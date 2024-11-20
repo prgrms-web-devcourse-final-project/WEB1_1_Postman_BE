@@ -40,6 +40,9 @@ out/
 applicaion.yml
 ./applicaion.yml
 ./src/main/resources/applicaion.yml
+*/applicaion.yml
+*.yml
+src/main/resources/applicaion.yml
 
 ### ds_store ###
 .DS_Store
