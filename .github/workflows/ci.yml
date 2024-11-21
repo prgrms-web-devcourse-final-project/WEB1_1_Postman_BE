@@ -48,3 +48,15 @@ jobs:
 
       - name: Gradle로 빌드 및 테스트
         run: ./gradlew clean build
+
+      - name: SonarCloud 패키지 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarCloud 분석
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube
