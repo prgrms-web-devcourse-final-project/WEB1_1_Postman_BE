@@ -1,4 +1,4 @@
 package postman.bottler.letter.dto.response;
 
-public record LetterResponseDTO {
+public record LetterResponseDTO() {
 }

@@ -36,17 +36,11 @@ out/
 ### VS Code ###
 .vscode/
 
-### yml ###
-applicaion.yml
-./applicaion.yml
-./src/main/resources/applicaion.yml
-*/applicaion.yml
-*.yml
-src/main/resources/applicaion.yml
-
 ### ds_store ###
 .DS_Store
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
 
+### env value ###
+.env
