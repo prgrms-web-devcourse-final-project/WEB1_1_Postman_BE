@@ -46,8 +46,8 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Gradle로 빌드 및 테스트
-        run: ./gradlew clean build
+      - name: Gradle로 테스트 및 커버리지 리포트 생성
+        run: ./gradlew clean build jacocoTestReport
 
       - name: SonarCloud 패키지 캐싱
         uses: actions/cache@v4

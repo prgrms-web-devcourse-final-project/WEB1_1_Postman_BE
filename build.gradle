@@ -6,6 +6,18 @@ plugins {
     id 'jacoco'
 }
 
+def jacocoDir = layout.buildDirectory.dir("reports/")
+jacocoTestReport {
+    dependsOn test // 테스트 작업이 완료된 후 실행
+    reports {
+        xml.required.set(true)  // XML 리포트 생성
+        html.required.set(true) // HTML 리포트 생성
+        csv.required.set(false) // CSV는 필요하지 않으면 false
+        html.destination jacocoDir.get().file("jacoco/index.html").asFile
+        xml.destination jacocoDir.get().file("jacoco/index.xml").asFile
+    }
+}
+
 sonarqube {
     properties {
         property "sonar.projectKey", "prgrms-web-devcourse-final-project_WEB1_1_Postman_BE"  // SonarCloud 프로젝트 키
