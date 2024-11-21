@@ -1,4 +1,4 @@
-name: 개발 브랜치 CI
+name: Develop Branch CI Pipeline
 
 on:
   pull_request:
