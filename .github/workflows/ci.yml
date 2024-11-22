@@ -33,7 +33,7 @@ jobs:
           distribution: temurin
 
       - name: Gradle 의존성 캐싱
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -46,5 +46,17 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: Gradle로 빌드 및 테스트
-        run: ./gradlew clean build
+      - name: Gradle로 테스트 및 커버리지 리포트 생성
+        run: ./gradlew clean build jacocoTestReport
+
+      - name: SonarCloud 패키지 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarCloud 분석
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube
