@@ -3,10 +3,7 @@ package postman.bottler.mapletter.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.exception.EmptyMapLetterContentException;
@@ -20,8 +17,8 @@ public class MapLetterController {
     private final MapLetterService mapLetterService;
 
     @PostMapping("/public")
-    public ApiResponse<?> createMapLetter(@RequestBody @Valid CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId,
-                                          BindingResult bindingResult) {
+    public ApiResponse<?> createMapLetter(@Valid @RequestBody CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
+                                          BindingResult bindingResult, Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("title".equals(error.getField())) {
