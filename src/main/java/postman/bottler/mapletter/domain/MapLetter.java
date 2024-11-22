@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,6 +42,25 @@ public class MapLetter {
                 .label(createPublicMapLetterRequestDTO.label())
                 .type(MapLetterType.PUBLIC)
                 .createUserId(userId)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .isDeleted(false)
+                .isBlocked(false)
+                .build();
+    }
+
+    public static MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, Long userId) {
+        return MapLetter.builder()
+                .title(createTargetMapLetterRequestDTO.title())
+                .content(createTargetMapLetterRequestDTO.content())
+                .latitude(createTargetMapLetterRequestDTO.latitude())
+                .longitude(createTargetMapLetterRequestDTO.longitude())
+                .font(createTargetMapLetterRequestDTO.font())
+                .paper(createTargetMapLetterRequestDTO.paper())
+                .label(createTargetMapLetterRequestDTO.label())
+                .type(MapLetterType.PRIVATE)
+                .createUserId(userId)
+                .targetUserId(createTargetMapLetterRequestDTO.target())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)

@@ -21,4 +21,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.FORBIDDEN.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(EmptyMapLetterTargetException.class)
+    public ApiResponse<?> handleEmptyMapLetterTargetException(EmptyMapLetterTargetException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_MAP_LETTER_TARGET.getCode(), e.getMessage(), null);
+    }
 }
