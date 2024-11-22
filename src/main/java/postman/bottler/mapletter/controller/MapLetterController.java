@@ -36,15 +36,15 @@ public class MapLetterController {
         return ApiResponse.onCreateSuccess("지도 편지 생성이 성공되었습니다.");
     }
 
-    @PostMapping("/target/{userId}")
-    public ApiResponse<?> createTargetLetter(@Valid @RequestBody CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, BindingResult bindingResult, @PathVariable Long userId) {
+    @PostMapping("/target")
+    public ApiResponse<?> createTargetLetter(@Valid @RequestBody CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, BindingResult bindingResult, Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("title".equals(error.getField())) {
                     throw new EmptyMapLetterTitleException(error.getDefaultMessage());
                 } else if ("content".equals(error.getField())) {
                     throw new EmptyMapLetterContentException(error.getDefaultMessage());
-                }else if("target".equals(error.getField())) {
+                } else if ("target".equals(error.getField())) {
                     throw new EmptyMapLetterTargetException(error.getDefaultMessage());
                 }
             });
