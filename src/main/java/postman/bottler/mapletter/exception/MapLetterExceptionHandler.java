@@ -13,13 +13,13 @@ public class MapLetterExceptionHandler {
     @ExceptionHandler(EmptyMapLetterContentException.class)
     public ApiResponse<?> handleEmptyLetterContentException(EmptyMapLetterContentException e) {
         log.error(e.getMessage());
-        return ApiResponse.onFailure(ErrorStatus.FORBIDDEN.getCode(), e.getMessage(), null);
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_MAP_LETTER_CONTENT.getCode(), e.getMessage(), null);
     }
 
     @ExceptionHandler(EmptyMapLetterTitleException.class)
     public ApiResponse<?> handleEmptyMapLetterTitleException(EmptyMapLetterTitleException e) {
         log.error(e.getMessage());
-        return ApiResponse.onFailure(ErrorStatus.FORBIDDEN.getCode(), e.getMessage(), null);
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_MAP_LETTER_TITLE.getCode(), e.getMessage(), null);
     }
 
     @ExceptionHandler(EmptyMapLetterTargetException.class)
