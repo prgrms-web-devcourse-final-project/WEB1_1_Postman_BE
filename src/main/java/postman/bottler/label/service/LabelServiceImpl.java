@@ -1,8 +1,12 @@
 package postman.bottler.label.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import postman.bottler.label.controller.LabelService;
 import postman.bottler.label.domain.Label;
+import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.infra.entity.LabelEntity;
 
 @Service
 public class LabelServiceImpl implements LabelService {
@@ -18,8 +22,9 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public void findAllLabels() {
-
+    public List<LabelResponseDTO> findAllLabels() {
+        List<Label> labels =  labelRepository.findAllLabels();
+        return Label.toResponseDTOList(labels);
     }
 
     @Override

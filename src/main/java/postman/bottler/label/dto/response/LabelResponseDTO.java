@@ -1,4 +1,4 @@
 package postman.bottler.label.dto.response;
 
-public record LabelResponseDTO() {
+public record LabelResponseDTO(String label) {
 }

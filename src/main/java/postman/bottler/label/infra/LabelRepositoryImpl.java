@@ -1,5 +1,6 @@
 package postman.bottler.label.infra;
 
+import java.util.List;
 import org.springframework.stereotype.Repository;
 import postman.bottler.label.domain.Label;
 import postman.bottler.label.infra.entity.LabelEntity;
@@ -16,5 +17,11 @@ public class LabelRepositoryImpl implements LabelRepository {
     @Override
     public void save(Label label) {
         labelJpaRepository.save(LabelEntity.from(label));
+    }
+
+    @Override
+    public List<Label> findAllLabels() {
+        List<LabelEntity> labelEntities = labelJpaRepository.findAll();
+        return LabelEntity.toLabels(labelEntities);
     }
 }
