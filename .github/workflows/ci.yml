@@ -9,18 +9,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
+      # 데이터베이스 환경변수 (RDS)
       DB_URL: ${{ secrets.DB_URL }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-    services:
-      mysql:
-        image: mysql:8.0
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: root_password
-          MYSQL_DATABASE: test_database
+      # AWS 환경변수
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # ECR 환경변수
+      ECR_URI: ${{ secrets.ECR_URI }}
+
+      # S3 환경변수
+      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      BASE_URL: ${{ secrets.BASE_URL }}
+
+      # gpt 환경변수
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - name: 코드 가져오기
