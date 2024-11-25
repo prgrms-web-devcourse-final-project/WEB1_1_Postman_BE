@@ -57,7 +57,7 @@ public class MapLetterController {
         return ApiResponse.onCreateSuccess("타겟 편지 생성이 성공되었습니다.");
     }
 
-    @GetMapping("/map/{letterId}")
+    @GetMapping("/{letterId}")
     public ApiResponse<OneLetterResponse> findOneMapLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findOneMepLetter(letterId, userId));
     }
