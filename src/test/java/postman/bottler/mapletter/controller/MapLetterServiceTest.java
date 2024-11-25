@@ -236,4 +236,82 @@ class MapLetterServiceTest {
         assertEquals("편지를 볼 수 있는 권한이 없습니다.", exception.getMessage());
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
     }
+
+    @Test
+    @DisplayName("PUBLIC 편지 삭제에 성공한다.")
+    void deletePublicMapLetterTest() {
+        // given
+        Long letterId = 1L;
+        Long userId = 2L;
+
+        MapLetter mockLetter = MapLetter.builder()
+                .id(letterId)
+                .title("테스트 편지")
+                .content("삭제 테스트")
+                .createUserId(userId)
+                .type(MapLetterType.PUBLIC)
+                .build();
+
+        Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
+
+        // when
+        mapLetterService.deleteMapLetter(letterId, userId);
+
+        // then
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).delete(letterId);
+    }
+
+    @Test
+    @DisplayName("TARGET 편지 삭제에 성공한다.")
+    void deleteTargetMapLetterTest() {
+        // given
+        Long letterId = 1L;
+        Long userId = 2L;
+
+        MapLetter mockLetter = MapLetter.builder()
+                .id(letterId)
+                .title("테스트 편지")
+                .content("삭제 테스트")
+                .createUserId(userId)
+                .type(MapLetterType.PRIVATE)
+                .build();
+
+        Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
+
+        // when
+        mapLetterService.deleteMapLetter(letterId, userId);
+
+        // then
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).delete(letterId);
+    }
+
+    @Test
+    @DisplayName("사용자가 권한이 없는 편지 삭제 시 CommonForbiddenException이 발생한다.")
+    void deleteMapLetterForbiddenTest() {
+        // given
+        Long letterId = 1L;
+        Long userId = 2L; //삭제 유저
+        Long otherUserId = 3L; //편지 작성 유저
+
+        MapLetter mockLetter = MapLetter.builder()
+                .id(letterId)
+                .title("테스트 편지")
+                .content("삭제 테스트")
+                .createUserId(otherUserId)
+                .type(MapLetterType.PUBLIC)
+                .build();
+
+        Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
+
+        // when & then
+        CommonForbiddenException exception = assertThrows(CommonForbiddenException.class, () -> {
+            mapLetterService.deleteMapLetter(letterId, userId);
+        });
+
+        assertEquals("편지를 삭제 할 권한이 없습니다.", exception.getMessage());
+
+        // 삭제 호출이 이루어지지 않아야 함
+        Mockito.verify(mapLetterRepository, Mockito.never()).delete(letterId);
+    }
+
 }
