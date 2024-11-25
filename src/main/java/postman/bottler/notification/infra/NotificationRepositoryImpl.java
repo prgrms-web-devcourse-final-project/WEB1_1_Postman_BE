@@ -18,7 +18,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
     @Override
     public List<Notification> findByReceiver(Long userId) {
-        return repository.findByReceiver(userId).stream()
+        return repository.findByReceiverOrderByCreateAtDesc(userId).stream()
                 .map(NotificationEntity::toDomain)
                 .toList();
     }
