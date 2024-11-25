@@ -43,7 +43,7 @@ public class LetterController {
     @DeleteMapping("/{letterId}")
     public ApiResponse<String> deleteLetter(@PathVariable Long letterId) {
         letterService.deleteLetter(letterId);
-        return ApiResponse.onSuccess("success");
+        return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 
     @GetMapping("/{letterId}")

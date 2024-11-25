@@ -7,6 +7,7 @@ import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterKeywordsResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
+import postman.bottler.letter.exception.LetterNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,12 @@ public class LetterService {
 
     public Page<LetterKeywordsResponseDTO> getLetterKeywords(int page, int size, String sort) {
         return null;
+    }
+
+    public void deleteLetter(Long letterId) {
+        letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
+        letterRepository.remove(letterId);
     }
 
     public LetterResponseDTO getLetterDetail(Long letterId) {
@@ -40,10 +47,6 @@ public class LetterService {
     }
 
     public void incrementWarningCount(Long letterId) {
-
-    }
-
-    public void deleteLetter(Long letterId) {
 
     }
 }
