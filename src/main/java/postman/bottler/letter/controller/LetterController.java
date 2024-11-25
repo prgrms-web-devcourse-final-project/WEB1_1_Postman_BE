@@ -44,4 +44,10 @@ public class LetterController {
         letterService.deleteLetter(letterId);
         return ApiResponse.onSuccess("success");
     }
+
+    @GetMapping("/{letterId}")
+    public ApiResponse<LetterResponseDTO> getLetter(@PathVariable Long letterId) {
+        LetterResponseDTO result = letterService.getLetterDetail(letterId);
+        return ApiResponse.onSuccess(result);
+    }
 }
