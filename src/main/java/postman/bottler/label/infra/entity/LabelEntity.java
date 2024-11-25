@@ -30,7 +30,7 @@ public class LabelEntity {
     public static List<Label> toLabels(List<LabelEntity> entities) {
         return entities.stream()
                 .map(LabelEntity::to)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Label to() {
