@@ -13,7 +13,7 @@ import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.FindSentMapLetter;
+import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
 import java.math.BigDecimal;
@@ -343,7 +343,7 @@ class MapLetterServiceTest {
         Mockito.when(mapLetterRepository.findAllByCreateUserId(userId)).thenReturn(mockMapLetters);
 
         //when
-        List<FindSentMapLetter> result=mapLetterService.findSentMapLetters(userId);
+        List<FindMapLetter> result=mapLetterService.findSentMapLetters(userId);
 
         //then
         assertEquals(4, result.size());
