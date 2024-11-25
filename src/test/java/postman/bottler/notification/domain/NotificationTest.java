@@ -19,13 +19,13 @@ public class NotificationTest {
         NotificationRequestDTO wrong = new NotificationRequestDTO("WRONG", 1L, 1L);
 
         // WHEN - THEN
-        assertThatThrownBy(() -> Notification.of(wrong.notificationType(), wrong.receiver(), wrong.letterId()))
+        assertThatThrownBy(() -> Notification.create(wrong.notificationType(), wrong.receiver(), wrong.letterId()))
                 .isInstanceOf(InvalidNotificationRequestException.class);
     }
 
     @Nested
-    @DisplayName("새 편지 생성")
-    class NewLetter {
+    @DisplayName("알림 생성")
+    class CreateNotification {
         @Test
         @DisplayName("새 편지 알림을 생성한다.")
         public void newLetterNotificationTest() {
@@ -33,7 +33,9 @@ public class NotificationTest {
             NotificationRequestDTO request = new NotificationRequestDTO("NEW_LETTER", 1L, 1L);
 
             // WHEN
-            Notification notification = Notification.of(request.notificationType(), request.receiver(),
+            Notification notification = Notification.create(
+                    request.notificationType(),
+                    request.receiver(),
                     request.letterId());
 
             // THEN
@@ -51,14 +53,10 @@ public class NotificationTest {
 
             // WHEN
             assertThatThrownBy(
-                    () -> Notification.of(request.notificationType(), request.receiver(), request.letterId()))
+                    () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
                     .isInstanceOf(InvalidNotificationRequestException.class);
         }
-    }
 
-    @Nested
-    @DisplayName("타겟 편지 생성")
-    class TargetLetter {
         @Test
         @DisplayName("타겟 편지 알림을 생성한다.")
         public void targetLetterNotificationTest() {
@@ -66,7 +64,9 @@ public class NotificationTest {
             NotificationRequestDTO request = new NotificationRequestDTO("TARGET_LETTER", 1L, 1L);
 
             // WHEN
-            Notification notification = Notification.of(request.notificationType(), request.receiver(),
+            Notification notification = Notification.create(
+                    request.notificationType(),
+                    request.receiver(),
                     request.letterId());
 
             // THEN
@@ -84,14 +84,10 @@ public class NotificationTest {
 
             // WHEN
             assertThatThrownBy(
-                    () -> Notification.of(request.notificationType(), request.receiver(), request.letterId()))
+                    () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
                     .isInstanceOf(InvalidNotificationRequestException.class);
         }
-    }
 
-    @Nested
-    @DisplayName("답장 편지")
-    class ReplyLetter {
         @Test
         @DisplayName("편지 답장 알림을 생성한다.")
         public void replyLetterNotificationTest() {
@@ -99,7 +95,9 @@ public class NotificationTest {
             NotificationRequestDTO request = new NotificationRequestDTO("REPLY_LETTER", 1L, 1L);
 
             // WHEN
-            Notification notification = Notification.of(request.notificationType(), request.receiver(),
+            Notification notification = Notification.create(
+                    request.notificationType(),
+                    request.receiver(),
                     request.letterId());
 
             // THEN
@@ -118,14 +116,10 @@ public class NotificationTest {
 
             // WHEN
             assertThatThrownBy(
-                    () -> Notification.of(request.notificationType(), request.receiver(), request.letterId()))
+                    () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
                     .isInstanceOf(InvalidNotificationRequestException.class);
         }
-    }
 
-    @Nested
-    @DisplayName("경고 알림")
-    class Warning {
         @Test
         @DisplayName("유저 경고 알림을 생성한다.")
         public void warningNotificationTest() {
@@ -133,7 +127,7 @@ public class NotificationTest {
             NotificationRequestDTO request = new NotificationRequestDTO("WARNING", 1L, null);
 
             // WHEN
-            Notification notification = Notification.of(
+            Notification notification = Notification.create(
                     request.notificationType(),
                     request.receiver(),
                     request.letterId());
@@ -143,11 +137,7 @@ public class NotificationTest {
             assertThat(notification.getReceiver()).isEqualTo(1L);
             assertThat(notification).isNotInstanceOf(LetterNotification.class);
         }
-    }
 
-    @Nested
-    @DisplayName("정지 알림")
-    class Ban {
         @Test
         @DisplayName("유저 정지 알림을 생성한다.")
         public void banNotificationTest() {
@@ -155,7 +145,7 @@ public class NotificationTest {
             NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, null);
 
             // WHEN
-            Notification notification = Notification.of(
+            Notification notification = Notification.create(
                     request.notificationType(),
                     request.receiver(),
                     request.letterId());
@@ -164,6 +154,23 @@ public class NotificationTest {
             assertThat(notification.getType()).isEqualTo(NotificationType.BAN);
             assertThat(notification.getReceiver()).isEqualTo(1L);
             assertThat(notification).isNotInstanceOf(LetterNotification.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("알림 읽음")
+    class NotificationRead {
+        @Test
+        @DisplayName("알림을 읽는다면, 읽음 표시를 한다.")
+        public void readNotification() {
+            // GIVEN
+            Notification notification = Notification.create("NEW_LETTER", 1L, 1L);
+
+            // WHEN
+            notification.read();
+
+            // THEN
+            assertThat(notification.getIsRead()).isTrue();
         }
     }
 }
