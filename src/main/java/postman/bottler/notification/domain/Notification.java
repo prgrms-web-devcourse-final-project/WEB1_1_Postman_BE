@@ -2,7 +2,6 @@ package postman.bottler.notification.domain;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
-import postman.bottler.notification.exception.InvalidNotificationRequestException;
 import postman.bottler.notification.exception.NoTypeException;
 
 @Getter
@@ -41,7 +40,8 @@ public class Notification {
         return new Notification(notificationType, receiver, false);
     }
 
-    public static Notification of(Long id, NotificationType type, Long receiver, Long letterId, LocalDateTime createdAt, Boolean isRead) {
+    public static Notification of(Long id, NotificationType type, Long receiver,
+                                  Long letterId, LocalDateTime createdAt, Boolean isRead) {
         if (type.isLetterNotification()) {
             return new LetterNotification(id, type, receiver, letterId, createdAt, isRead);
         }
