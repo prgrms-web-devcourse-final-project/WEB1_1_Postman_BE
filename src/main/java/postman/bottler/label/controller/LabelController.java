@@ -28,6 +28,6 @@ public class LabelController {
     @GetMapping
     public ApiResponse<?> findAllLabels() {
         List<LabelResponseDTO> labelResponseDTO = labelService.findAllLabels();
-        return ApiResponse.onCreateSuccess(labelResponseDTO);
+        return ApiResponse.onSuccess(labelResponseDTO);
     }
 }
