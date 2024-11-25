@@ -75,6 +75,7 @@ public class MapLetter {
                 .content(mapLetter.getContent())
                 .font(mapLetter.getFont())
                 .paper(mapLetter.getPaper())
+                .label(mapLetter.getLabel())
                 .createdAt(mapLetter.getCreatedAt())
                 .build();
     }

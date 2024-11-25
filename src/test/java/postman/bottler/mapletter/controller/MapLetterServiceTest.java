@@ -126,7 +126,7 @@ class MapLetterServiceTest {
         assertEquals("편지 내용", response.content());
         assertEquals("맑은고딕",response.font());
         assertEquals("www.paper.com", response.paper());
-//        assertEquals("www.label.com", response.label());
+        assertEquals("www.label.com", response.label());
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
     }
 }

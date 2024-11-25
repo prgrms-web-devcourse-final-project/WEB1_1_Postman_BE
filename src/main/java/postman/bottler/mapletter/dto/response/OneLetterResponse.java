@@ -11,6 +11,7 @@ public record OneLetterResponse(
         String profileImg,
         String font,
         String paper,
+        String label,
         LocalDateTime createdAt
 ) {
 }

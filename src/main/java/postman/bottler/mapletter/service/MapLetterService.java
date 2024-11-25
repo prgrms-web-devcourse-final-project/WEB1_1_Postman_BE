@@ -39,6 +39,7 @@ public class MapLetterService {
                 .profileImg(profileImg)
                 .font(oneLetterResponse.font())
                 .paper(oneLetterResponse.paper())
+                .label(oneLetterResponse.label())
                 .createdAt(oneLetterResponse.createdAt())
                 .build();
     }
