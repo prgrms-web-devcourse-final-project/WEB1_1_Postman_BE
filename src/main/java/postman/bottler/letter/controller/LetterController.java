@@ -57,4 +57,13 @@ public class LetterController {
         letterService.saveLetter(letterId);
         return ApiResponse.onSuccess("success");
     }
+
+    @GetMapping("/saved")
+    public ApiResponse<Page<LetterKeywordsResponseDTO>> getSavedLetters(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size
+    ) {
+        Page<LetterKeywordsResponseDTO> result = letterService.getSavedLetters(page, size);
+        return ApiResponse.onSuccess(result);
+    }
 }
