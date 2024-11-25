@@ -36,7 +36,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("퍼블릭 편지 생성에 성공한다.")
-    void createPublicMapLetter() {
+    void createPublicMapLetterTest() {
         //given
         CreatePublicMapLetterRequestDTO requestDTO=new CreatePublicMapLetterRequestDTO(
                 "Test Title",
@@ -66,7 +66,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("타겟 편지 생성에 성공한다.")
-    void createTargetLetter(){
+    void createTargetLetterTest(){
         //given
         CreateTargetMapLetterRequestDTO requestDTO=new CreateTargetMapLetterRequestDTO(
                 "Test Title",
@@ -99,7 +99,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("편지가 PUBLIC일 경우 편지 상세 조회에 성공한다.")
-    void findPublicMapLetter() {
+    void findPublicMapLetterTest() {
         // given
         Long letterId = 1L;
         Long userId = 2L;
@@ -132,7 +132,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("편지가 TARGET이고, TARGET ID와 USER ID가 동일하면 편지 상세 조회에 성공한다.")
-    void findTargetMapLetter() {
+    void findTargetMapLetterTest() {
         // given
         Long letterId = 1L;
         Long userId = 2L;
