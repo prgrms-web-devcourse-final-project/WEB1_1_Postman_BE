@@ -13,7 +13,8 @@ public enum ErrorStatus {
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403"),
 
     // 라벨 에러
-    INVALID_LABEL(HttpStatus.BAD_REQUEST, "LABEL400");
+    INVALID_LABEL(HttpStatus.BAD_REQUEST, "LABEL400"),
+    EMPTY_LABEL_INPUT(HttpStatus.BAD_REQUEST, "LABEL4001");
 
     private final HttpStatus httpStatus;
     private final String code;

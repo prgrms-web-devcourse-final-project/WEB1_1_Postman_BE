@@ -14,4 +14,10 @@ public class LabelExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.INVALID_LABEL.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(EmptyLabelInputException.class)
+    public ApiResponse<?> handleEmptyLabelInputException(EmptyLabelInputException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_LABEL_INPUT.getCode(), e.getMessage(), null);
+    }
 }

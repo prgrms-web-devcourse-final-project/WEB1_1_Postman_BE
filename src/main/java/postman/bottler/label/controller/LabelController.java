@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.exception.EmptyLabelInputException;
 import postman.bottler.label.service.LabelService;
 
 @RestController
@@ -21,6 +22,9 @@ public class LabelController {
 
     @PostMapping
     public ApiResponse<String> createLabel(@RequestParam String labelImageUrl) {
+        if (labelImageUrl == null || labelImageUrl.trim().isEmpty()) {
+            throw new EmptyLabelInputException("라벨 이미지 URL이 비어 있습니다.");
+        }
         labelService.createLabel(labelImageUrl);
         return ApiResponse.onCreateSuccess("라벨 추가 성공");
     }
