@@ -25,18 +25,17 @@ class LabelTest {
     }
 
     @Test
-    @DisplayName("label response dto 리스트를 label 도메인 리스트로 변환한다.")
-    void toResponseDTOList() {
+    @DisplayName("Label 객체를 LabelResponseDTO로 변환한다.")
+    void toLabelResponseDTO() {
         // given
-        Label label1 = Label.createLabel("http://example.com/image1.png");
-        Label label2 = Label.createLabel("http://example.com/image2.png");
-        List<Label> labels = List.of(label1, label2);
+        String imageUrl = "http://example.com/image1.png";
+        Label label = Label.createLabel(imageUrl);
 
         // when
-        List<LabelResponseDTO> dtos = Label.toResponseDTOList(labels);
+        LabelResponseDTO dto = label.toLabelResponseDTO();
 
         // then
-        assertNotNull(dtos, "Response DTO 리스트는 null이 될 수 없음");
-        assertEquals(2, dtos.size(), "DTO 리스트 사이즈는 2");
+        assertNotNull(dto, "LabelResponseDTO는 null이 될 수 없음");
+        assertEquals(imageUrl, dto.label(), "LabelResponseDTO의 label 값이 imageUrl과 일치해야 함");
     }
 }

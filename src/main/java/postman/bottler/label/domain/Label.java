@@ -1,7 +1,5 @@
 package postman.bottler.label.domain;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import postman.bottler.label.dto.response.LabelResponseDTO;
 
 public class Label {
@@ -19,9 +17,7 @@ public class Label {
         return imageUrl;
     }
 
-    public static List<LabelResponseDTO> toResponseDTOList(List<Label> labels) {
-        return labels.stream()
-                .map(label -> new LabelResponseDTO(label.getImageUrl()))
-                .collect(Collectors.toList());
+    public LabelResponseDTO toLabelResponseDTO() {
+        return new LabelResponseDTO(this.imageUrl);
     }
 }

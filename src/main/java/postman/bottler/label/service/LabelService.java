@@ -19,6 +19,6 @@ public class LabelService {
 
     public List<LabelResponseDTO> findAllLabels() {
         List<Label> labels =  labelRepository.findAllLabels();
-        return Label.toResponseDTOList(labels);
+        return labels.stream().map(Label::toLabelResponseDTO).toList();
     }
 }
