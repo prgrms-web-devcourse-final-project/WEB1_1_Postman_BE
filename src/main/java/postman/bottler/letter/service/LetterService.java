@@ -31,11 +31,13 @@ public class LetterService {
     }
 
     public LetterResponseDTO getLetterDetail(Long letterId) {
-        return null;
+        Letter letter = letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
+        return LetterResponseDTO.from(letter);
     }
 
     public void saveLetter(Long letterId) {
-
+        
     }
 
     public Page<LetterKeywordsResponseDTO> getSavedLetters(int page, int size) {
