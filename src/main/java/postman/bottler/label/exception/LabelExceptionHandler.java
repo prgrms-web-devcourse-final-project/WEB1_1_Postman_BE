@@ -10,7 +10,7 @@ import postman.bottler.global.response.code.ErrorStatus;
 @Slf4j
 public class LabelExceptionHandler {
     @ExceptionHandler(InvalidLabelException.class)
-    public ApiResponse<?> handleEmptyLabelException(InvalidLabelException e) {
+    public ApiResponse<?> handleInvalidLabelException(InvalidLabelException e) {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.INVALID_LABEL.getCode(), e.getMessage(), null);
     }
