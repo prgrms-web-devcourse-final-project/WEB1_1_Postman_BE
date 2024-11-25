@@ -2,6 +2,7 @@ package postman.bottler.notification.domain;
 
 import lombok.Getter;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
+import postman.bottler.notification.exception.NoLetterIdException;
 
 @Getter
 public class LetterNotification extends Notification {
@@ -21,7 +22,7 @@ public class LetterNotification extends Notification {
 
     private void validateLetterId(Long letterId) {
         if (letterId == null) {
-            throw new InvalidNotificationRequestException("편지 관련 알림은 편지 ID가 있어야 합니다.");
+            throw new NoLetterIdException();
         }
     }
 }

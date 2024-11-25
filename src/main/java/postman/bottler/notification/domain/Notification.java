@@ -3,6 +3,7 @@ package postman.bottler.notification.domain;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
+import postman.bottler.notification.exception.NoTypeException;
 
 @Getter
 public class Notification {
@@ -53,7 +54,7 @@ public class Notification {
                 return;
             }
         }
-        throw new InvalidNotificationRequestException("해당하는 타입의 알림 유형이 존재하지 않습니다.");
+        throw new NoTypeException();
     }
 
     public void read() {
