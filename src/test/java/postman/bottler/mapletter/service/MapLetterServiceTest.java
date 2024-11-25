@@ -318,6 +318,7 @@ class MapLetterServiceTest {
     void findSentMapLettersTest() {
         //given
         Long userId = 1L;
+        Long userId2 = 2L;
 
         List<MapLetter> mockMapLetters = List.of(
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
@@ -328,6 +329,10 @@ class MapLetterServiceTest {
                         new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
                         "www.paper.com", "www.label.com"), userId
                 ),
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
+                        new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "www.paper.com", "www.label.com"), userId2
+                ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
                         "Target Title 1", "content 1", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
@@ -337,10 +342,20 @@ class MapLetterServiceTest {
                         "Target Title 2", "content 2", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
                         2L),userId
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 3", "content 3", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
+                        2L),userId2
                 )
         );
 
-        Mockito.when(mapLetterRepository.findAllByCreateUserId(userId)).thenReturn(mockMapLetters);
+        List<MapLetter> filteredMapLetters = mockMapLetters.stream()
+                .filter(letter -> letter.getCreateUserId().equals(userId))
+                .toList();
+
+        Mockito.when(mapLetterRepository.findAllByCreateUserId(userId)).thenReturn(filteredMapLetters);
+
 
         //when
         List<FindMapLetter> result=mapLetterService.findSentMapLetters(userId);
