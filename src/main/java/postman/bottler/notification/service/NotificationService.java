@@ -1,4 +1,4 @@
 package postman.bottler.notification.service;
 
-public class NotificationServiceImpl {
+public class NotificationService {
 }
