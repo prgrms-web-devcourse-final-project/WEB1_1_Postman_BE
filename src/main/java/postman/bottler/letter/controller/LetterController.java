@@ -66,4 +66,10 @@ public class LetterController {
         Page<LetterKeywordsResponseDTO> result = letterService.getSavedLetters(page, size);
         return ApiResponse.onSuccess(result);
     }
+
+    @DeleteMapping("/saved/{letterId}")
+    public ApiResponse<String> deleteSavedLetter(@PathVariable Long letterId) {
+        letterService.deleteSavedLetter(letterId);
+        return ApiResponse.onSuccess("success");
+    }
 }
