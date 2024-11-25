@@ -1,5 +1,7 @@
 package postman.bottler.user.service;
 
+import org.springframework.stereotype.Service;
+
 public interface UserService {
     //user의 권한을 변경 할 수 있음. 신고 당하면 계정 정지, 날짜 지나면 정지 푸는거
 

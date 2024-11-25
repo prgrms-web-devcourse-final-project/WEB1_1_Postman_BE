@@ -19,7 +19,6 @@ public enum ErrorStatus {
     EMPTY_MAP_LETTER_TITLE(HttpStatus.BAD_REQUEST, "MAP4003"),
     EMPTY_MAP_LETTER_TARGET(HttpStatus.BAD_REQUEST, "MAP4004"),
 
-
     ;
 
 

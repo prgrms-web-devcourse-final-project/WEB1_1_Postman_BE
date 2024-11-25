@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.EmptyMapLetterContentException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTargetException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTitleException;
+import postman.bottler.mapletter.service.MapLetterService;
 
 @RestController
 @RequestMapping("/map")
@@ -53,5 +55,10 @@ public class MapLetterController {
         }
         mapLetterService.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("타겟 편지 생성이 성공되었습니다.");
+    }
+
+    @GetMapping("/map/{letterId}")
+    public ApiResponse<OneLetterResponse> findOneMapLetter(@PathVariable Long letterId, Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findOneMepLetter(letterId, userId));
     }
 }

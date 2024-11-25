@@ -2,15 +2,24 @@ package postman.bottler.mapletter.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.controller.MapLetterService;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.user.service.UserService;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MapLetterServiceImpl implements MapLetterService {
     private final MapLetterRepository mapLetterRepository;
+//    private final UserService userService;
 
     @Override
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId) {
@@ -20,7 +29,27 @@ public class MapLetterServiceImpl implements MapLetterService {
 
     @Override
     public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, Long userId) {
-        MapLetter mapLetter=MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
+        MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
         return mapLetterRepository.save(mapLetter);
+    }
+
+    @Override
+    public OneLetterResponse findOneMepLetter(Long letterId, Long userId) {
+        MapLetter mapLetter = mapLetterRepository.findById(letterId);
+        if (mapLetter.getType() == MapLetterType.PRIVATE && !mapLetter.getTargetUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+
+        OneLetterResponse oneLetterResponse = MapLetter.toOneLetterResponse(mapLetter);
+        String profileImg = ""; //user 서비스 메서드 불러서 받기
+        String paperImg = "";
+        return OneLetterResponse.builder()
+                .title(oneLetterResponse.title())
+                .content(oneLetterResponse.content())
+                .profileImg(profileImg)
+                .font(oneLetterResponse.font())
+                .paper(paperImg)
+                .createdAt(oneLetterResponse.createdAt())
+                .build();
     }
 }
