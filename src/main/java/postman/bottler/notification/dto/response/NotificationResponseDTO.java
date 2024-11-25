@@ -1,16 +1,20 @@
 package postman.bottler.notification.dto.response;
 
 import java.time.LocalDateTime;
+import postman.bottler.notification.domain.LetterNotification;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
 
 public record NotificationResponseDTO(
         NotificationType type,
         Long receiver,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        Long letterId
 ) {
     public static NotificationResponseDTO from(final Notification notification) {
-        return new NotificationResponseDTO(notification.getType(), notification.getReceiver(),
-                notification.getCreatedAt());
+        return new NotificationResponseDTO(notification.getType(),
+                notification.getReceiver(),
+                notification.getCreatedAt(),
+                notification instanceof LetterNotification ? ((LetterNotification) notification).getLetterId() : null);
     }
 }
