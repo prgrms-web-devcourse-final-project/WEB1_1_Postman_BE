@@ -2,7 +2,7 @@ package postman.bottler.label.infra.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -10,8 +10,8 @@ import postman.bottler.label.domain.Label;
 
 @Entity
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "label")
 public class LabelEntity {
     @Id
