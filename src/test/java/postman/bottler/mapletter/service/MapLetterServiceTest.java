@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.service;
 
+import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,11 @@ import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.FindSentMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +37,7 @@ class MapLetterServiceTest {
     @DisplayName("퍼블릭 편지 생성에 성공한다.")
     void createPublicMapLetterTest() {
         //given
-        CreatePublicMapLetterRequestDTO requestDTO=new CreatePublicMapLetterRequestDTO(
+        CreatePublicMapLetterRequestDTO requestDTO = new CreatePublicMapLetterRequestDTO(
                 "Test Title",
                 "TestContent",
                 new BigDecimal("37.5665"),
@@ -43,28 +46,28 @@ class MapLetterServiceTest {
                 "www.paper.com",
                 "www.label.com"
         );
-        Long userId=1L;
-        MapLetter expectedMapLetter=MapLetter.createPublicMapLetter(requestDTO, userId);
+        Long userId = 1L;
+        MapLetter expectedMapLetter = MapLetter.createPublicMapLetter(requestDTO, userId);
 
         Mockito.when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
 
         //when
-        MapLetter actualMapLetter=mapLetterService.createPublicMapLetter(requestDTO, userId);
+        MapLetter actualMapLetter = mapLetterService.createPublicMapLetter(requestDTO, userId);
 
         //then
-        assertEquals(expectedMapLetter.getTitle(),actualMapLetter.getTitle());
-        assertEquals(expectedMapLetter.getContent(),actualMapLetter.getContent());
-        assertEquals(expectedMapLetter.getLatitude(),actualMapLetter.getLatitude());
-        assertEquals(expectedMapLetter.getLongitude(),actualMapLetter.getLongitude());
+        assertEquals(expectedMapLetter.getTitle(), actualMapLetter.getTitle());
+        assertEquals(expectedMapLetter.getContent(), actualMapLetter.getContent());
+        assertEquals(expectedMapLetter.getLatitude(), actualMapLetter.getLatitude());
+        assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
     }
 
     @Test
     @DisplayName("타겟 편지 생성에 성공한다.")
-    void createTargetLetterTest(){
+    void createTargetLetterTest() {
         //given
-        CreateTargetMapLetterRequestDTO requestDTO=new CreateTargetMapLetterRequestDTO(
+        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "Test Title",
                 "TestContent",
                 new BigDecimal("37.5665"),
@@ -75,20 +78,20 @@ class MapLetterServiceTest {
                 2L //임시 타겟
         );
 
-        Long userId=1L;
-        MapLetter expectedMapLetter=MapLetter.createTargetMapLetter(requestDTO, userId);
+        Long userId = 1L;
+        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
 
         Mockito.when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
 
         //when
-        MapLetter actualMapLetter=mapLetterService.createTargetMapLetter(requestDTO, userId);
+        MapLetter actualMapLetter = mapLetterService.createTargetMapLetter(requestDTO, userId);
 
         //then
-        assertEquals(expectedMapLetter.getTitle(),actualMapLetter.getTitle());
-        assertEquals(expectedMapLetter.getContent(),actualMapLetter.getContent());
-        assertEquals(expectedMapLetter.getLatitude(),actualMapLetter.getLatitude());
-        assertEquals(expectedMapLetter.getLongitude(),actualMapLetter.getLongitude());
-        assertEquals(expectedMapLetter.getTargetUserId(),actualMapLetter.getTargetUserId());
+        assertEquals(expectedMapLetter.getTitle(), actualMapLetter.getTitle());
+        assertEquals(expectedMapLetter.getContent(), actualMapLetter.getContent());
+        assertEquals(expectedMapLetter.getLatitude(), actualMapLetter.getLatitude());
+        assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
+        assertEquals(expectedMapLetter.getTargetUserId(), actualMapLetter.getTargetUserId());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
     }
@@ -100,7 +103,7 @@ class MapLetterServiceTest {
         Long letterId = 1L;
         Long userId = 2L;
 
-        CreatePublicMapLetterRequestDTO requestDTO=new CreatePublicMapLetterRequestDTO(
+        CreatePublicMapLetterRequestDTO requestDTO = new CreatePublicMapLetterRequestDTO(
                 "퍼블릭 편지 상세 조회 테스트",
                 "편지 내용",
                 new BigDecimal("37.5665"),
@@ -109,7 +112,7 @@ class MapLetterServiceTest {
                 "www.paper.com",
                 "www.label.com"
         );
-        MapLetter publicLetter=MapLetter.createPublicMapLetter(requestDTO, userId);
+        MapLetter publicLetter = MapLetter.createPublicMapLetter(requestDTO, userId);
 
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(publicLetter);
 
@@ -120,7 +123,7 @@ class MapLetterServiceTest {
         assertNotNull(response);
         assertEquals("퍼블릭 편지 상세 조회 테스트", response.title());
         assertEquals("편지 내용", response.content());
-        assertEquals("맑은고딕",response.font());
+        assertEquals("맑은고딕", response.font());
         assertEquals("www.paper.com", response.paper());
         assertEquals("www.label.com", response.label());
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
@@ -132,10 +135,10 @@ class MapLetterServiceTest {
         // given
         Long letterId = 1L;
         Long userId = 2L;
-        Long targetUserId=7L;
+        Long targetUserId = 7L;
 
         //given
-        CreateTargetMapLetterRequestDTO requestDTO=new CreateTargetMapLetterRequestDTO(
+        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "프라이빗 편지 편지 상세 조회 테스트",
                 "편지 내용",
                 new BigDecimal("37.5665"),
@@ -145,7 +148,7 @@ class MapLetterServiceTest {
                 "www.label.com",
                 targetUserId
         );
-        MapLetter expectedMapLetter=MapLetter.createTargetMapLetter(requestDTO, userId);
+        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
 
         expectedMapLetter = MapLetter.builder()
                 .id(letterId) // id를 명시적으로 설정
@@ -176,7 +179,7 @@ class MapLetterServiceTest {
         assertEquals(targetUserId, expectedMapLetter.getTargetUserId()); //타겟이 맞는지 조회
         assertEquals("프라이빗 편지 편지 상세 조회 테스트", response.title());
         assertEquals("편지 내용", response.content());
-        assertEquals("맑은고딕",response.font());
+        assertEquals("맑은고딕", response.font());
         assertEquals("www.paper.com", response.paper());
         assertEquals("www.label.com", response.label());
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
@@ -188,11 +191,11 @@ class MapLetterServiceTest {
         // given
         Long letterId = 1L;
         Long userId = 2L;
-        Long targetUserId=7L;
-        Long unAuthorizedUserId=10L;
+        Long targetUserId = 7L;
+        Long unAuthorizedUserId = 10L;
 
         //given
-        CreateTargetMapLetterRequestDTO requestDTO=new CreateTargetMapLetterRequestDTO(
+        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "프라이빗 편지 편지 상세 조회 테스트",
                 "편지 내용",
                 new BigDecimal("37.5665"),
@@ -202,7 +205,7 @@ class MapLetterServiceTest {
                 "www.label.com",
                 targetUserId
         );
-        MapLetter expectedMapLetter=MapLetter.createTargetMapLetter(requestDTO, userId);
+        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
 
         expectedMapLetter = MapLetter.builder()
                 .id(letterId) // id를 명시적으로 설정
@@ -308,6 +311,48 @@ class MapLetterServiceTest {
 
         // 삭제 호출이 이루어지지 않아야 함
         Mockito.verify(mapLetterRepository, Mockito.never()).delete(letterId);
+    }
+
+    @Test
+    @DisplayName("보낸 지도 편지 조회에 성공한다.")
+    void findSentMapLettersTest() {
+        //given
+        Long userId = 1L;
+
+        List<MapLetter> mockMapLetters = List.of(
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
+                                new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                                "www.paper.com", "www.label.com"), userId
+                ),
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
+                        new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "www.paper.com", "www.label.com"), userId
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 1", "content 1", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
+                        2L),userId
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 2", "content 2", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
+                        2L),userId
+                )
+        );
+
+        Mockito.when(mapLetterRepository.findAllByCreateUserId(userId)).thenReturn(mockMapLetters);
+
+        //when
+        List<FindSentMapLetter> result=mapLetterService.findSentMapLetters(userId);
+
+        //then
+        assertEquals(4, result.size());
+        assertEquals("Title1", result.get(0).title());
+        assertEquals("Title2", result.get(1).title());
+        assertEquals("www.label4.com", result.get(3).label());
+
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).findAllByCreateUserId(userId);
+
     }
 
 }
