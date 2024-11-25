@@ -31,4 +31,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
                 .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
         return MapLetterEntity.toDomain(mapLetter);
     }
+
+    @Override
+    @Transactional
+    public void delete(Long letterId) {
+        mapLetterJpaRepository.deleteById(letterId);
+    }
 }

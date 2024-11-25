@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface MapLetterRepository {
     MapLetter save(MapLetter mapLetter);
     MapLetter findById(Long id);
+
+    void delete(Long letterId);
 }

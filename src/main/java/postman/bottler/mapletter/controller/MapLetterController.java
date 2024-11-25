@@ -61,4 +61,10 @@ public class MapLetterController {
     public ApiResponse<OneLetterResponse> findOneMapLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findOneMepLetter(letterId, userId));
     }
+
+    @DeleteMapping("/{letterId}")
+    public ApiResponse<?> deleteMapLetter(@PathVariable Long letterId, Long userId) {
+        mapLetterService.deleteMapLetter(letterId, userId);
+        return ApiResponse.onDeleteSuccess(letterId);
+    }
 }
