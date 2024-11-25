@@ -45,7 +45,6 @@ public class MapLetterService {
 
     public void deleteMapLetter(Long letterId, Long userId) {
         MapLetter findMapLetter = mapLetterRepository.findById(letterId);
-        userId=1L;
         if(!findMapLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다.");
         }
