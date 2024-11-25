@@ -23,6 +23,9 @@ public class NotificationService {
                 .map(NotificationResponseDTO::from)
                 .toList();
         notifications.forEach(Notification::read);
+        notifications.stream()
+                .filter(notification -> !notification.getIsRead())
+                .forEach(Notification::read);
         notificationRepository.updateNotifications(notifications);
         return result;
     }
