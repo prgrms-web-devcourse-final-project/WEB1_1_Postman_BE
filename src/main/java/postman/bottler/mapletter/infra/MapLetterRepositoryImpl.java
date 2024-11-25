@@ -1,6 +1,7 @@
 package postman.bottler.mapletter.infra;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
+import postman.bottler.mapletter.infra.entity.PaperEntity;
 import postman.bottler.mapletter.service.MapLetterRepository;
 
 @Repository
@@ -36,5 +38,14 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     @Transactional
     public void delete(Long letterId) {
         mapLetterJpaRepository.deleteById(letterId);
+    }
+
+    @Override
+    public List<MapLetter> findAllByCreateUserId(Long userId) {
+        List<MapLetterEntity> findAllLetters = mapLetterJpaRepository.findAllByCreateUserId(userId);
+
+        return findAllLetters.stream()
+                .map(MapLetterEntity::toDomain)
+                .toList();
     }
 }

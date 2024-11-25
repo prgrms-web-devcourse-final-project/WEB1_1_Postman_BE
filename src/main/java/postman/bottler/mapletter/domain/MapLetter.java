@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.FindSentMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
 @Builder
@@ -75,6 +76,15 @@ public class MapLetter {
                 .content(mapLetter.getContent())
                 .font(mapLetter.getFont())
                 .paper(mapLetter.getPaper())
+                .label(mapLetter.getLabel())
+                .createdAt(mapLetter.getCreatedAt())
+                .build();
+    }
+
+    public static FindSentMapLetter toFindSentMapLetter(MapLetter mapLetter) {
+        return FindSentMapLetter.builder()
+                .letterId(mapLetter.getId())
+                .title(mapLetter.getTitle())
                 .label(mapLetter.getLabel())
                 .createdAt(mapLetter.getCreatedAt())
                 .build();

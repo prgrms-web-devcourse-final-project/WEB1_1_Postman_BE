@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
+import java.util.List;
+
 @Repository
 public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, Long> {
+    List<MapLetterEntity>findAllByCreateUserId(Long userId);
 }

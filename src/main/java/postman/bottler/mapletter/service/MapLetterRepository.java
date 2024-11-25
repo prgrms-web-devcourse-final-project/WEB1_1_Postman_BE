@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +13,6 @@ public interface MapLetterRepository {
     MapLetter findById(Long id);
 
     void delete(Long letterId);
+
+    List<MapLetter> findAllByCreateUserId(Long userId);
 }

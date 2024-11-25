@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
+import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.FindSentMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +54,13 @@ public class MapLetterService {
             throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다.");
         }
         mapLetterRepository.delete(letterId);
+    }
+
+    public List<FindSentMapLetter> findSentMapLetters(Long userId) {
+        List<MapLetter> mapLetters=mapLetterRepository.findAllByCreateUserId(userId);
+
+        return mapLetters.stream()
+                .map(MapLetter::toFindSentMapLetter)
+                .toList();
     }
 }
