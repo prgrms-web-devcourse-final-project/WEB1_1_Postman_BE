@@ -9,7 +9,7 @@ public record CreatePublicMapLetterRequestDTO(
         BigDecimal latitude,
         BigDecimal longitude,
         String font,
-        int paper,
-        int label
+        String paper,
+        String label
 ) {
 }

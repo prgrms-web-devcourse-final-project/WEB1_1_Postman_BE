@@ -22,8 +22,8 @@ public class MapLetter {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String font;
-    private int paper;
-    private int label;
+    private String paper;
+    private String label;
     private MapLetterType type;
     private Long targetUserId;
     private Long createUserId;
@@ -74,6 +74,7 @@ public class MapLetter {
                 .title(mapLetter.getTitle())
                 .content(mapLetter.getContent())
                 .font(mapLetter.getFont())
+                .paper(mapLetter.getPaper())
                 .createdAt(mapLetter.getCreatedAt())
                 .build();
     }

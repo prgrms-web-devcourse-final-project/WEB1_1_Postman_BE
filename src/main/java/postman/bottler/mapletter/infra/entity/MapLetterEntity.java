@@ -32,8 +32,8 @@ public class MapLetterEntity {
     @Column(precision = 11, scale = 7) //총 11자리, 소수점 7자리(4, 7)
     private BigDecimal longitude;
     private String font;
-    private int paper;
-    private int label;
+    private String paper;
+    private String label;
 
     @Enumerated(EnumType.STRING)
     private MapLetterType type;
@@ -46,7 +46,7 @@ public class MapLetterEntity {
 
     @Builder
     public MapLetterEntity(String title, String content, BigDecimal latitude, BigDecimal longitude, String font,
-                           int paper, int label, MapLetterType type, Long targetUserId, Long createUserId,
+                           String paper, String label, MapLetterType type, Long targetUserId, Long createUserId,
                            LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBlocked) {
         this.title = title;
         this.content = content;

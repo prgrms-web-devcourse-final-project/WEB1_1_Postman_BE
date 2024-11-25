@@ -33,13 +33,12 @@ public class MapLetterService {
 
         OneLetterResponse oneLetterResponse = MapLetter.toOneLetterResponse(mapLetter);
         String profileImg = ""; //user 서비스 메서드 불러서 받기
-        String paperImg = "";
         return OneLetterResponse.builder()
                 .title(oneLetterResponse.title())
                 .content(oneLetterResponse.content())
                 .profileImg(profileImg)
                 .font(oneLetterResponse.font())
-                .paper(paperImg)
+                .paper(oneLetterResponse.paper())
                 .createdAt(oneLetterResponse.createdAt())
                 .build();
     }
