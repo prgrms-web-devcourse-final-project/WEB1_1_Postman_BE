@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.controller;
 
+import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,12 +8,17 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.service.MapLetterRepository;
+import postman.bottler.mapletter.service.MapLetterService;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,8 +44,8 @@ class MapLetterServiceTest {
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
-                1,
-                1
+                "www.paper.com",
+                "www.label.com"
         );
         Long userId=1L;
         MapLetter expectedMapLetter=MapLetter.createPublicMapLetter(requestDTO, userId);
@@ -68,8 +74,8 @@ class MapLetterServiceTest {
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
-                1,
-                1,
+                "www.paper.com",
+                "www.label.com",
                 2L //임시 타겟
         );
 
@@ -89,5 +95,38 @@ class MapLetterServiceTest {
         assertEquals(expectedMapLetter.getTargetUserId(),actualMapLetter.getTargetUserId());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
+    }
+
+    @Test
+    @DisplayName("편지가 PUBLIC일 경우 편지 상세 조회에 성공한다.")
+    void findPublicMapLetter() {
+        // given
+        Long letterId = 1L;
+        Long userId = 2L;
+
+        CreatePublicMapLetterRequestDTO requestDTO=new CreatePublicMapLetterRequestDTO(
+                "퍼블릭 편지 상세 조회 테스트",
+                "편지 내용",
+                new BigDecimal("37.5665"),
+                new BigDecimal("127.23456"),
+                "맑은고딕",
+                "www.paper.com",
+                "www.label.com"
+        );
+        MapLetter publicLetter=MapLetter.createPublicMapLetter(requestDTO, userId);
+
+        Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(publicLetter);
+
+        // when
+        OneLetterResponse response = mapLetterService.findOneMepLetter(letterId, userId);
+
+        // then
+        assertNotNull(response);
+        assertEquals("퍼블릭 편지 상세 조회 테스트", response.title());
+        assertEquals("편지 내용", response.content());
+        assertEquals("맑은고딕",response.font());
+        assertEquals("www.paper.com", response.paper());
+//        assertEquals("www.label.com", response.label());
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
     }
 }
