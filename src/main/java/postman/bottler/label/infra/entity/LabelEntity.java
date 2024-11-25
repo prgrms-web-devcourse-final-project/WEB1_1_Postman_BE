@@ -18,6 +18,7 @@ public class LabelEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long labelId;
 
+    @Column(unique = true)
     private String imageUrl;
 
     public static LabelEntity from(Label label) {
