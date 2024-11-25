@@ -1,11 +1,8 @@
 package postman.bottler.letter.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterKeywordsResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
@@ -20,11 +17,11 @@ public class LetterService {
         return null;
     }
 
-    public Page<LetterKeywordsResponseDTO> getSentLetters(int page, int size, String sort) {
+    public Page<LetterKeywordsResponseDTO> getLetterKeywords(int page, int size, String sort) {
         return null;
     }
 
-    public Letter getLetterDetail(Long letterId) {
+    public LetterResponseDTO getLetterDetail(Long letterId) {
         return null;
     }
 
@@ -32,8 +29,8 @@ public class LetterService {
 
     }
 
-    public List<Letter> getSavedLetters(Pageable pageable) {
-        return List.of();
+    public Page<LetterKeywordsResponseDTO> getSavedLetters(int page, int size) {
+        return null;
     }
 
     public void deleteSavedLetter(Long letterId) {
@@ -41,6 +38,10 @@ public class LetterService {
     }
 
     public void incrementWarningCount(Long letterId) {
+
+    }
+
+    public void deleteLetter(Long letterId) {
 
     }
 }
