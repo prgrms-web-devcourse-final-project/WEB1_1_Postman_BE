@@ -8,7 +8,7 @@ import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.FindSentMapLetter;
+import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
 import java.util.List;
@@ -56,8 +56,16 @@ public class MapLetterService {
         mapLetterRepository.delete(letterId);
     }
 
-    public List<FindSentMapLetter> findSentMapLetters(Long userId) {
+    public List<FindMapLetter> findSentMapLetters(Long userId) {
         List<MapLetter> mapLetters=mapLetterRepository.findAllByCreateUserId(userId);
+
+        return mapLetters.stream()
+                .map(MapLetter::toFindSentMapLetter)
+                .toList();
+    }
+
+    public List<FindMapLetter> findReceivedMapLetters(Long userId) {
+        List<MapLetter> mapLetters=mapLetterRepository.findAllByTargetUserId(userId);
 
         return mapLetters.stream()
                 .map(MapLetter::toFindSentMapLetter)

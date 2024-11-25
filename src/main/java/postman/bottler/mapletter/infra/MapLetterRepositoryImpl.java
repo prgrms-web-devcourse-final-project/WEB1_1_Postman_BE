@@ -48,4 +48,13 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
                 .map(MapLetterEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<MapLetter> findAllByTargetUserId(Long userId) {
+        List<MapLetterEntity> findAllLetters = mapLetterJpaRepository.findAllByTargetUserId(userId);
+
+        return findAllLetters.stream()
+                .map(MapLetterEntity::toDomain)
+                .toList();
+    }
 }

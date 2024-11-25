@@ -15,4 +15,6 @@ public interface MapLetterRepository {
     void delete(Long letterId);
 
     List<MapLetter> findAllByCreateUserId(Long userId);
+
+    List<MapLetter> findAllByTargetUserId(Long userId);
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.FindSentMapLetter;
+import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.EmptyMapLetterContentException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTargetException;
@@ -72,8 +72,13 @@ public class MapLetterController {
     }
 
     @GetMapping("/sent")
-    public ApiResponse<List<FindSentMapLetter>> findSentMapLetters(Long userId) {
+    public ApiResponse<List<FindMapLetter>> findSentMapLetters(Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findSentMapLetters(userId));
+    }
+
+    @GetMapping("/received")
+    public ApiResponse<List<FindMapLetter>> findReceivedMapLetters(Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findReceivedMapLetters(userId));
     }
 
 }

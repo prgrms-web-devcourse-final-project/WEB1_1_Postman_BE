@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, Long> {
     List<MapLetterEntity>findAllByCreateUserId(Long userId);
+    List<MapLetterEntity>findAllByTargetUserId(Long userId);
 }
