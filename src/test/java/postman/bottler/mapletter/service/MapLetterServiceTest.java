@@ -1,6 +1,5 @@
-package postman.bottler.mapletter.controller;
+package postman.bottler.mapletter.service;
 
-import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,11 +13,8 @@ import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
-import postman.bottler.mapletter.service.MapLetterRepository;
-import postman.bottler.mapletter.service.MapLetterService;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
