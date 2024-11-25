@@ -24,11 +24,11 @@ public class Notification {
         this.isRead = isRead;
     }
 
-    protected Notification(Long id, NotificationType type, Long receiver, Boolean isRead) {
+    protected Notification(Long id, NotificationType type, Long receiver, LocalDateTime createdAt, Boolean isRead) {
         this.id = id;
         this.type = type;
         this.receiver = receiver;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
         this.isRead = isRead;
     }
 
@@ -41,11 +41,11 @@ public class Notification {
         return new Notification(notificationType, receiver, false);
     }
 
-    public static Notification of(Long id, NotificationType type, Long receiver, Long letterId, Boolean isRead) {
+    public static Notification of(Long id, NotificationType type, Long receiver, Long letterId, LocalDateTime createdAt, Boolean isRead) {
         if (type.isLetterNotification()) {
-            return new LetterNotification(id, type, receiver, letterId, isRead);
+            return new LetterNotification(id, type, receiver, letterId, createdAt, isRead);
         }
-        return new Notification(id, type, receiver, isRead);
+        return new Notification(id, type, receiver, createdAt, isRead);
     }
 
     private static void validateType(String type) {

@@ -49,6 +49,6 @@ public class NotificationEntity {
     }
 
     public Notification toDomain() {
-        return Notification.of(id, type, receiver, letterId, isRead);
+        return Notification.of(id, type, receiver, letterId, createAt, isRead);
     }
 }
