@@ -8,19 +8,21 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
+import postman.bottler.notification.exception.NoLetterIdException;
+import postman.bottler.notification.exception.NoTypeException;
 
 @DisplayName("알림 테스트")
 public class NotificationTest {
 
     @Test
-    @DisplayName("잘못된 편지 타입 요청 시, InvalidNotificationRequestException을 발생시킨다.")
+    @DisplayName("잘못된 편지 타입 요청 시, NoTypeException을 발생시킨다.")
     public void wrongType() {
         // GIVEN
         NotificationRequestDTO wrong = new NotificationRequestDTO("WRONG", 1L, 1L);
 
         // WHEN - THEN
         assertThatThrownBy(() -> Notification.create(wrong.notificationType(), wrong.receiver(), wrong.letterId()))
-                .isInstanceOf(InvalidNotificationRequestException.class);
+                .isInstanceOf(NoTypeException.class);
     }
 
     @Nested
@@ -54,7 +56,7 @@ public class NotificationTest {
             // WHEN
             assertThatThrownBy(
                     () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
-                    .isInstanceOf(InvalidNotificationRequestException.class);
+                    .isInstanceOf(NoLetterIdException.class);
         }
 
         @Test
@@ -80,12 +82,12 @@ public class NotificationTest {
         @DisplayName("타겟 편지 생성 시, 편지 ID가 없으면 예외를 발생시킨다.")
         public void targetLetterNoLetterIdTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("TARGET", 1L, null);
+            NotificationRequestDTO request = new NotificationRequestDTO("TARGET_LETTER", 1L, null);
 
             // WHEN
             assertThatThrownBy(
                     () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
-                    .isInstanceOf(InvalidNotificationRequestException.class);
+                    .isInstanceOf(NoLetterIdException.class);
         }
 
         @Test
@@ -117,7 +119,7 @@ public class NotificationTest {
             // WHEN
             assertThatThrownBy(
                     () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
-                    .isInstanceOf(InvalidNotificationRequestException.class);
+                    .isInstanceOf(NoLetterIdException.class);
         }
 
         @Test
