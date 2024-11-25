@@ -71,8 +71,9 @@ public class MapLetterController {
         return ApiResponse.onDeleteSuccess(letterId);
     }
 
-    @GetMapping("/sent/{userId}")
-    public ApiResponse<List<FindSentMapLetter>> findSentMapLetters(@PathVariable Long userId) {
+    @GetMapping("/sent")
+    public ApiResponse<List<FindSentMapLetter>> findSentMapLetters(Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findSentMapLetters(userId));
     }
+
 }
