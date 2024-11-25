@@ -44,6 +44,7 @@ public class NotificationServiceTest {
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.NEW_LETTER);
+            assertThat(response.letterId()).isEqualTo(1L);
         }
 
         @Test
@@ -63,6 +64,7 @@ public class NotificationServiceTest {
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.TARGET_LETTER);
+            assertThat(response.letterId()).isEqualTo(1L);
         }
 
         @Test
@@ -80,9 +82,9 @@ public class NotificationServiceTest {
                     request.letterId());
 
             // THEN
-            // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.REPLY_LETTER);
+            assertThat(response.letterId()).isEqualTo(1L);
         }
 
         @Test
@@ -102,6 +104,7 @@ public class NotificationServiceTest {
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.WARNING);
+            assertThat(response.letterId()).isNull();
         }
 
         @Test
@@ -121,6 +124,7 @@ public class NotificationServiceTest {
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.BAN);
+            assertThat(response.letterId()).isNull();
         }
     }
 }
