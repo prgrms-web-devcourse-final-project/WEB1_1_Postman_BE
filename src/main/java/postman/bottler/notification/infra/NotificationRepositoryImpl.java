@@ -1,5 +1,6 @@
 package postman.bottler.notification.infra;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.notification.domain.Notification;
@@ -13,5 +14,17 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     @Override
     public Notification save(Notification notification) {
         return repository.save(NotificationEntity.from(notification)).toDomain();
+    }
+
+    @Override
+    public List<Notification> findByReceiver(Long userId) {
+        return repository.findByReceiver(userId).stream()
+                .map(NotificationEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public void updateNotifications(List<Notification> notifications) {
+        repository.saveAll(notifications.stream().map(NotificationEntity::from).toList());
     }
 }

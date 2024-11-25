@@ -1,5 +1,6 @@
 package postman.bottler.notification.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import postman.bottler.notification.domain.Notification;
@@ -11,8 +12,18 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public NotificationResponseDTO sendNotification(String type, Long userId, Long letterId) {
-        Notification notification = Notification.of(type, userId, letterId);
+        Notification notification = Notification.create(type, userId, letterId);
         // TODO 푸시 알림 보내는 로직 추가
         return NotificationResponseDTO.from(notificationRepository.save(notification));
+    }
+
+    public List<NotificationResponseDTO> getUserNotifications(Long userId) {
+        List<Notification> notifications = notificationRepository.findByReceiver(userId);
+        List<NotificationResponseDTO> result = notifications.stream()
+                .map(NotificationResponseDTO::from)
+                .toList();
+        notifications.forEach(Notification::read);
+        notificationRepository.updateNotifications(notifications);
+        return result;
     }
 }

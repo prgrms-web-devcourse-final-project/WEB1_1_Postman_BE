@@ -34,17 +34,21 @@ public class NotificationEntity {
 
     private LocalDateTime createAt;
 
+    private Boolean isRead;
+
     public static NotificationEntity from(Notification notification) {
         return NotificationEntity.builder()
+                .id(notification.getId())
                 .receiver(notification.getReceiver())
                 .type(notification.getType())
                 .letterId(notification instanceof LetterNotification ?
                         ((LetterNotification) notification).getLetterId() : null)
                 .createAt(notification.getCreatedAt())
+                .isRead(notification.getIsRead())
                 .build();
     }
 
     public Notification toDomain() {
-        return Notification.of(type.toString(), receiver, letterId);
+        return Notification.of(id, type, receiver, letterId, isRead);
     }
 }

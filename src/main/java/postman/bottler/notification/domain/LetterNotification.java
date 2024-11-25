@@ -5,11 +5,16 @@ import postman.bottler.notification.exception.InvalidNotificationRequestExceptio
 
 @Getter
 public class LetterNotification extends Notification {
-
     private long letterId;
 
-    protected LetterNotification(NotificationType type, long receiver, Long letterId) {
-        super(type, receiver);
+    protected LetterNotification(NotificationType type, long receiver, Long letterId, Boolean isRead) {
+        super(type, receiver, isRead);
+        validateLetterId(letterId);
+        this.letterId = letterId;
+    }
+
+    protected LetterNotification(Long id, NotificationType type, long receiver, Long letterId, Boolean isRead) {
+        super(id, type, receiver, isRead);
         validateLetterId(letterId);
         this.letterId = letterId;
     }

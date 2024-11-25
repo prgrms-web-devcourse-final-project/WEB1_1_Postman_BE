@@ -1,35 +1,50 @@
 package postman.bottler.notification.domain;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
 
-@Builder
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Notification {
+    private Long id;
+
     private final NotificationType type;
 
     private final long receiver;
 
     private LocalDateTime createdAt;
 
-    protected Notification(NotificationType type, Long receiver) {
+    private Boolean isRead;
+
+    protected Notification(NotificationType type, Long receiver, Boolean isRead) {
         this.type = type;
         this.receiver = receiver;
         this.createdAt = LocalDateTime.now();
+        this.isRead = isRead;
     }
 
-    public static Notification of(String type, Long receiver, Long letterId) {
+    protected Notification(Long id, NotificationType type, Long receiver, Boolean isRead) {
+        this.id = id;
+        this.type = type;
+        this.receiver = receiver;
+        this.createdAt = LocalDateTime.now();
+        this.isRead = isRead;
+    }
+
+    public static Notification create(String type, Long receiver, Long letterId) {
         validateType(type);
         NotificationType notificationType = NotificationType.valueOf(type);
         if (notificationType.isLetterNotification()) {
-            return new LetterNotification(notificationType, receiver, letterId);
+            return new LetterNotification(notificationType, receiver, letterId, false);
         }
-        return new Notification(notificationType, receiver);
+        return new Notification(notificationType, receiver, false);
+    }
+
+    public static Notification of(Long id, NotificationType type, Long receiver, Long letterId, Boolean isRead) {
+        if (type.isLetterNotification()) {
+            return new LetterNotification(id, type, receiver, letterId, isRead);
+        }
+        return new Notification(id, type, receiver, isRead);
     }
 
     private static void validateType(String type) {
@@ -39,5 +54,9 @@ public class Notification {
             }
         }
         throw new InvalidNotificationRequestException("해당하는 타입의 알림 유형이 존재하지 않습니다.");
+    }
+
+    public void read() {
+        this.isRead = true;
     }
 }
