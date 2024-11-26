@@ -133,6 +133,7 @@ class MapLetterServiceTest {
         assertEquals("퍼블릭 편지 상세 조회 테스트", response.title());
         assertEquals("편지 내용", response.content());
         assertEquals("맑은고딕", response.font());
+        assertEquals("장소 설명",response.description());
         assertEquals("www.paper.com", response.paper());
         assertEquals("www.label.com", response.label());
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
@@ -164,6 +165,7 @@ class MapLetterServiceTest {
                 .id(letterId) // id를 명시적으로 설정
                 .title(expectedMapLetter.getTitle())
                 .content(expectedMapLetter.getContent())
+                .description(expectedMapLetter.getDescription())
                 .latitude(expectedMapLetter.getLatitude())
                 .longitude(expectedMapLetter.getLongitude())
                 .font(expectedMapLetter.getFont())
@@ -188,6 +190,7 @@ class MapLetterServiceTest {
         assertEquals(MapLetterType.PRIVATE, expectedMapLetter.getType()); //타입이 PRIVATE인지 조회
         assertEquals(targetUserId, expectedMapLetter.getTargetUserId()); //타겟이 맞는지 조회
         assertEquals("프라이빗 편지 편지 상세 조회 테스트", response.title());
+        assertEquals("장소 설명", response.description());
         assertEquals("편지 내용", response.content());
         assertEquals("맑은고딕", response.font());
         assertEquals("www.paper.com", response.paper());
@@ -221,6 +224,7 @@ class MapLetterServiceTest {
                 .id(letterId) // id를 명시적으로 설정
                 .title(expectedMapLetter.getTitle())
                 .content(expectedMapLetter.getContent())
+                .description(expectedMapLetter.getDescription())
                 .latitude(expectedMapLetter.getLatitude())
                 .longitude(expectedMapLetter.getLongitude())
                 .font(expectedMapLetter.getFont())
@@ -274,6 +278,7 @@ class MapLetterServiceTest {
                 .id(letterId) // id를 명시적으로 설정
                 .title(expectedMapLetter.getTitle())
                 .content(expectedMapLetter.getContent())
+                .description(expectedMapLetter.getDescription())
                 .latitude(expectedMapLetter.getLatitude())
                 .longitude(expectedMapLetter.getLongitude())
                 .font(expectedMapLetter.getFont())
