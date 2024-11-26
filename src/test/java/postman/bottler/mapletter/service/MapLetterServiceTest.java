@@ -44,6 +44,7 @@ class MapLetterServiceTest {
         CreatePublicMapLetterRequestDTO requestDTO = new CreatePublicMapLetterRequestDTO(
                 "Test Title",
                 "TestContent",
+                "장소 설명",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
@@ -63,6 +64,7 @@ class MapLetterServiceTest {
         assertEquals(expectedMapLetter.getContent(), actualMapLetter.getContent());
         assertEquals(expectedMapLetter.getLatitude(), actualMapLetter.getLatitude());
         assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
+        assertEquals(expectedMapLetter.getDescription(), actualMapLetter.getDescription());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
     }
@@ -74,6 +76,7 @@ class MapLetterServiceTest {
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "Test Title",
                 "TestContent",
+                "장소 설명",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
@@ -96,6 +99,7 @@ class MapLetterServiceTest {
         assertEquals(expectedMapLetter.getLatitude(), actualMapLetter.getLatitude());
         assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
         assertEquals(expectedMapLetter.getTargetUserId(), actualMapLetter.getTargetUserId());
+        assertEquals(expectedMapLetter.getDescription(), actualMapLetter.getDescription());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
     }
@@ -110,6 +114,7 @@ class MapLetterServiceTest {
         CreatePublicMapLetterRequestDTO requestDTO = new CreatePublicMapLetterRequestDTO(
                 "퍼블릭 편지 상세 조회 테스트",
                 "편지 내용",
+                "장소 설명",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
@@ -145,6 +150,7 @@ class MapLetterServiceTest {
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "프라이빗 편지 편지 상세 조회 테스트",
                 "편지 내용",
+                "장소 설명",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
@@ -201,6 +207,7 @@ class MapLetterServiceTest {
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "프라이빗 편지 편지 상세 조회 테스트",
                 "편지 내용",
+                "장소 설명",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
@@ -253,6 +260,7 @@ class MapLetterServiceTest {
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "프라이빗 편지 편지 상세 조회 테스트",
                 "편지 내용",
+                "장소 설명",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.23456"),
                 "맑은고딕",
@@ -418,33 +426,33 @@ class MapLetterServiceTest {
 
         List<MapLetter> mockMapLetters = List.of(
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
-                                new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
                                 "www.paper.com", "www.label.com"), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
-                        new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
                         "www.paper.com", "www.label.com"), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
-                        new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
                         "www.paper.com", "www.label.com"), userId2 //다른 유저가 작성한 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 1", "content 1", new BigDecimal("12.1234"),
+                        "Target Title 1", "content 1", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
                         2L),userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title4", "content1",
-                        new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
                         "www.paper.com", "www.label.com"), userId //삭제 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 2", "content 2", new BigDecimal("12.1234"),
+                        "Target Title 2", "content 2", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
                         2L),userId //조회 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 3", "content 3", new BigDecimal("12.1234"),
+                        "Target Title 3", "content 3", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
                         2L),userId2 //다른 유저가 작성한 편지
                 )
@@ -482,34 +490,34 @@ class MapLetterServiceTest {
 
         List<MapLetter> mockMapLetters = List.of(
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
-                        new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
                         "www.paper.com", "www.label.com"), userId
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
-                        new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
                         "www.paper.com", "www.label.com"), userId
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
-                        new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
                         "www.paper.com", "www.label.com"), userId2
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 1", "content 1", new BigDecimal("12.1234"),
+                        "Target Title 1", "content 1", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
                         userId),userId //조회 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 2", "content 2", new BigDecimal("12.1234"),
+                        "Target Title 2", "content 2", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
                         userId2),userId //다른 타겟에게 간 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 3", "content 2", new BigDecimal("12.1234"),
+                        "Target Title 3", "content 2", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
                         userId),userId //삭제할편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 4", "content 3", new BigDecimal("12.1234"),
+                        "Target Title 4", "content 3", "장소 설명",new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
                         userId),userId2 //조회 될 편지
                 )

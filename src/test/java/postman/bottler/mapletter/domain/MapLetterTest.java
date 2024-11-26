@@ -20,6 +20,7 @@ class MapLetterTest {
         CreatePublicMapLetterRequestDTO requestDTO = new CreatePublicMapLetterRequestDTO(
                 "퍼블릭 편지",
                 "편지 내용",
+                "역곡역 씨지비 앞",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.9780"),
                 "프리텐다드",
@@ -35,6 +36,7 @@ class MapLetterTest {
         assertNotNull(mapLetter);
         assertEquals("퍼블릭 편지", mapLetter.getTitle());
         assertEquals("편지 내용", mapLetter.getContent());
+        assertEquals("역곡역 씨지비 앞", mapLetter.getDescription());
         assertEquals(MapLetterType.PUBLIC, mapLetter.getType());
         assertEquals(userId, mapLetter.getCreateUserId());
         assertFalse(mapLetter.isDeleted());
@@ -50,6 +52,7 @@ class MapLetterTest {
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "타겟 편지",
                 "편지 내용",
+                "우리 첫 만남 장소",
                 new BigDecimal("37.5665"),
                 new BigDecimal("127.9780"),
                 "프리텐다드",
@@ -66,6 +69,7 @@ class MapLetterTest {
         assertNotNull(mapLetter);
         assertEquals("타겟 편지", mapLetter.getTitle());
         assertEquals("편지 내용", mapLetter.getContent());
+        assertEquals("우리 첫 만남 장소", mapLetter.getDescription());
         assertEquals(MapLetterType.PRIVATE, mapLetter.getType());
         assertEquals(userId, mapLetter.getCreateUserId());
         assertEquals(targetUserId, mapLetter.getTargetUserId());
