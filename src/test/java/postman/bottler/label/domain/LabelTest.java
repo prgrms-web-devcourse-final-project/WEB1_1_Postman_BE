@@ -2,7 +2,6 @@ package postman.bottler.label.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +35,6 @@ class LabelTest {
 
         // then
         assertNotNull(dto, "LabelResponseDTO는 null이 될 수 없음");
-        assertEquals(imageUrl, dto.label(), "LabelResponseDTO의 label 값이 imageUrl과 일치해야 함");
+        assertEquals(imageUrl, dto.imageUrl(), "LabelResponseDTO의 label 값이 imageUrl과 일치해야 함");
     }
 }
