@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
+import postman.bottler.notification.dto.request.SubscriptionRequestDTO;
 import postman.bottler.notification.dto.request.UserNotificationRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
+import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
 import postman.bottler.notification.service.NotificationService;
 
@@ -41,5 +43,13 @@ public class NotificationController {
         List<NotificationResponseDTO> userNotifications = notificationService.getUserNotifications(
                 userNotificationRequestDTO.userId());
         return ApiResponse.onSuccess(userNotifications);
+    }
+
+    @PostMapping("/subscribe")
+    public ApiResponse<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest) {
+        SubscriptionResponseDTO response = notificationService.subscribe(
+                subscriptionRequest.userId(),
+                subscriptionRequest.deviceToken());
+        return ApiResponse.onSuccess(response);
     }
 }
