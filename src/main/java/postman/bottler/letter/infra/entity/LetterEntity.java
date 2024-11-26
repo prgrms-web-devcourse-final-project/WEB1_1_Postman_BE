@@ -6,13 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import postman.bottler.letter.domain.Letter;
 
 @Entity
 @Table(name = "letters")
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LetterEntity {
 
     @Id
