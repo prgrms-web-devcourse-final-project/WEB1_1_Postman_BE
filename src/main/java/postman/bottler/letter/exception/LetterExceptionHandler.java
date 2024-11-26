@@ -15,4 +15,10 @@ public class LetterExceptionHandler {
         log.error("Letter not found: {}", e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.LETTER_NOT_FOUND.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(LetterAlreadySavedException.class)
+    public ApiResponse<?> handleLetterAlreadySavedException(LetterAlreadySavedException e) {
+        log.error("Letter Already Saved: {}", e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.LETTER_ALREADY_SAVED.getCode(), e.getMessage(), null);
+    }
 }

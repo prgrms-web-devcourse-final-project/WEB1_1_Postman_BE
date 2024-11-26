@@ -12,7 +12,8 @@ public enum ErrorStatus {
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403"),
 
     // 키워드 편지 에러
-    LETTER_NOT_FOUND(HttpStatus.NOT_FOUND, "LETTER4000");
+    LETTER_NOT_FOUND(HttpStatus.NOT_FOUND, "LETTER4040"),
+    LETTER_ALREADY_SAVED(HttpStatus.BAD_REQUEST, "LETTER4001");
 
     private final HttpStatus httpStatus;
     private final String code;
