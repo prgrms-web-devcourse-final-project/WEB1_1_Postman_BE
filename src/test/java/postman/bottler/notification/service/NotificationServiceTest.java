@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
+import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
 
@@ -22,9 +23,12 @@ import postman.bottler.notification.dto.response.NotificationResponseDTO;
 public class NotificationServiceTest {
     @InjectMocks
     private NotificationService notificationService;
-
     @Mock
     private NotificationRepository notificationRepository;
+    @Mock
+    private SubscriptionRepository subscriptionRepository;
+    @Mock
+    private PushNotificationProvider pushNotificationProvider;
 
     @Nested
     @DisplayName("알림 생성")
@@ -34,8 +38,10 @@ public class NotificationServiceTest {
         public void sendNewLetterNotificationTest() {
             // GIVEN
             NotificationRequestDTO request = new NotificationRequestDTO("NEW_LETTER", 1L, 1L);
-            when(notificationRepository.save(any()))
-                    .thenReturn(Notification.create(request.notificationType(), request.receiver(), request.letterId()));
+            Notification notification = Notification.create(request.notificationType(), request.receiver(),
+                    request.letterId());
+            when(notificationRepository.save(any())).thenReturn(notification);
+            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -54,8 +60,10 @@ public class NotificationServiceTest {
         public void sendTargetLetterNotificationTest() {
             // GIVEN
             NotificationRequestDTO request = new NotificationRequestDTO("TARGET_LETTER", 1L, 1L);
-            when(notificationRepository.save(any()))
-                    .thenReturn(Notification.create(request.notificationType(), request.receiver(), request.letterId()));
+            Notification notification = Notification.create(request.notificationType(), request.receiver(),
+                    request.letterId());
+            when(notificationRepository.save(any())).thenReturn(notification);
+            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -74,8 +82,10 @@ public class NotificationServiceTest {
         public void sendReplyLetterNotificationTest() {
             // GIVEN
             NotificationRequestDTO request = new NotificationRequestDTO("REPLY_LETTER", 1L, 1L);
-            when(notificationRepository.save(any()))
-                    .thenReturn(Notification.create(request.notificationType(), request.receiver(), request.letterId()));
+            Notification notification = Notification.create(request.notificationType(), request.receiver(),
+                    request.letterId());
+            when(notificationRepository.save(any())).thenReturn(notification);
+            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -94,8 +104,10 @@ public class NotificationServiceTest {
         public void sendWarningNotificationTest() {
             // GIVEN
             NotificationRequestDTO request = new NotificationRequestDTO("WARNING", 1L, 1L);
-            when(notificationRepository.save(any()))
-                    .thenReturn(Notification.create(request.notificationType(), request.receiver(), request.letterId()));
+            Notification notification = Notification.create(request.notificationType(), request.receiver(),
+                    request.letterId());
+            when(notificationRepository.save(any())).thenReturn(notification);
+            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -114,8 +126,10 @@ public class NotificationServiceTest {
         public void sendBanNotificationTest() {
             // GIVEN
             NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L);
-            when(notificationRepository.save(any()))
-                    .thenReturn(Notification.create(request.notificationType(), request.receiver(), request.letterId()));
+            Notification notification = Notification.create(request.notificationType(), request.receiver(),
+                    request.letterId());
+            when(notificationRepository.save(any())).thenReturn(notification);
+            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -129,7 +143,6 @@ public class NotificationServiceTest {
             assertThat(response.letterId()).isNull();
         }
     }
-
 
     @Nested
     @DisplayName("알림 조회")
