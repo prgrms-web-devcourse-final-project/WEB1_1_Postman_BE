@@ -34,6 +34,6 @@ public class LabelEntity {
     }
 
     public Label to() {
-        return Label.createLabel(this.imageUrl);
+        return Label.createLabel(this.labelId, this.imageUrl);
     }
 }
