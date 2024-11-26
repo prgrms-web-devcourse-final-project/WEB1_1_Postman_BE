@@ -1,0 +1,38 @@
+package postman.bottler.notification.service;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import postman.bottler.notification.domain.Subscription;
+import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
+
+@DisplayName("알림 구독 서비스 테스트")
+@ExtendWith(MockitoExtension.class)
+public class SubscriptionServiceTest {
+    @InjectMocks
+    private SubscriptionService subscriptionService;
+
+    @Mock
+    private SubscriptionRepository subscriptionRepository;
+
+    @Test
+    @DisplayName("알림 구독을 허용한다.")
+    public void subscribe() {
+        // GIVEN
+        when(subscriptionRepository.save(any())).thenReturn(Subscription.create(1L, "token"));
+
+        // WHEN
+        SubscriptionResponseDTO response = subscriptionService.subscribe(1L, "token");
+
+        // THEN
+        assertThat(response.userId()).isEqualTo(1L);
+    }
+}
