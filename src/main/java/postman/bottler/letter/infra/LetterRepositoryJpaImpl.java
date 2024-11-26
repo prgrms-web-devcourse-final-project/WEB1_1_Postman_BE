@@ -31,4 +31,9 @@ public class LetterRepositoryJpaImpl implements LetterRepository {
         return letterJpaRepository.findById(letterId)
                 .map(LetterEntity::toDomain);
     }
+
+    @Override
+    public boolean existsById(Long letterId) {
+        return letterJpaRepository.existsById(letterId);
+    }
 }

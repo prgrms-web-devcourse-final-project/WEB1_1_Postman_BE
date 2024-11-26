@@ -25,7 +25,7 @@ public class LetterService {
     }
 
     public void deleteLetter(Long letterId) {
-        findLetter(letterId);
+        validateLetterExists(letterId);
         letterRepository.remove(letterId);
     }
 
@@ -36,6 +36,12 @@ public class LetterService {
 
     public void incrementWarningCount(Long letterId) {
 
+    }
+
+    private void validateLetterExists(Long letterId) {
+        if (letterRepository.existsById(letterId)) {
+            throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
+        }
     }
 
     private Letter findLetter(Long letterId) {

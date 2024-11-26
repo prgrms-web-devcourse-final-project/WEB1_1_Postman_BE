@@ -9,4 +9,6 @@ public interface LetterRepository {
     void remove(Long letterId);
 
     Optional<Letter> findById(Long letterId);
+
+    boolean existsById(Long letterId);
 }
