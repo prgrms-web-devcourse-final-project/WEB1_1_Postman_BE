@@ -20,4 +20,10 @@ public class LabelExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.EMPTY_LABEL_INPUT.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(UserLabelNotFoundException.class)
+    public ApiResponse<?> handleUserLabelNotFoundException(UserLabelNotFoundException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.USER_LABEL_NOT_FOUND.getCode(), e.getMessage(), null);
+    }
 }

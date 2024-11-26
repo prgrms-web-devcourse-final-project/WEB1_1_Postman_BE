@@ -14,7 +14,8 @@ public enum ErrorStatus {
 
     // 라벨 에러
     INVALID_LABEL(HttpStatus.BAD_REQUEST, "LABEL4000"),
-    EMPTY_LABEL_INPUT(HttpStatus.BAD_REQUEST, "LABEL4001");
+    EMPTY_LABEL_INPUT(HttpStatus.BAD_REQUEST, "LABEL4001"),
+    USER_LABEL_NOT_FOUND(HttpStatus.NOT_FOUND, "LABEL4002");
 
     private final HttpStatus httpStatus;
     private final String code;
