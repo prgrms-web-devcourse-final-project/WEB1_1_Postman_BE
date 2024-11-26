@@ -25,6 +25,7 @@ public class MapLetter {
     private String font;
     private String paper;
     private String label;
+    private String description;
     private MapLetterType type;
     private Long targetUserId;
     private Long createUserId;
@@ -48,6 +49,7 @@ public class MapLetter {
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)
                 .isBlocked(false)
+                .description(createPublicMapLetterRequestDTO.description())
                 .build();
     }
 
@@ -67,6 +69,7 @@ public class MapLetter {
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)
                 .isBlocked(false)
+                .description(createTargetMapLetterRequestDTO.description())
                 .build();
     }
 

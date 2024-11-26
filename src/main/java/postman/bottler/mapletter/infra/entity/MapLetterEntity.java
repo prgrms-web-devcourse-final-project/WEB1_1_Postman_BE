@@ -34,6 +34,7 @@ public class MapLetterEntity {
     private String font;
     private String paper;
     private String label;
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private MapLetterType type;
@@ -47,7 +48,8 @@ public class MapLetterEntity {
     @Builder
     public MapLetterEntity(String title, String content, BigDecimal latitude, BigDecimal longitude, String font,
                            String paper, String label, MapLetterType type, Long targetUserId, Long createUserId,
-                           LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBlocked) {
+                           LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBlocked,
+                           String description) {
         this.title = title;
         this.content = content;
         this.latitude = latitude;
@@ -62,6 +64,7 @@ public class MapLetterEntity {
         this.updatedAt = updatedAt;
         this.isDeleted = isDeleted;
         this.isBlocked = isBlocked;
+        this.description = description;
     }
 
     public static MapLetterEntity from(MapLetter mapLetter) {
@@ -80,6 +83,7 @@ public class MapLetterEntity {
                 .updatedAt(mapLetter.getUpdatedAt())
                 .isDeleted(mapLetter.isDeleted())
                 .isBlocked(mapLetter.isBlocked())
+                .description(mapLetter.getDescription())
                 .build();
     }
 
@@ -100,6 +104,7 @@ public class MapLetterEntity {
                 .updatedAt(mapLetterEntity.updatedAt)
                 .isDeleted(mapLetterEntity.isDeleted)
                 .isBlocked(mapLetterEntity.isBlocked)
+                .description(mapLetterEntity.description)
                 .build();
     }
 

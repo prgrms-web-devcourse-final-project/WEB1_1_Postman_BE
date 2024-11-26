@@ -46,4 +46,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.LOCATION_NOT_FOUND.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(EmptyMapLetterDescriptionException.class)
+    public ApiResponse<?> handleEmptyMapLetterDescriptionException(EmptyMapLetterDescriptionException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_MAP_LETTER_DESCRIPTION.getCode(), e.getMessage(), null);
+    }
 }

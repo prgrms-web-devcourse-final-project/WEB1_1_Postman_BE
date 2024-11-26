@@ -10,10 +10,7 @@ import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
-import postman.bottler.mapletter.exception.EmptyMapLetterContentException;
-import postman.bottler.mapletter.exception.EmptyMapLetterTargetException;
-import postman.bottler.mapletter.exception.EmptyMapLetterTitleException;
-import postman.bottler.mapletter.exception.LocationNotFoundException;
+import postman.bottler.mapletter.exception.*;
 import postman.bottler.mapletter.service.MapLetterService;
 
 import java.math.BigDecimal;
@@ -35,6 +32,8 @@ public class MapLetterController {
                     throw new EmptyMapLetterTitleException(error.getDefaultMessage());
                 } else if ("content".equals(error.getField())) {
                     throw new EmptyMapLetterContentException(error.getDefaultMessage());
+                } else if("description".equals(error.getField())) {
+                    throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
                 }
             });
 
@@ -54,6 +53,8 @@ public class MapLetterController {
                     throw new EmptyMapLetterContentException(error.getDefaultMessage());
                 } else if ("target".equals(error.getField())) {
                     throw new EmptyMapLetterTargetException(error.getDefaultMessage());
+                }else if("description".equals(error.getField())) {
+                    throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
                 }
             });
 
