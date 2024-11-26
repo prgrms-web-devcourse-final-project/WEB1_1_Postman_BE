@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
-import postman.bottler.letter.dto.response.LetterKeywordsResponseDTO;
+import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
+import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.service.LetterService;
 import postman.bottler.letter.service.SavedLetterService;
 
@@ -33,13 +34,13 @@ public class LetterController {
     }
 
     @GetMapping("/sent")
-    public ApiResponse<Page<LetterKeywordsResponseDTO>> getLetterKeywords(
+    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getLetterHeaders(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
-            @RequestParam(required = false, defaultValue = "createdDate") String sort
+            @RequestParam(required = false, defaultValue = "createdAt") String sort
     ) {
-        Page<LetterKeywordsResponseDTO> result = letterService.getLetterKeywords(page, size, sort);
-        return ApiResponse.onSuccess(result);
+        Page<LetterHeadersResponseDTO> result = letterService.getLetterHeaders(page, size, sort);
+        return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
     @DeleteMapping("/{letterId}")
@@ -61,11 +62,11 @@ public class LetterController {
     }
 
     @GetMapping("/saved")
-    public ApiResponse<Page<LetterKeywordsResponseDTO>> getSavedLetters(
+    public ApiResponse<Page<LetterHeadersResponseDTO>> getSavedLetters(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<LetterKeywordsResponseDTO> result = savedLetterService.getSavedLetters(page, size);
+        Page<LetterHeadersResponseDTO> result = savedLetterService.getSavedLetters(page, size);
         return ApiResponse.onSuccess(result);
     }
 

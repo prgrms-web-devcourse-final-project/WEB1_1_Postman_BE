@@ -2,6 +2,8 @@ package postman.bottler.letter.infra;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.Letter;
@@ -34,6 +36,12 @@ public class LetterRepositoryJpaImpl implements LetterRepository {
 
     @Override
     public boolean existsById(Long letterId) {
-        return letterJpaRepository.existsById(letterId);
+        return !letterJpaRepository.existsById(letterId);
+    }
+
+    @Override
+    public Page<Letter> findAll(Long userId, Pageable pageable) {
+        return letterJpaRepository.findAllByUserId(userId, pageable)
+                .map(LetterEntity::toDomain);
     }
 }
