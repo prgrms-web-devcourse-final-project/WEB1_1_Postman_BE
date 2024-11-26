@@ -1,5 +1,6 @@
 package postman.bottler.notification.infra;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.notification.domain.Subscription;
@@ -14,5 +15,13 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     public Subscription save(Subscription subscription) {
         SubscriptionEntity save = repository.save(SubscriptionEntity.from(subscription));
         return save.toDomain();
+    }
+
+    @Override
+    public List<Subscription> findByUserId(Long userId) {
+        List<SubscriptionEntity> finds = repository.findByUserId(userId);
+        return finds.stream()
+                .map(SubscriptionEntity::toDomain)
+                .toList();
     }
 }

@@ -18,4 +18,12 @@ public class Subscription {
                 .token(token)
                 .build();
     }
+
+    public PushMessage makeMessage(NotificationType type) {
+        return PushMessage.builder()
+                .token(token)
+                .title(type.getTitle())
+                .content(type.getContent())
+                .build();
+    }
 }
