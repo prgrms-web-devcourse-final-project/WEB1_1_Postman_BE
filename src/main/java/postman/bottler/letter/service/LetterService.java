@@ -25,30 +25,21 @@ public class LetterService {
     }
 
     public void deleteLetter(Long letterId) {
-        letterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
+        findLetter(letterId);
         letterRepository.remove(letterId);
     }
 
     public LetterResponseDTO getLetterDetail(Long letterId) {
-        Letter letter = letterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
+        Letter letter = findLetter(letterId);
         return LetterResponseDTO.from(letter);
-    }
-
-    public void saveLetter(Long letterId) {
-        
-    }
-
-    public Page<LetterKeywordsResponseDTO> getSavedLetters(int page, int size) {
-        return null;
-    }
-
-    public void deleteSavedLetter(Long letterId) {
-
     }
 
     public void incrementWarningCount(Long letterId) {
 
+    }
+
+    private Letter findLetter(Long letterId) {
+        return letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
 }

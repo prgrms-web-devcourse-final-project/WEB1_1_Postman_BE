@@ -16,6 +16,7 @@ import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterKeywordsResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.service.LetterService;
+import postman.bottler.letter.service.SavedLetterService;
 
 @RestController
 @RequestMapping("/letters")
@@ -23,6 +24,7 @@ import postman.bottler.letter.service.LetterService;
 public class LetterController {
 
     private final LetterService letterService;
+    private final SavedLetterService savedLetterService;
 
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(@RequestBody LetterRequestDTO letterRequestDTO) {
@@ -54,7 +56,7 @@ public class LetterController {
 
     @PutMapping("/{letterId}/save")
     public ApiResponse<String> saveLetter(@PathVariable Long letterId) {
-        letterService.saveLetter(letterId);
+        savedLetterService.saveLetter(letterId);
         return ApiResponse.onSuccess("success");
     }
 
@@ -63,13 +65,13 @@ public class LetterController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<LetterKeywordsResponseDTO> result = letterService.getSavedLetters(page, size);
+        Page<LetterKeywordsResponseDTO> result = savedLetterService.getSavedLetters(page, size);
         return ApiResponse.onSuccess(result);
     }
 
     @DeleteMapping("/saved/{letterId}")
     public ApiResponse<String> deleteSavedLetter(@PathVariable Long letterId) {
-        letterService.deleteSavedLetter(letterId);
+        savedLetterService.deleteSavedLetter(letterId);
         return ApiResponse.onSuccess("success");
     }
 }
