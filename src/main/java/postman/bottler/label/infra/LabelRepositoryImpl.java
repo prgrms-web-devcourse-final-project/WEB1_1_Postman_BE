@@ -7,8 +7,6 @@ import postman.bottler.label.domain.Label;
 import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.infra.entity.LabelEntity;
 import postman.bottler.label.service.LabelRepository;
-import postman.bottler.user.domain.User;
-import postman.bottler.user.infra.entity.UserEntity;
 
 @Repository
 public class LabelRepositoryImpl implements LabelRepository {
@@ -36,8 +34,8 @@ public class LabelRepositoryImpl implements LabelRepository {
     }
 
     @Override
-    public List<Label> findLabelsByUser(User user) {
-        List<LabelEntity> labelEntities = userLabelJpaRepository.findLabelsByUser(UserEntity.from(user));
+    public List<Label> findLabelsByUser(Long userId) {
+        List<LabelEntity> labelEntities = userLabelJpaRepository.findLabelsByUserId(userId);
         return LabelEntity.toLabels(labelEntities);
     }
 }

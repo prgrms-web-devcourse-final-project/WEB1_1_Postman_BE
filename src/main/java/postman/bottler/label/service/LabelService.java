@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import postman.bottler.label.domain.Label;
 import postman.bottler.label.dto.response.LabelResponseDTO;
-import postman.bottler.user.domain.User;
 
 @Service
 public class LabelService {
@@ -23,9 +22,8 @@ public class LabelService {
         return labels.stream().map(Label::toLabelResponseDTO).toList();
     }
 
-    public List<LabelResponseDTO> findUserLabels(String email) {
-        User user = null; //email로 user 가져오기 로직
-        List<Label> labels = labelRepository.findLabelsByUser(user);
+    public List<LabelResponseDTO> findUserLabels(Long userId) {
+        List<Label> labels = labelRepository.findLabelsByUser(userId);
         return labels.stream().map(Label::toLabelResponseDTO).toList();
     }
 }
