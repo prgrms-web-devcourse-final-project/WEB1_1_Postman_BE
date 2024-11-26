@@ -33,7 +33,7 @@ class LabelServiceTest {
         String imageUrl = "http://example.com/image.png";
 
         // when
-        labelService.createLabel(imageUrl);
+        labelService.createLabel(imageUrl, 10);
 
         // then
         verify(labelRepository, times(1)).save(any(Label.class));
@@ -43,8 +43,8 @@ class LabelServiceTest {
     @DisplayName("저장된 모든 라벨이 반환된다.")
     void findAllLabels() {
         // given
-        Label label1 = Label.createLabel("http://example.com/image1.png");
-        Label label2 = Label.createLabel("http://example.com/image2.png");
+        Label label1 = Label.createLabel("http://example.com/image1.png", 10);
+        Label label2 = Label.createLabel("http://example.com/image2.png", 10);
         List<Label> labels = List.of(label1, label2);
 
         when(labelRepository.findAllLabels()).thenReturn(labels);

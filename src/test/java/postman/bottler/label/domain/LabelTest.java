@@ -16,7 +16,7 @@ class LabelTest {
         String imageUrl = "http://example.com/image.png";
 
         // when
-        Label label = Label.createLabel(imageUrl);
+        Label label = Label.createLabel(imageUrl, 10);
 
         // then
         assertNotNull(label, "Label은 null이 될 수 없음");
@@ -28,7 +28,7 @@ class LabelTest {
     void toLabelResponseDTO() {
         // given
         String imageUrl = "http://example.com/image1.png";
-        Label label = Label.createLabel(imageUrl);
+        Label label = Label.createLabel(imageUrl, 10);
 
         // when
         LabelResponseDTO dto = label.toLabelResponseDTO();

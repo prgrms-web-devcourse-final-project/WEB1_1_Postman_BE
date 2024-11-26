@@ -21,9 +21,12 @@ public class LabelEntity {
     @Column(unique = true)
     private String imageUrl;
 
+    private int limitCount;
+
     public static LabelEntity from(Label label) {
         return LabelEntity.builder()
                 .imageUrl(label.getImageUrl())
+                .limitCount(label.getLimitCount())
                 .build();
     }
 
@@ -34,6 +37,6 @@ public class LabelEntity {
     }
 
     public Label to() {
-        return Label.createLabel(this.labelId, this.imageUrl);
+        return Label.createLabel(this.labelId, this.imageUrl, this.limitCount);
     }
 }

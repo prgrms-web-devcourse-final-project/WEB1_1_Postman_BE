@@ -13,8 +13,8 @@ public class LabelService {
         this.labelRepository = labelRepository;
     }
 
-    public void createLabel(String imageUrl) {
-        labelRepository.save(Label.createLabel(imageUrl));
+    public void createLabel(String imageUrl, int limitCount) {
+        labelRepository.save(Label.createLabel(imageUrl, limitCount));
     }
 
     public List<LabelResponseDTO> findAllLabels() {
@@ -25,5 +25,9 @@ public class LabelService {
     public List<LabelResponseDTO> findUserLabels(Long userId) {
         List<Label> labels = labelRepository.findLabelsByUser(userId);
         return labels.stream().map(Label::toLabelResponseDTO).toList();
+    }
+
+    public void createFirstComeFirstServedLabel(Long labelId, Long userId) {
+
     }
 }
