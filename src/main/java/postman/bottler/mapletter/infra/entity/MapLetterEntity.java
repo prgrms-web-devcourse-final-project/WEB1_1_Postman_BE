@@ -102,4 +102,8 @@ public class MapLetterEntity {
                 .isBlocked(mapLetterEntity.isBlocked)
                 .build();
     }
+
+    public void updateDelete(boolean isDeleted){
+        this.isDeleted=isDeleted;
+    }
 }

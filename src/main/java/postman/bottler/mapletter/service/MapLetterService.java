@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
-import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.util.List;
 
@@ -34,6 +34,9 @@ public class MapLetterService {
         if (mapLetter.getType() == MapLetterType.PRIVATE && !mapLetter.getTargetUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
+        if(mapLetter.isDeleted()){
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
 
         OneLetterResponse oneLetterResponse = MapLetter.toOneLetterResponse(mapLetter);
         String profileImg = ""; //user 서비스 메서드 불러서 받기
@@ -53,11 +56,11 @@ public class MapLetterService {
         if(!findMapLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다.");
         }
-        mapLetterRepository.delete(letterId);
+        mapLetterRepository.softDelete(letterId);
     }
 
     public List<FindMapLetter> findSentMapLetters(Long userId) {
-        List<MapLetter> mapLetters=mapLetterRepository.findAllByCreateUserId(userId);
+        List<MapLetter> mapLetters=mapLetterRepository.findActiveByCreateUserId(userId);
 
         return mapLetters.stream()
                 .map(MapLetter::toFindSentMapLetter)
@@ -65,7 +68,7 @@ public class MapLetterService {
     }
 
     public List<FindMapLetter> findReceivedMapLetters(Long userId) {
-        List<MapLetter> mapLetters=mapLetterRepository.findAllByTargetUserId(userId);
+        List<MapLetter> mapLetters=mapLetterRepository.findActiveByTargetUserId(userId);
 
         return mapLetters.stream()
                 .map(MapLetter::toFindSentMapLetter)

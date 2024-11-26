@@ -1,23 +1,21 @@
 package postman.bottler.mapletter.infra;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.domain.MapLetter;
-import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
-import postman.bottler.mapletter.infra.entity.PaperEntity;
 import postman.bottler.mapletter.service.MapLetterRepository;
 
 @Repository
 @RequiredArgsConstructor
 public class MapLetterRepositoryImpl implements MapLetterRepository {
     private final MapLetterJpaRepository mapLetterJpaRepository;
+    private final EntityManager em;
 
     @Override
     @Transactional
@@ -36,24 +34,29 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
 
     @Override
     @Transactional
-    public void delete(Long letterId) {
-        mapLetterJpaRepository.deleteById(letterId);
+    public void softDelete(Long letterId) {
+        MapLetterEntity letter = mapLetterJpaRepository.findById(letterId)
+                .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+
+        MapLetterEntity mapLetter = em.find(MapLetterEntity.class, letterId);
+        mapLetter.updateDelete(true);
+        em.flush();
     }
 
     @Override
-    public List<MapLetter> findAllByCreateUserId(Long userId) {
-        List<MapLetterEntity> findAllLetters = mapLetterJpaRepository.findAllByCreateUserId(userId);
+    public List<MapLetter> findActiveByCreateUserId(Long userId) {
+        List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByCreateUserId(userId);
 
-        return findAllLetters.stream()
+        return findActiveLetters.stream()
                 .map(MapLetterEntity::toDomain)
                 .toList();
     }
 
     @Override
-    public List<MapLetter> findAllByTargetUserId(Long userId) {
-        List<MapLetterEntity> findAllLetters = mapLetterJpaRepository.findAllByTargetUserId(userId);
+    public List<MapLetter> findActiveByTargetUserId(Long userId) {
+        List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByTargetUserId(userId);
 
-        return findAllLetters.stream()
+        return findActiveLetters.stream()
                 .map(MapLetterEntity::toDomain)
                 .toList();
     }

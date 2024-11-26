@@ -34,4 +34,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.MAP_LETTER_NOT_FOUND.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(MapLetterAlreadyDeletedException.class)
+    public ApiResponse<?> handleMapLetterAlreadyDeletedException(MapLetterAlreadyDeletedException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.MAP_LETTER_ALREADY_DELETED.getCode(), e.getMessage(), null);
+    }
 }

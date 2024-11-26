@@ -12,9 +12,9 @@ public interface MapLetterRepository {
     MapLetter save(MapLetter mapLetter);
     MapLetter findById(Long id);
 
-    void delete(Long letterId);
+    void softDelete(Long letterId);
 
-    List<MapLetter> findAllByCreateUserId(Long userId);
+    List<MapLetter> findActiveByCreateUserId(Long userId);
 
-    List<MapLetter> findAllByTargetUserId(Long userId);
+    List<MapLetter> findActiveByTargetUserId(Long userId);
 }
