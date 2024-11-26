@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.infra;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.service.MapLetterRepository;
@@ -59,5 +61,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
         return findActiveLetters.stream()
                 .map(MapLetterEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId) {
+        return mapLetterJpaRepository.findLettersByUserLocation(latitude, longitude, userId);
     }
 }

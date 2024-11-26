@@ -2,10 +2,10 @@ package postman.bottler.mapletter.service;
 
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
-import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.mapletter.dto.MapLetterAndDistance;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MapLetterRepository {
@@ -17,4 +17,6 @@ public interface MapLetterRepository {
     List<MapLetter> findActiveByCreateUserId(Long userId);
 
     List<MapLetter> findActiveByTargetUserId(Long userId);
+
+    List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId);
 }

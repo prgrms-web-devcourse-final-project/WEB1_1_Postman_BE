@@ -1,16 +1,21 @@
 package postman.bottler.mapletter.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.processing.Find;
 import org.springframework.stereotype.Service;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
+import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
+import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -72,6 +77,25 @@ public class MapLetterService {
 
         return mapLetters.stream()
                 .map(MapLetter::toFindSentMapLetter)
+                .toList();
+    }
+
+    public List<FindNearbyLettersResponse> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
+        List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
+
+        return letters.stream()
+                .map(letterWithDistance -> FindNearbyLettersResponse.builder()
+                        .letterId(letterWithDistance.getLetterId())
+                        .latitude(letterWithDistance.getLatitude())
+                        .longitude(letterWithDistance.getLongitude())
+                        .title(letterWithDistance.getTitle())
+                        .createdAt(letterWithDistance.getCreatedAt())
+                        .distance(letterWithDistance.getDistance())
+                        .target(letterWithDistance.getTargetUserId())
+                        .createUserId(letterWithDistance.getCreateUserId())
+                        .label(letterWithDistance.getLabel())
+                        .build()
+                )
                 .toList();
     }
 }

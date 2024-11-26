@@ -40,4 +40,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.MAP_LETTER_ALREADY_DELETED.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(LocationNotFoundException.class)
+    public ApiResponse<?> handleLocationNotFoundException(LocationNotFoundException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.LOCATION_NOT_FOUND.getCode(), e.getMessage(), null);
+    }
 }

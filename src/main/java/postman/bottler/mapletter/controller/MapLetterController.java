@@ -8,12 +8,15 @@ import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
+import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.EmptyMapLetterContentException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTargetException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTitleException;
+import postman.bottler.mapletter.exception.LocationNotFoundException;
 import postman.bottler.mapletter.service.MapLetterService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -81,4 +84,17 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findReceivedMapLetters(userId));
     }
 
+    @GetMapping
+    public ApiResponse<List<FindNearbyLettersResponse>> findNearbyMapLetters(@RequestParam String latitude, @RequestParam String longitude, Long userId) {
+        BigDecimal lat = BigDecimal.ZERO;
+        BigDecimal lon = BigDecimal.ZERO;
+        try {
+            lat=new BigDecimal(latitude);
+            lon=new BigDecimal(longitude);
+        }catch (Exception e) {
+            throw new LocationNotFoundException("해당 위치를 찾을 수 없습니다.");
+        }
+
+        return ApiResponse.onSuccess(mapLetterService.findNearByMapLetters(lat, lon, userId));
+    }
 }
