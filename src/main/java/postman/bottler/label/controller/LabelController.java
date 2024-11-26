@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,12 +26,11 @@ public class LabelController {
     }
 
     @PostMapping
-    public ApiResponse<?> createLabel(@Valid @RequestParam LabelRequestDTO labelRequestDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String errorMessage = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
-            throw new EmptyLabelInputException(errorMessage);
+    public ApiResponse<?> createLabel(@RequestParam String labelImageUrl) {
+        if (labelImageUrl == null || labelImageUrl.trim().isEmpty()) {
+            throw new EmptyLabelInputException("라벨 이미지 URL이 비어 있습니다.");
         }
-        labelService.createLabel(labelRequestDTO.imageUrl());
+        labelService.createLabel(labelImageUrl);
         return ApiResponse.onCreateSuccess("라벨 추가 성공");
     }
 
