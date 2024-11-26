@@ -81,6 +81,7 @@ public class MapLetter {
                 .paper(mapLetter.getPaper())
                 .label(mapLetter.getLabel())
                 .createdAt(mapLetter.getCreatedAt())
+                .description(mapLetter.getDescription())
                 .build();
     }
 

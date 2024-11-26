@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record OneLetterResponse(
         String title,
         String content,
+        String description,
         String profileImg,
         String font,
         String paper,

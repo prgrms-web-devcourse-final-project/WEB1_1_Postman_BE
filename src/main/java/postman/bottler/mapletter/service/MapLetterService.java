@@ -53,6 +53,7 @@ public class MapLetterService {
                 .paper(oneLetterResponse.paper())
                 .label(oneLetterResponse.label())
                 .createdAt(oneLetterResponse.createdAt())
+                .description(oneLetterResponse.description())
                 .build();
     }
 
