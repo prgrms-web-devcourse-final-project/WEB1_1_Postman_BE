@@ -57,7 +57,7 @@ public class LetterController {
     @PutMapping("/{letterId}/save")
     public ApiResponse<String> saveLetter(@PathVariable Long letterId) {
         savedLetterService.saveLetter(letterId);
-        return ApiResponse.onSuccess("success");
+        return ApiResponse.onSuccess("키워드 편지를 보관했습니다.");
     }
 
     @GetMapping("/saved")
@@ -72,6 +72,6 @@ public class LetterController {
     @DeleteMapping("/saved/{letterId}")
     public ApiResponse<String> deleteSavedLetter(@PathVariable Long letterId) {
         savedLetterService.deleteSavedLetter(letterId);
-        return ApiResponse.onSuccess("success");
+        return ApiResponse.onSuccess("키워드 편지 보관을 취소했습니다.");
     }
 }

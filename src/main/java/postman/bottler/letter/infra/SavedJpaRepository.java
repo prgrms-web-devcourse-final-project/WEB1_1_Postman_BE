@@ -5,4 +5,6 @@ import postman.bottler.letter.infra.entity.SavedLetterEntity;
 
 public interface SavedJpaRepository extends JpaRepository<SavedLetterEntity, Long> {
     boolean existsByUserIdAndLetterId(Long userId, Long letterId);
+
+    void deleteByUserIdAndLetterId(Long userId, Long letterId);
 }

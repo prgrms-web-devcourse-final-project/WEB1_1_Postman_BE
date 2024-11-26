@@ -20,7 +20,17 @@ public class SavedRepositoryJpaImpl implements SavedLetterRepository {
     }
 
     @Override
-    public boolean isAlreadySaved(long userId, Long letterId) {
+    public boolean isAlreadySaved(Long userId, Long letterId) {
+        return savedJpaRepository.existsByUserIdAndLetterId(userId, letterId);
+    }
+
+    @Override
+    public void remove(Long userId, Long letterId) {
+        savedJpaRepository.deleteByUserIdAndLetterId(userId, letterId);
+    }
+
+    @Override
+    public boolean existsById(Long userId, Long letterId) {
         return savedJpaRepository.existsByUserIdAndLetterId(userId, letterId);
     }
 }

@@ -5,5 +5,9 @@ import postman.bottler.letter.domain.SavedLetter;
 public interface SavedLetterRepository {
     void save(SavedLetter savedLetter);
 
-    boolean isAlreadySaved(long userId, Long letterId);
+    boolean isAlreadySaved(Long userId, Long letterId);
+
+    void remove(Long userId, Long letterId);
+
+    boolean existsById(Long userId, Long letterId);
 }

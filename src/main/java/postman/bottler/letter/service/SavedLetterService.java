@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.SavedLetter;
 import postman.bottler.letter.dto.response.LetterKeywordsResponseDTO;
 import postman.bottler.letter.exception.LetterAlreadySavedException;
@@ -17,6 +18,7 @@ public class SavedLetterService {
     private final SavedLetterRepository savedLetterRepository;
     private final LetterRepository letterRepository;
 
+    @Transactional
     public void saveLetter(Long letterId) {
         Long userId = 1L;
 
@@ -35,8 +37,12 @@ public class SavedLetterService {
         return null;
     }
 
+    @Transactional
     public void deleteSavedLetter(Long letterId) {
+        Long userId = 1L;
 
+        validateSavedLetterExists(letterId, userId);
+        savedLetterRepository.remove(userId, letterId);
     }
 
     private void validateLetterExists(Long letterId) {
@@ -48,6 +54,12 @@ public class SavedLetterService {
     private void validateCanBeSaved(Long userId, Long letterId) {
         if (savedLetterRepository.isAlreadySaved(userId, letterId)) {
             throw new LetterAlreadySavedException("이미 저장된 편지입니다.");
+        }
+    }
+
+    private void validateSavedLetterExists(Long letterId, Long userId) {
+        if (!savedLetterRepository.existsById(userId, letterId)) {
+            throw new LetterNotFoundException("보관된 키워드 편지가 존재하지 않습니다.");
         }
     }
 }
