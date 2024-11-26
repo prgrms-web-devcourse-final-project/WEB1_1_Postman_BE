@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,12 +12,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
+import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
+import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -531,5 +535,90 @@ class MapLetterServiceTest {
         assertEquals("www.label4.com", result.get(1).label());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByTargetUserId(userId);
+    }
+
+    @Test
+    @DisplayName("주변에 있는 편지 조회에 성공한다.")
+    public void findNearByMapLettersTest() {
+        // Given
+        BigDecimal latitude = BigDecimal.valueOf(37.5665); // 현재 사용자 위치
+        BigDecimal longitude = BigDecimal.valueOf(126.9780);
+        Long userId = 1L; // 현재 사용자 ID
+        Long targetUserId = 2L;
+        Long targetUserId2=7L;
+
+        List<MapLetterAndDistance> mockMapLetters = List.of(
+                createMockMapLetterAndDistance(1L, "퍼블릭 편지 1", latitude, longitude, "맑은고딕", userId, null, new BigDecimal("300.0")),
+                createMockMapLetterAndDistance(3L, "타겟 편지 1", latitude, longitude, "굴림체", userId, targetUserId, new BigDecimal("200.0"))
+        );
+
+        Mockito.when(mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId))
+                .thenReturn(mockMapLetters);
+
+        // When
+        List<FindNearbyLettersResponse> result = mapLetterService.findNearByMapLetters(latitude, longitude, userId);
+
+        // Then
+        assertEquals(2, result.size());
+        assertEquals("퍼블릭 편지 1", result.get(0).title());
+        assertEquals("타겟 편지 1", result.get(1).title());
+    }
+
+    private MapLetterAndDistance createMockMapLetterAndDistance(
+            Long letterId,
+            String title,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            String label,
+            Long createUserId,
+            Long targetUserId,
+            BigDecimal distance
+    ) {
+        return new MapLetterAndDistance() {
+            @Override
+            public Long getLetterId() {
+                return letterId;
+            }
+
+            @Override
+            public BigDecimal getLatitude() {
+                return latitude;
+            }
+
+            @Override
+            public BigDecimal getLongitude() {
+                return longitude;
+            }
+
+            @Override
+            public String getTitle() {
+                return title;
+            }
+
+            @Override
+            public LocalDateTime getCreatedAt() {
+                return LocalDateTime.now();
+            }
+
+            @Override
+            public BigDecimal getDistance() {
+                return distance;
+            }
+
+            @Override
+            public Long getTargetUserId() {
+                return targetUserId;
+            }
+
+            @Override
+            public Long getCreateUserId() {
+                return createUserId;
+            }
+
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
     }
 }
