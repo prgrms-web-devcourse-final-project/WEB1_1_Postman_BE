@@ -34,4 +34,11 @@ public class LabelController {
         List<LabelResponseDTO> labelResponseDTO = labelService.findAllLabels();
         return ApiResponse.onSuccess(labelResponseDTO);
     }
+
+    @GetMapping("/user")
+    public ApiResponse<?> findUserLabels() {
+        String email = ""; //쿠키에서 가져온 유저 이메일
+        List<LabelResponseDTO> labelResponseDTO = labelService.findUserLabels(email);
+        return ApiResponse.onSuccess(labelResponseDTO);
+    }
 }
