@@ -1,4 +1,6 @@
 package postman.bottler.label.dto.request;
 
-public record LabelRequestDTO() {
+import jakarta.validation.constraints.NotBlank;
+
+public record LabelRequestDTO(@NotBlank(message = "라벨 이미지 URL이 비어 있습니다.") String imageUrl) {
 }
