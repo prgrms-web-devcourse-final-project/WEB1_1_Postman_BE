@@ -39,7 +39,7 @@ public class LetterService {
     }
 
     private void validateLetterExists(Long letterId) {
-        if (letterRepository.existsById(letterId)) {
+        if (!letterRepository.existsById(letterId)) {
             throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
         }
     }
