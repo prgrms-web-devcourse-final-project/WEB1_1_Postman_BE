@@ -85,15 +85,6 @@ public class MapLetter {
                 .build();
     }
 
-    public static FindMapLetter toFindSentMapLetter(MapLetter mapLetter) {
-        return FindMapLetter.builder()
-                .letterId(mapLetter.getId())
-                .title(mapLetter.getTitle())
-                .label(mapLetter.getLabel())
-                .createdAt(mapLetter.getCreatedAt())
-                .build();
-    }
-
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
     }

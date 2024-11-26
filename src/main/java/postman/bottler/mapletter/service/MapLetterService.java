@@ -69,15 +69,31 @@ public class MapLetterService {
         List<MapLetter> mapLetters=mapLetterRepository.findActiveByCreateUserId(userId);
 
         return mapLetters.stream()
-                .map(MapLetter::toFindSentMapLetter)
+                .map(this::toFindSentMapLetter)
                 .toList();
+    }
+
+    private FindMapLetter toFindSentMapLetter(MapLetter mapLetter) {
+        String targetUserNickname="";
+        if(mapLetter.getType()==MapLetterType.PRIVATE){
+//            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
+        }
+
+        return FindMapLetter.builder()
+                .letterId(mapLetter.getId())
+                .title(mapLetter.getTitle())
+                .description(mapLetter.getDescription())
+                .label(mapLetter.getLabel())
+                .createdAt(mapLetter.getCreatedAt())
+                .targetUserNickname(targetUserNickname)
+                .build();
     }
 
     public List<FindMapLetter> findReceivedMapLetters(Long userId) {
         List<MapLetter> mapLetters=mapLetterRepository.findActiveByTargetUserId(userId);
 
         return mapLetters.stream()
-                .map(MapLetter::toFindSentMapLetter)
+                .map(this::toFindSentMapLetter)
                 .toList();
     }
 

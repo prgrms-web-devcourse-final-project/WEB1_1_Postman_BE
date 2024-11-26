@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 public record FindMapLetter(
         Long letterId,
         String title,
+        String description,
         String label,
+        String targetUserNickname,
         LocalDateTime createdAt
 ) {
 }
