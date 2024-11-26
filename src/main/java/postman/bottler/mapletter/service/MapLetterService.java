@@ -31,7 +31,7 @@ public class MapLetterService {
 
     public OneLetterResponse findOneMepLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        if (mapLetter.getType() == MapLetterType.PRIVATE && !mapLetter.getTargetUserId().equals(userId) && mapLetter.getCreateUserId().equals(userId)) {
+        if (mapLetter.getType() == MapLetterType.PRIVATE && mapLetter.getTargetUserId().equals(userId) || !mapLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
         if(mapLetter.isDeleted()){

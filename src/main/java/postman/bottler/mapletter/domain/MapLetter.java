@@ -89,4 +89,8 @@ public class MapLetter {
                 .createdAt(mapLetter.getCreatedAt())
                 .build();
     }
+
+    public void updateDelete(boolean deleted) {
+        this.isDeleted = deleted;
+    }
 }

@@ -237,8 +237,8 @@ class MapLetterServiceTest {
     }
 
     @Test
-    @DisplayName("PUBLIC 편지 삭제에 성공한다.")
-    void deletePublicMapLetterTest() {
+    @DisplayName("PUBLIC 편지 삭제에 성공하고 isDeleted 상태가 true로 변경된다.")
+    void deletePublicMapLetterAndVerifyIsDeletedTest() {
         // given
         Long letterId = 1L;
         Long userId = 2L;
@@ -249,19 +249,53 @@ class MapLetterServiceTest {
                 .content("삭제 테스트")
                 .createUserId(userId)
                 .type(MapLetterType.PUBLIC)
+                .isDeleted(false) // 초기 상태는 false
                 .build();
 
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
+
+        Mockito.doAnswer(invocation -> {
+            mockLetter.updateDelete(true);
+            return null;
+        }).when(mapLetterRepository).softDelete(letterId);
 
         // when
         mapLetterService.deleteMapLetter(letterId, userId);
 
         // then
-        Mockito.verify(mapLetterRepository, Mockito.times(1)).delete(letterId);
+        assertTrue(mockLetter.isDeleted(), "isDeleted가 true로 변경되어야 합니다.");
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).softDelete(letterId);
     }
 
     @Test
-    @DisplayName("TARGET 편지 삭제에 성공한다.")
+    @DisplayName("PUBLIC 편지 삭제 권한이 없을 경우 CommonForbiddenException 예외를 발생시킨다.")
+    void deletePublicMapLetterWithoutPermissionTest() {
+        // given
+        Long letterId = 1L;
+        Long userId = 3L; // 작성자가 아닌 사용자 ID
+        Long userId2 = 2L; // 작성자
+
+        MapLetter mockLetter = MapLetter.builder()
+                .id(letterId)
+                .title("테스트 편지")
+                .content("삭제 테스트")
+                .createUserId(userId2)
+                .type(MapLetterType.PUBLIC)
+                .build();
+
+        Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
+
+        // when & then
+        CommonForbiddenException exception = assertThrows(CommonForbiddenException.class,
+                () -> mapLetterService.deleteMapLetter(letterId, userId));
+
+        assertEquals("편지를 삭제 할 권한이 없습니다.", exception.getMessage());
+
+        Mockito.verify(mapLetterRepository, Mockito.times(0)).softDelete(Mockito.anyLong());
+    }
+
+    @Test
+    @DisplayName("TARGET 편지 삭제에 성공하고, isDeleted 상태가 true로 변경된다.")
     void deleteTargetMapLetterTest() {
         // given
         Long letterId = 1L;
@@ -273,44 +307,51 @@ class MapLetterServiceTest {
                 .content("삭제 테스트")
                 .createUserId(userId)
                 .type(MapLetterType.PRIVATE)
+                .isDeleted(false)
                 .build();
 
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
+
+        Mockito.doAnswer(invocation -> {
+            mockLetter.updateDelete(true);
+            return null;
+        }).when(mapLetterRepository).softDelete(letterId);
 
         // when
         mapLetterService.deleteMapLetter(letterId, userId);
 
         // then
-        Mockito.verify(mapLetterRepository, Mockito.times(1)).delete(letterId);
+        assertTrue(mockLetter.isDeleted(), "isDeleted가 true로 변경되어야 합니다.");
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).softDelete(letterId);
     }
 
     @Test
-    @DisplayName("사용자가 권한이 없는 편지 삭제 시 CommonForbiddenException이 발생한다.")
-    void deleteMapLetterForbiddenTest() {
+    @DisplayName("PRIVATE 편지 삭제 권한이 없을 경우 CommonForbiddenException 예외를 발생시킨다.")
+    void deletePrivateMapLetterWithoutPermissionTest() {
         // given
         Long letterId = 1L;
-        Long userId = 2L; //삭제 유저
-        Long otherUserId = 3L; //편지 작성 유저
+        Long userId = 3L; // 작성자가 아닌 사용자 ID
+        Long userId2 = 2L; // 작성자
+        Long targetUserId = 7L;
 
         MapLetter mockLetter = MapLetter.builder()
                 .id(letterId)
                 .title("테스트 편지")
                 .content("삭제 테스트")
-                .createUserId(otherUserId)
-                .type(MapLetterType.PUBLIC)
+                .createUserId(userId2)
+                .type(MapLetterType.PRIVATE)
+                .targetUserId(targetUserId)
                 .build();
 
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(mockLetter);
 
         // when & then
-        CommonForbiddenException exception = assertThrows(CommonForbiddenException.class, () -> {
-            mapLetterService.deleteMapLetter(letterId, userId);
-        });
+        CommonForbiddenException exception = assertThrows(CommonForbiddenException.class,
+                () -> mapLetterService.deleteMapLetter(letterId, userId));
 
         assertEquals("편지를 삭제 할 권한이 없습니다.", exception.getMessage());
 
-        // 삭제 호출이 이루어지지 않아야 함
-        Mockito.verify(mapLetterRepository, Mockito.never()).delete(letterId);
+        Mockito.verify(mapLetterRepository, Mockito.times(0)).softDelete(Mockito.anyLong());
     }
 
     @Test
@@ -323,38 +364,45 @@ class MapLetterServiceTest {
         List<MapLetter> mockMapLetters = List.of(
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
                                 new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
-                                "www.paper.com", "www.label.com"), userId
+                                "www.paper.com", "www.label.com"), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
                         new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
-                        "www.paper.com", "www.label.com"), userId
+                        "www.paper.com", "www.label.com"), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
                         new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
-                        "www.paper.com", "www.label.com"), userId2
+                        "www.paper.com", "www.label.com"), userId2 //다른 유저가 작성한 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
                         "Target Title 1", "content 1", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
-                        2L),userId
+                        2L),userId //조회 될 편지
+                ),
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title4", "content1",
+                        new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "www.paper.com", "www.label.com"), userId //삭제 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
                         "Target Title 2", "content 2", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-                        2L),userId
+                        2L),userId //조회 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
                         "Target Title 3", "content 3", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-                        2L),userId2
+                        2L),userId2 //다른 유저가 작성한 편지
                 )
         );
 
+        mockMapLetters.get(4).updateDelete(true);
+
         List<MapLetter> filteredMapLetters = mockMapLetters.stream()
                 .filter(letter -> letter.getCreateUserId().equals(userId))
+                .filter(letter -> !letter.isDeleted())
                 .toList();
 
-        Mockito.when(mapLetterRepository.findAllByCreateUserId(userId)).thenReturn(filteredMapLetters);
+        Mockito.when(mapLetterRepository.findActiveByCreateUserId(userId)).thenReturn(filteredMapLetters);
 
 
         //when
@@ -366,7 +414,7 @@ class MapLetterServiceTest {
         assertEquals("Title2", result.get(1).title());
         assertEquals("www.label4.com", result.get(3).label());
 
-        Mockito.verify(mapLetterRepository, Mockito.times(1)).findAllByCreateUserId(userId);
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByCreateUserId(userId);
 
     }
 
@@ -393,25 +441,33 @@ class MapLetterServiceTest {
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
                         "Target Title 1", "content 1", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
-                        userId),userId
+                        userId),userId //조회 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
                         "Target Title 2", "content 2", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-                        userId2),userId
+                        userId2),userId //다른 타겟에게 간 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 3", "content 3", new BigDecimal("12.1234"),
+                        "Target Title 3", "content 2", new BigDecimal("12.1234"),
                         new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-                        userId),userId2
+                        userId),userId //삭제할편지
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 4", "content 3", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
+                        userId),userId2 //조회 될 편지
                 )
         );
 
+        mockMapLetters.get(5).updateDelete(true);
+
         List<MapLetter> filteredMapLetters = mockMapLetters.stream()
                 .filter(letter -> letter.getType().equals(MapLetterType.PRIVATE) && letter.getTargetUserId().equals(userId))
+                .filter(letter -> !letter.isDeleted())
                 .toList();
 
-        Mockito.when(mapLetterRepository.findAllByTargetUserId(userId)).thenReturn(filteredMapLetters);
+        Mockito.when(mapLetterRepository.findActiveByTargetUserId(userId)).thenReturn(filteredMapLetters);
 
 
         //when
@@ -420,9 +476,9 @@ class MapLetterServiceTest {
         //then
         assertEquals(2, result.size());
         assertEquals("Target Title 1", result.get(0).title());
-        assertEquals("Target Title 3", result.get(1).title());
+        assertEquals("Target Title 4", result.get(1).title());
         assertEquals("www.label4.com", result.get(1).label());
 
-        Mockito.verify(mapLetterRepository, Mockito.times(1)).findAllByTargetUserId(userId);
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByTargetUserId(userId);
     }
 }
