@@ -186,6 +186,57 @@ class MapLetterServiceTest {
     }
 
     @Test
+    @DisplayName("편지가 TARGET이고, CREATE USER ID와 USER ID가 동일하면 편지 상세 조회에 성공한다.")
+    void findCreateUserTargetMapLetterTest() {
+        // given
+        Long letterId = 1L;
+        Long userId = 2L;
+        Long targetUserId = 7L;
+
+        //given
+        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
+                "프라이빗 편지 편지 상세 조회 테스트",
+                "편지 내용",
+                new BigDecimal("37.5665"),
+                new BigDecimal("127.23456"),
+                "맑은고딕",
+                "www.paper.com",
+                "www.label.com",
+                targetUserId
+        );
+        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
+
+        expectedMapLetter = MapLetter.builder()
+                .id(letterId) // id를 명시적으로 설정
+                .title(expectedMapLetter.getTitle())
+                .content(expectedMapLetter.getContent())
+                .latitude(expectedMapLetter.getLatitude())
+                .longitude(expectedMapLetter.getLongitude())
+                .font(expectedMapLetter.getFont())
+                .paper(expectedMapLetter.getPaper())
+                .label(expectedMapLetter.getLabel())
+                .type(expectedMapLetter.getType())
+                .targetUserId(expectedMapLetter.getTargetUserId())
+                .createUserId(expectedMapLetter.getCreateUserId())
+                .createdAt(expectedMapLetter.getCreatedAt())
+                .updatedAt(expectedMapLetter.getUpdatedAt())
+                .isDeleted(expectedMapLetter.isDeleted())
+                .isBlocked(expectedMapLetter.isBlocked())
+                .build();
+
+        Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(expectedMapLetter);
+
+        // when
+        OneLetterResponse response = mapLetterService.findOneMepLetter(expectedMapLetter.getId(), userId);
+
+        // then
+        assertNotNull(response);
+        assertEquals(MapLetterType.PRIVATE, expectedMapLetter.getType()); //타입이 PRIVATE인지 조회
+        assertEquals(userId, expectedMapLetter.getCreateUserId());
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).findById(letterId);
+    }
+
+    @Test
     @DisplayName("편지가 TARGET이고 TARGET ID와 USER ID가 일치하지 않을 경우 편지 상세 조회에 실패한다.")
     void findTargetMapLetterUnauthorized() {
         // given
