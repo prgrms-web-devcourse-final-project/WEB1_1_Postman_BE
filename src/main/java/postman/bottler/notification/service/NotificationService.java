@@ -19,12 +19,6 @@ public class NotificationService {
     private final SubscriptionRepository subscriptionRepository;
     private final PushNotificationProvider pushNotificationProvider;
 
-    public SubscriptionResponseDTO subscribe(Long userId, String token) {
-        Subscription subscribe = Subscription.create(userId, token);
-        Subscription save = subscriptionRepository.save(subscribe);
-        return SubscriptionResponseDTO.from(save);
-    }
-
     @Transactional
     public NotificationResponseDTO sendNotification(String type, Long userId, Long letterId) {
         Notification notification = Notification.create(type, userId, letterId);

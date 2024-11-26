@@ -17,12 +17,14 @@ import postman.bottler.notification.dto.response.NotificationResponseDTO;
 import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
 import postman.bottler.notification.service.NotificationService;
+import postman.bottler.notification.service.SubscriptionService;
 
 @RestController
 @RequestMapping("/notification")
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
+    private final SubscriptionService subscriptionService;
 
     @PostMapping
     public ApiResponse<?> create(@Valid @RequestBody NotificationRequestDTO notificationRequestDTO,
@@ -47,9 +49,9 @@ public class NotificationController {
 
     @PostMapping("/subscribe")
     public ApiResponse<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest) {
-        SubscriptionResponseDTO response = notificationService.subscribe(
+        SubscriptionResponseDTO response = subscriptionService.subscribe(
                 subscriptionRequest.userId(),
                 subscriptionRequest.deviceToken());
-        return ApiResponse.onSuccess(response);
+        return ApiResponse.onCreateSuccess(response);
     }
 }
