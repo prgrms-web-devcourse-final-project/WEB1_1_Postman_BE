@@ -3,10 +3,12 @@ package postman.bottler.letter.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.SavedLetter;
-import postman.bottler.letter.dto.response.LetterKeywordsResponseDTO;
+import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.exception.LetterAlreadySavedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
@@ -33,8 +35,12 @@ public class SavedLetterService {
         savedLetterRepository.save(savedLetter);
     }
 
-    public Page<LetterKeywordsResponseDTO> getSavedLetters(int page, int size) {
-        return null;
+    public Page<LetterHeadersResponseDTO> getSavedLetterHeaders(int page, int size) {
+        Long userId = 1L;
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return savedLetterRepository.findSavedLetters(userId, pageable)
+                .map(LetterHeadersResponseDTO::from);
     }
 
     @Transactional
@@ -46,7 +52,7 @@ public class SavedLetterService {
     }
 
     private void validateLetterExists(Long letterId) {
-        if (!letterRepository.existsById(letterId)) {
+        if (letterRepository.existsById(letterId)) {
             throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
         }
     }

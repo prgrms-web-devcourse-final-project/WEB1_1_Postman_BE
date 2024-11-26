@@ -62,12 +62,12 @@ public class LetterController {
     }
 
     @GetMapping("/saved")
-    public ApiResponse<Page<LetterHeadersResponseDTO>> getSavedLetters(
+    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getSavedLetters(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<LetterHeadersResponseDTO> result = savedLetterService.getSavedLetters(page, size);
-        return ApiResponse.onSuccess(result);
+        Page<LetterHeadersResponseDTO> result = savedLetterService.getSavedLetterHeaders(page, size);
+        return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
     @DeleteMapping("/saved/{letterId}")
