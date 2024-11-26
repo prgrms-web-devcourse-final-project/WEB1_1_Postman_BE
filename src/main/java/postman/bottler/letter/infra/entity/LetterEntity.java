@@ -19,6 +19,7 @@ public class LetterEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String title;
     private String content;
     private String font;
     private String paper;
@@ -29,8 +30,9 @@ public class LetterEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    private LetterEntity(String content, String font, String paper, String label, Long userId,
+    private LetterEntity(String title, String content, String font, String paper, String label, Long userId,
                          boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
+        this.title = title;
         this.content = content;
         this.font = font;
         this.paper = paper;
@@ -43,6 +45,7 @@ public class LetterEntity {
 
     public static LetterEntity from(Letter letter) {
         return LetterEntity.builder()
+                .title(letter.getTitle())
                 .content(letter.getContent())
                 .createdAt(letter.getCreatedAt())
                 .font(letter.getFont())
@@ -58,6 +61,7 @@ public class LetterEntity {
     public Letter toDomain() {
         return Letter.builder()
                 .id(this.id)
+                .title(this.title)
                 .content(this.content)
                 .font(this.font)
                 .paper(this.paper)

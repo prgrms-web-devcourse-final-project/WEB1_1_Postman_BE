@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Letter {
     private Long id;
+    private String title;
     private String content;
     private List<String> keywords;
     private String font;
@@ -22,9 +23,11 @@ public class Letter {
     private LocalDateTime createdAt;
 
     @Builder
-    private Letter(Long id, String content, List<String> keywords, String font, String paper, String label,
+    private Letter(Long id, String title, String content, List<String> keywords, String font, String paper,
+                   String label,
                    Long userId, boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
         this.id = id;
+        this.title = title;
         this.content = content;
         this.keywords = keywords;
         this.font = font;

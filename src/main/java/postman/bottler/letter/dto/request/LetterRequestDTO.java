@@ -5,6 +5,7 @@ import java.util.List;
 import postman.bottler.letter.domain.Letter;
 
 public record LetterRequestDTO(
+        String title,
         String content,
         List<String> keywords,
         String font,
@@ -13,6 +14,7 @@ public record LetterRequestDTO(
 ) {
     public Letter toDomain(Long userId) {
         return Letter.builder()
+                .title(title)
                 .content(this.content)
                 .keywords(this.keywords)
                 .font(this.font)
