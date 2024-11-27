@@ -34,7 +34,7 @@ public class LetterController {
         return ApiResponse.onCreateSuccess(result);
     }
 
-    @GetMapping("/sent")
+    @GetMapping
     public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getLetterHeaders(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
@@ -50,7 +50,7 @@ public class LetterController {
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 
-    @GetMapping("/{letterId}")
+    @GetMapping("/detail/{letterId}")
     public ApiResponse<LetterResponseDTO> getLetter(@PathVariable Long letterId) {
         LetterResponseDTO result = letterService.getLetterDetail(letterId);
         return ApiResponse.onSuccess(result);
