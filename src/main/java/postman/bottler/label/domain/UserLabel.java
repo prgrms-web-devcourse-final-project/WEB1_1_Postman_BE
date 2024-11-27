@@ -11,6 +11,10 @@ public class UserLabel {
         this.label = label;
     }
 
+    public static UserLabel createUserLabel(User user, Label label) {
+        return new UserLabel(user, label);
+    }
+
     public User getUser() {
         return user;
     }

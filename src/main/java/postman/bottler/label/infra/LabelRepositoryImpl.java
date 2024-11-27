@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import postman.bottler.label.domain.Label;
+import postman.bottler.label.domain.UserLabel;
 import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.exception.UserLabelNotFoundException;
 import postman.bottler.label.infra.entity.LabelEntity;
@@ -77,5 +78,11 @@ public class LabelRepositoryImpl implements LabelRepository {
         entityManager.persist(userLabelEntity);
 
         userLabelJpaRepository.save(userLabelEntity);
+    }
+
+    @Override
+    public List<UserLabel> findUserLabelByUserAndLabel(User user, Label label) {
+        List<UserLabelEntity> userLabelEntities = userLabelJpaRepository.findLabelsByUserAndLabel(user.getUserId(), label.getLabelId());
+        return UserLabelEntity.toUserLabels(userLabelEntities);
     }
 }

@@ -32,4 +32,10 @@ public class LabelExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.USER_LABEL_NOT_FOUND.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(DuplicateLabelException.class)
+    public ApiResponse<?> handleDuplicateLabelException(DuplicateLabelException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.DUPLICATE_LABEL.getCode(), e.getMessage(), null);
+    }
 }

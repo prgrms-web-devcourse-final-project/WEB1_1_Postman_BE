@@ -16,7 +16,8 @@ public enum ErrorStatus {
     INVALID_LABEL(HttpStatus.BAD_REQUEST, "LABEL4000"),
     EMPTY_LABEL_INPUT(HttpStatus.BAD_REQUEST, "LABEL4001"),
     USER_LABEL_NOT_FOUND(HttpStatus.NOT_FOUND, "LABEL4002"),
-    OVER_LIMIT_COUNT(HttpStatus.FORBIDDEN, "LABEL4003");
+    OVER_LIMIT_COUNT(HttpStatus.FORBIDDEN, "LABEL4003"),
+    DUPLICATE_LABEL(HttpStatus.BAD_REQUEST, "LABEL4004");
 
     private final HttpStatus httpStatus;
     private final String code;

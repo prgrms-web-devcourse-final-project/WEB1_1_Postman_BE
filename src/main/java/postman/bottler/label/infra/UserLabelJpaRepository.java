@@ -10,4 +10,7 @@ import postman.bottler.label.infra.entity.UserLabelEntity;
 public interface UserLabelJpaRepository extends JpaRepository<UserLabelEntity, Long> {
     @Query("SELECT ul.label FROM UserLabelEntity ul WHERE ul.user.userId = :userId")
     List<LabelEntity> findLabelsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT ul FROM UserLabelEntity ul WHERE ul.user.userId = :userId AND ul.label.labelId = :labelId")
+    List<UserLabelEntity> findLabelsByUserAndLabel(@Param("userId") Long userId, @Param("labelId") Long labelId);
 }
