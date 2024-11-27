@@ -480,6 +480,7 @@ class MapLetterServiceTest {
         assertEquals(4, result.size());
         assertEquals("Title1", result.get(0).title());
         assertEquals("Title2", result.get(1).title());
+        assertEquals("장소 설명", result.get(3).description());
         assertEquals("www.label4.com", result.get(3).label());
 
         Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByCreateUserId(userId);
