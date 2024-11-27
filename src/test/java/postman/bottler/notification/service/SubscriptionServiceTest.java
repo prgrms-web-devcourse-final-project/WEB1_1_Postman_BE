@@ -2,9 +2,10 @@ package postman.bottler.notification.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,5 +35,17 @@ public class SubscriptionServiceTest {
 
         // THEN
         assertThat(response.userId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("해당 유저의 알림을 비허용한다.")
+    public void unsubscribeAll() {
+        // GIVEN
+
+        // WHEN
+        subscriptionService.unsubscribeAll(1L);
+
+        // THEN
+        verify(subscriptionRepository, times(1)).deleteAllByUserId(1L);
     }
 }
