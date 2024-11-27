@@ -40,6 +40,10 @@ public class Label {
         }
     }
 
+    public void increaseOwnedCount() {
+        this.ownedCount++;
+    }
+
     public LabelResponseDTO toLabelResponseDTO() {
         return new LabelResponseDTO(this.labelId, this.imageUrl);
     }

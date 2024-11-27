@@ -65,6 +65,7 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public void updateOwnedCount(Label label) {
+        label.increaseOwnedCount();
         LabelEntity labelEntity = entityManager.find(LabelEntity.class, label.getLabelId());
         labelEntity.updateOwnedCount();
     }
