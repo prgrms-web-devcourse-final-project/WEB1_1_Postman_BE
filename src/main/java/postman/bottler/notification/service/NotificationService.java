@@ -6,10 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.notification.domain.Notification;
-import postman.bottler.notification.domain.PushMessage;
-import postman.bottler.notification.domain.Subscription;
+import postman.bottler.notification.domain.PushMessages;
+import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
-import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +21,16 @@ public class NotificationService {
     @Transactional
     public NotificationResponseDTO sendNotification(String type, Long userId, Long letterId) {
         Notification notification = Notification.create(type, userId, letterId);
-        List<Subscription> subscriptions = subscriptionRepository.findByUserId(userId);
-        subscriptions.forEach(subscription -> {
-            PushMessage pushMessage = subscription.makeMessage(notification.getType());
-            pushNotificationProvider.push(pushMessage);
-        });
+        Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);
+        if (subscriptions.isPushEnabled()) {
+            sendPushMessagesToUser(subscriptions, notification);
+        }
         return NotificationResponseDTO.from(notificationRepository.save(notification));
+    }
+
+    private void sendPushMessagesToUser(Subscriptions subscriptions, Notification notification) {
+        PushMessages pushMessages = subscriptions.makeMessages(notification.getType());
+        pushNotificationProvider.pushAll(pushMessages);
     }
 
     @Transactional

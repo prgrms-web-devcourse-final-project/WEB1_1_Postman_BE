@@ -1,7 +1,7 @@
 package postman.bottler.notification.service;
 
-import postman.bottler.notification.domain.PushMessage;
+import postman.bottler.notification.domain.PushMessages;
 
 public interface PushNotificationProvider {
-    public void push(PushMessage pushMessage);
+    public void pushAll(PushMessages pushMessages);
 }

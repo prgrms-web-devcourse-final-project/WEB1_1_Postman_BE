@@ -2,7 +2,6 @@ package postman.bottler.notification.domain;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
-import postman.bottler.notification.exception.NoTypeException;
 
 @Getter
 public class Notification {
@@ -12,7 +11,7 @@ public class Notification {
 
     private final long receiver;
 
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
     private Boolean isRead;
 
@@ -32,8 +31,7 @@ public class Notification {
     }
 
     public static Notification create(String type, Long receiver, Long letterId) {
-        validateType(type);
-        NotificationType notificationType = NotificationType.valueOf(type);
+        NotificationType notificationType = NotificationType.from(type);
         if (notificationType.isLetterNotification()) {
             return new LetterNotification(notificationType, receiver, letterId, false);
         }
@@ -46,15 +44,6 @@ public class Notification {
             return new LetterNotification(id, type, receiver, letterId, createdAt, isRead);
         }
         return new Notification(id, type, receiver, createdAt, isRead);
-    }
-
-    private static void validateType(String type) {
-        for (NotificationType value : NotificationType.values()) {
-            if (value.name().equals(type)) {
-                return;
-            }
-        }
-        throw new NoTypeException();
     }
 
     public void read() {

@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.notification.domain.Subscription;
+import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.service.SubscriptionRepository;
 
 @Repository
@@ -18,11 +19,11 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     }
 
     @Override
-    public List<Subscription> findByUserId(Long userId) {
-        List<SubscriptionEntity> finds = repository.findByUserId(userId);
-        return finds.stream()
+    public Subscriptions findByUserId(Long userId) {
+        List<Subscription> subscriptions = repository.findByUserId(userId).stream()
                 .map(SubscriptionEntity::toDomain)
                 .toList();
+        return Subscriptions.from(subscriptions);
     }
 
     @Override

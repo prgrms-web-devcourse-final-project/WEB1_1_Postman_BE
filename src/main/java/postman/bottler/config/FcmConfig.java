@@ -3,20 +3,23 @@ package postman.bottler.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.FirebaseOptions.Builder;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 public class FcmConfig {
+    @Value("${fcm.private-key}")
+    private String privateKey;
+
     @PostConstruct
     public void init() {
         try {
-            InputStream serviceAccount = new ClassPathResource("bottler-fcm.json").getInputStream();
-            FirebaseOptions options = new Builder()
+            InputStream serviceAccount = new ClassPathResource(privateKey).getInputStream();
+            FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 

@@ -1,12 +1,12 @@
 package postman.bottler.notification.service;
 
-import java.util.List;
 import postman.bottler.notification.domain.Subscription;
+import postman.bottler.notification.domain.Subscriptions;
 
 public interface SubscriptionRepository {
     Subscription save(Subscription subscription);
 
-    List<Subscription> findByUserId(Long userId);
+    Subscriptions findByUserId(Long userId);
 
     void deleteAllByUserId(Long userId);
 
