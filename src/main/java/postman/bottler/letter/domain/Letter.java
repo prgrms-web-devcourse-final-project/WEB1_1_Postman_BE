@@ -17,6 +17,7 @@ public class Letter {
     private String font;
     private String paper;
     private String label;
+    private String profile;
     private Long userId;
     private boolean isDeleted;
     private boolean isBlocked;
@@ -24,8 +25,8 @@ public class Letter {
 
     @Builder
     private Letter(Long id, String title, String content, List<String> keywords, String font, String paper,
-                   String label,
-                   Long userId, boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
+                   String label, String profile, Long userId, boolean isDeleted, boolean isBlocked,
+                   LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -33,6 +34,7 @@ public class Letter {
         this.font = font;
         this.paper = paper;
         this.label = label;
+        this.profile = profile;
         this.userId = userId;
         this.isDeleted = isDeleted;
         this.isBlocked = isBlocked;

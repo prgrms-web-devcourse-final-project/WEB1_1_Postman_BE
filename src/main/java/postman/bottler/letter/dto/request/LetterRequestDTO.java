@@ -12,7 +12,7 @@ public record LetterRequestDTO(
         String paper,
         String label
 ) {
-    public Letter toDomain(Long userId) {
+    public Letter toDomain(Long userId, String profile) {
         return Letter.builder()
                 .title(title)
                 .content(this.content)
@@ -20,6 +20,7 @@ public record LetterRequestDTO(
                 .font(this.font)
                 .paper(this.paper)
                 .label(this.label)
+                .profile(profile)
                 .userId(userId)
                 .isDeleted(false)
                 .isBlocked(false)

@@ -11,6 +11,7 @@ public record LetterResponseDTO(
         List<String> keywords,
         String font,
         String paper,
+        String profile,
         String label,
         LocalDateTime createdAt
 ) {
@@ -23,6 +24,7 @@ public record LetterResponseDTO(
                 letter.getFont(),
                 letter.getPaper(),
                 letter.getLabel(),
+                letter.getProfile(),
                 letter.getCreatedAt()
         );
     }

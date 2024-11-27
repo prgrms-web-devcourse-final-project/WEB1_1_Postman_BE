@@ -19,7 +19,10 @@ public class LetterService {
     private final LetterRepository letterRepository;
 
     public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO) {
-        Letter letter = letterRepository.save(letterRequestDTO.toDomain(1L));
+        Long userId = 1L;
+        String userProfile = "profile url";
+
+        Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
         return LetterResponseDTO.from(letter);
     }
 
