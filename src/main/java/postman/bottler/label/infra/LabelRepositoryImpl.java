@@ -77,8 +77,6 @@ public class LabelRepositoryImpl implements LabelRepository {
 
         UserLabelEntity userLabelEntity = UserLabelEntity.from(userEntity, labelEntity);
         entityManager.persist(userLabelEntity);
-
-        userLabelJpaRepository.save(userLabelEntity);
     }
 
     @Override
