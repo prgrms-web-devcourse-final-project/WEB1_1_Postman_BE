@@ -53,10 +53,11 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
+      - name: JSON 디렉토리 생성
+        run: mkdir -p WEB1_1_Postman_BE/src/resources
+
       - name: JSON 생성
-        run: |
-            touch src/resources/secrets.json		# 파일 생성
-            echo "${{ secrets.SECRET_JSON }}" >> src/resources/secrets.json	# 복사
+        run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
 
       - name: Gradle로 테스트 및 커버리지 리포트 생성
         run: ./gradlew clean build jacocoTestReport
@@ -74,4 +75,4 @@ jobs:
         run: ./gradlew sonarqube
 
       - name: JSON 삭제
-        run: rm src/resources/bottler-fcm.json
+        run: rm src/main/resources/bottler-fcm.json
