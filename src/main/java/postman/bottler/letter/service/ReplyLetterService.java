@@ -58,7 +58,7 @@ public class ReplyLetterService {
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
-    public void deleteReplyLetter(Long replyId) {
-
+    public void deleteReplyLetter(Long replyLetterId) {
+        replyLetterRepository.remove(replyLetterId);
     }
 }

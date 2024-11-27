@@ -13,4 +13,6 @@ public interface ReplyLetterRepository {
     Page<ReplyLetter> findAllByLetterId(Long letterId, Long userId, Pageable pageable);
 
     Optional<ReplyLetter> findById(Long replyLetterId);
+
+    void remove(Long replyLetterId);
 }

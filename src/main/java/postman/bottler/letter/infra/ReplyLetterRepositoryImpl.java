@@ -40,4 +40,9 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
         return replyLetterJpaRepository.findById(replyLetterId)
                 .map(ReplyLetterEntity::toDomain);
     }
+
+    @Override
+    public void remove(Long replyLetterId) {
+        replyLetterJpaRepository.deleteById(replyLetterId);
+    }
 }
