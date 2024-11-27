@@ -188,4 +188,22 @@ public class MapLetterService {
                 .map(ReplyMapLetter::toFindAllReplyMapLettersResponseDTO)
                 .toList();
     }
+
+    public OneReplyLetterResponseDTO findOneReplyMapLetter(Long letterId, Long userId) {
+        ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
+        MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+        if(replyMapLetter.isDeleted()){
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }else if(!replyMapLetter.getCreateUserId().equals(userId)&&!sourceLetter.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        return OneReplyLetterResponseDTO.builder()
+                .content(replyMapLetter.getContent())
+                .sourceLetterId(replyMapLetter.getSourceLetterId())
+                .font(replyMapLetter.getFont())
+                .label(replyMapLetter.getLabel())
+                .paper(replyMapLetter.getPaper())
+                .createdAt(replyMapLetter.getCreatedAt())
+                .build();
+    }
 }

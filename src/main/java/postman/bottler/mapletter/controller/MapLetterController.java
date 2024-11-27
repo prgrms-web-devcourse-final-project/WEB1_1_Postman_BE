@@ -122,4 +122,9 @@ public class MapLetterController {
     public ApiResponse<List<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findAllReplyMapLetter(letterId, userId));
     }
+
+    @GetMapping("/reply/{letterId}")
+    public ApiResponse<OneReplyLetterResponseDTO> findOneReplyMapLetter(@PathVariable Long letterId, Long userId){
+        return ApiResponse.onSuccess(mapLetterService.findOneReplyMapLetter(letterId, userId));
+    }
 }

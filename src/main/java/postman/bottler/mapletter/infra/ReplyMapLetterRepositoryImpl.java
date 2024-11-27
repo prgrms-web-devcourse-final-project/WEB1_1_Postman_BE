@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
+import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 import postman.bottler.mapletter.service.ReplyMapLetterRepository;
@@ -40,5 +41,13 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
         return findActiveLetters.stream()
                 .map(ReplyMapLetterEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public ReplyMapLetter findById(Long letterId) {
+        ReplyMapLetterEntity replyMapLetterEntity = replyMapLetterJpaRepository.findById(letterId)
+                .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+
+        return ReplyMapLetterEntity.toDomain(replyMapLetterEntity);
     }
 }
