@@ -1,5 +1,6 @@
 package postman.bottler.letter.infra;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,12 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     @Override
     public Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable) {
         return replyLetterJpaRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageable)
+                .map(ReplyLetterEntity::toDomain);
+    }
+
+    @Override
+    public Optional<ReplyLetter> findById(Long replyLetterId) {
+        return replyLetterJpaRepository.findById(replyLetterId)
                 .map(ReplyLetterEntity::toDomain);
     }
 }

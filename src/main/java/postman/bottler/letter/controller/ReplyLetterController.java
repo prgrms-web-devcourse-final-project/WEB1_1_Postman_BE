@@ -55,17 +55,17 @@ public class ReplyLetterController {
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
-    @GetMapping("/detail/{replyId}")
+    @GetMapping("/detail/{replyLetterId}")
     public ApiResponse<ReplyLetterResponseDTO> getReplyLetter(
-            @PathVariable Long replyId
+            @PathVariable Long replyLetterId
     ) {
-        ReplyLetterResponseDTO result = letterReplyService.getReplyLetter(replyId);
+        ReplyLetterResponseDTO result = letterReplyService.getReplyLetterDetail(replyLetterId);
         return ApiResponse.onSuccess(result);
     }
 
-    @DeleteMapping("/{replyId}")
-    public ApiResponse<String> deleteReplyLetter(@PathVariable Long replyId) {
-        letterReplyService.deleteReplyLetter(replyId);
+    @DeleteMapping("/{replyLetterId}")
+    public ApiResponse<String> deleteReplyLetter(@PathVariable Long replyLetterId) {
+        letterReplyService.deleteReplyLetter(replyLetterId);
         return ApiResponse.onSuccess("success");
     }
 }

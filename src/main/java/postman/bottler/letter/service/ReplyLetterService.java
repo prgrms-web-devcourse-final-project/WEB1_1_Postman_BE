@@ -11,6 +11,7 @@ import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
+import postman.bottler.letter.exception.LetterNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +52,10 @@ public class ReplyLetterService {
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
 
-    public ReplyLetterResponseDTO getReplyLetter(Long replyId) {
-        return null;
+    public ReplyLetterResponseDTO getReplyLetterDetail(Long replyLetterId) {
+        ReplyLetter replyLetter = replyLetterRepository.findById(replyLetterId)
+                .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
+        return ReplyLetterResponseDTO.from(replyLetter);
     }
 
     public void deleteReplyLetter(Long replyId) {
