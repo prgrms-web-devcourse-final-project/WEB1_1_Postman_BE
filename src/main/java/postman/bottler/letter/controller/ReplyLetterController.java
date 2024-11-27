@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
@@ -45,14 +44,14 @@ public class ReplyLetterController {
     }
 
     @GetMapping("/{letterId}")
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getReplyForLetter(
+    public ApiResponse<PageResponseDTO<ReplyLetterHeadersResponseDTO>> getReplyForLetter(
             @PathVariable Long letterId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "createdAt") String sort
     ) {
-        Page<LetterHeadersResponseDTO> result = letterReplyService.getReplyLetterHeadersById(letterId, page, size,
-                sort);
+        Page<ReplyLetterHeadersResponseDTO> result =
+                letterReplyService.getReplyLetterHeadersById(letterId, page, size, sort);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 

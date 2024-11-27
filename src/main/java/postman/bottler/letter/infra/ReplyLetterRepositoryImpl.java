@@ -23,12 +23,14 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    public Page<ReplyLetter> findAll(Long userId, Pageable pageable) {
-        Page<ReplyLetter> map = replyLetterJpaRepository.findAllByUserId(userId, pageable)
+    public Page<ReplyLetter> findAll(Long receiverId, Pageable pageable) {
+        return replyLetterJpaRepository.findAllByReceiverId(receiverId, pageable)
                 .map(ReplyLetterEntity::toDomain);
+    }
 
-        log.error(String.valueOf(map.getContent().get(0).getId()));
-        return replyLetterJpaRepository.findAllByUserId(userId, pageable)
+    @Override
+    public Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable) {
+        return replyLetterJpaRepository.findAllByReceiverIdAndLetterId(letterId, receiverId, pageable)
                 .map(ReplyLetterEntity::toDomain);
     }
 }

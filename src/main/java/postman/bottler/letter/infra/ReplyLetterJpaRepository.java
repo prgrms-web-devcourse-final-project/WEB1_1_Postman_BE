@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
 
 public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntity, Long> {
-    Page<ReplyLetterEntity> findAllByUserId(Long userId, Pageable pageable);
+    Page<ReplyLetterEntity> findAllByReceiverId(Long userId, Pageable pageable);
+
+    Page<ReplyLetterEntity> findAllByReceiverIdAndLetterId(Long letterId, Long receiverId, Pageable pageable);
 }

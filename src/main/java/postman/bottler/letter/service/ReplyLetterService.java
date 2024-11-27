@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import postman.bottler.letter.domain.ReplyLetter;
+import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 
@@ -20,13 +20,15 @@ public class ReplyLetterService {
     private final LetterService letterService;
 
     public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO) {
-        Long userId = 1L;
-        String userProfile = "profile url";
+        ReceiverDTO receiverInfo = letterService.getReceiverInfoById(letterId);
         // letterId 로 제목 받아와서 RE 형식 적용
-        String title = "RE: [" + letterService.getTitleById(letterId) + "]";
+        String title = "RE: [" + receiverInfo.title() + "]";
+        Long receiverId = receiverInfo.receiverId();
+        Long senderId = 2L;
+        String userProfile = "profile url";
 
         ReplyLetter replyLetter = replyLetterRepository.save(
-                letterReplyRequestDTO.toDomain(title, letterId, userId, userProfile));
+                letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId, userProfile));
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
@@ -39,15 +41,21 @@ public class ReplyLetterService {
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
 
+    public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeadersById(
+            Long letterId, int page, int size, String sort
+    ) {
+        Long userId = 1L;
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        return replyLetterRepository.findAllByLetterId(letterId, userId, pageable)
+                .map(ReplyLetterHeadersResponseDTO::from);
+    }
+
     public ReplyLetterResponseDTO getReplyLetter(Long replyId) {
         return null;
     }
 
     public void deleteReplyLetter(Long replyId) {
 
-    }
-
-    public Page<LetterHeadersResponseDTO> getReplyLetterHeadersById(Long letterId, int page, int size, String sort) {
-        return null;
     }
 }

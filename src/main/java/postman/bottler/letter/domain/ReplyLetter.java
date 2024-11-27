@@ -17,14 +17,15 @@ public class ReplyLetter {
     private String label;
     private String profile;
     private Long letterId;
-    private Long userId;
+    private Long receiverId;
+    private Long senderId;
     private boolean isDeleted;
     private boolean isBlocked;
     private LocalDateTime createdAt;
 
     @Builder
     private ReplyLetter(Long id, String title, String content, String font, String paper,
-                        String label, String profile, Long letterId, Long userId,
+                        String label, String profile, Long letterId, Long receiverId, Long senderId,
                         boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
@@ -34,7 +35,8 @@ public class ReplyLetter {
         this.label = label;
         this.profile = profile;
         this.letterId = letterId;
-        this.userId = userId;
+        this.receiverId = receiverId;
+        this.senderId = senderId;
         this.isDeleted = isDeleted;
         this.isBlocked = isBlocked;
         this.createdAt = createdAt;

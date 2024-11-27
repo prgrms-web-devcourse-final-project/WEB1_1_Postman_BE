@@ -9,7 +9,7 @@ public record ReplyLetterRequestDTO(
         String paper,
         String label
 ) {
-    public ReplyLetter toDomain(String title, Long letterId, Long userId, String profile) {
+    public ReplyLetter toDomain(String title, Long letterId, Long receiverId, Long senderId, String profile) {
         return ReplyLetter.builder()
                 .title(title)
                 .content(this.content)
@@ -18,7 +18,8 @@ public record ReplyLetterRequestDTO(
                 .label(this.label)
                 .profile(profile)
                 .letterId(letterId)
-                .userId(userId)
+                .receiverId(receiverId)
+                .senderId(senderId)
                 .isDeleted(false)
                 .isBlocked(false)
                 .createdAt(LocalDateTime.now())

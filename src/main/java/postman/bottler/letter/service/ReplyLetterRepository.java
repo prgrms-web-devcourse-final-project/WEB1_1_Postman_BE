@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import postman.bottler.letter.domain.ReplyLetter;
 
 public interface ReplyLetterRepository {
-    ReplyLetter save(ReplyLetter domain);
+    ReplyLetter save(ReplyLetter replyLetter);
 
     Page<ReplyLetter> findAll(Long userId, Pageable pageable);
+
+    Page<ReplyLetter> findAllByLetterId(Long letterId, Long userId, Pageable pageable);
 }

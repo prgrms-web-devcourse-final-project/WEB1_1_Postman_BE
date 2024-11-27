@@ -26,14 +26,15 @@ public class ReplyLetterEntity {
     private String label;
     private String profile;
     private Long letterId;
-    private Long userId;
+    private Long receiverId;
+    private Long senderId;
     private boolean isDeleted;
     private boolean isBlocked;
     private LocalDateTime createdAt;
 
     @Builder
     private ReplyLetterEntity(String title, String content, String font, String paper,
-                              String label, String profile, Long letterId, Long userId,
+                              String label, String profile, Long letterId, Long receiverId, Long senderId,
                               boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
@@ -42,9 +43,10 @@ public class ReplyLetterEntity {
         this.label = label;
         this.profile = profile;
         this.letterId = letterId;
-        this.userId = userId;
-        this.isDeleted = false;
-        this.isBlocked = false;
+        this.receiverId = receiverId;
+        this.senderId = senderId;
+        this.isDeleted = isDeleted;
+        this.isBlocked = isBlocked;
         this.createdAt = createdAt;
     }
 
@@ -57,7 +59,8 @@ public class ReplyLetterEntity {
                 .label(replyLetter.getLabel())
                 .profile(replyLetter.getProfile())
                 .letterId(replyLetter.getLetterId())
-                .userId(replyLetter.getUserId())
+                .receiverId(replyLetter.getReceiverId())
+                .senderId(replyLetter.getSenderId())
                 .isDeleted(replyLetter.isDeleted())
                 .isBlocked(replyLetter.isBlocked())
                 .createdAt(replyLetter.getCreatedAt())
@@ -74,7 +77,8 @@ public class ReplyLetterEntity {
                 .label(this.label)
                 .profile(this.profile)
                 .letterId(this.letterId)
-                .userId(this.userId)
+                .receiverId(this.receiverId)
+                .senderId(this.senderId)
                 .isDeleted(this.isDeleted)
                 .isBlocked(this.isBlocked)
                 .createdAt(this.createdAt)

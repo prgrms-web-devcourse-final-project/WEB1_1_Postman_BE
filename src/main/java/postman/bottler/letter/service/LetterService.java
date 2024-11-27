@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import postman.bottler.letter.domain.Letter;
+import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
@@ -59,7 +60,8 @@ public class LetterService {
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
 
-    public String getTitleById(Long letterId) {
-        return findLetter(letterId).getTitle();
+    public ReceiverDTO getReceiverInfoById(Long letterId) {
+        Letter letter = findLetter(letterId);
+        return ReceiverDTO.from(letter);
     }
 }
