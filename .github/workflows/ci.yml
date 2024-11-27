@@ -54,11 +54,9 @@ jobs:
         shell: bash
 
       - name: JSON 생성
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: "bottler-fcm.json"
-          json: ${{ secrets.BOTTLER_FCM }}
-          dir: 'src/resources'
+        run: |
+            touch src/resources/secrets.json		# 파일 생성
+            echo "${{ secrets.SECRET_JSON }}" >> src/resources/secrets.json	# 복사
 
       - name: Gradle로 테스트 및 커버리지 리포트 생성
         run: ./gradlew clean build jacocoTestReport
