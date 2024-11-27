@@ -3,6 +3,7 @@ package postman.bottler.mapletter.service;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.processing.Find;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
@@ -57,12 +58,15 @@ public class MapLetterService {
                 .build();
     }
 
-    public void deleteMapLetter(Long letterId, Long userId) {
-        MapLetter findMapLetter = mapLetterRepository.findById(letterId);
-        if(!findMapLetter.getCreateUserId().equals(userId)) {
-            throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다.");
+    @Transactional
+    public void deleteMapLetter(List<Long> letters, Long userId) {
+        for(Long letterId : letters) {
+            MapLetter findMapLetter = mapLetterRepository.findById(letterId);
+            if (!findMapLetter.getCreateUserId().equals(userId)) {
+                throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+            }
+            mapLetterRepository.softDelete(letterId);
         }
-        mapLetterRepository.softDelete(letterId);
     }
 
     public List<FindMapLetter> findSentMapLetters(Long userId) {

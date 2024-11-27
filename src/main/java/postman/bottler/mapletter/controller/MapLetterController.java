@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.DeleteMapLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
@@ -69,10 +70,10 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findOneMepLetter(letterId, userId));
     }
 
-    @DeleteMapping("/{letterId}")
-    public ApiResponse<?> deleteMapLetter(@PathVariable Long letterId, Long userId) {
-        mapLetterService.deleteMapLetter(letterId, userId);
-        return ApiResponse.onDeleteSuccess(letterId);
+    @DeleteMapping
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO letters, Long userId) {
+        mapLetterService.deleteMapLetter(letters.letterIds(), userId);
+        return ApiResponse.onDeleteSuccess(letters);
     }
 
     @GetMapping("/sent")

@@ -42,7 +42,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
 
         MapLetterEntity mapLetter = em.find(MapLetterEntity.class, letterId);
         mapLetter.updateDelete(true);
-        em.flush();
     }
 
     @Override
