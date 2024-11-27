@@ -13,4 +13,8 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
     @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m WHERE m.createUserId = :userId " +
             "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false ")
     List<ReplyMapLetterEntity> findActiveReplyMapLettersBySourceUserId(Long userId);
+
+    @Query("SELECT r FROM ReplyMapLetterEntity r " +
+            "WHERE r.sourceLetterId=:letterId AND r.isDeleted=false AND r.isBlocked = false")
+    List<ReplyMapLetterEntity> findReplyMapLettersBySourceLetterId(Long letterId);
 }

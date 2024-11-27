@@ -172,4 +172,20 @@ public class MapLetterService {
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         return replyMapLetterRepository.save(replyMapLetter);
     }
+
+    public List<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(Long letterId, Long userId) {
+        MapLetter sourceLetter = mapLetterRepository.findById(letterId);
+        if (!sourceLetter.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        if(sourceLetter.isDeleted()){
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
+
+        List<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId);
+
+        return findReply.stream()
+                .map(ReplyMapLetter::toFindAllReplyMapLettersResponseDTO)
+                .toList();
+    }
 }

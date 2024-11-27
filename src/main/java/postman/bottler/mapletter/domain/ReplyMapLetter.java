@@ -2,6 +2,7 @@ package postman.bottler.mapletter.domain;
 
 import lombok.*;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.FindAllReplyMapLettersResponseDTO;
 
 import java.time.LocalDateTime;
 
@@ -38,5 +39,14 @@ public class ReplyMapLetter {
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
     }
+
+    public static FindAllReplyMapLettersResponseDTO toFindAllReplyMapLettersResponseDTO(ReplyMapLetter replyMapLetter) {
+        return FindAllReplyMapLettersResponseDTO.builder()
+                .replyLetterId(replyMapLetter.getReplyLetterId())
+                .label(replyMapLetter.getLabel())
+                .createdAt(replyMapLetter.getCreatedAt())
+                .build();
+    }
+
 }
 

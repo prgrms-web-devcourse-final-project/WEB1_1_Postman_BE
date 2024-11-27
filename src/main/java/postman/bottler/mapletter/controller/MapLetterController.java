@@ -117,4 +117,9 @@ public class MapLetterController {
         mapLetterService.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("답장 편지 생성이 성공되었습니다.");
     }
+
+    @GetMapping("/{letterId}/reply")
+    public ApiResponse<List<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(@PathVariable Long letterId, Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findAllReplyMapLetter(letterId, userId));
+    }
 }

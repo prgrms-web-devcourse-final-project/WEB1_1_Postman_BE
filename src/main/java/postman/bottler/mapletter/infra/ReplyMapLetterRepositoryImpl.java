@@ -32,4 +32,13 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
                 .map(ReplyMapLetterEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId) {
+        List<ReplyMapLetterEntity> findActiveLetters=replyMapLetterJpaRepository.findReplyMapLettersBySourceLetterId(letterId);
+
+        return findActiveLetters.stream()
+                .map(ReplyMapLetterEntity::toDomain)
+                .toList();
+    }
 }
