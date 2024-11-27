@@ -14,7 +14,7 @@ public class SavedLetter {
     private boolean isDeleted;
 
     @Builder
-    public SavedLetter(Long id, Long userId, Long letterId, boolean isDeleted) {
+    private SavedLetter(Long id, Long userId, Long letterId, boolean isDeleted) {
         this.id = id;
         this.userId = userId;
         this.letterId = letterId;

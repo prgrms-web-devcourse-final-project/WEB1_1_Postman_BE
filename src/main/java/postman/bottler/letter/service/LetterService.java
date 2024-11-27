@@ -58,4 +58,8 @@ public class LetterService {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
+
+    public String getTitleById(Long letterId) {
+        return findLetter(letterId).getTitle();
+    }
 }

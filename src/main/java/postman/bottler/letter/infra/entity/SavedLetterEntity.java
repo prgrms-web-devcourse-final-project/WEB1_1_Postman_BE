@@ -22,7 +22,7 @@ public class SavedLetterEntity {
     private Long letterId;
 
     @Builder
-    public SavedLetterEntity(Long userId, Long letterId) {
+    private SavedLetterEntity(Long userId, Long letterId) {
         this.userId = userId;
         this.letterId = letterId;
     }

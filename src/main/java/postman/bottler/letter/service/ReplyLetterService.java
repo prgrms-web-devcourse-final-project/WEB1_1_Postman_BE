@@ -3,6 +3,7 @@ package postman.bottler.letter.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
@@ -12,10 +13,19 @@ import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 public class ReplyLetterService {
 
     private final ReplyLetterRepository replyLetterRepository;
+    private final LetterService letterService;
 
     public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO) {
-        return null;
+        Long userId = 1L;
+        String userProfile = "profile url";
+        // letterId 로 제목 받아와서 RE 형식 적용
+        String title = "RE: [" + letterService.getTitleById(letterId) + "]";
+
+        ReplyLetter replyLetter = replyLetterRepository.save(
+                letterReplyRequestDTO.toDomain(title, letterId, userId, userProfile));
+        return ReplyLetterResponseDTO.from(replyLetter);
     }
+
 
     public Page<LetterHeadersResponseDTO> getReplyLetterHeaders(int page, int size, String sort) {
         return null;
