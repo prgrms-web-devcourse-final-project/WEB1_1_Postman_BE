@@ -14,8 +14,8 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
-import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
+import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -124,7 +124,7 @@ class MapLetterServiceTest {
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(publicLetter);
 
         // when
-        OneLetterResponse response = mapLetterService.findOneMepLetter(letterId, userId);
+        OneLetterResponseDTO response = mapLetterService.findOneMepLetter(letterId, userId);
 
         // then
         assertNotNull(response);
@@ -181,7 +181,7 @@ class MapLetterServiceTest {
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(expectedMapLetter);
 
         // when
-        OneLetterResponse response = mapLetterService.findOneMepLetter(expectedMapLetter.getId(), targetUserId);
+        OneLetterResponseDTO response = mapLetterService.findOneMepLetter(expectedMapLetter.getId(), targetUserId);
 
         // then
         assertNotNull(response);
@@ -240,7 +240,7 @@ class MapLetterServiceTest {
         Mockito.when(mapLetterRepository.findById(letterId)).thenReturn(expectedMapLetter);
 
         // when
-        OneLetterResponse response = mapLetterService.findOneMepLetter(expectedMapLetter.getId(), userId);
+        OneLetterResponseDTO response = mapLetterService.findOneMepLetter(expectedMapLetter.getId(), userId);
 
         // then
         assertNotNull(response);
@@ -568,7 +568,7 @@ class MapLetterServiceTest {
                 .thenReturn(mockMapLetters);
 
         // When
-        List<FindNearbyLettersResponse> result = mapLetterService.findNearByMapLetters(latitude, longitude, userId);
+        List<FindNearbyLettersResponseDTO> result = mapLetterService.findNearByMapLetters(latitude, longitude, userId);
 
         // Then
         assertEquals(2, result.size());

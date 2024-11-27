@@ -65,7 +65,7 @@ public class MapLetterController {
     }
 
     @GetMapping("/{letterId}")
-    public ApiResponse<OneLetterResponse> findOneMapLetter(@PathVariable Long letterId, Long userId) {
+    public ApiResponse<OneLetterResponseDTO> findOneMapLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findOneMepLetter(letterId, userId));
     }
 
@@ -86,7 +86,7 @@ public class MapLetterController {
     }
 
     @GetMapping
-    public ApiResponse<List<FindNearbyLettersResponse>> findNearbyMapLetters(@RequestParam String latitude, @RequestParam String longitude, Long userId) {
+    public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude, @RequestParam String longitude, Long userId) {
         BigDecimal lat = BigDecimal.ZERO;
         BigDecimal lon = BigDecimal.ZERO;
         try {

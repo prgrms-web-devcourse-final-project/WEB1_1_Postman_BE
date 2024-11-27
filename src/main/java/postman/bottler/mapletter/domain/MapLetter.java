@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -72,8 +72,8 @@ public class MapLetter {
                 .build();
     }
 
-    public static OneLetterResponse toOneLetterResponse(MapLetter mapLetter) {
-        return OneLetterResponse.builder()
+    public static OneLetterResponseDTO toOneLetterResponse(MapLetter mapLetter) {
+        return OneLetterResponseDTO.builder()
                 .title(mapLetter.getTitle())
                 .content(mapLetter.getContent())
                 .font(mapLetter.getFont())

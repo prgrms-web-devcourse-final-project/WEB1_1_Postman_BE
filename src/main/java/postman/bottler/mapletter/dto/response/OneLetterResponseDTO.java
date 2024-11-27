@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record OneLetterResponse(
+public record OneLetterResponseDTO(
         String title,
         String content,
         String description,

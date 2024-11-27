@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
-public record FindNearbyLettersResponse(
+public record FindNearbyLettersResponseDTO(
         Long letterId,
         BigDecimal latitude,
         BigDecimal longitude,

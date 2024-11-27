@@ -38,7 +38,7 @@ public class MapLetterService {
         return mapLetterRepository.save(mapLetter);
     }
 
-    public OneLetterResponse findOneMepLetter(Long letterId, Long userId) {
+    public OneLetterResponseDTO findOneMepLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId) && !mapLetter.getCreateUserId().equals(userId))) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
@@ -47,17 +47,17 @@ public class MapLetterService {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
 
-        OneLetterResponse oneLetterResponse = MapLetter.toOneLetterResponse(mapLetter);
+        OneLetterResponseDTO oneLetterResponseDTO = MapLetter.toOneLetterResponse(mapLetter);
         String profileImg = ""; //user 서비스 메서드 불러서 받기
-        return OneLetterResponse.builder()
-                .title(oneLetterResponse.title())
-                .content(oneLetterResponse.content())
+        return OneLetterResponseDTO.builder()
+                .title(oneLetterResponseDTO.title())
+                .content(oneLetterResponseDTO.content())
                 .profileImg(profileImg)
-                .font(oneLetterResponse.font())
-                .paper(oneLetterResponse.paper())
-                .label(oneLetterResponse.label())
-                .createdAt(oneLetterResponse.createdAt())
-                .description(oneLetterResponse.description())
+                .font(oneLetterResponseDTO.font())
+                .paper(oneLetterResponseDTO.paper())
+                .label(oneLetterResponseDTO.label())
+                .createdAt(oneLetterResponseDTO.createdAt())
+                .description(oneLetterResponseDTO.description())
                 .build();
     }
 
@@ -147,11 +147,11 @@ public class MapLetterService {
         return result;
     }
 
-    public List<FindNearbyLettersResponse> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
+    public List<FindNearbyLettersResponseDTO> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
         return letters.stream()
-                .map(letterWithDistance -> FindNearbyLettersResponse.builder()
+                .map(letterWithDistance -> FindNearbyLettersResponseDTO.builder()
                         .letterId(letterWithDistance.getLetterId())
                         .latitude(letterWithDistance.getLatitude())
                         .longitude(letterWithDistance.getLongitude())
