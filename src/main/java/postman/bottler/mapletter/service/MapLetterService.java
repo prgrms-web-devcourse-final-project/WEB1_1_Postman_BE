@@ -13,6 +13,7 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
@@ -226,5 +227,16 @@ public class MapLetterService {
 
     public List<FindAllArchiveLetters> findArchiveLetters(Long userId) {
         return mapLetterArchiveRepository.findAllById(userId);
+    }
+
+    @Transactional
+    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
+        for(Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
+            MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
+            if (!findArchiveInfo.getUserId().equals(userId)) {
+                throw new CommonForbiddenException("편지 보관 취소를 할 권한이 없습니다. 편지 보관 취소에 실패했습니다.");
+            }
+            mapLetterArchiveRepository.deleteById(archiveId);
+        }
     }
 }

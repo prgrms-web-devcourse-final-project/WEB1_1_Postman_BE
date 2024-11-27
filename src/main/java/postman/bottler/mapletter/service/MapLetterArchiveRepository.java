@@ -11,4 +11,8 @@ public interface MapLetterArchiveRepository {
     MapLetterArchive save(MapLetterArchive archive);
 
     List<FindAllArchiveLetters> findAllById(Long userId);
+
+    MapLetterArchive findById(Long letterId);
+
+    void deleteById(Long letterId);
 }

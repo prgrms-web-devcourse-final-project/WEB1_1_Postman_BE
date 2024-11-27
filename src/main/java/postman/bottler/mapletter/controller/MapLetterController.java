@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.DeleteMapLettersRequestDTO;
+import postman.bottler.mapletter.dto.request.*;
 import postman.bottler.mapletter.dto.response.*;
 import postman.bottler.mapletter.exception.*;
 import postman.bottler.mapletter.service.MapLetterService;
@@ -137,5 +134,12 @@ public class MapLetterController {
     @GetMapping("/archived")
     public ApiResponse<List<FindAllArchiveLetters>> findArchiveLetters(Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findArchiveLetters(userId));
+    }
+
+    @DeleteMapping("/archived")
+    public ApiResponse<?> archiveLetter(@RequestBody DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO
+            , Long userId) {
+        mapLetterService.deleteArchivedLetter(deleteArchivedLettersRequestDTO, userId);
+        return ApiResponse.onDeleteSuccess(deleteArchivedLettersRequestDTO);
     }
 }
