@@ -24,4 +24,9 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
                 .map(SubscriptionEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        repository.deleteAllByUserId(userId);
+    }
 }

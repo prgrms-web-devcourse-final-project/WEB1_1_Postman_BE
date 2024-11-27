@@ -2,8 +2,10 @@ package postman.bottler.notification.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,9 +51,17 @@ public class NotificationController {
 
     @PostMapping("/subscribe")
     public ApiResponse<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest) {
+        // TODO 추후 JWT를 통해 사용자 획득
         SubscriptionResponseDTO response = subscriptionService.subscribe(
                 subscriptionRequest.userId(),
                 subscriptionRequest.deviceToken());
         return ApiResponse.onCreateSuccess(response);
+    }
+
+    @DeleteMapping("/subscribe/all")
+    public ApiResponse<?> unsubscribeAll(@RequestBody Map<String, Long> userId) {
+        // TODO 추후 JWT를 통해 사용자 획득
+        subscriptionService.unsubscribeAll(userId.get("userId"));
+        return ApiResponse.onDeleteSuccess("삭제 성공");
     }
 }

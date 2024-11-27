@@ -7,4 +7,6 @@ public interface SubscriptionRepository {
     Subscription save(Subscription subscription);
 
     List<Subscription> findByUserId(Long userId);
+
+    void deleteAllByUserId(Long userId);
 }
