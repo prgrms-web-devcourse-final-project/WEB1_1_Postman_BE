@@ -223,4 +223,8 @@ public class MapLetterService {
 
         return mapLetterArchiveRepository.save(archive);
     }
+
+    public List<FindAllArchiveLetters> findArchiveLetters(Long userId) {
+        return mapLetterArchiveRepository.findAllById(userId);
+    }
 }

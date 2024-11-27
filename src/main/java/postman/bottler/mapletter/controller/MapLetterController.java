@@ -133,4 +133,9 @@ public class MapLetterController {
         mapLetterService.mapLetterArchive(letterId, userId);
         return ApiResponse.onCreateSuccess("편지 저장이 성공되었습니다.");
     }
+
+    @GetMapping("/archived")
+    public ApiResponse<List<FindAllArchiveLetters>> findArchiveLetters(Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findArchiveLetters(userId));
+    }
 }
