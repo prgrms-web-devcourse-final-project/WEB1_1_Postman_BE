@@ -8,5 +8,5 @@ import postman.bottler.letter.infra.entity.ReplyLetterEntity;
 public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntity, Long> {
     Page<ReplyLetterEntity> findAllByReceiverId(Long userId, Pageable pageable);
 
-    Page<ReplyLetterEntity> findAllByReceiverIdAndLetterId(Long letterId, Long receiverId, Pageable pageable);
+    Page<ReplyLetterEntity> findAllByLetterIdAndReceiverId(Long letterId, Long receiverId, Pageable pageable);
 }

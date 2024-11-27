@@ -55,7 +55,7 @@ public class ReplyLetterController {
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
-    @GetMapping("/{replyId}")
+    @GetMapping("/detail/{replyId}")
     public ApiResponse<ReplyLetterResponseDTO> getReplyLetter(
             @PathVariable Long replyId
     ) {

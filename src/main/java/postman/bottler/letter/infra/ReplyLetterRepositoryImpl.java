@@ -30,7 +30,7 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable) {
-        return replyLetterJpaRepository.findAllByReceiverIdAndLetterId(letterId, receiverId, pageable)
+        return replyLetterJpaRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageable)
                 .map(ReplyLetterEntity::toDomain);
     }
 }
