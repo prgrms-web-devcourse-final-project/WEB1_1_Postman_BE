@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import postman.bottler.letter.infra.entity.LetterEntity;
 import postman.bottler.letter.infra.entity.SavedLetterEntity;
 
-public interface SavedJpaRepository extends JpaRepository<SavedLetterEntity, Long> {
+public interface SavedLetterJpaRepository extends JpaRepository<SavedLetterEntity, Long> {
 
     @Query("""
             SELECT l

@@ -14,33 +14,33 @@ import postman.bottler.letter.service.SavedLetterRepository;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class SavedRepositoryJpaImpl implements SavedLetterRepository {
+public class SavedLetterRepositoryImpl implements SavedLetterRepository {
 
-    private final SavedJpaRepository savedJpaRepository;
+    private final SavedLetterJpaRepository savedLetterJpaRepository;
 
     @Override
     public void save(SavedLetter savedLetter) {
-        savedJpaRepository.save(SavedLetterEntity.from(savedLetter));
+        savedLetterJpaRepository.save(SavedLetterEntity.from(savedLetter));
     }
 
     @Override
     public boolean isAlreadySaved(Long userId, Long letterId) {
-        return savedJpaRepository.existsByUserIdAndLetterId(userId, letterId);
+        return savedLetterJpaRepository.existsByUserIdAndLetterId(userId, letterId);
     }
 
     @Override
     public void remove(Long userId, Long letterId) {
-        savedJpaRepository.deleteByUserIdAndLetterId(userId, letterId);
+        savedLetterJpaRepository.deleteByUserIdAndLetterId(userId, letterId);
     }
 
     @Override
     public boolean existsById(Long userId, Long letterId) {
-        return savedJpaRepository.existsByUserIdAndLetterId(userId, letterId);
+        return savedLetterJpaRepository.existsByUserIdAndLetterId(userId, letterId);
     }
 
     @Override
     public Page<Letter> findSavedLetters(Long userId, Pageable pageable) {
-        return savedJpaRepository.findSavedLettersByUserId(userId, pageable)
+        return savedLetterJpaRepository.findSavedLettersByUserId(userId, pageable)
                 .map(LetterEntity::toDomain);
     }
 }

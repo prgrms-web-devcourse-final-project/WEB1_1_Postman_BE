@@ -12,7 +12,7 @@ import postman.bottler.letter.service.LetterRepository;
 
 @Repository
 @RequiredArgsConstructor
-public class LetterRepositoryJpaImpl implements LetterRepository {
+public class LetterRepositoryImpl implements LetterRepository {
 
     private final LetterJpaRepository letterJpaRepository;
 
