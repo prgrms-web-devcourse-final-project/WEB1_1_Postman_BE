@@ -2,6 +2,7 @@ package postman.bottler.label.domain;
 
 import lombok.Getter;
 import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.exception.FirstComeFirstServedLabelException;
 import postman.bottler.label.exception.InvalidLabelException;
 
 @Getter
@@ -26,6 +27,7 @@ public class Label {
     public static Label createLabel(Long labelId, String imageUrl, int limitCount, int ownedCount) {
         validateCount(limitCount);
         validateCount(ownedCount);
+        isOwnedCountValid(limitCount, ownedCount);
         return new Label(labelId, imageUrl, limitCount, ownedCount);
     }
 
@@ -48,7 +50,9 @@ public class Label {
         return new LabelResponseDTO(this.labelId, this.imageUrl);
     }
 
-    public boolean isOwnedCountValid() {
-        return limitCount > ownedCount;
+    private static void isOwnedCountValid(int limitCount, int ownedCount) {
+        if (limitCount <= ownedCount) {
+            throw new FirstComeFirstServedLabelException("선착순 뽑기 마감됐습니다.");
+        }
     }
 }

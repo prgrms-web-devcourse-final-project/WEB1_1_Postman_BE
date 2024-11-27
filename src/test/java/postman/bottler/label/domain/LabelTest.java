@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.exception.FirstComeFirstServedLabelException;
 import postman.bottler.label.exception.InvalidLabelException;
 
 @SpringBootTest
@@ -60,32 +61,31 @@ class LabelTest {
     }
 
     @Test
-    @DisplayName("ownedCount가 limitCount를 초과하지 않는 경우 isOwnedCountValid 메서드는 true를 반환한다.")
-    void isOwnedCountValidReturnsTrue() {
+    @DisplayName("ownedCount가 limitCount를 초과하지 않는 경우 라벨 생성이 성공한다.")
+    void createLabelSuccessfullyWhenOwnedCountIsValid() {
         // given
-        Label label = Label.createLabel("http://example.com/image3.png", 10);
-        label.increaseOwnedCount();
+        Long labelId = 1L;
+        String imageUrl = "http://example.com/image3.png";
+        int limitCount = 10;
+        int ownedCount = 5;
 
-        // when
-        boolean result = label.isOwnedCountValid();
-
-        // then
-        assertTrue(result, "소유 인원수가 제한 인원수를 초과하지 않았을 때 true를 반환해야 함");
+        // when, then
+        assertDoesNotThrow(() -> Label.createLabel(labelId, imageUrl, limitCount, ownedCount));
     }
 
     @Test
-    @DisplayName("ownedCount가 limitCount를 초과한 경우 isOwnedCountValid 메서드는 false를 반환한다.")
-    void isOwnedCountValidReturnsFalse() {
+    @DisplayName("ownedCount가 limitCount를 초과하는 경우 예외가 발생한다.")
+    void createLabelThrowsExceptionWhenOwnedCountExceedsLimit() {
         // given
-        Label label = Label.createLabel("http://example.com/image4.png", 1);
-        label.increaseOwnedCount();
-        label.increaseOwnedCount();
+        Long labelId = 1L;
+        String imageUrl = "http://example.com/image3.png";
+        int limitCount = 5;
+        int ownedCount = 6;
 
-        // when
-        boolean result = label.isOwnedCountValid();
-
-        // then
-        assertFalse(result, "소유 인원수가 제한 인원수에 도달했을 때 false를 반환해야 함");
+        // when, then
+        assertThrows(FirstComeFirstServedLabelException.class,
+                () -> Label.createLabel(labelId, imageUrl, limitCount, ownedCount),
+                "소유 인원수가 제한 인원수를 초과했을 때 예외가 발생해야 함");
     }
 
     @Test
