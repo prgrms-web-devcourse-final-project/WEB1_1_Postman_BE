@@ -53,6 +53,9 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
+      - name: JSON 생성
+        run: echo '${{ secrets.BOTTLER_FCM }}' > bottler-fcm.json
+
       - name: Gradle로 테스트 및 커버리지 리포트 생성
         run: ./gradlew clean build jacocoTestReport
 
@@ -67,3 +70,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonarqube
+
+      - name: JSON 삭제
+        run: rm bottler-fcm.json
