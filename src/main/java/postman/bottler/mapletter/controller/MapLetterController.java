@@ -1,11 +1,13 @@
 package postman.bottler.mapletter.controller;
 
+import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteMapLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
@@ -98,5 +100,24 @@ public class MapLetterController {
         }
 
         return ApiResponse.onSuccess(mapLetterService.findNearByMapLetters(lat, lon, userId));
+    }
+
+    @PostMapping("/reply")
+    public ApiResponse<?> createReplyMapLetter(
+            @Valid @RequestBody CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
+            BindingResult bindingResult, Long userId) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> {
+                if ("content".equals(error.getField())) {
+                    throw new EmptyMapLetterContentException(error.getDefaultMessage());
+                } else if ("sourceLetter".equals(error.getField())) {
+                    throw new EmptyReplyMapLetterSourceException(error.getDefaultMessage());
+                }
+            });
+
+            throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
+        }
+        mapLetterService.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
+        return ApiResponse.onCreateSuccess("답장 편지 생성이 성공되었습니다.");
     }
 }

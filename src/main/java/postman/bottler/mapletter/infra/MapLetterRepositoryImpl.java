@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
+import postman.bottler.mapletter.exception.SourceMapLetterNotFountException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.service.MapLetterRepository;
 
@@ -65,5 +66,13 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     @Override
     public List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId) {
         return mapLetterJpaRepository.findLettersByUserLocation(latitude, longitude, userId);
+    }
+
+    @Override
+    public void findSourceMapLetterById(Long sourceMapLetterId) {
+        MapLetterEntity activeLetter = mapLetterJpaRepository.findActiveById(sourceMapLetterId);
+        if (activeLetter == null) {
+            throw new SourceMapLetterNotFountException("원본 편지를 찾을 수 없습니다. 편지가 존재하지 않거나 삭제되었습니다.");
+        }
     }
 }

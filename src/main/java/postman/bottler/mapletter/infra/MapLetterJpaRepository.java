@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
@@ -30,4 +31,9 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     List<MapLetterAndDistance> findLettersByUserLocation(@Param("latitude") BigDecimal latitude,
                                                          @Param("longitude") BigDecimal longitude,
                                                          @Param("targetUserId") Long targetUserId);
+
+
+    @Query("SELECT m FROM MapLetterEntity m WHERE m.isDeleted=false AND m.isBlocked=false " +
+            "AND m.mapLetterId = :sourceMapLetterId")
+    MapLetterEntity findActiveById(Long sourceMapLetterId);
 }

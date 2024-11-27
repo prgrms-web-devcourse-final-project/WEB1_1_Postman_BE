@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.service;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
@@ -19,4 +20,6 @@ public interface MapLetterRepository {
     List<MapLetter> findActiveByTargetUserId(Long userId);
 
     List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId);
+
+    void findSourceMapLetterById(Long sourceMapLetterId);
 }

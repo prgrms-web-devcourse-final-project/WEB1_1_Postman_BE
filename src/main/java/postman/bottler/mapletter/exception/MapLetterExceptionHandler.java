@@ -52,4 +52,16 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.EMPTY_MAP_LETTER_DESCRIPTION.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(EmptyReplyMapLetterSourceException.class)
+    public ApiResponse<?> handleEmptyReplyMapLetterSourceException(EmptyReplyMapLetterSourceException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_REPLY_MAP_LETTER_SOURCE.getCode(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(SourceMapLetterNotFountException.class)
+    public ApiResponse<?> handleSourceMapLetterNotFountException(SourceMapLetterNotFountException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.SOURCE_MAP_LETTER_NOT_FOUND.getCode(), e.getMessage(), null);
+    }
 }

@@ -1,13 +1,16 @@
 package postman.bottler.mapletter.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
+import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetter;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
@@ -22,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MapLetterService {
     private final MapLetterRepository mapLetterRepository;
+    private final ReplyMapLetterRepository replyMapLetterRepository;
 //    private final UserService userService;
 
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId) {
@@ -118,5 +122,11 @@ public class MapLetterService {
                         .build()
                 )
                 .toList();
+    }
+
+    public ReplyMapLetter createReplyMapLetter(@Valid CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO, Long userId) {
+        mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
+        ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
+        return replyMapLetterRepository.save(replyMapLetter);
     }
 }
