@@ -1,5 +1,8 @@
 package postman.bottler.user.domain;
 
+import lombok.Getter;
+
+@Getter
 public class User {
     private final Long userId;
     private final String email;
@@ -11,13 +14,5 @@ public class User {
 
     public static User createUser(Long userId, String email) {
         return new User(userId, email);
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getEmail() {
-        return email;
     }
 }
