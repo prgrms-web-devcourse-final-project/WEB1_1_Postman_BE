@@ -9,4 +9,6 @@ public interface SubscriptionRepository {
     List<Subscription> findByUserId(Long userId);
 
     void deleteAllByUserId(Long userId);
+
+    void deleteByToken(String token);
 }

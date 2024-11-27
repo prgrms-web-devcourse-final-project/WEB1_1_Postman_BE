@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.dto.request.SubscriptionRequestDTO;
+import postman.bottler.notification.dto.request.UnsubscriptionRequestDTO;
 import postman.bottler.notification.dto.request.UserNotificationRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
 import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
@@ -62,6 +63,12 @@ public class NotificationController {
     public ApiResponse<?> unsubscribeAll(@RequestBody Map<String, Long> userId) {
         // TODO 추후 JWT를 통해 사용자 획득
         subscriptionService.unsubscribeAll(userId.get("userId"));
+        return ApiResponse.onDeleteSuccess("삭제 성공");
+    }
+
+    @DeleteMapping("/subscribe")
+    public ApiResponse<?> unsubscribe(@RequestBody UnsubscriptionRequestDTO unsubscriptionRequest) {
+        subscriptionService.unsubscribe(unsubscriptionRequest.token());
         return ApiResponse.onDeleteSuccess("삭제 성공");
     }
 }

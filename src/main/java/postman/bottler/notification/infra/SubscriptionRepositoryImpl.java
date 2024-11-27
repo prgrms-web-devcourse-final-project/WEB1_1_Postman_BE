@@ -29,4 +29,9 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     public void deleteAllByUserId(Long userId) {
         repository.deleteAllByUserId(userId);
     }
+
+    @Override
+    public void deleteByToken(String token) {
+        repository.deleteByToken(token);
+    }
 }

@@ -22,4 +22,9 @@ public class SubscriptionService {
     public void unsubscribeAll(Long userId) {
         subscriptionRepository.deleteAllByUserId(userId);
     }
+
+    @Transactional
+    public void unsubscribe(String token) {
+        subscriptionRepository.deleteByToken(token);
+    }
 }
