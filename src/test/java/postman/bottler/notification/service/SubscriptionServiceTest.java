@@ -1,6 +1,6 @@
 package postman.bottler.notification.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,11 +41,25 @@ public class SubscriptionServiceTest {
     @DisplayName("해당 유저의 알림을 비허용한다.")
     public void unsubscribeAll() {
         // GIVEN
+        Long userId = 1L;
 
         // WHEN
-        subscriptionService.unsubscribeAll(1L);
+        subscriptionService.unsubscribeAll(userId);
 
         // THEN
-        verify(subscriptionRepository, times(1)).deleteAllByUserId(1L);
+        verify(subscriptionRepository, times(1)).deleteAllByUserId(userId);
+    }
+
+    @Test
+    @DisplayName("특정 기기의 알림을 비허용한다.")
+    public void unsubscribe() {
+        // GIVEN
+        String token = "token";
+
+        // WHEN
+        subscriptionService.unsubscribe(token);
+
+        // THEN
+        verify(subscriptionRepository, times(1)).deleteByToken(token);
     }
 }
