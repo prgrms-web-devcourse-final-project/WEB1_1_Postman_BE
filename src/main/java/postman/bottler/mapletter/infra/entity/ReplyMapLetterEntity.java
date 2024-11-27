@@ -21,6 +21,7 @@ public class ReplyMapLetterEntity {
     private String font;
     private String paper;
     private String label;
+    private String content;
     private boolean isBlocked;
     private boolean isDeleted;
     private LocalDateTime createdAt;
@@ -30,7 +31,7 @@ public class ReplyMapLetterEntity {
     @Builder
     public ReplyMapLetterEntity(Long replyLetterId, Long sourceLetterId, String font, String paper, String label,
                                 boolean isBlocked, boolean isDeleted, LocalDateTime createdAt,
-                                LocalDateTime updatedAt, Long createUserId) {
+                                LocalDateTime updatedAt, Long createUserId, String content) {
         this.replyLetterId = replyLetterId;
         this.sourceLetterId = sourceLetterId;
         this.font = font;
@@ -41,6 +42,7 @@ public class ReplyMapLetterEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createUserId = createUserId;
+        this.content = content;
     }
 
     public static ReplyMapLetterEntity from(ReplyMapLetter replyMapLetter) {
@@ -55,6 +57,7 @@ public class ReplyMapLetterEntity {
                 .createdAt(replyMapLetter.getCreatedAt())
                 .updatedAt(replyMapLetter.getUpdatedAt())
                 .createUserId(replyMapLetter.getCreateUserId())
+                .content(replyMapLetter.getContent())
                 .build();
     }
 
@@ -70,6 +73,7 @@ public class ReplyMapLetterEntity {
                 .createdAt(replyMapLetter.getCreatedAt())
                 .updatedAt(replyMapLetter.getUpdatedAt())
                 .createUserId(replyMapLetter.getCreateUserId())
+                .content(replyMapLetter.getContent())
                 .build();
     }
 

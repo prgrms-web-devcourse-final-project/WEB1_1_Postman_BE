@@ -102,7 +102,7 @@ public class MapLetterController {
     @PostMapping("/reply")
     public ApiResponse<?> createReplyMapLetter(
             @Valid @RequestBody CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
-            BindingResult bindingResult, @PathVariable Long userId) {
+            BindingResult bindingResult, Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("content".equals(error.getField())) {
