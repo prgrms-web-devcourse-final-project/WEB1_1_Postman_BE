@@ -127,4 +127,10 @@ public class MapLetterController {
     public ApiResponse<OneReplyLetterResponseDTO> findOneReplyMapLetter(@PathVariable Long letterId, Long userId){
         return ApiResponse.onSuccess(mapLetterService.findOneReplyMapLetter(letterId, userId));
     }
+
+    @PostMapping("/{letterId}")
+    public ApiResponse<?> mapLetterArchive(@PathVariable Long letterId, Long userId) {
+        mapLetterService.mapLetterArchive(letterId, userId);
+        return ApiResponse.onCreateSuccess("편지 저장이 성공되었습니다.");
+    }
 }

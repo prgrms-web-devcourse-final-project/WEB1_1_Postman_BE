@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
@@ -26,6 +27,7 @@ import java.util.List;
 public class MapLetterService {
     private final MapLetterRepository mapLetterRepository;
     private final ReplyMapLetterRepository replyMapLetterRepository;
+    private final MapLetterArchiveRepository mapLetterArchiveRepository;
 //    private final UserService userService;
 
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId) {
@@ -205,5 +207,20 @@ public class MapLetterService {
                 .paper(replyMapLetter.getPaper())
                 .createdAt(replyMapLetter.getCreatedAt())
                 .build();
+    }
+
+    public MapLetterArchive mapLetterArchive(Long letterId, Long userId) {
+        MapLetter mapLetter = mapLetterRepository.findById(letterId);
+        if(mapLetter.isDeleted()){
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }else if(mapLetter.getType()==MapLetterType.PRIVATE) {
+            throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
+        }
+        MapLetterArchive archive = MapLetterArchive.builder()
+                .mapLetterId(letterId)
+                .userId(userId)
+                .build();
+
+        return mapLetterArchiveRepository.save(archive);
     }
 }
