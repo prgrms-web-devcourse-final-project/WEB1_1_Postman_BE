@@ -1,6 +1,5 @@
 package postman.bottler.mapletter.controller;
 
-import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -10,9 +9,7 @@ import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteMapLettersRequestDTO;
-import postman.bottler.mapletter.dto.response.FindMapLetter;
-import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
-import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.mapletter.dto.response.*;
 import postman.bottler.mapletter.exception.*;
 import postman.bottler.mapletter.service.MapLetterService;
 
@@ -79,12 +76,12 @@ public class MapLetterController {
     }
 
     @GetMapping("/sent")
-    public ApiResponse<List<FindMapLetter>> findSentMapLetters(Long userId) {
+    public ApiResponse<List<FindMapLetterResponseDTO>> findSentMapLetters(Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findSentMapLetters(userId));
     }
 
-    @GetMapping("/received")
-    public ApiResponse<List<FindMapLetter>> findReceivedMapLetters(Long userId) {
+    @GetMapping("/received/{userId}")
+    public ApiResponse<List<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(@PathVariable Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findReceivedMapLetters(userId));
     }
 
@@ -105,7 +102,7 @@ public class MapLetterController {
     @PostMapping("/reply")
     public ApiResponse<?> createReplyMapLetter(
             @Valid @RequestBody CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
-            BindingResult bindingResult, Long userId) {
+            BindingResult bindingResult, @PathVariable Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("content".equals(error.getField())) {

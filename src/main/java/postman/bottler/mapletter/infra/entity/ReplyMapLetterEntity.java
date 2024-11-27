@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class ReplyMapLetterEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mapLetterId;
+    private Long replyLetterId;
     private Long sourceLetterId;
     private String font;
     private String paper;
@@ -28,10 +28,10 @@ public class ReplyMapLetterEntity {
     private Long createUserId;
 
     @Builder
-    public ReplyMapLetterEntity(Long mapLetterId, Long sourceLetterId, String font, String paper, String label,
+    public ReplyMapLetterEntity(Long replyLetterId, Long sourceLetterId, String font, String paper, String label,
                                 boolean isBlocked, boolean isDeleted, LocalDateTime createdAt,
                                 LocalDateTime updatedAt, Long createUserId) {
-        this.mapLetterId = mapLetterId;
+        this.replyLetterId = replyLetterId;
         this.sourceLetterId = sourceLetterId;
         this.font = font;
         this.paper = paper;
@@ -45,7 +45,7 @@ public class ReplyMapLetterEntity {
 
     public static ReplyMapLetterEntity from(ReplyMapLetter replyMapLetter) {
         return ReplyMapLetterEntity.builder()
-                .mapLetterId(replyMapLetter.getMapLetterId())
+                .replyLetterId(replyMapLetter.getReplyLetterId())
                 .sourceLetterId(replyMapLetter.getSourceLetterId())
                 .font(replyMapLetter.getFont())
                 .paper(replyMapLetter.getPaper())
@@ -60,7 +60,7 @@ public class ReplyMapLetterEntity {
 
     public static ReplyMapLetter toDomain(ReplyMapLetterEntity replyMapLetter) {
         return ReplyMapLetter.builder()
-                .mapLetterId(replyMapLetter.getMapLetterId())
+                .replyLetterId(replyMapLetter.getReplyLetterId())
                 .sourceLetterId(replyMapLetter.getSourceLetterId())
                 .font(replyMapLetter.getFont())
                 .paper(replyMapLetter.getPaper())

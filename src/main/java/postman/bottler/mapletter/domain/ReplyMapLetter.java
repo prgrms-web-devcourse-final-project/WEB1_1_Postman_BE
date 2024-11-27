@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ReplyMapLetter {
-    private Long mapLetterId;
+    private Long replyLetterId;
     private Long sourceLetterId;
     private String font;
     private String paper;

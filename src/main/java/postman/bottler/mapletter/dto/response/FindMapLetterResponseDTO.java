@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record FindMapLetter(
+public record FindMapLetterResponseDTO(
         Long letterId,
         String title,
         String description,

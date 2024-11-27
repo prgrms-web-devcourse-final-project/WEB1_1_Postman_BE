@@ -1,10 +1,8 @@
 package postman.bottler.mapletter.service;
 
-import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +13,7 @@ import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.FindMapLetter;
+import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
 import postman.bottler.mapletter.dto.response.OneLetterResponse;
 
@@ -474,7 +472,7 @@ class MapLetterServiceTest {
 
 
         //when
-        List<FindMapLetter> result=mapLetterService.findSentMapLetters(userId);
+        List<FindMapLetterResponseDTO> result=mapLetterService.findSentMapLetters(userId);
 
         //then
         assertEquals(4, result.size());
@@ -540,7 +538,7 @@ class MapLetterServiceTest {
 
 
         //when
-        List<FindMapLetter> result=mapLetterService.findReceivedMapLetters(userId);
+        List<FindMapLetterResponseDTO> result=mapLetterService.findReceivedMapLetters(userId);
 
         //then
         assertEquals(2, result.size());

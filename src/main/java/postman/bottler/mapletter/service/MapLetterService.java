@@ -12,13 +12,13 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.FindMapLetter;
-import postman.bottler.mapletter.dto.response.FindNearbyLettersResponse;
-import postman.bottler.mapletter.dto.response.OneLetterResponse;
+import postman.bottler.mapletter.dto.response.*;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.math.BigDecimal;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -72,7 +72,7 @@ public class MapLetterService {
         }
     }
 
-    public List<FindMapLetter> findSentMapLetters(Long userId) {
+    public List<FindMapLetterResponseDTO> findSentMapLetters(Long userId) {
         List<MapLetter> mapLetters=mapLetterRepository.findActiveByCreateUserId(userId);
 
         return mapLetters.stream()
@@ -80,13 +80,13 @@ public class MapLetterService {
                 .toList();
     }
 
-    private FindMapLetter toFindSentMapLetter(MapLetter mapLetter) {
+    private FindMapLetterResponseDTO toFindSentMapLetter(MapLetter mapLetter) {
         String targetUserNickname="";
         if(mapLetter.getType()==MapLetterType.PRIVATE){
 //            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
         }
 
-        return FindMapLetter.builder()
+        return FindMapLetterResponseDTO.builder()
                 .letterId(mapLetter.getId())
                 .title(mapLetter.getTitle())
                 .description(mapLetter.getDescription())
@@ -96,12 +96,55 @@ public class MapLetterService {
                 .build();
     }
 
-    public List<FindMapLetter> findReceivedMapLetters(Long userId) {
-        List<MapLetter> mapLetters=mapLetterRepository.findActiveByTargetUserId(userId);
+    public List<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(Long userId) {
+        List<FindReceivedMapLetterResponseDTO> result = new ArrayList<>();
 
-        return mapLetters.stream()
-                .map(this::toFindSentMapLetter)
-                .toList();
+        List<MapLetter> targetMapLetters=mapLetterRepository.findActiveByTargetUserId(userId);
+        targetMapLetterToFindReceivedMapLetterResponseDTO(targetMapLetters,result);
+
+        List<ReplyMapLetter> replyMapLetters=replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
+        replyMapLetterToFindReceivedMapLetterResponseDTO(replyMapLetters, result);
+
+        result.sort(Comparator.comparing(FindReceivedMapLetterResponseDTO::createdAt).reversed());
+
+        return result;
+    }
+
+    private List<FindReceivedMapLetterResponseDTO> targetMapLetterToFindReceivedMapLetterResponseDTO
+            (List<MapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
+        for(MapLetter mapLetter : mapLetters) {
+            String senderNickname = "";
+            if (mapLetter.getType() == MapLetterType.PRIVATE) {
+//            senderNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
+            }
+
+            FindReceivedMapLetterResponseDTO dto = FindReceivedMapLetterResponseDTO.builder()
+                    .letterId(mapLetter.getId())
+                    .title(mapLetter.getTitle())
+                    .description(mapLetter.getDescription())
+                    .label(mapLetter.getLabel())
+                    .createdAt(mapLetter.getCreatedAt())
+                    .senderNickname(senderNickname)
+                    .type("target")
+                    .build();
+            result.add(dto);
+        }
+        return result;
+    }
+
+    private List<FindReceivedMapLetterResponseDTO> replyMapLetterToFindReceivedMapLetterResponseDTO
+            (List<ReplyMapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
+        for(ReplyMapLetter mapLetter : mapLetters) {
+            FindReceivedMapLetterResponseDTO dto = FindReceivedMapLetterResponseDTO.builder()
+                    .letterId(mapLetter.getReplyLetterId())
+                    .label(mapLetter.getLabel())
+                    .createdAt(mapLetter.getCreatedAt())
+                    .type("reply")
+                    .sourceLetterId(mapLetter.getSourceLetterId())
+                    .build();
+            result.add(dto);
+        }
+        return result;
     }
 
     public List<FindNearbyLettersResponse> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
