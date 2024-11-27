@@ -15,6 +15,7 @@ public record FindNearbyLettersResponse(
         BigDecimal distance,
         Long target,
         Long createUserId,
-        String label
+        String label,
+        String description
 ) {
 }

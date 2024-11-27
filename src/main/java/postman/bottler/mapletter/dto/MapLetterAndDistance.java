@@ -13,5 +13,6 @@ public interface MapLetterAndDistance {
     Long getTargetUserId();
     Long getCreateUserId();
     String getLabel();
+    String getDescription();
 
 }

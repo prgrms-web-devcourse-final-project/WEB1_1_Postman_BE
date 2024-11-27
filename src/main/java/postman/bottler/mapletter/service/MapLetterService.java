@@ -1,7 +1,6 @@
 package postman.bottler.mapletter.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.processing.Find;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
@@ -16,7 +15,7 @@ import postman.bottler.mapletter.dto.response.OneLetterResponse;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
@@ -115,6 +114,7 @@ public class MapLetterService {
                         .target(letterWithDistance.getTargetUserId())
                         .createUserId(letterWithDistance.getCreateUserId())
                         .label(letterWithDistance.getLabel())
+                        .description(letterWithDistance.getDescription())
                         .build()
                 )
                 .toList();
