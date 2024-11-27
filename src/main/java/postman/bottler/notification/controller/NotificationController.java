@@ -55,7 +55,7 @@ public class NotificationController {
         // TODO 추후 JWT를 통해 사용자 획득
         SubscriptionResponseDTO response = subscriptionService.subscribe(
                 subscriptionRequest.userId(),
-                subscriptionRequest.deviceToken());
+                subscriptionRequest.token());
         return ApiResponse.onCreateSuccess(response);
     }
 

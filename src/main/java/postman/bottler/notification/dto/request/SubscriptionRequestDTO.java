@@ -1,7 +1,7 @@
 package postman.bottler.notification.dto.request;
 
 public record SubscriptionRequestDTO(
-        String deviceToken,
+        String token,
         Long userId
 ) {
 }
