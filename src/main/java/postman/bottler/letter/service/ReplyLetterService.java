@@ -2,10 +2,14 @@ package postman.bottler.letter.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 
 @Service
@@ -27,8 +31,12 @@ public class ReplyLetterService {
     }
 
 
-    public Page<LetterHeadersResponseDTO> getReplyLetterHeaders(int page, int size, String sort) {
-        return null;
+    public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeaders(int page, int size, String sort) {
+        Long userId = 1L;
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        return replyLetterRepository.findAll(userId, pageable)
+                .map(ReplyLetterHeadersResponseDTO::from);
     }
 
     public ReplyLetterResponseDTO getReplyLetter(Long replyId) {

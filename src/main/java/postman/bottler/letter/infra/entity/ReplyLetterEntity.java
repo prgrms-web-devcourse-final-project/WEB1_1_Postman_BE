@@ -66,6 +66,7 @@ public class ReplyLetterEntity {
 
     public ReplyLetter toDomain() {
         return ReplyLetter.builder()
+                .id(this.id)
                 .title(this.title)
                 .content(this.content)
                 .font(this.font)

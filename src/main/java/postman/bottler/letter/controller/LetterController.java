@@ -27,6 +27,7 @@ public class LetterController {
     private final LetterService letterService;
     private final SavedLetterService savedLetterService;
 
+    //TODO Title 없으면 무제 설정
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(@RequestBody LetterRequestDTO letterRequestDTO) {
         LetterResponseDTO result = letterService.createLetter(letterRequestDTO);

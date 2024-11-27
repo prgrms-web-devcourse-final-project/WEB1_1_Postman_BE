@@ -14,6 +14,7 @@ import postman.bottler.global.response.ApiResponse;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
+import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.service.ReplyLetterService;
 
@@ -34,12 +35,12 @@ public class ReplyLetterController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getReplyLetterHeaders(
+    public ApiResponse<PageResponseDTO<ReplyLetterHeadersResponseDTO>> getReplyLetterHeaders(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "createdAt") String sort
     ) {
-        Page<LetterHeadersResponseDTO> result = letterReplyService.getReplyLetterHeaders(page, size, sort);
+        Page<ReplyLetterHeadersResponseDTO> result = letterReplyService.getReplyLetterHeaders(page, size, sort);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
