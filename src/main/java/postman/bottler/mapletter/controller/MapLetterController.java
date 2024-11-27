@@ -77,8 +77,8 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findSentMapLetters(userId));
     }
 
-    @GetMapping("/received/{userId}")
-    public ApiResponse<List<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(@PathVariable Long userId) {
+    @GetMapping("/received")
+    public ApiResponse<List<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findReceivedMapLetters(userId));
     }
 
