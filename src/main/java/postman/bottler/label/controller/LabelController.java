@@ -59,8 +59,8 @@ public class LabelController {
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
-    @PostMapping("/{labelId}/{userId}")
-    public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId, @PathVariable Long userId) {
+    @PostMapping("/{labelId}")
+    public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId, Long userId) {
         labelService.createFirstComeFirstServedLabel(labelId, userId);
         return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
     }
