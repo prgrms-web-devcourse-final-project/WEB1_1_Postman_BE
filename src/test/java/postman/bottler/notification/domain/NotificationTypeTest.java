@@ -1,9 +1,11 @@
 package postman.bottler.notification.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import postman.bottler.notification.exception.NoTypeException;
 
 @DisplayName("알림 타입 테스트")
 public class NotificationTypeTest {
@@ -30,5 +32,40 @@ public class NotificationTypeTest {
         assertThat(letter3).isTrue();
         assertThat(nonLetter1).isFalse();
         assertThat(nonLetter2).isFalse();
+    }
+
+    @Test
+    @DisplayName("해당하는 타입의 NotificationType을 반환한다.")
+    public void from() {
+        // GIVEN
+        String newLetter = "NEW_LETTER";
+        String targetLetter = "TARGET_LETTER";
+        String replyLetter = "REPLY_LETTER";
+        String warning = "WARNING";
+        String ban = "BAN";
+
+        // WHEN
+        NotificationType newLetterType = NotificationType.from(newLetter);
+        NotificationType targetLetterType = NotificationType.from(targetLetter);
+        NotificationType replyLetterType = NotificationType.from(replyLetter);
+        NotificationType warningType = NotificationType.from(warning);
+        NotificationType banType = NotificationType.from(ban);
+
+        // THEN
+        assertThat(newLetterType).isEqualTo(NotificationType.NEW_LETTER);
+        assertThat(targetLetterType).isEqualTo(NotificationType.TARGET_LETTER);
+        assertThat(replyLetterType).isEqualTo(NotificationType.REPLY_LETTER);
+        assertThat(warningType).isEqualTo(NotificationType.WARNING);
+        assertThat(banType).isEqualTo(NotificationType.BAN);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 타입 변환 시도 시, NoTypeException 예외를 발생시킨다.")
+    public void noType() {
+        // GIVEN
+        String nonNotification = "WRONG";
+
+        // WHEN - THEN
+        assertThatThrownBy(() -> NotificationType.from(nonNotification)).isInstanceOf(NoTypeException.class);
     }
 }

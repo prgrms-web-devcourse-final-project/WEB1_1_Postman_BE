@@ -2,6 +2,8 @@ package postman.bottler.notification.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Subscription;
+import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
 
@@ -41,7 +44,8 @@ public class NotificationServiceTest {
             Notification notification = Notification.create(request.notificationType(), request.receiver(),
                     request.letterId());
             when(notificationRepository.save(any())).thenReturn(notification);
-            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
+            when(subscriptionRepository.findByUserId(1L))
+                    .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -63,7 +67,8 @@ public class NotificationServiceTest {
             Notification notification = Notification.create(request.notificationType(), request.receiver(),
                     request.letterId());
             when(notificationRepository.save(any())).thenReturn(notification);
-            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
+            when(subscriptionRepository.findByUserId(1L))
+                    .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -85,7 +90,8 @@ public class NotificationServiceTest {
             Notification notification = Notification.create(request.notificationType(), request.receiver(),
                     request.letterId());
             when(notificationRepository.save(any())).thenReturn(notification);
-            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
+            when(subscriptionRepository.findByUserId(1L))
+                    .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -107,7 +113,8 @@ public class NotificationServiceTest {
             Notification notification = Notification.create(request.notificationType(), request.receiver(),
                     request.letterId());
             when(notificationRepository.save(any())).thenReturn(notification);
-            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
+            when(subscriptionRepository.findByUserId(1L))
+                    .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -129,7 +136,8 @@ public class NotificationServiceTest {
             Notification notification = Notification.create(request.notificationType(), request.receiver(),
                     request.letterId());
             when(notificationRepository.save(any())).thenReturn(notification);
-            when(subscriptionRepository.findByUserId(1L)).thenReturn(List.of(Subscription.create(1L, "token")));
+            when(subscriptionRepository.findByUserId(1L))
+                    .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
@@ -141,6 +149,30 @@ public class NotificationServiceTest {
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.BAN);
             assertThat(response.letterId()).isNull();
+        }
+
+        @Test
+        @DisplayName("알림 보낼 기기가 없다면, 보내지 않는다.")
+        public void notSendPushNotification() {
+            // GIVEN
+            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L);
+            Notification notification = Notification.create(request.notificationType(), request.receiver(),
+                    request.letterId());
+            when(notificationRepository.save(any())).thenReturn(notification);
+            when(subscriptionRepository.findByUserId(1L))
+                    .thenReturn(Subscriptions.from(List.of()));
+
+            // WHEN
+            NotificationResponseDTO response = notificationService.sendNotification(
+                    request.notificationType(),
+                    request.receiver(),
+                    request.letterId());
+
+            // THEN
+            assertThat(response.receiver()).isEqualTo(1L);
+            assertThat(response.type()).isEqualTo(NotificationType.BAN);
+            assertThat(response.letterId()).isNull();
+            verify(pushNotificationProvider, times(0)).pushAll(any());
         }
     }
 
