@@ -53,14 +53,14 @@ public class LabelController {
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
-    @GetMapping("/user")
-    public ApiResponse<?> findUserLabels(Long userId) {
+    @GetMapping("/user/{userId}")
+    public ApiResponse<?> findUserLabels(@PathVariable Long userId) { // TODO: 유저 로직 구현 후 변경 예정
         List<LabelResponseDTO> labelResponseDTO = labelService.findUserLabels(userId);
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
-    @PostMapping("/{labelId}")
-    public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId, Long userId) {
+    @PostMapping("/{labelId}/{userId}")
+    public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId, @PathVariable Long userId) {  // TODO: 유저 로직 구현 후 변경 예정
         labelService.createFirstComeFirstServedLabel(labelId, userId);
         return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
     }

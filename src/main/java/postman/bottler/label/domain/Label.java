@@ -1,7 +1,9 @@
 package postman.bottler.label.domain;
 
+import lombok.Getter;
 import postman.bottler.label.dto.response.LabelResponseDTO;
 
+@Getter
 public class Label {
     private Long labelId;
     private final String imageUrl;
@@ -26,18 +28,6 @@ public class Label {
 
     public static Label createLabel(String imageUrl, int limitCount) {
         return new Label(imageUrl, limitCount);
-    }
-
-    public Long getLabelId() {
-        return labelId;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public int getLimitCount() {
-        return limitCount;
     }
 
     public LabelResponseDTO toLabelResponseDTO() {

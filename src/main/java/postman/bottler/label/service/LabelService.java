@@ -27,15 +27,18 @@ public class LabelService {
         this.userJpaRepository = userJpaRepository;
     }
 
+    @Transactional
     public void createLabel(String imageUrl, int limitCount) {
         labelRepository.save(Label.createLabel(imageUrl, limitCount));
     }
 
+    @Transactional
     public List<LabelResponseDTO> findAllLabels() {
         List<Label> labels = labelRepository.findAllLabels();
         return labels.stream().map(Label::toLabelResponseDTO).toList();
     }
 
+    @Transactional
     public List<LabelResponseDTO> findUserLabels(Long userId) {
         List<Label> labels = labelRepository.findLabelsByUser(userId);
         return labels.stream().map(Label::toLabelResponseDTO).toList();
