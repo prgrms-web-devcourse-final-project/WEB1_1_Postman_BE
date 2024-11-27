@@ -64,4 +64,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.SOURCE_MAP_LETTER_NOT_FOUND.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(MapLetterAlreadyArchivedException.class)
+    public ApiResponse<?> handleMapLetterAlreadyArchivedException(MapLetterAlreadyArchivedException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.LETTER_ALREADY_ARCHIVED.getCode(), e.getMessage(), null);
+    }
 }

@@ -15,4 +15,6 @@ public interface MapLetterArchiveRepository {
     MapLetterArchive findById(Long letterId);
 
     void deleteById(Long letterId);
+
+    boolean findByLetterIdAndUserId(Long letterId, Long userId);
 }

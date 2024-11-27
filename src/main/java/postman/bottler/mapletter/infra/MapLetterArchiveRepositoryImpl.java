@@ -8,9 +8,11 @@ import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.MapLetterArchiveEntity;
+import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.service.MapLetterArchiveRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -43,5 +45,12 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
                 .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
 
         mapLetterArchiveJpaRepository.delete(archive);
+    }
+
+    @Override
+    public boolean findByLetterIdAndUserId(Long letterId, Long userId) {
+        List<MapLetterArchiveEntity> find = mapLetterArchiveJpaRepository.findByMapLetterIdAndUserId(letterId, userId);
+        return !find.isEmpty();
+        //true면 중복 O, false면 중복 X
     }
 }

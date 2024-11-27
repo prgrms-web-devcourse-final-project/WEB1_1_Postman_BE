@@ -15,6 +15,7 @@ import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
+import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.math.BigDecimal;
@@ -221,6 +222,11 @@ public class MapLetterService {
                 .mapLetterId(letterId)
                 .userId(userId)
                 .build();
+
+        boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
+        if(isArchived) {
+            throw new MapLetterAlreadyArchivedException("편지가 이미 저장되어 있습니다.");
+        }
 
         return mapLetterArchiveRepository.save(archive);
     }

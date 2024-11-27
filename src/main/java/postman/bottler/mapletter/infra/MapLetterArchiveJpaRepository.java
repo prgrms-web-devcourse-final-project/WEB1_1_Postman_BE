@@ -7,6 +7,7 @@ import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.infra.entity.MapLetterArchiveEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MapLetterArchiveJpaRepository extends JpaRepository<MapLetterArchiveEntity, Long> {
@@ -15,4 +16,6 @@ public interface MapLetterArchiveJpaRepository extends JpaRepository<MapLetterAr
             "FROM MapLetterArchiveEntity a, MapLetterEntity m " +
             "WHERE a.mapLetterId = m.mapLetterId AND m.isBlocked = false AND m.isDeleted=false")
     List<FindAllArchiveLetters> findAllByUserId(Long userId);
+
+    List<MapLetterArchiveEntity> findByMapLetterIdAndUserId(Long letterId, Long userId);
 }
