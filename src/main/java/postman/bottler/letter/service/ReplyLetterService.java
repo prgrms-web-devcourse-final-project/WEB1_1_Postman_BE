@@ -23,7 +23,7 @@ public class ReplyLetterService {
     public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO) {
         ReceiverDTO receiverInfo = letterService.getReceiverInfoById(letterId);
         // letterId 로 제목 받아와서 RE 형식 적용
-        String title = "RE: [" + receiverInfo.title() + "]";
+        String title = generateReplyTitle(receiverInfo.title());
         Long receiverId = receiverInfo.receiverId();
         Long senderId = 2L;
         String userProfile = "profile url";
@@ -37,7 +37,7 @@ public class ReplyLetterService {
     public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeaders(int page, int size, String sort) {
         Long userId = 1L;
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        Pageable pageable = createPageable(page, size, sort);
         return replyLetterRepository.findAll(userId, pageable)
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
@@ -47,7 +47,7 @@ public class ReplyLetterService {
     ) {
         Long userId = 1L;
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        Pageable pageable = createPageable(page, size, sort);
         return replyLetterRepository.findAllByLetterId(letterId, userId, pageable)
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
@@ -60,5 +60,13 @@ public class ReplyLetterService {
 
     public void deleteReplyLetter(Long replyLetterId) {
         replyLetterRepository.remove(replyLetterId);
+    }
+
+    private String generateReplyTitle(String title) {
+        return "RE: [" + title + "]";
+    }
+
+    private static PageRequest createPageable(int page, int size, String sort) {
+        return PageRequest.of(page - 1, size, Sort.by(sort).descending());
     }
 }
