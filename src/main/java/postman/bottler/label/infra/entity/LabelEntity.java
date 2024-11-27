@@ -30,6 +30,7 @@ public class LabelEntity {
 
     public static LabelEntity from(Label label) {
         return LabelEntity.builder()
+                .labelId(label.getLabelId())
                 .imageUrl(label.getImageUrl())
                 .limitCount(label.getLimitCount())
                 .build();
@@ -46,6 +47,10 @@ public class LabelEntity {
     }
 
     public Label to() {
-        return Label.createLabel(this.labelId, this.imageUrl, this.limitCount);
+        return Label.createLabel(this.labelId, this.imageUrl, this.limitCount, this.ownedCount);
+    }
+
+    public void updateOwnedCount() {
+        this.ownedCount++;
     }
 }

@@ -28,4 +28,12 @@ public class UserEntity {
                 .email(user.getEmail())
                 .build();
     }
+
+    public static User toUser(UserEntity userEntity) {
+        return userEntity.to();
+    }
+
+    public User to() {
+        return User.createUser(this.userId, this.email);
+    }
 }

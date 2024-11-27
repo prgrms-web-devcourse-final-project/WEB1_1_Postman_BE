@@ -2,6 +2,7 @@ package postman.bottler.label.controller;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,5 +57,11 @@ public class LabelController {
     public ApiResponse<?> findUserLabels(Long userId) {
         List<LabelResponseDTO> labelResponseDTO = labelService.findUserLabels(userId);
         return ApiResponse.onSuccess(labelResponseDTO);
+    }
+
+    @PostMapping("/{labelId}/{userId}")
+    public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId, @PathVariable Long userId) {
+        labelService.createFirstComeFirstServedLabel(labelId, userId);
+        return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
     }
 }

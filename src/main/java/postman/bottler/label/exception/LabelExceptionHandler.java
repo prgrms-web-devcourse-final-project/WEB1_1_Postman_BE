@@ -26,4 +26,10 @@ public class LabelExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.USER_LABEL_NOT_FOUND.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(FirstComeFirstServedLabelException.class)
+    public ApiResponse<?> handleFirstComeFirstServedLabelException(FirstComeFirstServedLabelException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.USER_LABEL_NOT_FOUND.getCode(), e.getMessage(), null);
+    }
 }
