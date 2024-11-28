@@ -25,7 +25,7 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     @Query(value = "SELECT m.map_letter_id as letterId, m.latitude, m.longitude, m.title, m.description, " +
             "m.created_at as createdAt, m.target_user_id as targetUserId, m.create_user_id as createUserId, m.label, " +
             "st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance " +
-            "FROM map_letter_tb m " +
+            "FROM map_letter m " +
             "WHERE (m.type = 'PUBLIC'  OR (m.type = 'PRIVATE' AND m.target_user_id =:targetUserId)) " +
             "AND st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) <= 500 " +
             "AND m.is_deleted =false AND m.is_blocked=false " +
