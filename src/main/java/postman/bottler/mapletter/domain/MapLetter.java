@@ -33,7 +33,8 @@ public class MapLetter {
     private boolean isDeleted;
     private boolean isBlocked;
 
-    public static MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId) {
+    public static MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
+                                                  Long userId) {
         return MapLetter.builder()
                 .title(createPublicMapLetterRequestDTO.title())
                 .content(createPublicMapLetterRequestDTO.content())
@@ -52,7 +53,8 @@ public class MapLetter {
                 .build();
     }
 
-    public static MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, Long userId) {
+    public static MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
+                                                  Long userId) {
         return MapLetter.builder()
                 .title(createTargetMapLetterRequestDTO.title())
                 .content(createTargetMapLetterRequestDTO.content())

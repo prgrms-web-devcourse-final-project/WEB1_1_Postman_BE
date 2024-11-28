@@ -17,7 +17,7 @@ public class PaperController {
     private final PaperService paperService;
 
     @GetMapping
-    public ApiResponse<List<PaperDTO>> findPapers(){
+    public ApiResponse<List<PaperDTO>> findPapers() {
         return ApiResponse.onSuccess(paperService.findPapers());
     }
 }

@@ -30,8 +30,8 @@ public class ReplyMapLetterEntity {
 
     @Builder
     public ReplyMapLetterEntity(Long replyLetterId, Long sourceLetterId, String font, String paper, String label,
-                                boolean isBlocked, boolean isDeleted, LocalDateTime createdAt,
-                                LocalDateTime updatedAt, Long createUserId, String content) {
+                                boolean isBlocked, boolean isDeleted, LocalDateTime createdAt, LocalDateTime updatedAt,
+                                Long createUserId, String content) {
         this.replyLetterId = replyLetterId;
         this.sourceLetterId = sourceLetterId;
         this.font = font;
@@ -77,7 +77,7 @@ public class ReplyMapLetterEntity {
                 .build();
     }
 
-    public void updateDelete(boolean isDeleted){
-        this.isDeleted=isDeleted;
+    public void updateDelete(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

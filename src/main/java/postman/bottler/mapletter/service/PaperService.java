@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.dto.PaperDTO;
-import postman.bottler.mapletter.infra.entity.PaperEntity;
 
 import java.util.List;
 
@@ -15,8 +14,8 @@ public class PaperService {
     private final PaperRepository paperRepository;
 
     @Transactional(readOnly = true)
-    public List<PaperDTO> findPapers(){
-        List<Paper> papers=paperRepository.findAll();
+    public List<PaperDTO> findPapers() {
+        List<Paper> papers = paperRepository.findAll();
         return papers.stream()
                 .map(Paper::toPaperDTO)
                 .toList();

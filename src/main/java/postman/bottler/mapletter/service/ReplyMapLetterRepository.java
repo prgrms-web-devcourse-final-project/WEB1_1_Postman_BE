@@ -8,7 +8,9 @@ import java.util.List;
 @Repository
 public interface ReplyMapLetterRepository {
     ReplyMapLetter save(ReplyMapLetter replyMapLetter);
+
     List<ReplyMapLetter> findActiveReplyMapLettersBySourceUserId(Long userId);
+
     List<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId);
 
     ReplyMapLetter findById(Long letterId);

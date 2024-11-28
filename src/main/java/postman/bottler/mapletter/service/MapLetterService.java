@@ -34,13 +34,15 @@ public class MapLetterService {
 //    private final UserService userService;
 
     @Transactional
-    public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId) {
+    public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
+                                           Long userId) {
         MapLetter mapLetter = MapLetter.createPublicMapLetter(createPublicMapLetterRequestDTO, userId);
         return mapLetterRepository.save(mapLetter);
     }
 
     @Transactional
-    public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, Long userId) {
+    public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
+                                           Long userId) {
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
         return mapLetterRepository.save(mapLetter);
     }
@@ -48,10 +50,11 @@ public class MapLetterService {
     @Transactional(readOnly = true)
     public OneLetterResponseDTO findOneMepLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId) && !mapLetter.getCreateUserId().equals(userId))) {
+        if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
+                && !mapLetter.getCreateUserId().equals(userId))) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
-        if(mapLetter.isDeleted()){
+        if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
 
@@ -71,7 +74,7 @@ public class MapLetterService {
 
     @Transactional
     public void deleteMapLetter(List<Long> letters, Long userId) {
-        for(Long letterId : letters) {
+        for (Long letterId : letters) {
             MapLetter findMapLetter = mapLetterRepository.findById(letterId);
             if (!findMapLetter.getCreateUserId().equals(userId)) {
                 throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
@@ -82,7 +85,7 @@ public class MapLetterService {
 
     @Transactional(readOnly = true)
     public List<FindMapLetterResponseDTO> findSentMapLetters(Long userId) {
-        List<MapLetter> mapLetters=mapLetterRepository.findActiveByCreateUserId(userId);
+        List<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId);
 
         return mapLetters.stream()
                 .map(this::toFindSentMapLetter)
@@ -90,8 +93,8 @@ public class MapLetterService {
     }
 
     private FindMapLetterResponseDTO toFindSentMapLetter(MapLetter mapLetter) {
-        String targetUserNickname="";
-        if(mapLetter.getType()==MapLetterType.PRIVATE){
+        String targetUserNickname = "";
+        if (mapLetter.getType() == MapLetterType.PRIVATE) {
 //            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
         }
 
@@ -109,10 +112,10 @@ public class MapLetterService {
     public List<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(Long userId) {
         List<FindReceivedMapLetterResponseDTO> result = new ArrayList<>();
 
-        List<MapLetter> targetMapLetters=mapLetterRepository.findActiveByTargetUserId(userId);
-        targetMapLetterToFindReceivedMapLetterResponseDTO(targetMapLetters,result);
+        List<MapLetter> targetMapLetters = mapLetterRepository.findActiveByTargetUserId(userId);
+        targetMapLetterToFindReceivedMapLetterResponseDTO(targetMapLetters, result);
 
-        List<ReplyMapLetter> replyMapLetters=replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
+        List<ReplyMapLetter> replyMapLetters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
         replyMapLetterToFindReceivedMapLetterResponseDTO(replyMapLetters, result);
 
         result.sort(Comparator.comparing(FindReceivedMapLetterResponseDTO::createdAt).reversed());
@@ -122,7 +125,7 @@ public class MapLetterService {
 
     private void targetMapLetterToFindReceivedMapLetterResponseDTO
             (List<MapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
-        for(MapLetter mapLetter : mapLetters) {
+        for (MapLetter mapLetter : mapLetters) {
             String senderNickname = "";
             if (mapLetter.getType() == MapLetterType.PRIVATE) {
 //            senderNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
@@ -143,7 +146,7 @@ public class MapLetterService {
 
     private void replyMapLetterToFindReceivedMapLetterResponseDTO
             (List<ReplyMapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
-        for(ReplyMapLetter mapLetter : mapLetters) {
+        for (ReplyMapLetter mapLetter : mapLetters) {
             FindReceivedMapLetterResponseDTO dto = FindReceivedMapLetterResponseDTO.builder()
                     .letterId(mapLetter.getReplyLetterId())
                     .label(mapLetter.getLabel())
@@ -156,7 +159,8 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindNearbyLettersResponseDTO> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
+    public List<FindNearbyLettersResponseDTO> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude,
+                                                                   Long userId) {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
         return letters.stream()
@@ -177,10 +181,11 @@ public class MapLetterService {
     }
 
     @Transactional
-    public ReplyMapLetter createReplyMapLetter(@Valid CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO, Long userId) {
+    public ReplyMapLetter createReplyMapLetter(@Valid CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
+                                               Long userId) {
         boolean isReplied = replyMapLetterRepository.findByLetterIdAndUserId(
                 createReplyMapLetterRequestDTO.sourceLetter(), userId);
-        if(isReplied) {
+        if (isReplied) {
             throw new LetterAlreadyReplyException("해당 편지에 이미 답장을 했습니다.");
         }
 
@@ -195,7 +200,7 @@ public class MapLetterService {
         if (!sourceLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
-        if(sourceLetter.isDeleted()){
+        if (sourceLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
 
@@ -210,9 +215,9 @@ public class MapLetterService {
     public OneReplyLetterResponseDTO findOneReplyMapLetter(Long letterId, Long userId) {
         ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
         MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
-        if(replyMapLetter.isDeleted()){
+        if (replyMapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        }else if(!replyMapLetter.getCreateUserId().equals(userId)&&!sourceLetter.getCreateUserId().equals(userId)) {
+        } else if (!replyMapLetter.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
         return OneReplyLetterResponseDTO.builder()
@@ -228,9 +233,9 @@ public class MapLetterService {
     @Transactional
     public MapLetterArchive mapLetterArchive(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        if(mapLetter.isDeleted()){
+        if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        }else if(mapLetter.getType()==MapLetterType.PRIVATE) {
+        } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
             throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
         }
         MapLetterArchive archive = MapLetterArchive.builder()
@@ -239,7 +244,7 @@ public class MapLetterService {
                 .build();
 
         boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
-        if(isArchived) {
+        if (isArchived) {
             throw new MapLetterAlreadyArchivedException("편지가 이미 저장되어 있습니다.");
         }
 
@@ -252,7 +257,7 @@ public class MapLetterService {
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
-        for(Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
+        for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
             if (!findArchiveInfo.getUserId().equals(userId)) {
                 throw new CommonForbiddenException("편지 보관 취소를 할 권한이 없습니다. 편지 보관 취소에 실패했습니다.");
@@ -267,17 +272,17 @@ public class MapLetterService {
     }
 
     @Transactional
-    public void letterBlock(BlockMapLetterType type, Long letterId){
-        if(type==BlockMapLetterType.MAP_LETTER){
+    public void letterBlock(BlockMapLetterType type, Long letterId) {
+        if (type == BlockMapLetterType.MAP_LETTER) {
             mapLetterRepository.letterBlock(letterId);
-        }else if(type==BlockMapLetterType.REPLY){
-           replyMapLetterRepository.letterBlock(letterId);
+        } else if (type == BlockMapLetterType.REPLY) {
+            replyMapLetterRepository.letterBlock(letterId);
         }
     }
 
     @Transactional
     public void deleteReplyMapLetter(List<Long> letters, Long userId) {
-        for(Long letterId : letters) {
+        for (Long letterId : letters) {
             ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
             if (!replyMapLetter.getCreateUserId().equals(userId)) {
                 throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");

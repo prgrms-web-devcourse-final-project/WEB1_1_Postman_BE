@@ -23,7 +23,8 @@ public class ReplyMapLetter {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static ReplyMapLetter createReplyMapLetter(CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO, Long userId) {
+    public static ReplyMapLetter createReplyMapLetter(CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
+                                                      Long userId) {
         return ReplyMapLetter.builder()
                 .sourceLetterId(createReplyMapLetterRequestDTO.sourceLetter())
                 .font(createReplyMapLetterRequestDTO.font())
@@ -51,4 +52,3 @@ public class ReplyMapLetter {
     }
 
 }
-

@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.global.response.code.ErrorStatus;
-import postman.bottler.mapletter.domain.MapLetter;
 
 @RestControllerAdvice
 @Slf4j

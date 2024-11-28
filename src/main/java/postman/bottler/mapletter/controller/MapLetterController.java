@@ -2,14 +2,12 @@ package postman.bottler.mapletter.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.*;
 import postman.bottler.mapletter.dto.response.*;
 import postman.bottler.mapletter.exception.*;
-import postman.bottler.mapletter.service.BlockMapLetterType;
 import postman.bottler.mapletter.service.MapLetterService;
 
 import java.math.BigDecimal;
@@ -23,15 +21,16 @@ public class MapLetterController {
     private final MapLetterService mapLetterService;
 
     @PostMapping("/public")
-    public ApiResponse<?> createMapLetter(@Valid @RequestBody CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
-                                          BindingResult bindingResult, Long userId) {
+    public ApiResponse<?> createMapLetter(
+            @Valid @RequestBody CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
+            BindingResult bindingResult, Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("title".equals(error.getField())) {
                     throw new EmptyMapLetterTitleException(error.getDefaultMessage());
                 } else if ("content".equals(error.getField())) {
                     throw new EmptyMapLetterContentException(error.getDefaultMessage());
-                } else if("description".equals(error.getField())) {
+                } else if ("description".equals(error.getField())) {
                     throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
                 }
             });
@@ -43,7 +42,9 @@ public class MapLetterController {
     }
 
     @PostMapping("/target")
-    public ApiResponse<?> createTargetLetter(@Valid @RequestBody CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, BindingResult bindingResult, Long userId) {
+    public ApiResponse<?> createTargetLetter(
+            @Valid @RequestBody CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
+            BindingResult bindingResult, Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("title".equals(error.getField())) {
@@ -52,7 +53,7 @@ public class MapLetterController {
                     throw new EmptyMapLetterContentException(error.getDefaultMessage());
                 } else if ("target".equals(error.getField())) {
                     throw new EmptyMapLetterTargetException(error.getDefaultMessage());
-                }else if("description".equals(error.getField())) {
+                } else if ("description".equals(error.getField())) {
                     throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
                 }
             });
@@ -85,13 +86,15 @@ public class MapLetterController {
     }
 
     @GetMapping
-    public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude, @RequestParam String longitude, Long userId) {
+    public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude,
+                                                                                @RequestParam String longitude,
+                                                                                Long userId) {
         BigDecimal lat = BigDecimal.ZERO;
         BigDecimal lon = BigDecimal.ZERO;
         try {
-            lat=new BigDecimal(latitude);
-            lon=new BigDecimal(longitude);
-        }catch (Exception e) {
+            lat = new BigDecimal(latitude);
+            lon = new BigDecimal(longitude);
+        } catch (Exception e) {
             throw new LocationNotFoundException("해당 위치를 찾을 수 없습니다.");
         }
 
@@ -118,12 +121,13 @@ public class MapLetterController {
     }
 
     @GetMapping("/{letterId}/reply")
-    public ApiResponse<List<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(@PathVariable Long letterId, Long userId) {
+    public ApiResponse<List<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(@PathVariable Long letterId,
+                                                                                      Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findAllReplyMapLetter(letterId, userId));
     }
 
     @GetMapping("/reply/{letterId}")
-    public ApiResponse<OneReplyLetterResponseDTO> findOneReplyMapLetter(@PathVariable Long letterId, Long userId){
+    public ApiResponse<OneReplyLetterResponseDTO> findOneReplyMapLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findOneReplyMapLetter(letterId, userId));
     }
 

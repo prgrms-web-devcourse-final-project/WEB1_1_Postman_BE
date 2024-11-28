@@ -14,6 +14,6 @@ public record CreateTargetMapLetterRequestDTO(
         String font,
         String paper,
         String label,
-        @NotNull(message="타겟 유저는 생략할 수 없습니다.") Long target
+        @NotNull(message = "타겟 유저는 생략할 수 없습니다.") Long target
 ) {
 }

@@ -108,7 +108,7 @@ public class MapLetterEntity {
                 .build();
     }
 
-    public void updateDelete(boolean isDeleted){
-        this.isDeleted=isDeleted;
+    public void updateDelete(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

@@ -1,6 +1,5 @@
 package postman.bottler.mapletter.service;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
@@ -11,6 +10,7 @@ import java.util.List;
 @Repository
 public interface MapLetterRepository {
     MapLetter save(MapLetter mapLetter);
+
     MapLetter findById(Long id);
 
     void softDelete(Long letterId);
