@@ -22,7 +22,7 @@ public class SavedLetterService {
 
     @Transactional
     public void saveLetter(Long letterId) {
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
 
         validateCanBeSaved(userId, letterId);
         validateLetterExists(letterId);
@@ -35,8 +35,9 @@ public class SavedLetterService {
         savedLetterRepository.save(savedLetter);
     }
 
+    @Transactional(readOnly = true)
     public Page<LetterHeadersResponseDTO> getSavedLetterHeaders(int page, int size) {
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
 
         Pageable pageable = PageRequest.of(page - 1, size);
         return savedLetterRepository.findSavedLetters(userId, pageable)
@@ -45,27 +46,31 @@ public class SavedLetterService {
 
     @Transactional
     public void deleteSavedLetter(Long letterId) {
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
 
         validateSavedLetterExists(letterId, userId);
         savedLetterRepository.remove(userId, letterId);
     }
 
     private void validateLetterExists(Long letterId) {
-        if (letterRepository.existsById(letterId)) {
+        if (!letterRepository.existsById(letterId)) {
             throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
         }
     }
 
     private void validateCanBeSaved(Long userId, Long letterId) {
-        if (savedLetterRepository.isAlreadySaved(userId, letterId)) {
+        if (savedLetterRepository.isSaved(userId, letterId)) {
             throw new LetterAlreadySavedException("이미 저장된 편지입니다.");
         }
     }
 
     private void validateSavedLetterExists(Long letterId, Long userId) {
-        if (!savedLetterRepository.existsById(userId, letterId)) {
+        if (!savedLetterRepository.isSaved(userId, letterId)) {
             throw new LetterNotFoundException("보관된 키워드 편지가 존재하지 않습니다.");
         }
+    }
+
+    private Long getCurrentUserId() {
+        return 1L; // TODO: 실제 인증 로직으로 대체
     }
 }

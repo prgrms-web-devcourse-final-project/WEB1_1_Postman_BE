@@ -21,6 +21,7 @@ public class LetterEntity {
     private Long id;
     private String title;
     private String content;
+    //TODO 키워드 파트 개발 후 속성 추가
     private String font;
     private String paper;
     private String label;
@@ -49,7 +50,6 @@ public class LetterEntity {
         return LetterEntity.builder()
                 .title(letter.getTitle())
                 .content(letter.getContent())
-                .createdAt(letter.getCreatedAt())
                 .font(letter.getFont())
                 .paper(letter.getPaper())
                 .label(letter.getLabel())

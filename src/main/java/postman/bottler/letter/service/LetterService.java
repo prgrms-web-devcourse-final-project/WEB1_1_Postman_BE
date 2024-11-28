@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
@@ -19,27 +20,31 @@ public class LetterService {
 
     private final LetterRepository letterRepository;
 
+    @Transactional
     public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO) {
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
         String userProfile = "profile url";
 
         Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
         return LetterResponseDTO.from(letter);
     }
 
+    @Transactional(readOnly = true)
     public Page<LetterHeadersResponseDTO> getLetterHeaders(int page, int size, String sort) {
-        Long userId = 1L;
+        Long userId = getCurrentUserId();
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
         return letterRepository.findAll(userId, pageable)
                 .map(LetterHeadersResponseDTO::from);
     }
 
+    @Transactional
     public void deleteLetter(Long letterId) {
         validateLetterExists(letterId);
         letterRepository.remove(letterId);
     }
 
+    @Transactional(readOnly = true)
     public LetterResponseDTO getLetterDetail(Long letterId) {
         Letter letter = findLetter(letterId);
         return LetterResponseDTO.from(letter);
@@ -50,7 +55,7 @@ public class LetterService {
     }
 
     private void validateLetterExists(Long letterId) {
-        if (letterRepository.existsById(letterId)) {
+        if (!letterRepository.existsById(letterId)) {
             throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
         }
     }
@@ -60,8 +65,13 @@ public class LetterService {
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
 
+    @Transactional(readOnly = true)
     public ReceiverDTO getReceiverInfoById(Long letterId) {
         Letter letter = findLetter(letterId);
         return ReceiverDTO.from(letter);
+    }
+
+    private Long getCurrentUserId() {
+        return 1L; // TODO: 실제 인증 로직으로 대체
     }
 }

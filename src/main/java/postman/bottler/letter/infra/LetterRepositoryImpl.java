@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.infra.entity.LetterEntity;
 import postman.bottler.letter.service.LetterRepository;
@@ -17,7 +16,6 @@ public class LetterRepositoryImpl implements LetterRepository {
     private final LetterJpaRepository letterJpaRepository;
 
     @Override
-    @Transactional
     public Letter save(Letter letter) {
         LetterEntity letterEntity = letterJpaRepository.save(LetterEntity.from(letter));
         return letterEntity.toDomain();
@@ -36,7 +34,7 @@ public class LetterRepositoryImpl implements LetterRepository {
 
     @Override
     public boolean existsById(Long letterId) {
-        return !letterJpaRepository.existsById(letterId);
+        return letterJpaRepository.existsById(letterId);
     }
 
     @Override

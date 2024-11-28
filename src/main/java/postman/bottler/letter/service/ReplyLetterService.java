@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
@@ -20,44 +21,49 @@ public class ReplyLetterService {
     private final ReplyLetterRepository replyLetterRepository;
     private final LetterService letterService;
 
+    @Transactional
     public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO) {
         ReceiverDTO receiverInfo = letterService.getReceiverInfoById(letterId);
-        // letterId 로 제목 받아와서 RE 형식 적용
         String title = generateReplyTitle(receiverInfo.title());
         Long receiverId = receiverInfo.receiverId();
-        Long senderId = 2L;
-        String userProfile = "profile url";
+
+        Long senderId = getCurrentUserId();
+        String userProfile = getCurrentUserProfile();
 
         ReplyLetter replyLetter = replyLetterRepository.save(
-                letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId, userProfile));
+                letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId, userProfile)
+        );
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
-
+    @Transactional(readOnly = true)
     public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeaders(int page, int size, String sort) {
-        Long userId = 1L;
+        Long receiverId = getCurrentUserId();
 
         Pageable pageable = createPageable(page, size, sort);
-        return replyLetterRepository.findAll(userId, pageable)
+        return replyLetterRepository.findAll(receiverId, pageable)
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
 
+    @Transactional(readOnly = true)
     public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeadersById(
             Long letterId, int page, int size, String sort
     ) {
-        Long userId = 1L;
+        Long receiverId = getCurrentUserId();
 
         Pageable pageable = createPageable(page, size, sort);
-        return replyLetterRepository.findAllByLetterId(letterId, userId, pageable)
+        return replyLetterRepository.findAllByLetterId(letterId, receiverId, pageable)
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
 
+    @Transactional(readOnly = true)
     public ReplyLetterResponseDTO getReplyLetterDetail(Long replyLetterId) {
         ReplyLetter replyLetter = replyLetterRepository.findById(replyLetterId)
                 .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
+    @Transactional
     public void deleteReplyLetter(Long replyLetterId) {
         replyLetterRepository.remove(replyLetterId);
     }
@@ -68,5 +74,13 @@ public class ReplyLetterService {
 
     private static PageRequest createPageable(int page, int size, String sort) {
         return PageRequest.of(page - 1, size, Sort.by(sort).descending());
+    }
+
+    private Long getCurrentUserId() {
+        return 1L;
+    }
+
+    private String getCurrentUserProfile() {
+        return "url";
     }
 }
