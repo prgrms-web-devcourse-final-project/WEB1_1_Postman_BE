@@ -12,4 +12,6 @@ public interface ReplyMapLetterRepository {
     List<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId);
 
     ReplyMapLetter findById(Long letterId);
+
+    ReplyMapLetter findByLetterIdAndUserId(Long letterId, Long userId);
 }

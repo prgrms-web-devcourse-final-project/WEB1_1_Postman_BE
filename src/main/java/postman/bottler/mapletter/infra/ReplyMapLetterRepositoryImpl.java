@@ -3,14 +3,13 @@ package postman.bottler.mapletter.infra;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
-import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 import postman.bottler.mapletter.service.ReplyMapLetterRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -49,5 +48,11 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
                 .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
 
         return ReplyMapLetterEntity.toDomain(replyMapLetterEntity);
+    }
+
+    @Override
+    public ReplyMapLetter findByLetterIdAndUserId(Long letterId, Long userId) {
+        return ReplyMapLetterEntity.toDomain(Objects.requireNonNull(replyMapLetterJpaRepository.findBySourceLetterIdAndCreateUserId(letterId, userId)
+                .orElse(null)));
     }
 }

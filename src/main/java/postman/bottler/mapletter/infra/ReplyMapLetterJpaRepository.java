@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLetterEntity, Long> {
@@ -17,4 +18,6 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
     @Query("SELECT r FROM ReplyMapLetterEntity r " +
             "WHERE r.sourceLetterId=:letterId AND r.isDeleted=false AND r.isBlocked = false")
     List<ReplyMapLetterEntity> findReplyMapLettersBySourceLetterId(Long letterId);
+
+    Optional<ReplyMapLetterEntity> findBySourceLetterIdAndCreateUserId(Long letterId, Long userId);
 }

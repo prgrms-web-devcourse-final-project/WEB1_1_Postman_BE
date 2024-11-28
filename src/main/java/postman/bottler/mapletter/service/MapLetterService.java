@@ -15,6 +15,7 @@ import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
+import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
@@ -172,6 +173,12 @@ public class MapLetterService {
     }
 
     public ReplyMapLetter createReplyMapLetter(@Valid CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO, Long userId) {
+        ReplyMapLetter alreadyReply = replyMapLetterRepository.findByLetterIdAndUserId(
+                createReplyMapLetterRequestDTO.sourceLetter(), userId);
+        if(alreadyReply != null) {
+            throw new LetterAlreadyReplyException("해당 편지에 이미 답장을 했습니다.");
+        }
+
         mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         return replyMapLetterRepository.save(replyMapLetter);

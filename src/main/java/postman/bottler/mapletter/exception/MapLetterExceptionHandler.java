@@ -70,4 +70,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.LETTER_ALREADY_ARCHIVED.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(LetterAlreadyReplyException.class)
+    public ApiResponse<?> handleLetterAlreadyReplyException(LetterAlreadyReplyException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.LETTER_ALREADY_REPLY.getCode(), e.getMessage(), null);
+    }
 }
