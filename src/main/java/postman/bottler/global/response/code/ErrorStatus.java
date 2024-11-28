@@ -1,9 +1,8 @@
 package postman.bottler.global.response.code;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -12,6 +11,10 @@ public enum ErrorStatus {
     INVALID_NOTIFICATION_CREATION(HttpStatus.BAD_REQUEST, "NOTIFICATION4000"),
     NOTIFICATION_NO_LETTER(HttpStatus.BAD_REQUEST, "NOTIFICATION4001"),
     NOTIFICATION_NO_TYPE(HttpStatus.BAD_REQUEST, "NOTIFICATION4002"),
+
+    // 신고 에러
+    INVALID_COMPLAINT(HttpStatus.BAD_REQUEST, "COMPLAINT4000"),
+    DUPLICATE_COMPLAINT(HttpStatus.BAD_REQUEST, "COMPLAINT4001"),
 
     // 공통 에러
     INVALID_LOGIN(HttpStatus.BAD_REQUEST, "COMMON400"),

@@ -1,0 +1,10 @@
+package postman.bottler.complaint.infra;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface JpaKeywordComplaintRepository extends JpaRepository<KeywordComplaintEntity, Long> {
+    Boolean existsByReporterIdAndLetterId(Long reporterId, Long letterId);
+
+    List<KeywordComplaintEntity> findByLetterId(Long letterId);
+}
