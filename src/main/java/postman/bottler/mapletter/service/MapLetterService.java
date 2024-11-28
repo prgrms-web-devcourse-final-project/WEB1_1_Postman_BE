@@ -252,4 +252,13 @@ public class MapLetterService {
             mapLetterArchiveRepository.deleteById(archiveId);
         }
     }
+
+    public CheckReplyMapLetterResponseDTO checkReplyMapLetter(Long letterId, Long userId) {
+        ReplyMapLetter replyMapLetter = replyMapLetterRepository.findByLetterIdAndUserId(letterId, userId);
+        if(replyMapLetter==null){
+            return new CheckReplyMapLetterResponseDTO(false); //답장을 하지 않은 상태
+        }else{
+            return new CheckReplyMapLetterResponseDTO(true); //답장을 한 상태
+        }
+    }
 }
