@@ -9,7 +9,6 @@ import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 import postman.bottler.mapletter.service.ReplyMapLetterRepository;
 
 import java.util.List;
-import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -51,9 +50,9 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
     }
 
     @Override
-    public ReplyMapLetter findByLetterIdAndUserId(Long letterId, Long userId) {
-        return ReplyMapLetterEntity.toDomain(Objects.requireNonNull(replyMapLetterJpaRepository.findBySourceLetterIdAndCreateUserId(letterId, userId)
-                .orElse(null)));
+    public boolean findByLetterIdAndUserId(Long letterId, Long userId) {
+        return replyMapLetterJpaRepository.findBySourceLetterIdAndCreateUserId(letterId, userId).isPresent();
+        // 값이 없으면 false
     }
 
     @Override

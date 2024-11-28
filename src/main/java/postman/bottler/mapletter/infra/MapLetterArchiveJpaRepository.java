@@ -17,5 +17,5 @@ public interface MapLetterArchiveJpaRepository extends JpaRepository<MapLetterAr
             "WHERE a.mapLetterId = m.mapLetterId AND m.isBlocked = false AND m.isDeleted=false AND a.userId=:userId")
     List<FindAllArchiveLetters> findAllByUserId(Long userId);
 
-    List<MapLetterArchiveEntity> findByMapLetterIdAndUserId(Long letterId, Long userId);
+    Optional<MapLetterArchiveEntity> findByMapLetterIdAndUserId(Long letterId, Long userId);
 }

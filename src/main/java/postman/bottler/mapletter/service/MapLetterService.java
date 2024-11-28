@@ -171,9 +171,9 @@ public class MapLetterService {
     }
 
     public ReplyMapLetter createReplyMapLetter(@Valid CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO, Long userId) {
-        ReplyMapLetter alreadyReply = replyMapLetterRepository.findByLetterIdAndUserId(
+        boolean isReplied = replyMapLetterRepository.findByLetterIdAndUserId(
                 createReplyMapLetterRequestDTO.sourceLetter(), userId);
-        if(alreadyReply != null) {
+        if(isReplied) {
             throw new LetterAlreadyReplyException("해당 편지에 이미 답장을 했습니다.");
         }
 
@@ -252,12 +252,7 @@ public class MapLetterService {
     }
 
     public CheckReplyMapLetterResponseDTO checkReplyMapLetter(Long letterId, Long userId) {
-        ReplyMapLetter replyMapLetter = replyMapLetterRepository.findByLetterIdAndUserId(letterId, userId);
-        if(replyMapLetter==null){
-            return new CheckReplyMapLetterResponseDTO(false); //답장을 하지 않은 상태
-        }else{
-            return new CheckReplyMapLetterResponseDTO(true); //답장을 한 상태
-        }
+        return new CheckReplyMapLetterResponseDTO(replyMapLetterRepository.findByLetterIdAndUserId(letterId, userId));
     }
 
     public void letterBlock(BlockMapLetterType type, Long letterId){

@@ -49,8 +49,7 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
 
     @Override
     public boolean findByLetterIdAndUserId(Long letterId, Long userId) {
-        List<MapLetterArchiveEntity> find = mapLetterArchiveJpaRepository.findByMapLetterIdAndUserId(letterId, userId);
-        return !find.isEmpty();
-        //true면 중복 O, false면 중복 X
+        return mapLetterArchiveJpaRepository.findByMapLetterIdAndUserId(letterId, userId).isPresent();
+        // 값이 없으면 false
     }
 }
