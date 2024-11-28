@@ -22,7 +22,7 @@ public class Complaints {
         }
     }
 
-    public void add(KeywordComplaint complaint) {
+    public void add(Complaint complaint) {
         complaints.add(complaint);
     }
 

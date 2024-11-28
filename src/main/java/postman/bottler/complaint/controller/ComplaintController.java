@@ -25,8 +25,19 @@ public class ComplaintController {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         ComplaintResponseDTO response = complaintService.complainKeywordLetter(letterId,
-                complaintRequest.reporterId(), complaintRequest.writerId(),
-                complaintRequest.description());
+                complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
+        return ApiResponse.onCreateSuccess(response);
+    }
+
+    @PostMapping("/map/{letterId}/complaint")
+    public ApiResponse<?> complainMapLetter(@PathVariable Long letterId,
+                                            @RequestBody ComplaintRequestDTO complaintRequest,
+                                            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+        ComplaintResponseDTO response = complaintService.complainMapLetter(letterId,
+                complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
 }

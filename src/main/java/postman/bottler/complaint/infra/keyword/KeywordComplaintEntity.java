@@ -1,4 +1,4 @@
-package postman.bottler.complaint.infra;
+package postman.bottler.complaint.infra.keyword;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
