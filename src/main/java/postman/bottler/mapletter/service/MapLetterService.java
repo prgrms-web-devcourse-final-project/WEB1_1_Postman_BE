@@ -262,4 +262,15 @@ public class MapLetterService {
            replyMapLetterRepository.letterBlock(letterId);
         }
     }
+
+    @Transactional
+    public void deleteReplyMapLetter(List<Long> letters, Long userId) {
+        for(Long letterId : letters) {
+            ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
+            if (!replyMapLetter.getCreateUserId().equals(userId)) {
+                throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+            }
+            replyMapLetterRepository.softDelete(letterId);
+        }
+    }
 }

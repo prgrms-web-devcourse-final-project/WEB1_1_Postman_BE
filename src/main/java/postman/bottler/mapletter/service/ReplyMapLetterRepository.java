@@ -16,4 +16,6 @@ public interface ReplyMapLetterRepository {
     boolean findByLetterIdAndUserId(Long letterId, Long userId);
 
     void letterBlock(Long letterId);
+
+    void softDelete(Long letterId);
 }

@@ -149,4 +149,10 @@ public class MapLetterController {
     public ApiResponse<CheckReplyMapLetterResponseDTO> checkReplyMapLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.checkReplyMapLetter(letterId, userId));
     }
+
+    @DeleteMapping("/reply")
+    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersRequestDTO letters, Long userId) {
+        mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
+        return ApiResponse.onDeleteSuccess(letters);
+    }
 }
