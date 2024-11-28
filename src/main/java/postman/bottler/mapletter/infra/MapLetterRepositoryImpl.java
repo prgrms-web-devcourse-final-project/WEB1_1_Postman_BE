@@ -78,4 +78,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     public void letterBlock(Long letterId) {
         mapLetterJpaRepository.letterBlock(letterId);
     }
+
+    @Override
+    public Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude,
+                                                                 Long letterId) {
+        return mapLetterJpaRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude, letterId);
+    }
 }

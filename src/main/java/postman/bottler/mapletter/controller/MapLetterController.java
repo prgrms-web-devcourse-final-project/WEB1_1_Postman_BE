@@ -65,8 +65,19 @@ public class MapLetterController {
     }
 
     @GetMapping("/{letterId}")
-    public ApiResponse<OneLetterResponseDTO> findOneMapLetter(@PathVariable Long letterId, Long userId) {
-        return ApiResponse.onSuccess(mapLetterService.findOneMapLetter(letterId, userId));
+    public ApiResponse<OneLetterResponseDTO> findOneMapLetter(@RequestParam String latitude,
+                                                              @RequestParam String longitude,
+                                                              @PathVariable Long letterId, Long userId) {
+        BigDecimal lat = BigDecimal.ZERO;
+        BigDecimal lon = BigDecimal.ZERO;
+        try {
+            lat = new BigDecimal(latitude);
+            lon = new BigDecimal(longitude);
+        } catch (Exception e) {
+            throw new LocationNotFoundException("해당 위치를 찾을 수 없습니다.");
+        }
+
+        return ApiResponse.onSuccess(mapLetterService.findOneMapLetter(letterId, userId, lat, lon));
     }
 
     @DeleteMapping
@@ -101,10 +112,10 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findNearByMapLetters(lat, lon, userId));
     }
 
-    @PostMapping("/reply")
+    @PostMapping("/reply/{userId}")
     public ApiResponse<?> createReplyMapLetter(
             @Valid @RequestBody CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
-            BindingResult bindingResult, Long userId) {
+            BindingResult bindingResult, @PathVariable Long userId) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 if ("content".equals(error.getField())) {

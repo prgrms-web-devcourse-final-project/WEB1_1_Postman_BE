@@ -24,4 +24,6 @@ public interface MapLetterRepository {
     void findSourceMapLetterById(Long sourceMapLetterId);
 
     void letterBlock(Long letterId);
+
+    Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude, Long letterId);
 }

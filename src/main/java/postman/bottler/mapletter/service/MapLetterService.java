@@ -15,6 +15,7 @@ import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
+import postman.bottler.mapletter.exception.DistanceToFarException;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
@@ -48,7 +49,8 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId) {
+    public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId, BigDecimal latitude,
+                                                 BigDecimal longitude) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
                 && !mapLetter.getCreateUserId().equals(userId))) {
@@ -56,6 +58,11 @@ public class MapLetterService {
         }
         if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
+        Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
+                letterId);
+        if(distance > 15){
+            throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
         }
 
         OneLetterResponseDTO oneLetterResponseDTO = MapLetter.toOneLetterResponse(mapLetter);

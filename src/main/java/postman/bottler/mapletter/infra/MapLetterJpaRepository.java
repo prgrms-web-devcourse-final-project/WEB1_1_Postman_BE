@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
@@ -41,4 +42,11 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     @Modifying
     @Query("UPDATE MapLetterEntity m SET m.isBlocked = true WHERE m.mapLetterId = :letterId")
     void letterBlock(Long letterId);
+
+    @Query(value = "SELECT st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance "
+            + "FROM map_letter m "
+            + "WHERE m.is_deleted =false AND m.is_blocked=false "
+            + "AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30 "
+            + "AND m.map_letter_id=:letterId", nativeQuery = true)
+    Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude, Long letterId);
 }

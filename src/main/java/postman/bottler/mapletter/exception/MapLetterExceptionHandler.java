@@ -75,4 +75,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.LETTER_ALREADY_REPLY.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(DistanceToFarException.class)
+    public ApiResponse<?> handleDistanceToFarException(DistanceToFarException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.DISTANCE_TOO_FAR.getCode(), e.getMessage(), null);
+    }
 }
