@@ -66,7 +66,7 @@ public class MapLetterController {
 
     @GetMapping("/{letterId}")
     public ApiResponse<OneLetterResponseDTO> findOneMapLetter(@PathVariable Long letterId, Long userId) {
-        return ApiResponse.onSuccess(mapLetterService.findOneMepLetter(letterId, userId));
+        return ApiResponse.onSuccess(mapLetterService.findOneMapLetter(letterId, userId));
     }
 
     @DeleteMapping

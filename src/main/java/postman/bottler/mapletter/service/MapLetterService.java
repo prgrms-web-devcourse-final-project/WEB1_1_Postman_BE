@@ -48,7 +48,7 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public OneLetterResponseDTO findOneMepLetter(Long letterId, Long userId) {
+    public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
                 && !mapLetter.getCreateUserId().equals(userId))) {
