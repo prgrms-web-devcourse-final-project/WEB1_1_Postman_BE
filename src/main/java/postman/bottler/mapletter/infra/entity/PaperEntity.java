@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import postman.bottler.mapletter.domain.Paper;
 
 @Entity
-@Table(name = "paper_tb")
+@Table(name = "paper")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PaperEntity {

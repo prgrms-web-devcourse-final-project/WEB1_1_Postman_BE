@@ -18,7 +18,7 @@ import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
 
 @Entity
-@Table(name = "map_letter_tb")
+@Table(name = "map_letter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MapLetterEntity {

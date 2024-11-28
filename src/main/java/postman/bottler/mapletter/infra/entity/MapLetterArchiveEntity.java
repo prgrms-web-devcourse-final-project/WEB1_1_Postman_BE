@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 
 @Entity
-@Table(name = "map_letter_archive_tb")
+@Table(name = "map_letter_archive")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MapLetterArchiveEntity {

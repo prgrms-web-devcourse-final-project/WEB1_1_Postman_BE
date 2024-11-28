@@ -10,7 +10,7 @@ import postman.bottler.mapletter.domain.ReplyMapLetter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reply_map_letter_tb")
+@Table(name = "reply_map_letter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ReplyMapLetterEntity {
