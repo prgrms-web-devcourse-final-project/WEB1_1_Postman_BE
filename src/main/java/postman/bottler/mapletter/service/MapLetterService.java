@@ -115,7 +115,7 @@ public class MapLetterService {
         return result;
     }
 
-    private List<FindReceivedMapLetterResponseDTO> targetMapLetterToFindReceivedMapLetterResponseDTO
+    private void targetMapLetterToFindReceivedMapLetterResponseDTO
             (List<MapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
         for(MapLetter mapLetter : mapLetters) {
             String senderNickname = "";
@@ -134,10 +134,9 @@ public class MapLetterService {
                     .build();
             result.add(dto);
         }
-        return result;
     }
 
-    private List<FindReceivedMapLetterResponseDTO> replyMapLetterToFindReceivedMapLetterResponseDTO
+    private void replyMapLetterToFindReceivedMapLetterResponseDTO
             (List<ReplyMapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
         for(ReplyMapLetter mapLetter : mapLetters) {
             FindReceivedMapLetterResponseDTO dto = FindReceivedMapLetterResponseDTO.builder()
@@ -149,7 +148,6 @@ public class MapLetterService {
                     .build();
             result.add(dto);
         }
-        return result;
     }
 
     public List<FindNearbyLettersResponseDTO> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
