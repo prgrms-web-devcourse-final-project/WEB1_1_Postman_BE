@@ -40,4 +40,16 @@ public class ComplaintController {
                 complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
+
+    @PostMapping("/reply/{letterId}/complaint")
+    public ApiResponse<?> complainReplyLetter(@PathVariable Long letterId,
+                                              @RequestBody ComplaintRequestDTO complaintRequest,
+                                              BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+        ComplaintResponseDTO response = complaintService.complainReplyLetter(letterId,
+                complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
+        return ApiResponse.onCreateSuccess(response);
+    }
 }
