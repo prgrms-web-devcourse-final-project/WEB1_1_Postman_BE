@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.complaint.domain.Complaints;
 import postman.bottler.complaint.domain.KeywordComplaint;
+import postman.bottler.complaint.domain.MapComplaint;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.exception.DuplicateComplainException;
 
@@ -25,6 +26,8 @@ public class ComplaintServiceTest {
     private ComplaintService complaintService;
     @Mock
     private KeywordComplaintRepository keywordComplaintRepository;
+    @Mock
+    private MapComplaintRepository mapComplaintRepository;
 
     @Test
     @DisplayName("키워드 편지를 신고한다.")
@@ -41,7 +44,7 @@ public class ComplaintServiceTest {
     }
 
     @Test
-    @DisplayName("같은 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
+    @DisplayName("같은 키워드 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
     public void duplicateKeywordComplain() {
         // GIVEN
         KeywordComplaint complaint = KeywordComplaint.of(1L, 1L, 1L, 2L, "욕설사용");
@@ -52,6 +55,35 @@ public class ComplaintServiceTest {
 
         // WHEN - THEN
         assertThatThrownBy(() -> complaintService.complainKeywordLetter(1L, 1L, 2L, "욕설 사용"))
+                .isInstanceOf(DuplicateComplainException.class);
+    }
+
+    @Test
+    @DisplayName("지도 편지를 신고한다.")
+    public void complainMapLetter() {
+        // GIVEN
+        when(mapComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()));
+        when(mapComplaintRepository.save(any())).thenReturn(MapComplaint.of(1L, 1L, 1L, 2L, "욕설사용"));
+
+        // WHEN
+        ComplaintResponseDTO response = complaintService.complainMapLetter(1L, 1L, 2L, "욕설 사용");
+
+        // THEN
+        assertThat(response.id()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("같은 지도 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
+    public void duplicateMapComplain() {
+        // GIVEN
+        MapComplaint complaint = MapComplaint.of(1L, 1L, 1L, 2L, "욕설사용");
+        when(mapComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()))
+                .thenReturn(Complaints.from(List.of(complaint)));
+        when(mapComplaintRepository.save(any())).thenReturn(complaint);
+        complaintService.complainMapLetter(1L, 1L, 2L, "욕설 사용");
+
+        // WHEN - THEN
+        assertThatThrownBy(() -> complaintService.complainMapLetter(1L, 1L, 2L, "욕설 사용"))
                 .isInstanceOf(DuplicateComplainException.class);
     }
 }
