@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,10 +23,22 @@ public class UserEntity {
     private Long userId;
 
     private String email;
+    private String password;
+    private String nickname;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean isDeleted;
+    private boolean isBanned;
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
                 .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .isDeleted(user.isDeleted())
+                .isBanned(user.isBanned())
                 .build();
     }
 

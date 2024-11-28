@@ -22,7 +22,12 @@ public enum ErrorStatus {
     EMPTY_LABEL_INPUT(HttpStatus.BAD_REQUEST, "LABEL4001"),
     USER_LABEL_NOT_FOUND(HttpStatus.NOT_FOUND, "LABEL4002"),
     OVER_LIMIT_COUNT(HttpStatus.FORBIDDEN, "LABEL4003"),
-    DUPLICATE_LABEL(HttpStatus.BAD_REQUEST, "LABEL4004");
+    DUPLICATE_LABEL(HttpStatus.BAD_REQUEST, "LABEL4004"),
+
+    // 유저 에러
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "USER4000"),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "USER4001"),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "USER4002");
 
     private final HttpStatus httpStatus;
     private final String code;
