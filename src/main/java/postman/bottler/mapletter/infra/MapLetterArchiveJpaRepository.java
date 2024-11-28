@@ -14,7 +14,7 @@ public interface MapLetterArchiveJpaRepository extends JpaRepository<MapLetterAr
     @Query("SELECT new postman.bottler.mapletter.dto.response.FindAllArchiveLetters(" +
             "a.mapLetterArchiveId, m.mapLetterId, m.title, m.description, m.label, m.createdAt)" +
             "FROM MapLetterArchiveEntity a, MapLetterEntity m " +
-            "WHERE a.mapLetterId = m.mapLetterId AND m.isBlocked = false AND m.isDeleted=false")
+            "WHERE a.mapLetterId = m.mapLetterId AND m.isBlocked = false AND m.isDeleted=false AND a.userId=:userId")
     List<FindAllArchiveLetters> findAllByUserId(Long userId);
 
     List<MapLetterArchiveEntity> findByMapLetterIdAndUserId(Long letterId, Long userId);
