@@ -1,7 +1,5 @@
 package postman.bottler.letter.domain;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,17 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Letter {
+public class SavedLetter {
     private Long id;
-    private String title;
-    private String content;
-    private List<String> keywords;
-    private String font;
-    private String paper;
-    private String label;
-    private String profile;
     private Long userId;
+    private Long letterId;
     private boolean isDeleted;
-    private boolean isBlocked;
-    private LocalDateTime createdAt;
 }
