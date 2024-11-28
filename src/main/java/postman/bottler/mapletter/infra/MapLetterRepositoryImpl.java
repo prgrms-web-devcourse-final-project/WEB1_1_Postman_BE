@@ -75,4 +75,9 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
             throw new SourceMapLetterNotFountException("원본 편지를 찾을 수 없습니다. 편지가 존재하지 않거나 삭제되었습니다.");
         }
     }
+
+    @Override
+    public void letterBlock(Long letterId) {
+        mapLetterJpaRepository.letterBlock(letterId);
+    }
 }

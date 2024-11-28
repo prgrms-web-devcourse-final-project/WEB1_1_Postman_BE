@@ -259,4 +259,12 @@ public class MapLetterService {
             return new CheckReplyMapLetterResponseDTO(true); //답장을 한 상태
         }
     }
+
+    public void letterBlock(BlockMapLetterType type, Long letterId){
+        if(type==BlockMapLetterType.MAP_LETTER){
+            mapLetterRepository.letterBlock(letterId);
+        }else if(type==BlockMapLetterType.REPLY){
+           replyMapLetterRepository.letterBlock(letterId);
+        }
+    }
 }

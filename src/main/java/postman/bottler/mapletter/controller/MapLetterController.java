@@ -2,12 +2,14 @@ package postman.bottler.mapletter.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.request.*;
 import postman.bottler.mapletter.dto.response.*;
 import postman.bottler.mapletter.exception.*;
+import postman.bottler.mapletter.service.BlockMapLetterType;
 import postman.bottler.mapletter.service.MapLetterService;
 
 import java.math.BigDecimal;

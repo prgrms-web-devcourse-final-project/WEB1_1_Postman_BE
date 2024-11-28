@@ -14,4 +14,6 @@ public interface ReplyMapLetterRepository {
     ReplyMapLetter findById(Long letterId);
 
     ReplyMapLetter findByLetterIdAndUserId(Long letterId, Long userId);
+
+    void letterBlock(Long letterId);
 }

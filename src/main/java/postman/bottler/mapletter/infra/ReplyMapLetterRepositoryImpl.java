@@ -55,4 +55,9 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
         return ReplyMapLetterEntity.toDomain(Objects.requireNonNull(replyMapLetterJpaRepository.findBySourceLetterIdAndCreateUserId(letterId, userId)
                 .orElse(null)));
     }
+
+    @Override
+    public void letterBlock(Long letterId) {
+        replyMapLetterJpaRepository.letterBlock(letterId);
+    }
 }
