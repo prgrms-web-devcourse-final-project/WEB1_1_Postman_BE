@@ -42,13 +42,4 @@ public class ReplyMapLetter {
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
     }
-
-    public static FindAllReplyMapLettersResponseDTO toFindAllReplyMapLettersResponseDTO(ReplyMapLetter replyMapLetter) {
-        return FindAllReplyMapLettersResponseDTO.builder()
-                .replyLetterId(replyMapLetter.getReplyLetterId())
-                .label(replyMapLetter.getLabel())
-                .createdAt(replyMapLetter.getCreatedAt())
-                .build();
-    }
-
 }

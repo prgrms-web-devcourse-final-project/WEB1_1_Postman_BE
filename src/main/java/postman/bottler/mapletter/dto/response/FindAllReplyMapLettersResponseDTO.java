@@ -3,6 +3,7 @@ package postman.bottler.mapletter.dto.response;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import postman.bottler.mapletter.domain.ReplyMapLetter;
 
 @Builder
 public record FindAllReplyMapLettersResponseDTO(
@@ -10,4 +11,11 @@ public record FindAllReplyMapLettersResponseDTO(
         String label,
         LocalDateTime createdAt
 ) {
+    public static FindAllReplyMapLettersResponseDTO from(ReplyMapLetter replyMapLetter) {
+        return FindAllReplyMapLettersResponseDTO.builder()
+                .replyLetterId(replyMapLetter.getReplyLetterId())
+                .label(replyMapLetter.getLabel())
+                .createdAt(replyMapLetter.getCreatedAt())
+                .build();
+    }
 }

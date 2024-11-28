@@ -20,23 +20,32 @@ public class MapLetterController {
 
     private final MapLetterService mapLetterService;
 
+    private void validateMapLetterRequest(BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> {
+                switch (error.getField()) {
+                    case "title":
+                        throw new EmptyMapLetterTitleException(error.getDefaultMessage());
+                    case "description":
+                        throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
+                    case "content":
+                        throw new EmptyMapLetterContentException(error.getDefaultMessage());
+                    case "target":
+                        throw new EmptyMapLetterTargetException(error.getDefaultMessage());
+                    case "sourceLetter":
+                        throw new EmptyReplyMapLetterSourceException(error.getDefaultMessage());
+                    default:
+                        throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
+                }
+            });
+        }
+    }
+
     @PostMapping("/public")
     public ApiResponse<?> createMapLetter(
             @Valid @RequestBody CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
             BindingResult bindingResult, Long userId) {
-        if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(error -> {
-                if ("title".equals(error.getField())) {
-                    throw new EmptyMapLetterTitleException(error.getDefaultMessage());
-                } else if ("content".equals(error.getField())) {
-                    throw new EmptyMapLetterContentException(error.getDefaultMessage());
-                } else if ("description".equals(error.getField())) {
-                    throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
-                }
-            });
-
-            throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
-        }
+        validateMapLetterRequest(bindingResult);
         mapLetterService.createPublicMapLetter(createPublicMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("지도 편지 생성이 성공되었습니다.");
     }
@@ -45,21 +54,7 @@ public class MapLetterController {
     public ApiResponse<?> createTargetLetter(
             @Valid @RequestBody CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
             BindingResult bindingResult, Long userId) {
-        if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(error -> {
-                if ("title".equals(error.getField())) {
-                    throw new EmptyMapLetterTitleException(error.getDefaultMessage());
-                } else if ("content".equals(error.getField())) {
-                    throw new EmptyMapLetterContentException(error.getDefaultMessage());
-                } else if ("target".equals(error.getField())) {
-                    throw new EmptyMapLetterTargetException(error.getDefaultMessage());
-                } else if ("description".equals(error.getField())) {
-                    throw new EmptyMapLetterDescriptionException(error.getDefaultMessage());
-                }
-            });
-
-            throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
-        }
+        validateMapLetterRequest(bindingResult);
         mapLetterService.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("타겟 편지 생성이 성공되었습니다.");
     }
@@ -116,17 +111,7 @@ public class MapLetterController {
     public ApiResponse<?> createReplyMapLetter(
             @Valid @RequestBody CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
             BindingResult bindingResult, @PathVariable Long userId) {
-        if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(error -> {
-                if ("content".equals(error.getField())) {
-                    throw new EmptyMapLetterContentException(error.getDefaultMessage());
-                } else if ("sourceLetter".equals(error.getField())) {
-                    throw new EmptyReplyMapLetterSourceException(error.getDefaultMessage());
-                }
-            });
-
-            throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
-        }
+        validateMapLetterRequest(bindingResult);
         mapLetterService.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("답장 편지 생성이 성공되었습니다.");
     }

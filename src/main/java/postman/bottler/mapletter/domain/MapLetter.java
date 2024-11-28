@@ -74,18 +74,6 @@ public class MapLetter {
                 .build();
     }
 
-    public static OneLetterResponseDTO toOneLetterResponse(MapLetter mapLetter) {
-        return OneLetterResponseDTO.builder()
-                .title(mapLetter.getTitle())
-                .content(mapLetter.getContent())
-                .font(mapLetter.getFont())
-                .paper(mapLetter.getPaper())
-                .label(mapLetter.getLabel())
-                .createdAt(mapLetter.getCreatedAt())
-                .description(mapLetter.getDescription())
-                .build();
-    }
-
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
     }

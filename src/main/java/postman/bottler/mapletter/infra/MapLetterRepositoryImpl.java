@@ -38,8 +38,7 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
         MapLetterEntity letter = mapLetterJpaRepository.findById(letterId)
                 .orElseThrow(() -> new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
 
-        MapLetterEntity mapLetter = em.find(MapLetterEntity.class, letterId);
-        mapLetter.updateDelete(true);
+        letter.updateDelete(true);
     }
 
     @Override

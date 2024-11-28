@@ -61,22 +61,12 @@ public class MapLetterService {
         }
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
-        if(distance > 15){
+        if (distance > 15) {
             throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
         }
 
-        OneLetterResponseDTO oneLetterResponseDTO = MapLetter.toOneLetterResponse(mapLetter);
         String profileImg = ""; //user 서비스 메서드 불러서 받기
-        return OneLetterResponseDTO.builder()
-                .title(oneLetterResponseDTO.title())
-                .content(oneLetterResponseDTO.content())
-                .profileImg(profileImg)
-                .font(oneLetterResponseDTO.font())
-                .paper(oneLetterResponseDTO.paper())
-                .label(oneLetterResponseDTO.label())
-                .createdAt(oneLetterResponseDTO.createdAt())
-                .description(oneLetterResponseDTO.description())
-                .build();
+        return OneLetterResponseDTO.from(mapLetter, profileImg); //from으로 수정하기
     }
 
     @Transactional
@@ -105,14 +95,7 @@ public class MapLetterService {
 //            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
         }
 
-        return FindMapLetterResponseDTO.builder()
-                .letterId(mapLetter.getId())
-                .title(mapLetter.getTitle())
-                .description(mapLetter.getDescription())
-                .label(mapLetter.getLabel())
-                .createdAt(mapLetter.getCreatedAt())
-                .targetUserNickname(targetUserNickname)
-                .build();
+        return FindMapLetterResponseDTO.from(mapLetter, targetUserNickname);
     }
 
     @Transactional(readOnly = true)
@@ -120,49 +103,21 @@ public class MapLetterService {
         List<FindReceivedMapLetterResponseDTO> result = new ArrayList<>();
 
         List<MapLetter> targetMapLetters = mapLetterRepository.findActiveByTargetUserId(userId);
-        targetMapLetterToFindReceivedMapLetterResponseDTO(targetMapLetters, result);
-
-        List<ReplyMapLetter> replyMapLetters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
-        replyMapLetterToFindReceivedMapLetterResponseDTO(replyMapLetters, result);
-
-        result.sort(Comparator.comparing(FindReceivedMapLetterResponseDTO::createdAt).reversed());
-
-        return result;
-    }
-
-    private void targetMapLetterToFindReceivedMapLetterResponseDTO
-            (List<MapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
-        for (MapLetter mapLetter : mapLetters) {
+        for (MapLetter mapLetter : targetMapLetters) {
             String senderNickname = "";
             if (mapLetter.getType() == MapLetterType.PRIVATE) {
-//            senderNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
+                // senderNickname = userService.getNicknameById(mapLetter.getTargetUserId());
             }
-
-            FindReceivedMapLetterResponseDTO dto = FindReceivedMapLetterResponseDTO.builder()
-                    .letterId(mapLetter.getId())
-                    .title(mapLetter.getTitle())
-                    .description(mapLetter.getDescription())
-                    .label(mapLetter.getLabel())
-                    .createdAt(mapLetter.getCreatedAt())
-                    .senderNickname(senderNickname)
-                    .type("target")
-                    .build();
-            result.add(dto);
+            result.add(FindReceivedMapLetterResponseDTO.fromTargetMapLetter(mapLetter, senderNickname));
         }
-    }
 
-    private void replyMapLetterToFindReceivedMapLetterResponseDTO
-            (List<ReplyMapLetter> mapLetters, List<FindReceivedMapLetterResponseDTO> result) {
-        for (ReplyMapLetter mapLetter : mapLetters) {
-            FindReceivedMapLetterResponseDTO dto = FindReceivedMapLetterResponseDTO.builder()
-                    .letterId(mapLetter.getReplyLetterId())
-                    .label(mapLetter.getLabel())
-                    .createdAt(mapLetter.getCreatedAt())
-                    .type("reply")
-                    .sourceLetterId(mapLetter.getSourceLetterId())
-                    .build();
-            result.add(dto);
+        List<ReplyMapLetter> replyMapLetters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
+        for (ReplyMapLetter mapLetter : replyMapLetters) {
+            result.add(FindReceivedMapLetterResponseDTO.fromReplyMapLetter(mapLetter));
         }
+
+        result.sort(Comparator.comparing(FindReceivedMapLetterResponseDTO::createdAt).reversed());
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -171,19 +126,7 @@ public class MapLetterService {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
         return letters.stream()
-                .map(letterWithDistance -> FindNearbyLettersResponseDTO.builder()
-                        .letterId(letterWithDistance.getLetterId())
-                        .latitude(letterWithDistance.getLatitude())
-                        .longitude(letterWithDistance.getLongitude())
-                        .title(letterWithDistance.getTitle())
-                        .createdAt(letterWithDistance.getCreatedAt())
-                        .distance(letterWithDistance.getDistance())
-                        .target(letterWithDistance.getTargetUserId())
-                        .createUserId(letterWithDistance.getCreateUserId())
-                        .label(letterWithDistance.getLabel())
-                        .description(letterWithDistance.getDescription())
-                        .build()
-                )
+                .map(FindNearbyLettersResponseDTO::from)
                 .toList();
     }
 
@@ -214,7 +157,7 @@ public class MapLetterService {
         List<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId);
 
         return findReply.stream()
-                .map(ReplyMapLetter::toFindAllReplyMapLettersResponseDTO)
+                .map(FindAllReplyMapLettersResponseDTO::from)
                 .toList();
     }
 
@@ -227,14 +170,8 @@ public class MapLetterService {
         } else if (!replyMapLetter.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
-        return OneReplyLetterResponseDTO.builder()
-                .content(replyMapLetter.getContent())
-                .sourceLetterId(replyMapLetter.getSourceLetterId())
-                .font(replyMapLetter.getFont())
-                .label(replyMapLetter.getLabel())
-                .paper(replyMapLetter.getPaper())
-                .createdAt(replyMapLetter.getCreatedAt())
-                .build();
+
+        return OneReplyLetterResponseDTO.from(replyMapLetter);
     }
 
     @Transactional

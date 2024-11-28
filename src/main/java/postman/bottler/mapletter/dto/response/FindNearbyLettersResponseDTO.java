@@ -4,6 +4,7 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import postman.bottler.mapletter.dto.MapLetterAndDistance;
 
 @Builder
 public record FindNearbyLettersResponseDTO(
@@ -18,4 +19,18 @@ public record FindNearbyLettersResponseDTO(
         String label,
         String description
 ) {
+    public static FindNearbyLettersResponseDTO from(MapLetterAndDistance letterWithDistance) {
+        return FindNearbyLettersResponseDTO.builder()
+                .letterId(letterWithDistance.getLetterId())
+                .latitude(letterWithDistance.getLatitude())
+                .longitude(letterWithDistance.getLongitude())
+                .title(letterWithDistance.getTitle())
+                .createdAt(letterWithDistance.getCreatedAt())
+                .distance(letterWithDistance.getDistance())
+                .target(letterWithDistance.getTargetUserId())
+                .createUserId(letterWithDistance.getCreateUserId())
+                .label(letterWithDistance.getLabel())
+                .description(letterWithDistance.getDescription())
+                .build();
+    }
 }
