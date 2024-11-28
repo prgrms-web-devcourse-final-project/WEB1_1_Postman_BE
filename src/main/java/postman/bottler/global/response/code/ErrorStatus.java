@@ -18,7 +18,7 @@ public enum ErrorStatus {
 
     // 키워드 편지 에러
     LETTER_NOT_FOUND(HttpStatus.NOT_FOUND, "LETTER4040"),
-    LETTER_ALREADY_SAVED(HttpStatus.BAD_REQUEST, "LETTER4001");
+    LETTER_ALREADY_SAVED(HttpStatus.BAD_REQUEST, "LETTER4001"),
     // 라벨 에러
     INVALID_LABEL(HttpStatus.BAD_REQUEST, "LABEL4000"),
     EMPTY_LABEL_INPUT(HttpStatus.BAD_REQUEST, "LABEL4001"),

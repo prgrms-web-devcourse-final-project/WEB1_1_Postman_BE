@@ -13,6 +13,7 @@ import postman.bottler.letter.domain.SavedLetter;
 @Entity
 @Table(name = "saved_letters")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class SavedLetterEntity {
 
     @Id
