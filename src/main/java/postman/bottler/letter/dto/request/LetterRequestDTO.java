@@ -13,8 +13,10 @@ public record LetterRequestDTO(
         String label
 ) {
     public Letter toDomain(Long userId, String profile) {
+        String validatedTitle = (title == null || title.trim().isEmpty()) ? "무제" : title;
+
         return Letter.builder()
-                .title(title)
+                .title(validatedTitle)
                 .content(this.content)
                 .keywords(this.keywords)
                 .font(this.font)
