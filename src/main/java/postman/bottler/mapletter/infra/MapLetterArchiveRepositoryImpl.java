@@ -21,7 +21,6 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
     private final EntityManager em;
 
     @Override
-    @Transactional
     public MapLetterArchive save(MapLetterArchive archive) {
         MapLetterArchiveEntity mapLetterArchiveEntity=MapLetterArchiveEntity.from(archive);
         MapLetterArchiveEntity save = mapLetterArchiveJpaRepository.save(mapLetterArchiveEntity);
@@ -29,20 +28,17 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<FindAllArchiveLetters> findAllById(Long userId) {
         return mapLetterArchiveJpaRepository.findAllByUserId(userId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public MapLetterArchive findById(Long archiveId) {
         return MapLetterArchiveEntity.toDomain(mapLetterArchiveJpaRepository.findById(archiveId)
                 .orElseThrow(() -> new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다.")));
     }
 
     @Override
-    @Transactional
     public void deleteById(Long archiveId) {
         MapLetterArchiveEntity archive = mapLetterArchiveJpaRepository.findById(archiveId)
                 .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
@@ -51,7 +47,6 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean findByLetterIdAndUserId(Long letterId, Long userId) {
         return mapLetterArchiveJpaRepository.findByMapLetterIdAndUserId(letterId, userId).isPresent();
         // 값이 없으면 false

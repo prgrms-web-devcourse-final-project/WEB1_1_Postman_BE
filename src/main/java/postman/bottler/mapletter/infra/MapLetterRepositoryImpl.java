@@ -21,7 +21,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     private final EntityManager em;
 
     @Override
-    @Transactional
     public MapLetter save(MapLetter mapLetter) {
         MapLetterEntity mapLetterEntity=MapLetterEntity.from(mapLetter);
         MapLetterEntity save = mapLetterJpaRepository.save(mapLetterEntity);
@@ -29,7 +28,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public MapLetter findById(Long id) {
         MapLetterEntity mapLetter = mapLetterJpaRepository.findById(id)
                 .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
@@ -37,7 +35,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    @Transactional
     public void softDelete(Long letterId) {
         MapLetterEntity letter = mapLetterJpaRepository.findById(letterId)
                 .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
@@ -47,7 +44,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<MapLetter> findActiveByCreateUserId(Long userId) {
         List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByCreateUserId(userId);
 
@@ -57,7 +53,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<MapLetter> findActiveByTargetUserId(Long userId) {
         List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByTargetUserId(userId);
 
@@ -67,13 +62,11 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId) {
         return mapLetterJpaRepository.findLettersByUserLocation(latitude, longitude, userId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public void findSourceMapLetterById(Long sourceMapLetterId) {
         MapLetterEntity activeLetter = mapLetterJpaRepository.findActiveById(sourceMapLetterId);
         if (activeLetter == null) {
@@ -82,7 +75,6 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    @Transactional
     public void letterBlock(Long letterId) {
         mapLetterJpaRepository.letterBlock(letterId);
     }

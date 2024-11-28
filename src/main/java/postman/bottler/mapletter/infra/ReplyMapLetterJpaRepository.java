@@ -25,7 +25,6 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
     Optional<ReplyMapLetterEntity> findBySourceLetterIdAndCreateUserId(Long letterId, Long userId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE ReplyMapLetterEntity r SET r.isBlocked = true WHERE r.replyLetterId = :letterId")
     void letterBlock(Long letterId);
 }

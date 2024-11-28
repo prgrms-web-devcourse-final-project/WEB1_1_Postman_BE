@@ -22,7 +22,6 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     @Query("SELECT m FROM MapLetterEntity m WHERE m.targetUserId = :userId AND m.isDeleted = false AND m.isBlocked=false")
     List<MapLetterEntity> findActiveByTargetUserId(Long userId);
 
-    @Transactional
     @Query(value = "SELECT m.map_letter_id as letterId, m.latitude, m.longitude, m.title, m.description, " +
             "m.created_at as createdAt, m.target_user_id as targetUserId, m.create_user_id as createUserId, m.label, " +
             "st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance " +
@@ -41,7 +40,6 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     MapLetterEntity findActiveById(Long sourceMapLetterId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE MapLetterEntity m SET m.isBlocked = true WHERE m.mapLetterId = :letterId")
     void letterBlock(Long letterId);
 }

@@ -16,7 +16,6 @@ public class PaperRepositoryImpl implements PaperRepository {
     private final PaperJpaRepository paperJpaRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public List<Paper> findAll() {
         List<PaperEntity> findAllPapers = paperJpaRepository.findAll();
 

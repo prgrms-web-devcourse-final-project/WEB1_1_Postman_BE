@@ -45,6 +45,7 @@ public class MapLetterService {
         return mapLetterRepository.save(mapLetter);
     }
 
+    @Transactional(readOnly = true)
     public OneLetterResponseDTO findOneMepLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId) && !mapLetter.getCreateUserId().equals(userId))) {
@@ -79,6 +80,7 @@ public class MapLetterService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<FindMapLetterResponseDTO> findSentMapLetters(Long userId) {
         List<MapLetter> mapLetters=mapLetterRepository.findActiveByCreateUserId(userId);
 
@@ -103,6 +105,7 @@ public class MapLetterService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(Long userId) {
         List<FindReceivedMapLetterResponseDTO> result = new ArrayList<>();
 
@@ -152,6 +155,7 @@ public class MapLetterService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<FindNearbyLettersResponseDTO> findNearByMapLetters(BigDecimal latitude, BigDecimal longitude, Long userId) {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
@@ -185,6 +189,7 @@ public class MapLetterService {
         return replyMapLetterRepository.save(replyMapLetter);
     }
 
+    @Transactional(readOnly = true)
     public List<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(Long letterId, Long userId) {
         MapLetter sourceLetter = mapLetterRepository.findById(letterId);
         if (!sourceLetter.getCreateUserId().equals(userId)) {
@@ -201,6 +206,7 @@ public class MapLetterService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public OneReplyLetterResponseDTO findOneReplyMapLetter(Long letterId, Long userId) {
         ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
         MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
@@ -255,6 +261,7 @@ public class MapLetterService {
         }
     }
 
+    @Transactional(readOnly = true)
     public CheckReplyMapLetterResponseDTO checkReplyMapLetter(Long letterId, Long userId) {
         return new CheckReplyMapLetterResponseDTO(replyMapLetterRepository.findByLetterIdAndUserId(letterId, userId));
     }

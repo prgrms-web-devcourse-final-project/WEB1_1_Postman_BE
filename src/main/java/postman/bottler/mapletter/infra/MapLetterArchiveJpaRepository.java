@@ -13,7 +13,6 @@ import java.util.Optional;
 @Repository
 public interface MapLetterArchiveJpaRepository extends JpaRepository<MapLetterArchiveEntity, Long> {
 
-    @Transactional
     @Query("SELECT new postman.bottler.mapletter.dto.response.FindAllArchiveLetters(" +
             "a.mapLetterArchiveId, m.mapLetterId, m.title, m.description, m.label, m.createdAt)" +
             "FROM MapLetterArchiveEntity a, MapLetterEntity m " +
