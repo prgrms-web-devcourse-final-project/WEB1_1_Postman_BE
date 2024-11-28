@@ -33,11 +33,13 @@ public class MapLetterService {
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
 //    private final UserService userService;
 
+    @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO, Long userId) {
         MapLetter mapLetter = MapLetter.createPublicMapLetter(createPublicMapLetterRequestDTO, userId);
         return mapLetterRepository.save(mapLetter);
     }
 
+    @Transactional
     public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO, Long userId) {
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
         return mapLetterRepository.save(mapLetter);
@@ -170,6 +172,7 @@ public class MapLetterService {
                 .toList();
     }
 
+    @Transactional
     public ReplyMapLetter createReplyMapLetter(@Valid CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO, Long userId) {
         boolean isReplied = replyMapLetterRepository.findByLetterIdAndUserId(
                 createReplyMapLetterRequestDTO.sourceLetter(), userId);
@@ -216,6 +219,7 @@ public class MapLetterService {
                 .build();
     }
 
+    @Transactional
     public MapLetterArchive mapLetterArchive(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         if(mapLetter.isDeleted()){
@@ -255,6 +259,7 @@ public class MapLetterService {
         return new CheckReplyMapLetterResponseDTO(replyMapLetterRepository.findByLetterIdAndUserId(letterId, userId));
     }
 
+    @Transactional
     public void letterBlock(BlockMapLetterType type, Long letterId){
         if(type==BlockMapLetterType.MAP_LETTER){
             mapLetterRepository.letterBlock(letterId);
