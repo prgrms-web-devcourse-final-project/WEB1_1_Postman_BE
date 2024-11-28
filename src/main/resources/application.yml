@@ -16,3 +16,13 @@ spring:
 
 fcm:
   private-key: bottler-fcm.json
+
+jwt:
+  secret: ${JWT_SECRET_KEY}  # JWT 비밀 키
+  access:
+    token:
+      expiration: 1800000  # 액세스 토큰 유효 시간 (30분)
+  #      expiration: 10000  # 액세스 토큰 유효 시간 (10초)
+  refresh:
+    token:
+      expiration: 604800000  # 리프레시 토큰 유효 시간 (7일)
