@@ -1,5 +1,6 @@
 package postman.bottler.letter.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,9 +28,8 @@ public class LetterController {
     private final LetterService letterService;
     private final SavedLetterService savedLetterService;
 
-    //TODO Title 없으면 무제 설정
     @PostMapping
-    public ApiResponse<LetterResponseDTO> createLetter(@RequestBody LetterRequestDTO letterRequestDTO) {
+    public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO) {
         LetterResponseDTO result = letterService.createLetter(letterRequestDTO);
         return ApiResponse.onCreateSuccess(result);
     }

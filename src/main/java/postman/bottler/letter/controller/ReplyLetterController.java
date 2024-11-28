@@ -1,5 +1,6 @@
 package postman.bottler.letter.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ public class ReplyLetterController {
     @PostMapping("/{letterId}")
     public ApiResponse<ReplyLetterResponseDTO> createReply(
             @PathVariable Long letterId,
-            @RequestBody ReplyLetterRequestDTO letterReplyRequestDTO
+            @RequestBody @Valid ReplyLetterRequestDTO letterReplyRequestDTO
     ) {
         ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO);
         return ApiResponse.onCreateSuccess(result);
