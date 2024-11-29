@@ -96,11 +96,13 @@ jobs:
 
       - name: .env 파일 EC2로 복사
         run: |
-          scp -i '${{ secrets.EC2_SSH_KEY }}' docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
+          echo '${{ secretes.EC2_SSH_KEY }}' > bottler-keypair.pem
+          chmod 600 bottler-keypair.pem
+          scp -o StrictHostKeyChecking=no -i bottler-keypair.pem docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
 
       - name: EC2로 Docker Compose 배포
         run: |
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
+          ssh -o StrictHostKeyChecking=no -i bottler-keypair.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
           docker pull ${{ secrets.ECR_URI }}:${{ github.sha }}
           cd ~/docker-compose
           TAG=${{ github.sha }} docker-compose -f docker-compose.yml down
