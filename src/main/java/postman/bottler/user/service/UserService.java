@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
+import postman.bottler.user.exception.NicknameException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,12 @@ public class UserService {
     public void checkEmail(String email) {
         if (userRepository.findUserByEmail(email)) {
             throw new EmailException("이메일이 중복되었습니다.");
+        }
+    }
+
+    public void checkNickname(String nickname) {
+        if (userRepository.findUserByNickname(nickname)) {
+            throw new NicknameException("닉네임이 중복되었습니다.");
         }
     }
 }

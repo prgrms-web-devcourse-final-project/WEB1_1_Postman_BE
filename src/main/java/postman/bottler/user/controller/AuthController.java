@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.dto.request.CheckDuplicateEmailRequestDTO;
+import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
@@ -32,6 +33,13 @@ public class AuthController {
     public ApiResponse<?> checkDuplicateEmail(@Valid @RequestBody CheckDuplicateEmailRequestDTO checkDuplicateEmailRequestDTO, BindingResult bindingResult) {
         validateRequestDTO(bindingResult);
         userService.checkEmail(checkDuplicateEmailRequestDTO.email());
+        return ApiResponse.onSuccess("사용 가능한 이메일입니다.");
+    }
+
+    @PostMapping("/duplicate-check/nickname")
+    public ApiResponse<?> checkDuplicateNickname(@Valid @RequestBody CheckDuplicateNicknameRequestDTO checkDuplicateNicknameRequestDTO, BindingResult bindingResult) {
+        validateRequestDTO(bindingResult);
+        userService.checkNickname(checkDuplicateNicknameRequestDTO.nickname());
         return ApiResponse.onSuccess("사용 가능한 이메일입니다.");
     }
 

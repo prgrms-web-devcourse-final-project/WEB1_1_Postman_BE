@@ -26,4 +26,9 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean findUserByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
     }
+
+    @Override
+    public boolean findUserByNickname(String nickname) {
+        return userJpaRepository.existsByNickname(nickname);
+    }
 }

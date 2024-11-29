@@ -8,4 +8,5 @@ public interface UserRepository {
     Optional<UserEntity> findOneByEmail(String email);
     void save(User user);
     boolean findUserByEmail(String email);
+    boolean findUserByNickname(String nickname);
 }
