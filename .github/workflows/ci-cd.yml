@@ -80,27 +80,31 @@ jobs:
 
       - name: .env 파일 작성
         run: |
-          mkdir -p docker-compose
-          echo "DB_URL=${{ secrets.DB_URL }}" >> docker-compose/.env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> docker-compose/.env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> docker-compose/.env
-          echo "BOTTLER_FCM_BASE64=${{ secrets.BOTTLER_FCM_BASE64 }}" >> docker-compose/.env
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> docker-compose/.env
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> docker-compose/.env
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> docker-compose/.env
-          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> docker-compose/.env
-          echo "BASE_URL=${{ secrets.BASE_URL }}" >> docker-compose/.env
-          echo "ECR_URI=${{ secrets.ECR_URI }}" >> docker-compose/.env
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> docker-compose/.env
-          echo "TAG=${{ github.sha }}" >> docker-compose/.env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "BOTTLER_FCM_BASE64=${{ secrets.BOTTLER_FCM_BASE64 }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
+          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          echo "ECR_URI=${{ secrets.ECR_URI }}" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "TAG=${{ github.sha }}" >> .env
+
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY_BASE64 }}" | base64 -d > ${HOME}/ec2_ssh_key
+          chmod 400 ${HOME}/ec2_ssh_key
 
       - name: .env 파일 EC2로 복사
         run: |
-          scp -i ${{ secrets.EC2_SSH_KEY }} docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
+          scp -o StrictHostKeyChecking=no -i ${HOME}/ec2_ssh_key .env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
 
       - name: EC2로 Docker Compose 배포
         run: |
-          ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
+          ssh -o StrictHostKeyChecking=no -i ${HOME}/ec2_ssh_key ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
           docker pull ${{ secrets.ECR_URI }}:${{ github.sha }}
           cd ~/docker-compose
           TAG=${{ github.sha }} docker-compose -f docker-compose.yml down
