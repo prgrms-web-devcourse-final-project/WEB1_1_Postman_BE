@@ -12,6 +12,7 @@ import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
+import postman.bottler.letter.exception.LetterAccessDeniedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
 @Service
@@ -40,7 +41,8 @@ public class LetterService {
 
     @Transactional
     public void deleteLetter(Long letterId) {
-        validateLetterExists(letterId);
+        Long userId = getCurrentUserId();
+        validateLetterOwnership(userId, letterId);
         letterRepository.remove(letterId);
     }
 
@@ -50,25 +52,25 @@ public class LetterService {
         return LetterResponseDTO.from(letter);
     }
 
-    public void incrementWarningCount(Long letterId) {
+    public void blockLetter(Long letterId) {
 
-    }
-
-    private void validateLetterExists(Long letterId) {
-        if (!letterRepository.existsById(letterId)) {
-            throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
-        }
-    }
-
-    private Letter findLetter(Long letterId) {
-        return letterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)
     public ReceiverDTO getReceiverInfoById(Long letterId) {
         Letter letter = findLetter(letterId);
         return ReceiverDTO.from(letter);
+    }
+
+    private void validateLetterOwnership(Long userId, Long letterId) {
+        if (!letterRepository.existsByUserIdAndLetterId(userId, letterId)) {
+            throw new LetterAccessDeniedException("해당 편지의 작성자가 아닙니다.");
+        }
+    }
+
+    private Letter findLetter(Long letterId) {
+        return letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
 
     private Long getCurrentUserId() {
