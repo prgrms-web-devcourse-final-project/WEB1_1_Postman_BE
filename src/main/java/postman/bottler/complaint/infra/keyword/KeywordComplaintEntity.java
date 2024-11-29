@@ -29,8 +29,6 @@ public class KeywordComplaintEntity {
 
     private Long reporterId;
 
-    private Long reportedUserId;
-
     private String description;
 
     @CreationTimestamp
@@ -41,12 +39,11 @@ public class KeywordComplaintEntity {
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
                 .reporterId(complaint.getReporterId())
-                .reportedUserId(complaint.getReportedUserId())
                 .description(complaint.getDescription())
                 .build();
     }
 
     public KeywordComplaint toDomain() {
-        return KeywordComplaint.of(id, letterId, reporterId, reportedUserId, description);
+        return KeywordComplaint.of(id, letterId, reporterId, description);
     }
 }

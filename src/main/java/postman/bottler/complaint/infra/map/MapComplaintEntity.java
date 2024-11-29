@@ -29,8 +29,6 @@ public class MapComplaintEntity {
 
     private Long reporterId;
 
-    private Long reportedUserId;
-
     private String description;
 
     @CreationTimestamp
@@ -41,12 +39,11 @@ public class MapComplaintEntity {
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
                 .reporterId(complaint.getReporterId())
-                .reportedUserId(complaint.getReportedUserId())
                 .description(complaint.getDescription())
                 .build();
     }
 
     public MapComplaint toDomain() {
-        return MapComplaint.of(id, letterId, reporterId, reportedUserId, description);
+        return MapComplaint.of(id, letterId, reporterId, description);
     }
 }

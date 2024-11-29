@@ -29,8 +29,6 @@ public class ReplyComplaintEntity {
 
     private Long reporterId;
 
-    private Long reportedUserId;
-
     private String description;
 
     @CreationTimestamp
@@ -41,12 +39,11 @@ public class ReplyComplaintEntity {
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
                 .reporterId(complaint.getReporterId())
-                .reportedUserId(complaint.getReportedUserId())
                 .description(complaint.getDescription())
                 .build();
     }
 
     public ReplyComplaint toDomain() {
-        return ReplyComplaint.of(id, letterId, reporterId, reportedUserId, description);
+        return ReplyComplaint.of(id, letterId, reporterId, description);
     }
 }

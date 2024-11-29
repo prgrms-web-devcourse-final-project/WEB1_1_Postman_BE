@@ -17,46 +17,46 @@ public class ComplaintService {
     private final ReplyComplaintRepository replyComplaintRepository;
 
     @Transactional
-    public ComplaintResponseDTO complainKeywordLetter(Long letterId, Long reporterId, Long reportedUserId,
+    public ComplaintResponseDTO complainKeywordLetter(Long letterId, Long reporterId,
                                                       String description) {
         Complaints complaints = keywordComplaintRepository.findByLetterId(letterId);
         complaints.validateDuplication(reporterId);
-        KeywordComplaint complaint = KeywordComplaint.create(letterId, reporterId, reportedUserId, description);
+        KeywordComplaint complaint = KeywordComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
+            // TODO 편지 블락 처리
             // TODO 편지 작성자에게 경고 알림
             // TODO 편지 작성자 경고 횟수 증가
-            // TODO 편지 블락 처리
         }
         return ComplaintResponseDTO.from(keywordComplaintRepository.save(complaint));
     }
 
     @Transactional
-    public ComplaintResponseDTO complainMapLetter(Long letterId, Long reporterId, Long reportedUserId,
+    public ComplaintResponseDTO complainMapLetter(Long letterId, Long reporterId,
                                                   String description) {
         Complaints complaints = mapComplaintRepository.findByLetterId(letterId);
         complaints.validateDuplication(reporterId);
-        MapComplaint complaint = MapComplaint.create(letterId, reporterId, reportedUserId, description);
+        MapComplaint complaint = MapComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
+            // TODO 편지 블락 처리
             // TODO 편지 작성자에게 경고 알림
             // TODO 편지 작성자 경고 횟수 증가
-            // TODO 편지 블락 처리
         }
         return ComplaintResponseDTO.from(mapComplaintRepository.save(complaint));
     }
 
     @Transactional
-    public ComplaintResponseDTO complainReplyLetter(Long letterId, Long reporterId, Long reportedUserId,
+    public ComplaintResponseDTO complainReplyLetter(Long letterId, Long reporterId,
                                                     String description) {
         Complaints complaints = replyComplaintRepository.findByLetterId(letterId);
         complaints.validateDuplication(reporterId);
-        ReplyComplaint complaint = ReplyComplaint.create(letterId, reporterId, reportedUserId, description);
+        ReplyComplaint complaint = ReplyComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
+            // TODO 편지 블락 처리
             // TODO 편지 작성자에게 경고 알림
             // TODO 편지 작성자 경고 횟수 증가
-            // TODO 편지 블락 처리
         }
         return ComplaintResponseDTO.from(replyComplaintRepository.save(complaint));
     }

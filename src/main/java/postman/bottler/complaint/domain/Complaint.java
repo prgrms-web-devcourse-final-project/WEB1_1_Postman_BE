@@ -12,22 +12,18 @@ public class Complaint {
 
     private Long reporterId;
 
-    private Long reportedUserId;
-
     private String description;
 
-    protected Complaint(Long letterId, Long reporterId, Long reportedUserId, String description) {
+    protected Complaint(Long letterId, Long reporterId, String description) {
         this.letterId = letterId;
         this.reporterId = reporterId;
-        this.reportedUserId = reportedUserId;
         this.description = description;
     }
 
-    protected Complaint(Long id, Long letterId, Long reporterId, Long reportedUserId, String description) {
+    protected Complaint(Long id, Long letterId, Long reporterId, String description) {
         this.id = id;
         this.letterId = letterId;
         this.reporterId = reporterId;
-        this.reportedUserId = reportedUserId;
         this.description = description;
     }
 

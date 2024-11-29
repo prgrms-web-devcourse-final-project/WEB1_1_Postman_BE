@@ -25,7 +25,7 @@ public class ComplaintController {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         ComplaintResponseDTO response = complaintService.complainKeywordLetter(letterId,
-                complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
+                complaintRequest.reporterId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
 
@@ -37,7 +37,7 @@ public class ComplaintController {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         ComplaintResponseDTO response = complaintService.complainMapLetter(letterId,
-                complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
+                complaintRequest.reporterId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
 
@@ -49,7 +49,7 @@ public class ComplaintController {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         ComplaintResponseDTO response = complaintService.complainReplyLetter(letterId,
-                complaintRequest.reporterId(), complaintRequest.writerId(), complaintRequest.description());
+                complaintRequest.reporterId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
 }
