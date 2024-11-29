@@ -7,4 +7,5 @@ import postman.bottler.user.infra.entity.UserEntity;
 public interface UserRepository {
     Optional<UserEntity> findOneByEmail(String email);
     void save(User user);
+    boolean findUserByEmail(String email);
 }
