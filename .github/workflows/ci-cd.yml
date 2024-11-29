@@ -96,7 +96,7 @@ jobs:
 
       - name: .env 파일 EC2로 복사
         run: |
-          scp -i ${{ secrets.EC2_SSH_KEY }} docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
+          scp -i '${{ secrets.EC2_SSH_KEY }}' docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
 
       - name: EC2로 Docker Compose 배포
         run: |
