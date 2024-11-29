@@ -18,7 +18,7 @@ jobs:
       BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
 
       # AWS 환경변수
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
