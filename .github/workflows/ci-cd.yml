@@ -105,10 +105,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i bottler-keypair.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
-          sudo docker pull ${{ secrets.ECR_URI }}/bottler-backend:${{ github.sha }}
+          docker pull ${{ secrets.ECR_URI }}/bottler-backend:${{ github.sha }}
           
           cd ~/docker-compose
           export TAG=${{ github.sha }}
-          sudo /usr/local/bin/docker-compose -f docker-compose.yml down
-          sudo /usr/local/bin/docker-compose -f docker-compose.yml up -d
+          /usr/local/bin/docker-compose -f docker-compose.yml down
+          /usr/local/bin/docker-compose -f docker-compose.yml up -d
           EOF
