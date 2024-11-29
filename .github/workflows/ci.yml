@@ -16,7 +16,7 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       # FCM 환경변수
-      BOTTLER_FCM: ${{ secrets.BOTTLER_FCM }}
+      BOTTLER_FCM: ${{ secrets.BOTTLER_FCM_BASE64 }}
 
       # AWS 환경변수
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
