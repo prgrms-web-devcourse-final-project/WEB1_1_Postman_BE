@@ -1,5 +1,48 @@
 package postman.bottler.notification.service;
 
-public interface NotificationService {
-    // 알림 보내기
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.notification.domain.Notification;
+import postman.bottler.notification.domain.PushMessages;
+import postman.bottler.notification.domain.Subscriptions;
+import postman.bottler.notification.dto.response.NotificationResponseDTO;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class NotificationService {
+    private final NotificationRepository notificationRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final PushNotificationProvider pushNotificationProvider;
+
+    @Transactional
+    public NotificationResponseDTO sendNotification(String type, Long userId, Long letterId) {
+        Notification notification = Notification.create(type, userId, letterId);
+        Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);
+        if (subscriptions.isPushEnabled()) {
+            sendPushMessagesToUser(subscriptions, notification);
+        }
+        return NotificationResponseDTO.from(notificationRepository.save(notification));
+    }
+
+    private void sendPushMessagesToUser(Subscriptions subscriptions, Notification notification) {
+        PushMessages pushMessages = subscriptions.makeMessages(notification.getType());
+        pushNotificationProvider.pushAll(pushMessages);
+    }
+
+    @Transactional
+    public List<NotificationResponseDTO> getUserNotifications(Long userId) {
+        List<Notification> notifications = notificationRepository.findByReceiver(userId);
+        List<NotificationResponseDTO> result = notifications.stream()
+                .map(NotificationResponseDTO::from)
+                .toList();
+        notifications.stream()
+                .filter(notification -> !notification.getIsRead())
+                .forEach(Notification::read);
+        notificationRepository.updateNotifications(notifications);
+        return result;
+    }
 }

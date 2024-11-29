@@ -1,4 +1,32 @@
 package postman.bottler.letter.dto.request;
 
-public record LetterRequestDTO() {
+import java.time.LocalDateTime;
+import java.util.List;
+import postman.bottler.letter.domain.Letter;
+
+public record LetterRequestDTO(
+        String title,
+        String content,
+        List<String> keywords,
+        String font,
+        String paper,
+        String label
+) {
+    public Letter toDomain(Long userId, String profile) {
+        String validatedTitle = (title == null || title.trim().isEmpty()) ? "무제" : title;
+
+        return Letter.builder()
+                .title(validatedTitle)
+                .content(this.content)
+                .keywords(this.keywords)
+                .font(this.font)
+                .paper(this.paper)
+                .label(this.label)
+                .profile(profile)
+                .userId(userId)
+                .isDeleted(false)
+                .isBlocked(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 }

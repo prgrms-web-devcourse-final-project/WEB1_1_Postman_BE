@@ -7,9 +7,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # create, create-drop, update, none 중 선택 가능
-    show-sql: true       # 콘솔에 SQL 쿼리 로그 출력
+      ddl-auto: update
     properties:
       hibernate:
-        format_sql: true # SQL 쿼리를 보기 좋게 출력
-        dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 8.x 사용 시 적합
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        highlight_sql: true
+    show-sql: true
+
+fcm:
+  private-key: bottler-fcm.json

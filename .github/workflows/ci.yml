@@ -1,0 +1,78 @@
+name: Develop Branch CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # 데이터베이스 환경변수 (RDS)
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      # AWS 환경변수
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # ECR 환경변수
+      ECR_URI: ${{ secrets.ECR_URI }}
+
+      # S3 환경변수
+      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      BASE_URL: ${{ secrets.BASE_URL }}
+
+      # gpt 환경변수
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: JDK 17 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Gradle 의존성 캐싱
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/caches/build-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Gradle 권한 부여
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: JSON 디렉토리 생성
+        run: mkdir -p WEB1_1_Postman_BE/src/resources
+
+      - name: JSON 생성
+        run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
+
+      - name: Gradle로 테스트 및 커버리지 리포트 생성
+        run: ./gradlew clean build jacocoTestReport
+
+      - name: SonarCloud 패키지 캐싱
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarCloud 분석
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube
+
+      - name: JSON 삭제
+        run: rm src/main/resources/bottler-fcm.json
