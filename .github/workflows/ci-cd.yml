@@ -96,7 +96,7 @@ jobs:
 
       - name: .env 파일 EC2로 복사
         run: |
-          echo '${{ secretes.EC2_SSH_KEY }}' > bottler-keypair.pem
+          echo '${{ secrets.EC2_SSH_KEY }}' > bottler-keypair.pem
           chmod 600 bottler-keypair.pem
           scp -o StrictHostKeyChecking=no -i bottler-keypair.pem docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
 
