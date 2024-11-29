@@ -11,4 +11,4 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
 fcm:
-  private-key: bottler-fcm.json
+  private-key: ${BOTTLER_FCM_BASE64}
