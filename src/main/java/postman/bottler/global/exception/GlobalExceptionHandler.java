@@ -1,11 +1,10 @@
 package postman.bottler.global.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import lombok.extern.slf4j.Slf4j;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.global.response.ErrorStatus;
+import postman.bottler.global.response.code.ErrorStatus;
 
 @RestControllerAdvice
 @Slf4j
