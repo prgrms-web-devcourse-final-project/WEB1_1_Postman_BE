@@ -21,12 +21,12 @@ public class KeywordComplaintRepositoryTest {
     @DisplayName("편지 ID로 찾은 신고 객체들은 mutable이어야 한다.")
     public void mutable() {
         // GIVEN
-        keywordComplaintRepository.save(KeywordComplaint.create(1L, 1L, 2L, "설명"));
+        keywordComplaintRepository.save(KeywordComplaint.create(1L, 1L, "설명"));
 
         // WHEN
         Complaints find = keywordComplaintRepository.findByLetterId(1L);
 
         // THEN
-        Assertions.assertDoesNotThrow(() -> find.add(KeywordComplaint.create(1L, 1L, 2L, "설명")));
+        Assertions.assertDoesNotThrow(() -> find.add(KeywordComplaint.create(1L, 1L, "설명")));
     }
 }

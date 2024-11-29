@@ -13,7 +13,7 @@ public class ComplaintsTest {
     @DisplayName("한 편지의 신고자가 2명일 경우, DuplicateComplainException 예외를 발생시킨다.")
     public void duplicateException() {
         // GIVEN
-        Complaints complaints = Complaints.from(List.of(KeywordComplaint.create(1L, 1L, 2L, "욕설 사용")));
+        Complaints complaints = Complaints.from(List.of(KeywordComplaint.create(1L, 1L, "욕설 사용")));
 
         // WHEN -  THEN
         assertThatThrownBy(() -> complaints.validateDuplication(1L)).isInstanceOf(DuplicateComplainException.class);
