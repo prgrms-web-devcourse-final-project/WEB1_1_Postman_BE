@@ -15,4 +15,6 @@ public interface LetterRepository {
     boolean existsById(Long letterId);
 
     Page<Letter> findAll(Long userId, Pageable pageable);
+
+    boolean existsByUserIdAndLetterId(Long userId, Long letterId);
 }

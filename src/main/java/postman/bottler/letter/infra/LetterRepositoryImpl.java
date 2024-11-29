@@ -42,4 +42,9 @@ public class LetterRepositoryImpl implements LetterRepository {
         return letterJpaRepository.findAllByUserId(userId, pageable)
                 .map(LetterEntity::toDomain);
     }
+
+    @Override
+    public boolean existsByUserIdAndLetterId(Long userId, Long letterId) {
+        return letterJpaRepository.existsByUserIdAndId(userId, letterId);
+    }
 }

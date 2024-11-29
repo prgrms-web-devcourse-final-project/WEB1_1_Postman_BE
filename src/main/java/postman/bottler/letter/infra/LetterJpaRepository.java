@@ -7,4 +7,6 @@ import postman.bottler.letter.infra.entity.LetterEntity;
 
 public interface LetterJpaRepository extends JpaRepository<LetterEntity, Long> {
     Page<LetterEntity> findAllByUserId(Long userId, Pageable pageable);
+
+    boolean existsByUserIdAndId(Long userId, Long id);
 }
