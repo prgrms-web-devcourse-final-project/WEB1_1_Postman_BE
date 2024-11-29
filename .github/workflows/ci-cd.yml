@@ -103,8 +103,9 @@ jobs:
       - name: EC2로 Docker Compose 배포
         run: |
           ssh -o StrictHostKeyChecking=no -i bottler-keypair.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
-          docker pull ${{ secrets.ECR_URI }}:${{ github.sha }}
+          sudo docker pull ${{ secrets.ECR_URI }}/bottler-backend:${{ github.sha }}
           cd ~/docker-compose
-          TAG=${{ github.sha }} docker-compose -f docker-compose.yml down
-          TAG=${{ github.sha }} docker-compose -f docker-compose.yml up -d
+          export TAG=${{ github.sha }}
+          sudo /usr/local/bin/docker-compose -f docker-compose.yml down
+          sudo /usr/local/bin/docker-compose -f docker-compose.yml up -d
           EOF
