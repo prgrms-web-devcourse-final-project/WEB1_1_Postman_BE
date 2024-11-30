@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +23,6 @@ import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
-import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.LetterService;
 
 @RestController
@@ -33,7 +31,6 @@ import postman.bottler.letter.service.LetterService;
 public class LetterController {
 
     private final LetterService letterService;
-    private final LetterBoxService letterBoxService;
 
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO,
@@ -71,11 +68,5 @@ public class LetterController {
     public ApiResponse<LetterDetailResponseDTO> getLetter(@PathVariable Long letterId) {
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId);
         return ApiResponse.onSuccess(result);
-    }
-
-    @PutMapping("/{letterId}/save")
-    public ApiResponse<String> saveLetter(@PathVariable Long letterId) {
-        letterBoxService.saveLetter(letterId);
-        return ApiResponse.onSuccess("키워드 편지를 보관했습니다.");
     }
 }

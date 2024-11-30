@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
+import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
@@ -21,6 +24,7 @@ import postman.bottler.letter.exception.LetterNotFoundException;
 public class LetterService {
 
     private final LetterRepository letterRepository;
+    private final LetterBoxService letterBoxService;
 
     @Transactional
     public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO) {
@@ -28,6 +32,9 @@ public class LetterService {
         String userProfile = "profile url";
 
         Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
+        letterBoxService.saveLetter(
+                LetterBoxDTO.of(userId, letter.getId(), LetterType.LETTER, BoxType.SEND, letter.getCreatedAt())
+        );
         return LetterResponseDTO.from(letter);
     }
 

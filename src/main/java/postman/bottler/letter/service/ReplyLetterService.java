@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.domain.ReplyLetter;
+import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
@@ -20,6 +23,7 @@ public class ReplyLetterService {
 
     private final ReplyLetterRepository replyLetterRepository;
     private final LetterService letterService;
+    private final LetterBoxService letterBoxService;
 
     @Transactional
     public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO) {
@@ -33,6 +37,13 @@ public class ReplyLetterService {
         ReplyLetter replyLetter = replyLetterRepository.save(
                 letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId, userProfile)
         );
+
+        letterBoxService.saveLetter(
+                LetterBoxDTO.of(senderId, replyLetter.getId(), LetterType.REPLY_LETTER, BoxType.SEND,
+                        replyLetter.getCreatedAt()));
+        letterBoxService.saveLetter(
+                LetterBoxDTO.of(receiverId, replyLetter.getId(), LetterType.REPLY_LETTER, BoxType.RECEIVE,
+                        replyLetter.getCreatedAt()));
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 

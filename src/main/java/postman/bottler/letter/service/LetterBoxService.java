@@ -7,9 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.letter.domain.LetterBox;
+import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
-import postman.bottler.letter.exception.LetterAlreadySavedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
 @Slf4j
@@ -18,21 +17,10 @@ import postman.bottler.letter.exception.LetterNotFoundException;
 public class LetterBoxService {
 
     private final LetterBoxRepository letterBoxRepository;
-    private final LetterRepository letterRepository;
 
     @Transactional
-    public void saveLetter(Long letterId) {
-        Long userId = getCurrentUserId();
-
-        validateCanBeSaved(userId, letterId);
-        validateLetterExists(letterId);
-
-        LetterBox letterBox = LetterBox.builder()
-                .userId(userId)
-                .letterId(letterId)
-                .build();
-
-        letterBoxRepository.save(letterBox);
+    public void saveLetter(LetterBoxDTO letterBoxDTO) {
+        letterBoxRepository.save(letterBoxDTO.toDomain());
     }
 
     @Transactional(readOnly = true)
@@ -60,18 +48,6 @@ public class LetterBoxService {
 
         validateSavedLetterExists(letterId, userId);
         letterBoxRepository.remove(userId, letterId);
-    }
-
-    private void validateLetterExists(Long letterId) {
-        if (!letterRepository.existsById(letterId)) {
-            throw new LetterNotFoundException("키워드 편지가 존재하지 않습니다.");
-        }
-    }
-
-    private void validateCanBeSaved(Long userId, Long letterId) {
-        if (letterBoxRepository.isSaved(userId, letterId)) {
-            throw new LetterAlreadySavedException("이미 저장된 편지입니다.");
-        }
     }
 
     private void validateSavedLetterExists(Long letterId, Long userId) {
