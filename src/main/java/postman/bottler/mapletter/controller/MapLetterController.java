@@ -2,6 +2,7 @@ package postman.bottler.mapletter.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
@@ -21,7 +22,7 @@ public class MapLetterController {
     private final MapLetterService mapLetterService;
 
     private void validateMapLetterRequest(BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 switch (error.getField()) {
                     case "title":
@@ -35,7 +36,8 @@ public class MapLetterController {
                     case "sourceLetter":
                         throw new EmptyReplyMapLetterSourceException(error.getDefaultMessage());
                     default:
-                        throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
+                        throw new IllegalArgumentException(
+                                bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
                 }
             });
         }
@@ -81,9 +83,13 @@ public class MapLetterController {
         return ApiResponse.onDeleteSuccess(letters);
     }
 
-    @GetMapping("/sent")
-    public ApiResponse<List<FindMapLetterResponseDTO>> findSentMapLetters(Long userId) {
-        return ApiResponse.onSuccess(mapLetterService.findSentMapLetters(userId));
+    @GetMapping("/sent/{userId}")
+    public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sort, @PathVariable Long userId) {
+        return ApiResponse.onSuccess(
+                MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, sort, userId)));
     }
 
     @GetMapping("/received")

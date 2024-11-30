@@ -1,11 +1,12 @@
 package postman.bottler.mapletter.infra;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, Long> {
     @Query("SELECT m FROM MapLetterEntity m "
             + "WHERE m.createUserId = :userId AND m.isDeleted = false AND m.isBlocked = false")
-    List<MapLetterEntity> findActiveByCreateUserId(Long userId);
+    Page<MapLetterEntity> findActiveByCreateUserId(Long userId, Pageable pageable);
 
     @Query("SELECT m FROM MapLetterEntity m "
             + "WHERE m.targetUserId = :userId AND m.isDeleted = false AND m.isBlocked=false")

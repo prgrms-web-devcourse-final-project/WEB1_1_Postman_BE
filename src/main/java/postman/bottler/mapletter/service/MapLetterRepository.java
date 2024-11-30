@@ -1,11 +1,14 @@
 package postman.bottler.mapletter.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 
 import java.math.BigDecimal;
 import java.util.List;
+import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
 @Repository
 public interface MapLetterRepository {
@@ -15,7 +18,7 @@ public interface MapLetterRepository {
 
     void softDelete(Long letterId);
 
-    List<MapLetter> findActiveByCreateUserId(Long userId);
+    Page<MapLetter> findActiveByCreateUserId(Long userId, Pageable pageable);
 
     List<MapLetter> findActiveByTargetUserId(Long userId);
 

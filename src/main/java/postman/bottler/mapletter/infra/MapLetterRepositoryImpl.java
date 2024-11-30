@@ -5,6 +5,8 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
@@ -42,12 +44,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    public List<MapLetter> findActiveByCreateUserId(Long userId) {
-        List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByCreateUserId(userId);
+    public Page<MapLetter> findActiveByCreateUserId(Long userId, Pageable pageable) {
+        Page<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByCreateUserId(userId, pageable);
 
-        return findActiveLetters.stream()
-                .map(MapLetterEntity::toDomain)
-                .toList();
+        return findActiveLetters.map(MapLetterEntity::toDomain);
     }
 
     @Override

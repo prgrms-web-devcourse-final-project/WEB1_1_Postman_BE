@@ -2,6 +2,11 @@ package postman.bottler.mapletter.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
@@ -25,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -81,12 +87,11 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindMapLetterResponseDTO> findSentMapLetters(Long userId) {
-        List<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId);
+    public Page<FindMapLetterResponseDTO> findSentMapLetters(int page, int size, String sort, Long userId) {
+        Page<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId,
+                PageRequest.of(page - 1, size, Sort.by(sort).descending()));
 
-        return mapLetters.stream()
-                .map(this::toFindSentMapLetter)
-                .toList();
+        return mapLetters.map(this::toFindSentMapLetter);
     }
 
     private FindMapLetterResponseDTO toFindSentMapLetter(MapLetter mapLetter) {
@@ -125,9 +130,7 @@ public class MapLetterService {
                                                                    Long userId) {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
-        return letters.stream()
-                .map(FindNearbyLettersResponseDTO::from)
-                .toList();
+        return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
     }
 
     @Transactional
@@ -156,9 +159,7 @@ public class MapLetterService {
 
         List<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId);
 
-        return findReply.stream()
-                .map(FindAllReplyMapLettersResponseDTO::from)
-                .toList();
+        return findReply.stream().map(FindAllReplyMapLettersResponseDTO::from).toList();
     }
 
     @Transactional(readOnly = true)
@@ -182,10 +183,7 @@ public class MapLetterService {
         } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
             throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
         }
-        MapLetterArchive archive = MapLetterArchive.builder()
-                .mapLetterId(letterId)
-                .userId(userId)
-                .build();
+        MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId).build();
 
         boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
         if (isArchived) {
