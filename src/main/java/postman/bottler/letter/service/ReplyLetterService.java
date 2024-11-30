@@ -78,7 +78,6 @@ public class ReplyLetterService {
     @Transactional
     public void deleteReplyLetter(Long replyLetterId) {
         replyLetterRepository.delete(replyLetterId);
-        letterBoxService.deleteLetter(replyLetterId);
     }
 
     @Transactional

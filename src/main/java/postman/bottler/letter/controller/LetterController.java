@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
@@ -46,9 +47,9 @@ public class LetterController {
         return ApiResponse.onCreateSuccess(result);
     }
 
-    @DeleteMapping("/{letterId}")
-    public ApiResponse<String> deleteLetter(@PathVariable Long letterId) {
-        deleteManagerService.deleteLetter(letterId);
+    @DeleteMapping
+    public ApiResponse<String> deleteLetter(LetterDeleteRequestDTO letterDeleteRequestDTO) {
+        deleteManagerService.deleteLetter(letterDeleteRequestDTO);
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 

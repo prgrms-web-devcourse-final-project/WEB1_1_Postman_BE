@@ -21,9 +21,11 @@ public interface LetterBoxRepository {
 
     Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
 
-    void deleteByLetterIds(List<Long> letterIds, LetterType letterType, BoxType boxType);
+    void deleteByIdsAndTypes(List<Long> letterIds, LetterType letterType, BoxType boxType);
 
-    void deleteByLetterId(Long letterId);
+    void deleteByIdAndType(Long letterId, LetterType letterType);
 
-    void deleteAllByLetterIds(List<Long> letterIds, LetterType letterType);
+    void deleteByIdsAndType(List<Long> letterIds, LetterType letterType);
+
+    void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType);
 }

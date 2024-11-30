@@ -28,52 +28,55 @@ public class DeleteManagerService {
                         )
                 ));
 
-        // LETTER 삭제
         if (groupedByTypeAndBox.containsKey(LetterType.LETTER)) {
             Map<BoxType, List<Long>> letterBoxMap = groupedByTypeAndBox.get(LetterType.LETTER);
-
-            // SEND BoxType
             if (letterBoxMap.containsKey(BoxType.SEND)) {
                 List<Long> letterIds = letterBoxMap.get(BoxType.SEND);
                 letterService.deleteLetters(letterIds); // LetterService에서 삭제
-                letterBoxService.deleteAllByType(letterIds, LetterType.LETTER);
+                letterBoxService.deleteByIdsAndType(letterIds, LetterType.LETTER);
             }
-
-            // RECEIVE BoxType
             if (letterBoxMap.containsKey(BoxType.RECEIVE)) {
                 List<Long> letterIds = letterBoxMap.get(BoxType.RECEIVE);
-                letterBoxService.deleteByType(letterIds, LetterType.LETTER, BoxType.RECEIVE);
+                letterBoxService.deleteByIdsAndTypes(letterIds, LetterType.LETTER, BoxType.RECEIVE);
             }
         }
 
-        // REPLY_LETTER 삭제
         if (groupedByTypeAndBox.containsKey(LetterType.REPLY_LETTER)) {
             Map<BoxType, List<Long>> replyLetterBoxMap = groupedByTypeAndBox.get(LetterType.REPLY_LETTER);
-
-            // SEND BoxType
             if (replyLetterBoxMap.containsKey(BoxType.SEND)) {
                 List<Long> replyLetterIds = replyLetterBoxMap.get(BoxType.SEND);
                 replyLetterService.deleteReplyLetters(replyLetterIds); // ReplyLetterService에서 삭제
-                letterBoxService.deleteAllByType(replyLetterIds, LetterType.REPLY_LETTER);
+                letterBoxService.deleteByIdsAndType(replyLetterIds, LetterType.REPLY_LETTER);
             }
-
-            // RECEIVE BoxType
             if (replyLetterBoxMap.containsKey(BoxType.RECEIVE)) {
                 List<Long> replyLetterIds = replyLetterBoxMap.get(BoxType.RECEIVE);
-                letterBoxService.deleteByType(replyLetterIds, LetterType.REPLY_LETTER, BoxType.RECEIVE);
+                letterBoxService.deleteByIdsAndTypes(replyLetterIds, LetterType.REPLY_LETTER, BoxType.RECEIVE);
             }
         }
     }
 
     @Transactional
-    public void deleteLetter(Long letterId) {
-        letterService.deleteLetter(letterId);
-        letterBoxService.deleteLetter(letterId);
-    }
+    public void deleteLetter(LetterDeleteRequestDTO letterDeleteRequestDTO) {
+        if (letterDeleteRequestDTO.letterType().equals(LetterType.LETTER)) {
+            if (letterDeleteRequestDTO.boxType().equals(BoxType.SEND)) {
+                letterService.deleteLetter(letterDeleteRequestDTO.letterId());
+                letterBoxService.deleteByIdAndType(letterDeleteRequestDTO.letterId(), LetterType.LETTER);
+            }
+            if (letterDeleteRequestDTO.boxType().equals(BoxType.RECEIVE)) {
+                letterBoxService.deleteByIdAndTypes(letterDeleteRequestDTO.letterId(), LetterType.LETTER,
+                        BoxType.RECEIVE);
+            }
+        }
 
-    @Transactional
-    public void deleteReplyLetter(Long replyLetterId) {
-        replyLetterService.deleteReplyLetter(replyLetterId);
-        letterBoxService.deleteLetter(replyLetterId);
+        if (letterDeleteRequestDTO.letterType().equals(LetterType.REPLY_LETTER)) {
+            if (letterDeleteRequestDTO.boxType().equals(BoxType.SEND)) {
+                replyLetterService.deleteReplyLetter(letterDeleteRequestDTO.letterId());
+                letterBoxService.deleteByIdAndType(letterDeleteRequestDTO.letterId(), LetterType.REPLY_LETTER);
+            }
+            if (letterDeleteRequestDTO.boxType().equals(BoxType.RECEIVE)) {
+                letterBoxService.deleteByIdAndTypes(letterDeleteRequestDTO.letterId(), LetterType.REPLY_LETTER,
+                        BoxType.RECEIVE);
+            }
+        }
     }
 }

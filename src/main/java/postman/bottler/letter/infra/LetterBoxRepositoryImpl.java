@@ -167,7 +167,7 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public void deleteAllByLetterIds(List<Long> letterIds, LetterType letterType) {
+    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         queryFactory.delete(letterBox)
                 .where(
@@ -178,7 +178,7 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public void deleteByLetterIds(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+    public void deleteByIdsAndTypes(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         queryFactory.delete(letterBox)
                 .where(
@@ -190,10 +190,26 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public void deleteByLetterId(Long letterId) {
+    public void deleteByIdAndType(Long letterId, LetterType letterType) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         queryFactory.delete(letterBox)
-                .where(letterBox.letterId.eq(letterId));
+                .where(
+                        letterBox.letterId.eq(letterId)
+                                .and(letterBox.letterType.eq(letterType))
+                )
+                .execute();
+    }
+
+    @Override
+    public void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        queryFactory.delete(letterBox)
+                .where(
+                        letterBox.letterId.eq(letterId)
+                                .and(letterBox.letterType.eq(letterType))
+                                .and(letterBox.boxType.eq(boxType))
+                )
+                .execute();
     }
 
     @Override

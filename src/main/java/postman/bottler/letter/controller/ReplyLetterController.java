@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
@@ -84,9 +85,9 @@ public class ReplyLetterController {
         return ApiResponse.onSuccess(result);
     }
 
-    @DeleteMapping("/{replyLetterId}")
-    public ApiResponse<String> deleteReplyLetter(@PathVariable Long replyLetterId) {
-        deleteManagerService.deleteReplyLetter(replyLetterId);
+    @DeleteMapping
+    public ApiResponse<String> deleteReplyLetter(LetterDeleteRequestDTO letterDeleteRequestDTO) {
+        deleteManagerService.deleteLetter(letterDeleteRequestDTO);
         return ApiResponse.onSuccess("success");
     }
 }

@@ -52,18 +52,23 @@ public class LetterBoxService {
     }
 
     @Transactional
-    public void deleteAllByType(List<Long> letterIds, LetterType letterType) {
-        letterBoxRepository.deleteAllByLetterIds(letterIds, letterType);
+    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType) {
+        letterBoxRepository.deleteByIdsAndType(letterIds, letterType);
     }
 
     @Transactional
-    public void deleteByType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
-        letterBoxRepository.deleteByLetterIds(letterIds, letterType, boxType);
+    public void deleteByIdsAndTypes(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+        letterBoxRepository.deleteByIdsAndTypes(letterIds, letterType, boxType);
     }
 
     @Transactional
-    public void deleteLetter(Long letterId) {
-        letterBoxRepository.deleteByLetterId(letterId);
+    public void deleteByIdAndType(Long letterId, LetterType letterType) {
+        letterBoxRepository.deleteByIdAndType(letterId, letterType);
+    }
+
+    @Transactional
+    public void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType) {
+        letterBoxRepository.deleteByIdAndTypes(letterId, letterType, boxType);
     }
 
     private void validateSavedLetterExists(Long letterId, Long userId) {
