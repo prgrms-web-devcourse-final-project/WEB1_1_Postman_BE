@@ -34,12 +34,18 @@ public class LetterBoxService {
 
     @Transactional(readOnly = true)
     public Page<LetterHeadersResponseDTO> getSentLetterHeaders(int page, int size, String sort) {
-        return null;
+        Long userId = getCurrentUserId();
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        return letterBoxRepository.findSentLetters(userId, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(int page, int size, String sort) {
-        return null;
+        Long userId = getCurrentUserId();
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        return letterBoxRepository.findReceivedLetters(userId, pageable);
     }
 
     @Transactional

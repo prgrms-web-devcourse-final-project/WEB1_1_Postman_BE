@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
@@ -60,6 +61,90 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                 .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
                         .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
                 .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
+                .orderBy(letterBox.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(letterBox)
+                .from(letterBox)
+                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
+                .fetch()
+                .size();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<LetterHeadersResponseDTO> findSentLetters(Long userId, Pageable pageable) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        QLetterEntity letter = QLetterEntity.letterEntity;
+        QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
+
+        List<LetterHeadersResponseDTO> results = queryFactory
+                .select(Projections.constructor(
+                        LetterHeadersResponseDTO.class,
+                        letterBox.letterId,
+                        new CaseBuilder()
+                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
+                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
+                                .otherwise(""),
+                        new CaseBuilder()
+                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
+                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
+                                .otherwise(""),
+                        letterBox.createdAt
+                ))
+                .from(letterBox)
+                .leftJoin(letter).on(letterBox.letterId.eq(letter.id)
+                        .and(letterBox.letterType.eq(LetterType.LETTER)))
+                .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
+                        .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
+                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse())
+                        .and(letterBox.boxType.eq(BoxType.SEND)))
+                .orderBy(letterBox.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(letterBox)
+                .from(letterBox)
+                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
+                .fetch()
+                .size();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        QLetterEntity letter = QLetterEntity.letterEntity;
+        QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
+
+        List<LetterHeadersResponseDTO> results = queryFactory
+                .select(Projections.constructor(
+                        LetterHeadersResponseDTO.class,
+                        letterBox.letterId,
+                        new CaseBuilder()
+                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
+                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
+                                .otherwise(""),
+                        new CaseBuilder()
+                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
+                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
+                                .otherwise(""),
+                        letterBox.createdAt
+                ))
+                .from(letterBox)
+                .leftJoin(letter).on(letterBox.letterId.eq(letter.id)
+                        .and(letterBox.letterType.eq(LetterType.LETTER)))
+                .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
+                        .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
+                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse())
+                        .and(letterBox.boxType.eq(BoxType.RECEIVE)))
                 .orderBy(letterBox.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

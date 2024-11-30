@@ -13,4 +13,8 @@ public interface LetterBoxRepository {
     void remove(Long userId, Long letterId);
 
     Page<LetterHeadersResponseDTO> findAllLetters(Long userId, Pageable pageable);
+
+    Page<LetterHeadersResponseDTO> findSentLetters(Long userId, Pageable pageable);
+
+    Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
 }
