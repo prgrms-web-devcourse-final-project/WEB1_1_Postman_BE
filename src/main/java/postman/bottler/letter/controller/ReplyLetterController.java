@@ -23,6 +23,7 @@ import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
+import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.ReplyLetterService;
 
 @Slf4j
@@ -32,6 +33,7 @@ import postman.bottler.letter.service.ReplyLetterService;
 public class ReplyLetterController {
 
     private final ReplyLetterService letterReplyService;
+    private final DeleteManagerService deleteManagerService;
 
     @PostMapping("/{letterId}")
     public ApiResponse<ReplyLetterResponseDTO> createReply(
@@ -84,7 +86,7 @@ public class ReplyLetterController {
 
     @DeleteMapping("/{replyLetterId}")
     public ApiResponse<String> deleteReplyLetter(@PathVariable Long replyLetterId) {
-        letterReplyService.deleteReplyLetter(replyLetterId);
+        deleteManagerService.deleteReplyLetter(replyLetterId);
         return ApiResponse.onSuccess("success");
     }
 }

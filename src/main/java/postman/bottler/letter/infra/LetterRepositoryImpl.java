@@ -1,5 +1,6 @@
 package postman.bottler.letter.infra;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public class LetterRepositoryImpl implements LetterRepository {
     }
 
     @Override
-    public void remove(Long letterId) {
+    public void delete(Long letterId) {
         letterJpaRepository.deleteById(letterId);
     }
 
@@ -46,5 +47,10 @@ public class LetterRepositoryImpl implements LetterRepository {
     @Override
     public boolean existsByUserIdAndLetterId(Long userId, Long letterId) {
         return letterJpaRepository.existsByUserIdAndId(userId, letterId);
+    }
+
+    @Override
+    public void deleteByIds(List<Long> letterIds) {
+        letterJpaRepository.deleteByIds(letterIds);
     }
 }

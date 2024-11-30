@@ -48,11 +48,13 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                         new CaseBuilder()
                                 .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
                                 .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
-                                .otherwise(""),
+                                .otherwise("Unknown Title"),
                         new CaseBuilder()
                                 .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
                                 .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
-                                .otherwise(""),
+                                .otherwise("Unknown Label"),
+                        letterBox.letterType, // Enum 타입 매핑
+                        letterBox.boxType, // Enum 타입 매핑
                         letterBox.createdAt
                 ))
                 .from(letterBox)
@@ -94,6 +96,8 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                                 .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
                                 .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
                                 .otherwise(""),
+                        letterBox.letterType, // Enum 타입 매핑
+                        letterBox.boxType, // Enum 타입 매핑
                         letterBox.createdAt
                 ))
                 .from(letterBox)
@@ -136,6 +140,8 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                                 .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
                                 .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
                                 .otherwise(""),
+                        letterBox.letterType, // Enum 타입 매핑
+                        letterBox.boxType, // Enum 타입 매핑
                         letterBox.createdAt
                 ))
                 .from(letterBox)
@@ -158,6 +164,36 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                 .size();
 
         return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public void deleteAllByLetterIds(List<Long> letterIds, LetterType letterType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        queryFactory.delete(letterBox)
+                .where(
+                        letterBox.letterId.in(letterIds)
+                                .and(letterBox.letterType.eq(letterType))
+                )
+                .execute();
+    }
+
+    @Override
+    public void deleteByLetterIds(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        queryFactory.delete(letterBox)
+                .where(
+                        letterBox.letterId.in(letterIds)
+                                .and(letterBox.letterType.eq(letterType))
+                                .and(letterBox.boxType.eq(boxType))
+                )
+                .execute();
+    }
+
+    @Override
+    public void deleteByLetterId(Long letterId) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        queryFactory.delete(letterBox)
+                .where(letterBox.letterId.eq(letterId));
     }
 
     @Override

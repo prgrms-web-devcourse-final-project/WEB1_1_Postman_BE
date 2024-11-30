@@ -1,10 +1,7 @@
 package postman.bottler.letter.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.BoxType;
@@ -14,7 +11,6 @@ import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.LetterAccessDeniedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
@@ -38,20 +34,16 @@ public class LetterService {
         return LetterResponseDTO.from(letter);
     }
 
-    @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getLetterHeaders(int page, int size, String sort) {
-        Long userId = getCurrentUserId();
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
-        return letterRepository.findAll(userId, pageable)
-                .map(LetterHeadersResponseDTO::from);
-    }
-
     @Transactional
     public void deleteLetter(Long letterId) {
         Long userId = getCurrentUserId();
         validateLetterOwnership(userId, letterId);
-        letterRepository.remove(letterId);
+        letterRepository.delete(letterId);
+    }
+
+    @Transactional
+    public void deleteLetters(List<Long> letterIds) {
+        letterRepository.deleteByIds(letterIds);
     }
 
     @Transactional(readOnly = true)

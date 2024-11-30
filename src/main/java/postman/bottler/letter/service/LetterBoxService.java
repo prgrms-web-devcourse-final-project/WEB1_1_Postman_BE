@@ -1,5 +1,6 @@
 package postman.bottler.letter.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
@@ -49,11 +52,18 @@ public class LetterBoxService {
     }
 
     @Transactional
-    public void handleLetterDeletion(Long letterId) {
-        Long userId = getCurrentUserId();
+    public void deleteAllByType(List<Long> letterIds, LetterType letterType) {
+        letterBoxRepository.deleteAllByLetterIds(letterIds, letterType);
+    }
 
-        validateSavedLetterExists(letterId, userId);
-        letterBoxRepository.remove(userId, letterId);
+    @Transactional
+    public void deleteByType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+        letterBoxRepository.deleteByLetterIds(letterIds, letterType, boxType);
+    }
+
+    @Transactional
+    public void deleteLetter(Long letterId) {
+        letterBoxRepository.deleteByLetterId(letterId);
     }
 
     private void validateSavedLetterExists(Long letterId, Long userId) {

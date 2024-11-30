@@ -1,5 +1,6 @@
 package postman.bottler.letter.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,7 +77,13 @@ public class ReplyLetterService {
 
     @Transactional
     public void deleteReplyLetter(Long replyLetterId) {
-        replyLetterRepository.remove(replyLetterId);
+        replyLetterRepository.delete(replyLetterId);
+        letterBoxService.deleteLetter(replyLetterId);
+    }
+
+    @Transactional
+    public void deleteReplyLetters(List<Long> letterIds) {
+        replyLetterRepository.deleteByIds(letterIds);
     }
 
     private String generateReplyTitle(String title) {
