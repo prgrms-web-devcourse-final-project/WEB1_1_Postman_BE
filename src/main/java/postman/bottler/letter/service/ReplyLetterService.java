@@ -88,7 +88,7 @@ public class ReplyLetterService {
     }
 
     private Long getCurrentUserId() {
-        return 1L;
+        return 2L;
     }
 
     private String getCurrentUserProfile() {

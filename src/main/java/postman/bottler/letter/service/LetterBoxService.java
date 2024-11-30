@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.dto.LetterBoxDTO;
@@ -24,6 +25,14 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
+    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(int page, int size, String sort) {
+        Long userId = getCurrentUserId();
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
+        return letterBoxRepository.findAllLetters(userId, pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Page<LetterHeadersResponseDTO> getSentLetterHeaders(int page, int size, String sort) {
         return null;
     }
@@ -31,15 +40,6 @@ public class LetterBoxService {
     @Transactional(readOnly = true)
     public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(int page, int size, String sort) {
         return null;
-    }
-
-    @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(int page, int size, String sort) {
-        Long userId = getCurrentUserId();
-
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return letterBoxRepository.findSavedLetters(userId, pageable)
-                .map(LetterHeadersResponseDTO::from);
     }
 
     @Transactional

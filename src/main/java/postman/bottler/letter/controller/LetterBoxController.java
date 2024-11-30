@@ -20,6 +20,16 @@ public class LetterBoxController {
 
     private final LetterBoxService letterBoxService;
 
+    @GetMapping
+    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getAllLetters(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sort
+    ) {
+        Page<LetterHeadersResponseDTO> result = letterBoxService.getAllLetterHeaders(page, size, sort);
+        return ApiResponse.onSuccess(PageResponseDTO.from(result));
+    }
+
     @GetMapping("/sent")
     public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getSentLetters(
             @RequestParam(defaultValue = "1") int page,
@@ -37,16 +47,6 @@ public class LetterBoxController {
             @RequestParam(required = false, defaultValue = "createdAt") String sort
     ) {
         Page<LetterHeadersResponseDTO> result = letterBoxService.getReceivedLetterHeaders(page, size, sort);
-        return ApiResponse.onSuccess(PageResponseDTO.from(result));
-    }
-
-    @GetMapping
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getAllLetters(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sort
-    ) {
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getAllLetterHeaders(page, size, sort);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
