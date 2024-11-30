@@ -9,6 +9,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,14 +65,27 @@ public class JwtTokenProvider implements InitializingBean {
         Date expiryDate = new Date(now.getTime() + accessTokenExpirationTime);
 
         return Jwts.builder()
-                .setSubject(username) // 사용자 정보 설정
-                .claim(AUTHORITIES_KEY, authorities) // 권한 정보 추가
-                .setIssuedAt(now) // 발급 시간
-                .setExpiration(expiryDate) // 만료 시간
-                .signWith(key, SignatureAlgorithm.HS512) // 서명 알고리즘 및 키 설정
-                .compact(); // 최종 JWT 문자열 생성
+                .setSubject(username)
+                .claim(AUTHORITIES_KEY, authorities)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 
+    public String createRefreshToken(Authentication authentication) {
+        String username = authentication.getName();
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshTokenExpirationTime);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
 
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
@@ -82,11 +96,17 @@ public class JwtTokenProvider implements InitializingBean {
 
         String username = claims.getSubject();
 
-        List<SimpleGrantedAuthority> authorities =
-                ((List<?>) claims.get(AUTHORITIES_KEY))
-                        .stream()
-                        .map(authority -> new SimpleGrantedAuthority(authority.toString()))
-                        .collect(Collectors.toList());
+        Object authoritiesObj = claims.get(AUTHORITIES_KEY);
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        if (authoritiesObj instanceof List) {
+            authorities = ((List<?>) authoritiesObj)
+                    .stream()
+                    .map(authority -> new SimpleGrantedAuthority(authority.toString()))
+                    .collect(Collectors.toList());
+        } else if (authoritiesObj instanceof String) {
+            authorities.add(new SimpleGrantedAuthority((String) authoritiesObj));
+        }
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 

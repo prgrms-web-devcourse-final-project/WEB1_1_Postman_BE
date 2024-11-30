@@ -1,9 +1,9 @@
 package postman.bottler.user.infra;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.User;
+import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.infra.entity.UserEntity;
 import postman.bottler.user.service.UserRepository;
 
@@ -11,11 +11,6 @@ import postman.bottler.user.service.UserRepository;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
-
-    @Override
-    public Optional<UserEntity> findOneByEmail(String email) {
-        return Optional.empty();
-    }
 
     @Override
     public void save(User user) {
@@ -30,5 +25,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean findUserByNickname(String nickname) {
         return userJpaRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        UserEntity userEntity = userJpaRepository.findByEmail(email)
+                .orElseThrow(() -> new EmailException("유저를 찾을 수 없습니다. " + email));
+        return UserEntity.toUser(userEntity);
     }
 }

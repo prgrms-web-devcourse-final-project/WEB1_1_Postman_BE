@@ -26,4 +26,10 @@ public class UserExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.INVALID_NICKNAME.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(SignInException.class)
+    public ApiResponse<?> handleSignInException(SignInException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.INVALID_EMAIL_AND_PASSWORD.getCode(), e.getMessage(), null);
+    }
 }

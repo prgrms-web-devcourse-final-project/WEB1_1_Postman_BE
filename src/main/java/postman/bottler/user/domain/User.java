@@ -1,7 +1,9 @@
 package postman.bottler.user.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Getter
 public class User {
@@ -35,5 +37,9 @@ public class User {
 
     public static User createUser(String email, String password, String nickname) {
         return new User(email, password, nickname);
+    }
+
+    public org.springframework.security.core.userdetails.User toUserDetails() {
+        return new org.springframework.security.core.userdetails.User(this.email, this.password, List.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }
