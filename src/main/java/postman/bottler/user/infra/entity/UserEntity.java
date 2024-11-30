@@ -47,6 +47,6 @@ public class UserEntity {
     }
 
     public User to() {
-        return User.createUser(this.userId, this.email);
+        return User.createUser(this.userId, this.email, this.password);
     }
 }

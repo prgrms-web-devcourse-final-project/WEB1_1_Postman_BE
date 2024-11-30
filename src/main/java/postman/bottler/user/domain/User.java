@@ -21,6 +21,12 @@ public class User {
         this.email = email;
     }
 
+    private User(Long userId, String email, String password) {
+        this.userId = userId;
+        this.email = email;
+        this.password = password;
+    }
+
     public User(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
@@ -31,8 +37,8 @@ public class User {
         this.isBanned = false;
     }
 
-    public static User createUser(Long userId, String email) {
-        return new User(userId, email);
+    public static User createUser(Long userId, String email, String password) {
+        return new User(userId, email, password);
     }
 
     public static User createUser(String email, String password, String nickname) {
