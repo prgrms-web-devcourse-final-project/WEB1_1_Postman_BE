@@ -19,12 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
+import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
+import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.LetterService;
-import postman.bottler.letter.service.SavedLetterService;
 
 @RestController
 @RequestMapping("/letters")
@@ -32,7 +33,7 @@ import postman.bottler.letter.service.SavedLetterService;
 public class LetterController {
 
     private final LetterService letterService;
-    private final SavedLetterService savedLetterService;
+    private final LetterBoxService letterBoxService;
 
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO,
@@ -67,29 +68,14 @@ public class LetterController {
     }
 
     @GetMapping("/detail/{letterId}")
-    public ApiResponse<LetterResponseDTO> getLetter(@PathVariable Long letterId) {
-        LetterResponseDTO result = letterService.getLetterDetail(letterId);
+    public ApiResponse<LetterDetailResponseDTO> getLetter(@PathVariable Long letterId) {
+        LetterDetailResponseDTO result = letterService.getLetterDetail(letterId);
         return ApiResponse.onSuccess(result);
     }
 
     @PutMapping("/{letterId}/save")
     public ApiResponse<String> saveLetter(@PathVariable Long letterId) {
-        savedLetterService.saveLetter(letterId);
+        letterBoxService.saveLetter(letterId);
         return ApiResponse.onSuccess("키워드 편지를 보관했습니다.");
-    }
-
-    @GetMapping("/saved")
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getSavedLetters(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size
-    ) {
-        Page<LetterHeadersResponseDTO> result = savedLetterService.getSavedLetterHeaders(page, size);
-        return ApiResponse.onSuccess(PageResponseDTO.from(result));
-    }
-
-    @DeleteMapping("/saved/{letterId}")
-    public ApiResponse<String> deleteSavedLetter(@PathVariable Long letterId) {
-        savedLetterService.deleteSavedLetter(letterId);
-        return ApiResponse.onSuccess("키워드 편지 보관을 취소했습니다.");
     }
 }

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import postman.bottler.letter.domain.Letter;
 
-public record LetterResponseDTO(
+public record LetterDetailResponseDTO(
         Long letterId,
         String title,
         String content,
@@ -13,10 +13,11 @@ public record LetterResponseDTO(
         String paper,
         String profile,
         String label,
+        boolean isOwner,
         LocalDateTime createdAt
 ) {
-    public static LetterResponseDTO from(Letter letter) {
-        return new LetterResponseDTO(
+    public static LetterDetailResponseDTO from(Letter letter, Long userId) {
+        return new LetterDetailResponseDTO(
                 letter.getId(),
                 letter.getTitle(),
                 letter.getContent(),
@@ -25,6 +26,7 @@ public record LetterResponseDTO(
                 letter.getPaper(),
                 letter.getProfile(),
                 letter.getLabel(),
+                letter.getUserId().equals(userId),
                 letter.getCreatedAt()
         );
     }

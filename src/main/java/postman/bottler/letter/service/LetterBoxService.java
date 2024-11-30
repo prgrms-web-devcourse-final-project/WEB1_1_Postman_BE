@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.letter.domain.SavedLetter;
+import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.exception.LetterAlreadySavedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
@@ -15,9 +15,9 @@ import postman.bottler.letter.exception.LetterNotFoundException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SavedLetterService {
+public class LetterBoxService {
 
-    private final SavedLetterRepository savedLetterRepository;
+    private final LetterBoxRepository letterBoxRepository;
     private final LetterRepository letterRepository;
 
     @Transactional
@@ -27,29 +27,39 @@ public class SavedLetterService {
         validateCanBeSaved(userId, letterId);
         validateLetterExists(letterId);
 
-        SavedLetter savedLetter = SavedLetter.builder()
+        LetterBox letterBox = LetterBox.builder()
                 .userId(userId)
                 .letterId(letterId)
                 .build();
 
-        savedLetterRepository.save(savedLetter);
+        letterBoxRepository.save(letterBox);
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getSavedLetterHeaders(int page, int size) {
+    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(int page, int size, String sort) {
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(int page, int size, String sort) {
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(int page, int size, String sort) {
         Long userId = getCurrentUserId();
 
         Pageable pageable = PageRequest.of(page - 1, size);
-        return savedLetterRepository.findSavedLetters(userId, pageable)
+        return letterBoxRepository.findSavedLetters(userId, pageable)
                 .map(LetterHeadersResponseDTO::from);
     }
 
     @Transactional
-    public void deleteSavedLetter(Long letterId) {
+    public void handleLetterDeletion(Long letterId) {
         Long userId = getCurrentUserId();
 
         validateSavedLetterExists(letterId, userId);
-        savedLetterRepository.remove(userId, letterId);
+        letterBoxRepository.remove(userId, letterId);
     }
 
     private void validateLetterExists(Long letterId) {
@@ -59,13 +69,13 @@ public class SavedLetterService {
     }
 
     private void validateCanBeSaved(Long userId, Long letterId) {
-        if (savedLetterRepository.isSaved(userId, letterId)) {
+        if (letterBoxRepository.isSaved(userId, letterId)) {
             throw new LetterAlreadySavedException("이미 저장된 편지입니다.");
         }
     }
 
     private void validateSavedLetterExists(Long letterId, Long userId) {
-        if (!savedLetterRepository.isSaved(userId, letterId)) {
+        if (!letterBoxRepository.isSaved(userId, letterId)) {
             throw new LetterNotFoundException("보관된 키워드 편지가 존재하지 않습니다.");
         }
     }

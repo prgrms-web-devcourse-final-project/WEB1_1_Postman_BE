@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
+import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.LetterAccessDeniedException;
@@ -47,9 +48,10 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public LetterResponseDTO getLetterDetail(Long letterId) {
+    public LetterDetailResponseDTO getLetterDetail(Long letterId) {
         Letter letter = findLetter(letterId);
-        return LetterResponseDTO.from(letter);
+        Long userId = getCurrentUserId();
+        return LetterDetailResponseDTO.from(letter, userId);
     }
 
     public void blockLetter(Long letterId) {
