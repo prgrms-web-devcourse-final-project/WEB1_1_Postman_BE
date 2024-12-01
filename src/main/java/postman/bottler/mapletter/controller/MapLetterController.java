@@ -143,8 +143,12 @@ public class MapLetterController {
     }
 
     @GetMapping("/archived")
-    public ApiResponse<List<FindAllArchiveLetters>> findArchiveLetters(Long userId) {
-        return ApiResponse.onSuccess(mapLetterService.findArchiveLetters(userId));
+    public ApiResponse<MapLetterPageResponseDTO<FindAllArchiveLetters>> findArchiveLetters(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Long userId) {
+        return ApiResponse.onSuccess(
+                MapLetterPageResponseDTO.from(mapLetterService.findArchiveLetters(page, size, userId)));
     }
 
     @DeleteMapping("/archived")

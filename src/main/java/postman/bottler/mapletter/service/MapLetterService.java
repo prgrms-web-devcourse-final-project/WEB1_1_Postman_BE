@@ -1,6 +1,7 @@
 package postman.bottler.mapletter.service;
 
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -191,7 +192,8 @@ public class MapLetterService {
         } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
             throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
         }
-        MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId).build();
+        MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId).createdAt(
+                LocalDateTime.now()).build();
 
         boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
         if (isArchived) {
@@ -201,8 +203,9 @@ public class MapLetterService {
         return mapLetterArchiveRepository.save(archive);
     }
 
-    public List<FindAllArchiveLetters> findArchiveLetters(Long userId) {
-        return mapLetterArchiveRepository.findAllById(userId);
+    public Page<FindAllArchiveLetters> findArchiveLetters(int page, int size, Long userId) {
+        return mapLetterArchiveRepository.findAllById(userId,
+                PageRequest.of(page - 1, size));
     }
 
     @Transactional

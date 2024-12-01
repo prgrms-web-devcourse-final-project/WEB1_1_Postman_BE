@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.domain;
 
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Builder
@@ -10,4 +11,5 @@ public class MapLetterArchive {
     private Long mapLetterArchiveId;
     private Long mapLetterId;
     private Long userId;
+    private LocalDateTime createdAt;
 }

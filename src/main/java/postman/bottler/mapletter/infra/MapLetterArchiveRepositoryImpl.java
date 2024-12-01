@@ -2,6 +2,8 @@ package postman.bottler.mapletter.infra;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
@@ -24,8 +26,8 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
     }
 
     @Override
-    public List<FindAllArchiveLetters> findAllById(Long userId) {
-        return mapLetterArchiveJpaRepository.findAllByUserId(userId);
+    public Page<FindAllArchiveLetters> findAllById(Long userId, Pageable pageable) {
+        return mapLetterArchiveJpaRepository.findAllByUserId(userId, pageable);
     }
 
     @Override
