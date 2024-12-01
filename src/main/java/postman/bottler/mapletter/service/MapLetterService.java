@@ -90,10 +90,6 @@ public class MapLetterService {
 
     @Transactional(readOnly = true)
     public Page<FindMapLetterResponseDTO> findSentMapLetters(int page, int size, Long userId) {
-
-//        Page<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId,
-//                PageRequest.of(page - 1, size, Sort.by(sort).descending()));
-
         Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
 
