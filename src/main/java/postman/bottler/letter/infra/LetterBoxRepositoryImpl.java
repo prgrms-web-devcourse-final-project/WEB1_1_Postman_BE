@@ -37,179 +37,43 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
 
     @Override
     public Page<LetterHeadersResponseDTO> findAllLetters(Long userId, Pageable pageable) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        QLetterEntity letter = QLetterEntity.letterEntity;
-        QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
-
-        List<LetterHeadersResponseDTO> results = queryFactory
-                .select(Projections.constructor(
-                        LetterHeadersResponseDTO.class,
-                        letterBox.letterId,
-                        new CaseBuilder()
-                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
-                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
-                                .otherwise("Unknown Title"),
-                        new CaseBuilder()
-                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
-                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
-                                .otherwise("Unknown Label"),
-                        letterBox.letterType, // Enum 타입 매핑
-                        letterBox.boxType, // Enum 타입 매핑
-                        letterBox.createdAt
-                ))
-                .from(letterBox)
-                .leftJoin(letter).on(letterBox.letterId.eq(letter.id)
-                        .and(letterBox.letterType.eq(LetterType.LETTER)))
-                .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
-                        .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
-                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
-                .orderBy(letterBox.createdAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        long total = queryFactory
-                .select(letterBox)
-                .from(letterBox)
-                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
-                .fetch()
-                .size();
-
+        List<LetterHeadersResponseDTO> results = fetchLetters(userId, null, pageable);
+        long total = countLetters(userId, null);
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
     public Page<LetterHeadersResponseDTO> findSentLetters(Long userId, Pageable pageable) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        QLetterEntity letter = QLetterEntity.letterEntity;
-        QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
-
-        List<LetterHeadersResponseDTO> results = queryFactory
-                .select(Projections.constructor(
-                        LetterHeadersResponseDTO.class,
-                        letterBox.letterId,
-                        new CaseBuilder()
-                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
-                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
-                                .otherwise(""),
-                        new CaseBuilder()
-                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
-                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
-                                .otherwise(""),
-                        letterBox.letterType, // Enum 타입 매핑
-                        letterBox.boxType, // Enum 타입 매핑
-                        letterBox.createdAt
-                ))
-                .from(letterBox)
-                .leftJoin(letter).on(letterBox.letterId.eq(letter.id)
-                        .and(letterBox.letterType.eq(LetterType.LETTER)))
-                .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
-                        .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
-                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse())
-                        .and(letterBox.boxType.eq(BoxType.SEND)))
-                .orderBy(letterBox.createdAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        long total = queryFactory
-                .select(letterBox)
-                .from(letterBox)
-                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
-                .fetch()
-                .size();
-
+        List<LetterHeadersResponseDTO> results = fetchLetters(userId, BoxType.SEND, pageable);
+        long total = countLetters(userId, BoxType.SEND);
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
     public Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        QLetterEntity letter = QLetterEntity.letterEntity;
-        QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
-
-        List<LetterHeadersResponseDTO> results = queryFactory
-                .select(Projections.constructor(
-                        LetterHeadersResponseDTO.class,
-                        letterBox.letterId,
-                        new CaseBuilder()
-                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
-                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
-                                .otherwise(""),
-                        new CaseBuilder()
-                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
-                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
-                                .otherwise(""),
-                        letterBox.letterType, // Enum 타입 매핑
-                        letterBox.boxType, // Enum 타입 매핑
-                        letterBox.createdAt
-                ))
-                .from(letterBox)
-                .leftJoin(letter).on(letterBox.letterId.eq(letter.id)
-                        .and(letterBox.letterType.eq(LetterType.LETTER)))
-                .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
-                        .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
-                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse())
-                        .and(letterBox.boxType.eq(BoxType.RECEIVE)))
-                .orderBy(letterBox.createdAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        long total = queryFactory
-                .select(letterBox)
-                .from(letterBox)
-                .where(letterBox.userId.eq(userId).and(letterBox.isDeleted.isFalse()))
-                .fetch()
-                .size();
-
+        List<LetterHeadersResponseDTO> results = fetchLetters(userId, BoxType.RECEIVE, pageable);
+        long total = countLetters(userId, BoxType.RECEIVE);
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
     public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        queryFactory.delete(letterBox)
-                .where(
-                        letterBox.letterId.in(letterIds)
-                                .and(letterBox.letterType.eq(letterType))
-                )
-                .execute();
+        deleteByCondition(letterIds, letterType, null);
     }
 
     @Override
     public void deleteByIdsAndTypes(List<Long> letterIds, LetterType letterType, BoxType boxType) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        queryFactory.delete(letterBox)
-                .where(
-                        letterBox.letterId.in(letterIds)
-                                .and(letterBox.letterType.eq(letterType))
-                                .and(letterBox.boxType.eq(boxType))
-                )
-                .execute();
+        deleteByCondition(letterIds, letterType, boxType);
     }
 
     @Override
     public void deleteByIdAndType(Long letterId, LetterType letterType) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        queryFactory.delete(letterBox)
-                .where(
-                        letterBox.letterId.eq(letterId)
-                                .and(letterBox.letterType.eq(letterType))
-                )
-                .execute();
+        deleteByCondition(List.of(letterId), letterType, null);
     }
 
     @Override
     public void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        queryFactory.delete(letterBox)
-                .where(
-                        letterBox.letterId.eq(letterId)
-                                .and(letterBox.letterType.eq(letterType))
-                                .and(letterBox.boxType.eq(boxType))
-                )
-                .execute();
+        deleteByCondition(List.of(letterId), letterType, boxType);
     }
 
     @Override
@@ -221,4 +85,64 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     public void remove(Long userId, Long letterId) {
 //        letterBoxJpaRepository.deleteByUserIdAndLetterId(userId, letterId);
     }
+
+    private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        QLetterEntity letter = QLetterEntity.letterEntity;
+        QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        LetterHeadersResponseDTO.class,
+                        letterBox.letterId,
+                        new CaseBuilder()
+                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)
+                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.title)
+                                .otherwise("Unknown Title"),
+                        new CaseBuilder()
+                                .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.label)
+                                .when(letterBox.letterType.eq(LetterType.REPLY_LETTER)).then(replyLetter.label)
+                                .otherwise("Unknown Label"),
+                        letterBox.letterType,
+                        letterBox.boxType,
+                        letterBox.createdAt
+                ))
+                .from(letterBox)
+                .leftJoin(letter).on(letterBox.letterId.eq(letter.id)
+                        .and(letterBox.letterType.eq(LetterType.LETTER)))
+                .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
+                        .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
+                .where(letterBox.userId.eq(userId)
+                        .and(letterBox.isDeleted.isFalse())
+                        .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
+                .orderBy(letterBox.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    private long countLetters(Long userId, BoxType boxType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        return queryFactory
+                .select(letterBox.id)
+                .from(letterBox)
+                .where(letterBox.userId.eq(userId)
+                        .and(letterBox.isDeleted.isFalse())
+                        .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
+                .fetch()
+                .size();
+    }
+
+    private void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+
+        queryFactory.delete(letterBox)
+                .where(
+                        letterIds != null ? letterBox.letterId.in(letterIds) : null,
+                        letterType != null ? letterBox.letterType.eq(letterType) : null,
+                        boxType != null ? letterBox.boxType.eq(boxType) : null
+                )
+                .execute();
+    }
+
 }
