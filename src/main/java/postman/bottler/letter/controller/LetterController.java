@@ -32,17 +32,10 @@ public class LetterController {
     private final DeleteManagerService deleteManagerService;
 
     @PostMapping
-    public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO,
-                                                       BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = bindingResult.getFieldErrors().stream()
-                    .collect(Collectors.toMap(
-                            FieldError::getField,
-                            fieldError -> Objects.requireNonNullElse(fieldError.getDefaultMessage(), "검증 실패")
-                    ));
-            throw new InvalidLetterRequestException("유효성 검사 실패", errors);
-        }
-
+    public ApiResponse<LetterResponseDTO> createLetter(
+            @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult
+    ) {
+        validateLetterRequest(bindingResult);
         LetterResponseDTO result = letterService.createLetter(letterRequestDTO);
         return ApiResponse.onCreateSuccess(result);
     }
@@ -57,5 +50,16 @@ public class LetterController {
     public ApiResponse<LetterDetailResponseDTO> getLetter(@PathVariable Long letterId) {
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId);
         return ApiResponse.onSuccess(result);
+    }
+
+    private static void validateLetterRequest(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = bindingResult.getFieldErrors().stream()
+                    .collect(Collectors.toMap(
+                            FieldError::getField,
+                            fieldError -> Objects.requireNonNullElse(fieldError.getDefaultMessage(), "검증 실패")
+                    ));
+            throw new InvalidLetterRequestException("유효성 검사 실패", errors);
+        }
     }
 }

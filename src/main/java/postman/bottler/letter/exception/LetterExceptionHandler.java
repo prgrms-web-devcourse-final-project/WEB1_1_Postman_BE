@@ -57,12 +57,12 @@ public class LetterExceptionHandler {
             BaseLetterValidationException e) {
         ErrorStatus status;
 
-        log.error("오류 들어옴");
-
         if (e instanceof InvalidLetterRequestException) {
             status = LETTER_VALIDATION_ERROR;
         } else if (e instanceof InvalidReplyLetterRequestException) {
             status = REPLY_LETTER_VALIDATION_ERROR;
+        } else if (e instanceof InvalidPageRequestException) {
+            status = PAGINATION_VALIDATION_ERROR;
         } else {
             status = LETTER_UNKNOWN_VALIDATION_ERROR; // 기본 처리
         }
@@ -85,12 +85,5 @@ public class LetterExceptionHandler {
         return ResponseEntity
                 .status(INVALID_SORT_FIELD.getHttpStatus())
                 .body(ApiResponse.onFailure(INVALID_SORT_FIELD.getCode(), e.getMessage(), null));
-    }
-
-    @ExceptionHandler(PaginationValidationException.class)
-    public ResponseEntity<ApiResponse<String>> handlePaginationValidationException(PaginationValidationException e) {
-        return ResponseEntity
-                .status(PAGINATION_VALIDATION_ERROR.getHttpStatus())
-                .body(ApiResponse.onFailure(PAGINATION_VALIDATION_ERROR.getCode(), e.getMessage(), null));
     }
 }

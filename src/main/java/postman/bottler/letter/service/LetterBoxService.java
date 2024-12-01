@@ -4,16 +4,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
+import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
-import postman.bottler.letter.exception.LetterNotFoundException;
 
 @Slf4j
 @Service
@@ -28,27 +25,21 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(int page, int size, String sort) {
+    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO) {
         Long userId = getCurrentUserId();
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
-        return letterBoxRepository.findAllLetters(userId, pageable);
+        return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(int page, int size, String sort) {
+    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO) {
         Long userId = getCurrentUserId();
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
-        return letterBoxRepository.findSentLetters(userId, pageable);
+        return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(int page, int size, String sort) {
+    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO) {
         Long userId = getCurrentUserId();
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
-        return letterBoxRepository.findReceivedLetters(userId, pageable);
+        return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional
@@ -69,12 +60,6 @@ public class LetterBoxService {
     @Transactional
     public void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType) {
         letterBoxRepository.deleteByIdAndTypes(letterId, letterType, boxType);
-    }
-
-    private void validateSavedLetterExists(Long letterId, Long userId) {
-        if (!letterBoxRepository.isSaved(userId, letterId)) {
-            throw new LetterNotFoundException("보관된 키워드 편지가 존재하지 않습니다.");
-        }
     }
 
     private Long getCurrentUserId() {
