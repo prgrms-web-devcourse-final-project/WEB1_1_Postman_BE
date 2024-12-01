@@ -41,7 +41,9 @@ public class LetterController {
     }
 
     @DeleteMapping
-    public ApiResponse<String> deleteLetter(LetterDeleteRequestDTO letterDeleteRequestDTO) {
+    public ApiResponse<String> deleteLetter(
+            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
+    ) {
         deleteManagerService.deleteLetter(letterDeleteRequestDTO);
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
@@ -52,7 +54,7 @@ public class LetterController {
         return ApiResponse.onSuccess(result);
     }
 
-    private static void validateLetterRequest(BindingResult bindingResult) {
+    private void validateLetterRequest(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = bindingResult.getFieldErrors().stream()
                     .collect(Collectors.toMap(

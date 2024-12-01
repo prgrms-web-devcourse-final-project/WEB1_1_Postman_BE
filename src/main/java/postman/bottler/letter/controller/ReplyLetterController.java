@@ -69,12 +69,14 @@ public class ReplyLetterController {
     }
 
     @DeleteMapping
-    public ApiResponse<String> deleteReplyLetter(LetterDeleteRequestDTO letterDeleteRequestDTO) {
+    public ApiResponse<String> deleteReplyLetter(
+            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
+    ) {
         deleteManagerService.deleteLetter(letterDeleteRequestDTO);
         return ApiResponse.onSuccess("success");
     }
 
-    private static void validateRequest(BindingResult bindingResult) {
+    private void validateRequest(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = bindingResult.getFieldErrors().stream()
                     .collect(Collectors.toMap(
@@ -85,7 +87,7 @@ public class ReplyLetterController {
         }
     }
 
-    private static void validatePageRequest(BindingResult bindingResult) {
+    private void validatePageRequest(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = bindingResult.getFieldErrors().stream()
                     .collect(Collectors.toMap(
