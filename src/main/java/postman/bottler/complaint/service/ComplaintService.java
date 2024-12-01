@@ -5,8 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.complaint.domain.Complaints;
 import postman.bottler.complaint.domain.KeywordComplaint;
+import postman.bottler.complaint.domain.KeywordReplyComplaint;
 import postman.bottler.complaint.domain.MapComplaint;
-import postman.bottler.complaint.domain.ReplyComplaint;
+import postman.bottler.complaint.domain.MapReplyComplaint;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
 
 @Service
@@ -14,7 +15,8 @@ import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
 public class ComplaintService {
     private final KeywordComplaintRepository keywordComplaintRepository;
     private final MapComplaintRepository mapComplaintRepository;
-    private final ReplyComplaintRepository replyComplaintRepository;
+    private final KeywordReplyComplaintRepository keywordReplyComplaintRepository;
+    private final MapReplyComplaintRepository mapReplyComplaintRepository;
 
     @Transactional
     public ComplaintResponseDTO complainKeywordLetter(Long letterId, Long reporterId,
@@ -47,17 +49,32 @@ public class ComplaintService {
     }
 
     @Transactional
-    public ComplaintResponseDTO complainReplyLetter(Long letterId, Long reporterId,
-                                                    String description) {
-        Complaints complaints = replyComplaintRepository.findByLetterId(letterId);
+    public ComplaintResponseDTO complainKeywordReplyLetter(Long letterId, Long reporterId,
+                                                           String description) {
+        Complaints complaints = keywordReplyComplaintRepository.findByLetterId(letterId);
         complaints.validateDuplication(reporterId);
-        ReplyComplaint complaint = ReplyComplaint.create(letterId, reporterId, description);
+        KeywordReplyComplaint complaint = KeywordReplyComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
             // TODO 편지 블락 처리
             // TODO 편지 작성자에게 경고 알림
             // TODO 편지 작성자 경고 횟수 증가
         }
-        return ComplaintResponseDTO.from(replyComplaintRepository.save(complaint));
+        return ComplaintResponseDTO.from(keywordReplyComplaintRepository.save(complaint));
+    }
+
+    @Transactional
+    public ComplaintResponseDTO complainMapReplyLetter(Long letterId, Long reporterId,
+                                                       String description) {
+        Complaints complaints = mapReplyComplaintRepository.findByLetterId(letterId);
+        complaints.validateDuplication(reporterId);
+        MapReplyComplaint complaint = MapReplyComplaint.create(letterId, reporterId, description);
+        complaints.add(complaint);
+        if (complaints.needsWarningNotification()) {
+            // TODO 편지 블락 처리
+            // TODO 편지 작성자에게 경고 알림
+            // TODO 편지 작성자 경고 횟수 증가
+        }
+        return ComplaintResponseDTO.from(mapReplyComplaintRepository.save(complaint));
     }
 }

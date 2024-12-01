@@ -1,4 +1,4 @@
-package postman.bottler.complaint.infra.reply;
+package postman.bottler.complaint.infra.keyword;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,15 +12,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import postman.bottler.complaint.domain.ReplyComplaint;
+import postman.bottler.complaint.domain.KeywordReplyComplaint;
 
 @Entity
-@Table(name = "reply_complaint")
+@Table(name = "keyword_reply_complaint")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReplyComplaintEntity {
+public class KeywordReplyComplaintEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,8 +34,8 @@ public class ReplyComplaintEntity {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static ReplyComplaintEntity from(ReplyComplaint complaint) {
-        return ReplyComplaintEntity.builder()
+    public static KeywordReplyComplaintEntity from(KeywordReplyComplaint complaint) {
+        return KeywordReplyComplaintEntity.builder()
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
                 .reporterId(complaint.getReporterId())
@@ -43,7 +43,7 @@ public class ReplyComplaintEntity {
                 .build();
     }
 
-    public ReplyComplaint toDomain() {
-        return ReplyComplaint.of(id, letterId, reporterId, description);
+    public KeywordReplyComplaint toDomain() {
+        return KeywordReplyComplaint.of(id, letterId, reporterId, description);
     }
 }
