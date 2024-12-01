@@ -8,11 +8,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
     env:
       # 데이터베이스 환경변수 (RDS)
       DB_URL: ${{ secrets.DB_URL }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      ## Redis 환경변수
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
 
       # AWS 환경변수
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
