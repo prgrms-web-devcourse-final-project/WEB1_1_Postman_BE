@@ -203,6 +203,7 @@ public class MapLetterService {
         return mapLetterArchiveRepository.save(archive);
     }
 
+    @Transactional(readOnly = true)
     public Page<FindAllArchiveLetters> findArchiveLetters(int page, int size, Long userId) {
         return mapLetterArchiveRepository.findAllById(userId,
                 PageRequest.of(page - 1, size));
