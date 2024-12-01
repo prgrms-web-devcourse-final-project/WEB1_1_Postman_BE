@@ -70,6 +70,9 @@ jobs:
       - name: JSON 생성
         run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
 
+      - name: 로그 확인
+        run: ./gradlew test -i
+
       - name: Gradle로 테스트 및 커버리지 리포트 생성
         run: ./gradlew clean build jacocoTestReport
 
