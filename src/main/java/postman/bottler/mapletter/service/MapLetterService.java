@@ -233,12 +233,15 @@ public class MapLetterService {
     }
 
     @Transactional
-    public void letterBlock(BlockMapLetterType type, Long letterId) {
+    public Long letterBlock(BlockMapLetterType type, Long letterId) { //userId return
         if (type == BlockMapLetterType.MAP_LETTER) {
             mapLetterRepository.letterBlock(letterId);
+            return mapLetterRepository.findById(letterId).getCreateUserId();
         } else if (type == BlockMapLetterType.REPLY) {
             replyMapLetterRepository.letterBlock(letterId);
+            return replyMapLetterRepository.findById(letterId).getCreateUserId();
         }
+        return null;
     }
 
     @Transactional
