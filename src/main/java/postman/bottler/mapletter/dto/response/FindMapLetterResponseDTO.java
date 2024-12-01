@@ -12,7 +12,8 @@ public record FindMapLetterResponseDTO(
         String label,
         String targetUserNickname, // 타겟 편지의 경우만
         LocalDateTime createdAt,
-        String type //REPLY(답장 편지), TARGET(타겟 편지), PUBLIC(퍼블릭 편지)
+        String type, //REPLY(답장 편지), TARGET(타겟 편지), PUBLIC(퍼블릭 편지)
+        Long sourceLetterId //답장 편지의 경우 원본 편지 id
 ) {
     public static FindMapLetterResponseDTO from(FindSentMapLetter projection, String targetUserNickname) {
         return FindMapLetterResponseDTO.builder()
@@ -23,6 +24,7 @@ public record FindMapLetterResponseDTO(
                 .targetUserNickname(targetUserNickname)
                 .createdAt(projection.getCreatedAt())
                 .type(projection.getType())
+                .sourceLetterId(projection.getSourceLetterId())
                 .build();
     }
 }

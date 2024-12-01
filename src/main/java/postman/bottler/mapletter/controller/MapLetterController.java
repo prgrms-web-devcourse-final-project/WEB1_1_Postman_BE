@@ -2,7 +2,6 @@ package postman.bottler.mapletter.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import postman.bottler.global.response.ApiResponse;
@@ -86,7 +85,7 @@ public class MapLetterController {
     @GetMapping("/sent")
     public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size, String sort, Long userId) {
+            @RequestParam(defaultValue = "9") int size, Long userId) {
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
     }

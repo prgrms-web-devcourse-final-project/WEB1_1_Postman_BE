@@ -62,13 +62,14 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
                        WHEN m.type = 'PRIVATE' THEN 'TARGET' 
                        WHEN m.type = 'PUBLIC' THEN 'PUBLIC' 
                    END AS type, 
-                   m.created_at AS createdAt 
+                   m.created_at AS createdAt, NULL as sourceLetterId 
             FROM map_letter m 
             WHERE m.create_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false 
             UNION ALL 
             SELECT r.reply_letter_id AS letterId, 
                    CONCAT('Re: ', (SELECT ml.title FROM map_letter ml WHERE ml.map_letter_id = r.source_letter_id)) AS title, 
-                   NULL AS description, r.label AS label, NULL AS targetUserNickname, 'REPLY' AS type, r.created_at AS createdAt 
+                   NULL AS description, r.label AS label, NULL AS targetUserNickname, 'REPLY' AS type,
+                   r.created_at AS createdAt, r.source_letter_id AS sourceLetterId 
             FROM reply_map_letter r 
             WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false 
             ORDER BY createdAt DESC
