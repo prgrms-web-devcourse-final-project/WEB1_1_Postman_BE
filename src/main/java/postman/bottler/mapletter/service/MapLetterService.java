@@ -239,4 +239,19 @@ public class MapLetterService {
             replyMapLetterRepository.softDelete(letterId);
         }
     }
+
+    public OneLetterResponseDTO findArchiveOneLetter(Long letterId, Long userId) {
+        MapLetter mapLetter = mapLetterRepository.findById(letterId);
+        if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
+                && !mapLetter.getCreateUserId().equals(userId))) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        if (mapLetter.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
+
+        String profileImg = "www.profile.com"; //user 서비스 메서드 불러서 받기
+//        profileImg = userService.getProfileImgByCreateUserId(mapLetter.getCreateUserId());
+        return OneLetterResponseDTO.from(mapLetter, profileImg);
+    }
 }

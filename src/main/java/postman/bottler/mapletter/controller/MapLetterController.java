@@ -172,4 +172,9 @@ public class MapLetterController {
         mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
         return ApiResponse.onDeleteSuccess(letters);
     }
+
+    @GetMapping("/archive/{letterId}")
+    public ApiResponse<OneLetterResponseDTO> findArchiveOneLetter(@PathVariable Long letterId, Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findArchiveOneLetter(letterId, userId));
+    }
 }
