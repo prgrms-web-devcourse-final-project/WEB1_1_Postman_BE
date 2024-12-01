@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
@@ -23,6 +20,7 @@ import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
+import postman.bottler.mapletter.exception.BlockedLetterException;
 import postman.bottler.mapletter.exception.DistanceToFarException;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
@@ -30,10 +28,7 @@ import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.math.BigDecimal;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +63,10 @@ public class MapLetterService {
         if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
+        if(mapLetter.isBlocked()){
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
+
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
         if (distance > 15) {
@@ -84,6 +83,9 @@ public class MapLetterService {
             MapLetter findMapLetter = mapLetterRepository.findById(letterId);
             if (!findMapLetter.getCreateUserId().equals(userId)) {
                 throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+            }
+            if(findMapLetter.isBlocked()){
+                throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
             }
             mapLetterRepository.softDelete(letterId);
         }
@@ -159,6 +161,9 @@ public class MapLetterService {
         if (sourceLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
+        if(sourceLetter.isBlocked()){
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
 
         Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
                 PageRequest.of(page - 1, size));
@@ -175,6 +180,9 @@ public class MapLetterService {
         } else if (!replyMapLetter.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
+        if(sourceLetter.isBlocked()){
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
 
         return OneReplyLetterResponseDTO.from(replyMapLetter);
     }
@@ -187,6 +195,10 @@ public class MapLetterService {
         } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
             throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
         }
+        if(mapLetter.isBlocked()){
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
+
         MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId).createdAt(
                 LocalDateTime.now()).build();
 
@@ -248,6 +260,9 @@ public class MapLetterService {
         }
         if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
+        if(mapLetter.isBlocked()){
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
 
         String profileImg = "www.profile.com"; //user 서비스 메서드 불러서 받기

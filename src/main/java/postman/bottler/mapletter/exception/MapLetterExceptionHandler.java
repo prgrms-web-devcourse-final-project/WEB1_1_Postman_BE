@@ -81,4 +81,9 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.DISTANCE_TOO_FAR.getCode(), e.getMessage(), null);
     }
+    @ExceptionHandler(BlockedLetterException.class)
+    public ApiResponse<?> handleBlockedLetterException(BlockedLetterException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.LETTER_BLOCKED.getCode(), e.getMessage(), null);
+    }
 }
