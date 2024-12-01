@@ -144,5 +144,4 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                 )
                 .execute();
     }
-
 }
