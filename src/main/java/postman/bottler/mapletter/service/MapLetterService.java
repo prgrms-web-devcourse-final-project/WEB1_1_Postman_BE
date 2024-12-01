@@ -14,6 +14,7 @@ import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
+import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
@@ -87,20 +88,25 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<FindMapLetterResponseDTO> findSentMapLetters(int page, int size, String sort, Long userId) {
-        Page<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId,
-                PageRequest.of(page - 1, size, Sort.by(sort).descending()));
+    public Page<FindMapLetterResponseDTO> findSentMapLetters(int page, int size, Long userId) {
 
-        return mapLetters.map(this::toFindSentMapLetter);
+//        Page<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId,
+//                PageRequest.of(page - 1, size, Sort.by(sort).descending()));
+
+        Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
+                PageRequest.of(page - 1, size));
+
+        return sentMapLetters.map(this::toFindSentMapLetter);
     }
 
-    private FindMapLetterResponseDTO toFindSentMapLetter(MapLetter mapLetter) {
-        String targetUserNickname = "";
-        if (mapLetter.getType() == MapLetterType.PRIVATE) {
+    private FindMapLetterResponseDTO toFindSentMapLetter(FindSentMapLetter findSentMapLetter) {
+        String targetUserNickname = null;
+        if (findSentMapLetter.getType().equals("TARGET")) {
+            targetUserNickname = "TS"; //추후 변경. 테스트용
 //            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
         }
 
-        return FindMapLetterResponseDTO.from(mapLetter, targetUserNickname);
+        return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname);
     }
 
     @Transactional(readOnly = true)

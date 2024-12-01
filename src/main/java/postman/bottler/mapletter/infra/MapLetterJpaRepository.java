@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
@@ -44,10 +45,42 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     @Query("UPDATE MapLetterEntity m SET m.isBlocked = true WHERE m.mapLetterId = :letterId")
     void letterBlock(Long letterId);
 
-    @Query(value = "SELECT st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance "
-            + "FROM map_letter m "
-            + "WHERE m.is_deleted =false AND m.is_blocked=false "
-            + "AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30 "
-            + "AND m.map_letter_id=:letterId", nativeQuery = true)
+    @Query(value =
+            "SELECT st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance "
+                    + "FROM map_letter m "
+                    + "WHERE m.is_deleted =false AND m.is_blocked=false "
+                    + "AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30 "
+                    + "AND m.map_letter_id=:letterId", nativeQuery = true)
     Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude, Long letterId);
+
+    @Query(value = """
+            SELECT m.map_letter_id AS letterId,  m.title AS title, m.description AS description, m.label AS label, 
+                   NULL AS targetUserNickname, 
+                   CASE 
+                       WHEN m.type = 'PRIVATE' THEN 'TARGET' 
+                       WHEN m.type = 'PUBLIC' THEN 'PUBLIC' 
+                   END AS type, 
+                   m.created_at AS createdAt 
+            FROM map_letter m 
+            WHERE m.create_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false 
+            UNION ALL 
+            SELECT r.reply_letter_id AS letterId, 
+                   CONCAT('Re: ', (SELECT ml.title FROM map_letter ml WHERE ml.map_letter_id = r.source_letter_id)) AS title, 
+                   NULL AS description, r.label AS label, NULL AS targetUserNickname, 'REPLY' AS type, r.created_at AS createdAt 
+            FROM reply_map_letter r 
+            WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false 
+            ORDER BY createdAt DESC
+            """,
+            countQuery = """
+                    SELECT COUNT(*) 
+                    FROM (
+                        SELECT m.map_letter_id FROM map_letter m 
+                        WHERE m.create_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false 
+                        UNION ALL 
+                        SELECT r.reply_letter_id FROM reply_map_letter r 
+                        WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false
+                    ) AS combined
+                    """,
+            nativeQuery = true)
+    Page<FindSentMapLetter> findSentLettersByUserId(Long userId, Pageable pageable);
 }

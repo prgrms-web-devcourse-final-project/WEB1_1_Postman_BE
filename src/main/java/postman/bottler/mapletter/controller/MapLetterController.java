@@ -83,13 +83,12 @@ public class MapLetterController {
         return ApiResponse.onDeleteSuccess(letters);
     }
 
-    @GetMapping("/sent/{userId}")
+    @GetMapping("/sent")
     public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sort, @PathVariable Long userId) {
+            @RequestParam(defaultValue = "9") int size, String sort, Long userId) {
         return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, sort, userId)));
+                MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
     }
 
     @GetMapping("/received")

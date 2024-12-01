@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.SourceMapLetterNotFountException;
@@ -82,5 +83,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     public Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude,
                                                                  Long letterId) {
         return mapLetterJpaRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude, letterId);
+    }
+
+    @Override
+    public Page<FindSentMapLetter> findSentLettersByUserId(Long userId, Pageable pageable) {
+        return mapLetterJpaRepository.findSentLettersByUserId(userId, pageable);
     }
 }
