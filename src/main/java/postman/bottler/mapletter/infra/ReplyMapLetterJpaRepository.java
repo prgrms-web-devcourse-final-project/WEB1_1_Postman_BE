@@ -1,5 +1,7 @@
 package postman.bottler.mapletter.infra;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +20,7 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
 
     @Query("SELECT r FROM ReplyMapLetterEntity r " +
             "WHERE r.sourceLetterId=:letterId AND r.isDeleted=false AND r.isBlocked = false")
-    List<ReplyMapLetterEntity> findReplyMapLettersBySourceLetterId(Long letterId);
+    Page<ReplyMapLetterEntity> findReplyMapLettersBySourceLetterId(Long letterId, Pageable pageable);
 
     Optional<ReplyMapLetterEntity> findBySourceLetterIdAndCreateUserId(Long letterId, Long userId);
 

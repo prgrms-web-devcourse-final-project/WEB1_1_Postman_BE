@@ -2,6 +2,8 @@ package postman.bottler.mapletter.infra;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
@@ -32,11 +34,11 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
     }
 
     @Override
-    public List<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId) {
-        List<ReplyMapLetterEntity> findActiveLetters = replyMapLetterJpaRepository.findReplyMapLettersBySourceLetterId(
-                letterId);
+    public Page<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId, Pageable pageable) {
+        Page<ReplyMapLetterEntity> findActiveLetters = replyMapLetterJpaRepository.findReplyMapLettersBySourceLetterId(
+                letterId, pageable);
 
-        return findActiveLetters.stream().map(ReplyMapLetterEntity::toDomain).toList();
+        return findActiveLetters.map(ReplyMapLetterEntity::toDomain);
     }
 
     @Override

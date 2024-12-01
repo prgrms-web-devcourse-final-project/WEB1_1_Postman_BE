@@ -154,7 +154,8 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(Long letterId, Long userId) {
+    public Page<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(int page, int size, Long letterId,
+                                                                         Long userId) {
         MapLetter sourceLetter = mapLetterRepository.findById(letterId);
         if (!sourceLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
@@ -163,9 +164,10 @@ public class MapLetterService {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
 
-        List<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId);
+        Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
+                PageRequest.of(page - 1, size));
 
-        return findReply.stream().map(FindAllReplyMapLettersResponseDTO::from).toList();
+        return findReply.map(FindAllReplyMapLettersResponseDTO::from);
     }
 
     @Transactional(readOnly = true)

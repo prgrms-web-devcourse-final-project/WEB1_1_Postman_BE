@@ -1,5 +1,7 @@
 package postman.bottler.mapletter.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 
@@ -11,7 +13,7 @@ public interface ReplyMapLetterRepository {
 
     List<ReplyMapLetter> findActiveReplyMapLettersBySourceUserId(Long userId);
 
-    List<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId);
+    Page<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId, Pageable pageable);
 
     ReplyMapLetter findById(Long letterId);
 
