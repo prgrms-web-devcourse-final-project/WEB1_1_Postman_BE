@@ -4,6 +4,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,3 +14,6 @@ spring:
         format_sql: true
         highlight_sql: true
     show-sql: true
+
+fcm:
+  private-key: bottler-fcm.json
