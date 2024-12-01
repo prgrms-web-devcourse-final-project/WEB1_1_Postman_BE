@@ -92,8 +92,12 @@ public class MapLetterController {
     }
 
     @GetMapping("/received")
-    public ApiResponse<List<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(Long userId) {
-        return ApiResponse.onSuccess(mapLetterService.findReceivedMapLetters(userId));
+    public ApiResponse<MapLetterPageResponseDTO<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Long userId) {
+        return ApiResponse.onSuccess(
+                MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
     }
 
     @GetMapping

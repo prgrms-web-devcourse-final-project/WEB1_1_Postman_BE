@@ -15,6 +15,7 @@ import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
+import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
@@ -107,25 +108,23 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(Long userId) {
-        List<FindReceivedMapLetterResponseDTO> result = new ArrayList<>();
+    public Page<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(int page, int size, Long userId) {
+        Page<FindReceivedMapLetterDTO> letters = mapLetterRepository.findActiveReceivedMapLettersByUserId(userId,
+                PageRequest.of(page - 1, size));
 
-        List<MapLetter> targetMapLetters = mapLetterRepository.findActiveByTargetUserId(userId);
-        for (MapLetter mapLetter : targetMapLetters) {
-            String senderNickname = "";
-            if (mapLetter.getType() == MapLetterType.PRIVATE) {
-                // senderNickname = userService.getNicknameById(mapLetter.getTargetUserId());
+        return letters.map(letter -> {
+            String senderNickname = null;
+            String senderProfileImg = null;
+
+            if ("TARGET".equals(letter.getType())) {
+                senderNickname = "TS"; // 예시 닉네임 (유저 서비스에서 가져와야 함)
+                senderProfileImg = "www.profile.com"; // 예시 프로필 이미지
+                // senderNickname = userService.getNicknameById(projection.getSenderId());
+                // senderProfileImg = userService.getProfileImgById(projection.getSenderId());
             }
-            result.add(FindReceivedMapLetterResponseDTO.fromTargetMapLetter(mapLetter, senderNickname));
-        }
 
-        List<ReplyMapLetter> replyMapLetters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
-        for (ReplyMapLetter mapLetter : replyMapLetters) {
-            result.add(FindReceivedMapLetterResponseDTO.fromReplyMapLetter(mapLetter));
-        }
-
-        result.sort(Comparator.comparing(FindReceivedMapLetterResponseDTO::createdAt).reversed());
-        return result;
+            return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg);
+        });
     }
 
     @Transactional(readOnly = true)

@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 
@@ -33,4 +34,6 @@ public interface MapLetterRepository {
     Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude, Long letterId);
 
     Page<FindSentMapLetter> findSentLettersByUserId(Long userId, Pageable createdAt);
+
+    Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest);
 }

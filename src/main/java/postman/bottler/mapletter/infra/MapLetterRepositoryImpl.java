@@ -6,9 +6,11 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
@@ -88,5 +90,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     @Override
     public Page<FindSentMapLetter> findSentLettersByUserId(Long userId, Pageable pageable) {
         return mapLetterJpaRepository.findSentLettersByUserId(userId, pageable);
+    }
+
+    @Override
+    public Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest) {
+       return mapLetterJpaRepository.findActiveReceivedMapLettersByUserId(userId, pageRequest);
     }
 }
