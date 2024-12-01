@@ -9,6 +9,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import postman.bottler.user.exception.TokenException;
 
 @Component
 @Slf4j
@@ -54,7 +57,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public String createToken(Authentication authentication) {
-        String username = authentication.getName();
+        String email = authentication.getName();
 
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority
@@ -65,7 +68,7 @@ public class JwtTokenProvider implements InitializingBean {
         Date expiryDate = new Date(now.getTime() + accessTokenExpirationTime);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
@@ -74,13 +77,13 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public String createRefreshToken(Authentication authentication) {
-        String username = authentication.getName();
+        String email = authentication.getName();
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationTime);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -94,7 +97,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String username = claims.getSubject();
+        String email = claims.getSubject();
 
         Object authoritiesObj = claims.get(AUTHORITIES_KEY);
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -108,9 +111,24 @@ public class JwtTokenProvider implements InitializingBean {
             authorities.add(new SimpleGrantedAuthority((String) authoritiesObj));
         }
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
         return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
+    }
+
+    public String getEmailFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new TokenException("만료된 jwt 토큰입니다.");
+        } catch (Exception e) {
+            throw new TokenException("유효하지 않은 jwt 토큰입니다.");
+        }
     }
 
     public boolean validateToken(String token) {

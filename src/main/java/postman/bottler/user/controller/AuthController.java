@@ -12,10 +12,13 @@ import postman.bottler.user.dto.request.CheckDuplicateEmailRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
 import postman.bottler.user.dto.request.SignInRequestDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
+import postman.bottler.user.dto.request.RefreshTokenRequestDTO;
+import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
+import postman.bottler.user.exception.TokenException;
 import postman.bottler.user.service.UserService;
 
 @RestController
@@ -52,6 +55,13 @@ public class AuthController {
         return ApiResponse.onSuccess(signInResponseDTO);
     }
 
+    @PostMapping("/validate")
+    public ApiResponse<AccessTokenResponseDTO> validateRefreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO, BindingResult bindingResult) {
+        validateRequestDTO(bindingResult);
+        AccessTokenResponseDTO newAccessToken = userService.validateRefreshToken(refreshTokenRequestDTO.refreshToken());
+        return ApiResponse.onSuccess(newAccessToken);
+    }
+
     private void validateRequestDTO(BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
@@ -59,6 +69,7 @@ public class AuthController {
                     case "email" -> throw new EmailException(error.getDefaultMessage());
                     case "password" -> throw new PasswordException(error.getDefaultMessage());
                     case "nickname" -> throw new NicknameException(error.getDefaultMessage());
+                    case "token" -> throw new TokenException(error.getDefaultMessage());
                     default -> throw new IllegalArgumentException(
                             bindingResult.getAllErrors().get(0).getDefaultMessage());
                 }

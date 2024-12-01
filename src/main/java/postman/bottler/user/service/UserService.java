@@ -10,16 +10,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.auth.JwtTokenProvider;
+import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
+import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
+import postman.bottler.user.exception.TokenException;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -47,18 +51,28 @@ public class UserService {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(email, password);
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             String accessToken = jwtTokenProvider.createToken(authentication);
             String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-            // TODO: refreshToken 저장
+            refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));
 
             return new SignInResponseDTO(accessToken, refreshToken);
-
         } catch (BadCredentialsException e) {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    public AccessTokenResponseDTO validateRefreshToken(String refreshToken) {
+        //db에 저장되어 있는 email과 refreshToken의 email과 같은지 비교
+        String emailFromRefreshToken = jwtTokenProvider.getEmailFromToken(refreshToken);
+        String storedEmail = refreshTokenRepository.findEmailByRefreshToken(refreshToken);
+        if (!storedEmail.equals(emailFromRefreshToken)) {
+            throw new TokenException("유효하지 않은 jwt 토큰입니다.");
+        }
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        String newAccessToken = jwtTokenProvider.createToken(authentication);
+        return new AccessTokenResponseDTO(newAccessToken);
     }
 }
