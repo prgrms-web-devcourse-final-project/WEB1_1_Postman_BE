@@ -1,6 +1,7 @@
 package postman.bottler.mapletter.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
@@ -22,4 +23,6 @@ public interface ReplyMapLetterRepository {
     void letterBlock(Long letterId);
 
     void softDelete(Long letterId);
+
+    Page<ReplyMapLetter> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
 }

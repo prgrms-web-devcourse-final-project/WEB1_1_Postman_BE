@@ -11,7 +11,7 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 
 import java.math.BigDecimal;
 import java.util.List;
-import postman.bottler.mapletter.infra.entity.MapLetterEntity;
+import postman.bottler.mapletter.dto.response.FindAllSentReplyMapLetterResponseDTO;
 
 @Repository
 public interface MapLetterRepository {

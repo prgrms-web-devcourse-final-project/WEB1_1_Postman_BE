@@ -176,4 +176,13 @@ public class MapLetterController {
     public ApiResponse<OneLetterResponseDTO> findArchiveOneLetter(@PathVariable Long letterId, Long userId) {
         return ApiResponse.onSuccess(mapLetterService.findArchiveOneLetter(letterId, userId));
     }
+
+    @GetMapping("/sent/reply")
+    public ApiResponse<MapLetterPageResponseDTO<FindAllSentReplyMapLetterResponseDTO>> findAllSentReplyMapLetter(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Long userId) {
+        return ApiResponse.onSuccess(
+                MapLetterPageResponseDTO.from(mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
+    }
 }

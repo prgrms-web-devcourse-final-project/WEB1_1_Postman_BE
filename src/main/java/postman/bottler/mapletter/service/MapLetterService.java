@@ -272,4 +272,16 @@ public class MapLetterService {
 //        profileImg = userService.getProfileImgByCreateUserId(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg);
     }
+
+    public Page<FindAllSentReplyMapLetterResponseDTO> findAllSentReplyMapLetter(int page, int size, Long userId) {
+        Page<ReplyMapLetter> letters = replyMapLetterRepository.findAllSentReplyByUserId(userId,
+                PageRequest.of(page - 1, size));
+
+        return letters.map(replyMapLetter -> {
+            MapLetter sourceLetter=mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+            String title="Re: "+sourceLetter.getTitle();
+
+            return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title);
+        });
+    }
 }
