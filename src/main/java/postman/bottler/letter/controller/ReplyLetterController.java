@@ -1,14 +1,10 @@
 package postman.bottler.letter.controller;
 
 import jakarta.validation.Valid;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +23,7 @@ import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.ReplyLetterService;
+import postman.bottler.letter.service.ValidationService;
 
 @Slf4j
 @RestController
@@ -36,6 +33,7 @@ public class ReplyLetterController {
 
     private final ReplyLetterService letterReplyService;
     private final DeleteManagerService deleteManagerService;
+    private final ValidationService validationService;
 
     @PostMapping("/{letterId}")
     public ApiResponse<ReplyLetterResponseDTO> createReply(
@@ -43,7 +41,8 @@ public class ReplyLetterController {
             BindingResult bindingResult,
             @PathVariable Long letterId
     ) {
-        validateRequest(bindingResult);
+        validationService.validate(bindingResult,
+                errors -> new InvalidReplyLetterRequestException("유효성 검사 실패", errors));
         ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO);
         return ApiResponse.onCreateSuccess(result);
     }
@@ -54,7 +53,8 @@ public class ReplyLetterController {
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult
     ) {
-        validatePageRequest(bindingResult);
+        validationService.validate(bindingResult,
+                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
         Page<ReplyLetterHeadersResponseDTO> result =
                 letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -74,27 +74,5 @@ public class ReplyLetterController {
     ) {
         deleteManagerService.deleteLetter(letterDeleteRequestDTO);
         return ApiResponse.onSuccess("success");
-    }
-
-    private void validateRequest(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = bindingResult.getFieldErrors().stream()
-                    .collect(Collectors.toMap(
-                            FieldError::getField,
-                            fieldError -> Objects.requireNonNullElse(fieldError.getDefaultMessage(), "검증 실패")
-                    ));
-            throw new InvalidReplyLetterRequestException("유효성 검사 실패", errors);
-        }
-    }
-
-    private void validatePageRequest(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = bindingResult.getFieldErrors().stream()
-                    .collect(Collectors.toMap(
-                            FieldError::getField,
-                            fieldError -> Objects.requireNonNullElse(fieldError.getDefaultMessage(), "검증 실패")
-                    ));
-            throw new InvalidPageRequestException("유효성 검사 실패", errors);
-        }
     }
 }
