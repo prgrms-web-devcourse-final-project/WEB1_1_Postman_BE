@@ -1,10 +1,12 @@
 package postman.bottler.letter.exception;
 
+import static postman.bottler.global.response.code.ErrorStatus.INVALID_SORT_FIELD;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ACCESS_DENIED;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ALREADY_SAVED;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_NOT_FOUND;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_UNKNOWN_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_VALIDATION_ERROR;
+import static postman.bottler.global.response.code.ErrorStatus.PAGINATION_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.REPLY_LETTER_VALIDATION_ERROR;
 
 import java.util.Map;
@@ -76,5 +78,19 @@ public class LetterExceptionHandler {
                                 e.getErrors()
                         )
                 );
+    }
+
+    @ExceptionHandler(InvalidSortFieldException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidSortFieldException(InvalidSortFieldException e) {
+        return ResponseEntity
+                .status(INVALID_SORT_FIELD.getHttpStatus())
+                .body(ApiResponse.onFailure(INVALID_SORT_FIELD.getCode(), e.getMessage(), null));
+    }
+
+    @ExceptionHandler(PaginationValidationException.class)
+    public ResponseEntity<ApiResponse<String>> handlePaginationValidationException(PaginationValidationException e) {
+        return ResponseEntity
+                .status(PAGINATION_VALIDATION_ERROR.getHttpStatus())
+                .body(ApiResponse.onFailure(PAGINATION_VALIDATION_ERROR.getCode(), e.getMessage(), null));
     }
 }
