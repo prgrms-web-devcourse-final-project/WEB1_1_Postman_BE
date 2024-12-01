@@ -75,7 +75,7 @@ public class MapLetterService {
         }
 
         String profileImg = ""; //user 서비스 메서드 불러서 받기
-        return OneLetterResponseDTO.from(mapLetter, profileImg); //from으로 수정하기
+        return OneLetterResponseDTO.from(mapLetter, profileImg);
     }
 
     @Transactional
