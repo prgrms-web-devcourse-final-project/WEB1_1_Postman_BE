@@ -23,7 +23,7 @@ import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.ReplyLetterService;
-import postman.bottler.letter.service.ValidationService;
+import postman.bottler.letter.utiil.ValidationUtil;
 
 @Slf4j
 @RestController
@@ -33,7 +33,7 @@ public class ReplyLetterController {
 
     private final ReplyLetterService letterReplyService;
     private final DeleteManagerService deleteManagerService;
-    private final ValidationService validationService;
+    private final ValidationUtil validationUtil;
 
     @PostMapping("/{letterId}")
     public ApiResponse<ReplyLetterResponseDTO> createReply(
@@ -41,8 +41,7 @@ public class ReplyLetterController {
             BindingResult bindingResult,
             @PathVariable Long letterId
     ) {
-        validationService.validate(bindingResult,
-                errors -> new InvalidReplyLetterRequestException("유효성 검사 실패", errors));
+        validateReplyLetterRequest(bindingResult);
         ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO);
         return ApiResponse.onCreateSuccess(result);
     }
@@ -53,8 +52,7 @@ public class ReplyLetterController {
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult
     ) {
-        validationService.validate(bindingResult,
-                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
+        validatePageRequest(bindingResult);
         Page<ReplyLetterHeadersResponseDTO> result =
                 letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -74,5 +72,15 @@ public class ReplyLetterController {
     ) {
         deleteManagerService.deleteLetter(letterDeleteRequestDTO);
         return ApiResponse.onSuccess("success");
+    }
+
+    private void validateReplyLetterRequest(BindingResult bindingResult) {
+        validationUtil.validate(bindingResult,
+                errors -> new InvalidReplyLetterRequestException("유효성 검사 실패", errors));
+    }
+
+    private void validatePageRequest(BindingResult bindingResult) {
+        validationUtil.validate(bindingResult,
+                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
     }
 }

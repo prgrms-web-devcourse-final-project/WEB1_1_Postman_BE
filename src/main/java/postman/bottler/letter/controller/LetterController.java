@@ -18,7 +18,7 @@ import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterService;
-import postman.bottler.letter.service.ValidationService;
+import postman.bottler.letter.utiil.ValidationUtil;
 
 @RestController
 @RequestMapping("/letters")
@@ -27,14 +27,13 @@ public class LetterController {
 
     private final LetterService letterService;
     private final DeleteManagerService deleteManagerService;
-    private final ValidationService validationService;
+    private final ValidationUtil validationUtil;
 
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(
             @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult
     ) {
-        validationService.validate(bindingResult,
-                errors -> new InvalidLetterRequestException("유효성 검사 실패", errors));
+        validateLetterRequest(bindingResult);
         LetterResponseDTO result = letterService.createLetter(letterRequestDTO);
         return ApiResponse.onCreateSuccess(result);
     }
@@ -51,5 +50,10 @@ public class LetterController {
     public ApiResponse<LetterDetailResponseDTO> getLetter(@PathVariable Long letterId) {
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId);
         return ApiResponse.onSuccess(result);
+    }
+
+    private void validateLetterRequest(BindingResult bindingResult) {
+        validationUtil.validate(bindingResult,
+                errors -> new InvalidLetterRequestException("유효성 검사 실패", errors));
     }
 }

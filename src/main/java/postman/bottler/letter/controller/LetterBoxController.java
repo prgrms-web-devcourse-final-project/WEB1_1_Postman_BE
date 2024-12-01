@@ -19,7 +19,7 @@ import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterBoxService;
-import postman.bottler.letter.service.ValidationService;
+import postman.bottler.letter.utiil.ValidationUtil;
 
 @Slf4j
 @RestController
@@ -29,15 +29,14 @@ public class LetterBoxController {
 
     private final LetterBoxService letterBoxService;
     private final DeleteManagerService deleteManagerService;
-    private final ValidationService validationService;
+    private final ValidationUtil validationUtil;
 
     @GetMapping
     public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getAllLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult
     ) {
-        validationService.validate(bindingResult,
-                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
+        validatePageRequest(bindingResult);
         Page<LetterHeadersResponseDTO> result = letterBoxService.getAllLetterHeaders(pageRequestDTO);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -47,8 +46,7 @@ public class LetterBoxController {
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult
     ) {
-        validationService.validate(bindingResult,
-                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
+        validatePageRequest(bindingResult);
         Page<LetterHeadersResponseDTO> result = letterBoxService.getSentLetterHeaders(pageRequestDTO);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -58,8 +56,7 @@ public class LetterBoxController {
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult
     ) {
-        validationService.validate(bindingResult,
-                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
+        validatePageRequest(bindingResult);
         Page<LetterHeadersResponseDTO> result = letterBoxService.getReceivedLetterHeaders(pageRequestDTO);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -70,5 +67,10 @@ public class LetterBoxController {
     ) {
         deleteManagerService.deleteLetters(letterDeleteRequestDTOS);
         return ApiResponse.onSuccess("편지 보관을 취소했습니다.");
+    }
+
+    private void validatePageRequest(BindingResult bindingResult) {
+        validationUtil.validate(bindingResult,
+                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
     }
 }

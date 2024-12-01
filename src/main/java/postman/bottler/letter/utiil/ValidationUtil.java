@@ -1,4 +1,4 @@
-package postman.bottler.letter.service;
+package postman.bottler.letter.utiil;
 
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 @Component
-public class ValidationService {
+public class ValidationUtil {
     public <T extends RuntimeException> void validate(
             BindingResult bindingResult,
             Function<Map<String, String>, T> exceptionSupplier
