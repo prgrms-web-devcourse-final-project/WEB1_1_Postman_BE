@@ -289,12 +289,23 @@ public class MapLetterService {
                 userId, PageRequest.of(page - 1, size));
 
         return letters.map(mapLetter -> {
-            String targetUserNickname=null;
-            if(mapLetter.getType() == MapLetterType.PRIVATE) {
+            String targetUserNickname = null;
+            if (mapLetter.getType() == MapLetterType.PRIVATE) {
 //                targetUserNickname=userService.findNicknameByUserId(mapLetter.getTargetUserId());
-                targetUserNickname="TS";
+                targetUserNickname = "TS";
             }
             return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
+        });
+    }
+
+    public Page<FindAllReceivedReplyLetterResponseDTO> findAllReceivedReplyLetter(int page, int size, Long userId) {
+        Page<ReplyMapLetter> letters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId,
+                PageRequest.of(page - 1, size));
+
+        return letters.map(replyMapLetter -> {
+            MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+            String title = "Re: " + sourceLetter.getTitle();
+            return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title);
         });
     }
 }

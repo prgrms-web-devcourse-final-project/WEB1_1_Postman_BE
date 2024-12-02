@@ -27,11 +27,11 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
     }
 
     @Override
-    public List<ReplyMapLetter> findActiveReplyMapLettersBySourceUserId(Long userId) {
-        List<ReplyMapLetterEntity> findActiveLetters = replyMapLetterJpaRepository.findActiveReplyMapLettersBySourceUserId(
-                userId);
+    public Page<ReplyMapLetter> findActiveReplyMapLettersBySourceUserId(Long userId, Pageable pageable) {
+        Page<ReplyMapLetterEntity> findActiveLetters = replyMapLetterJpaRepository.findActiveReplyMapLettersBySourceUserId(
+                userId, pageable);
 
-        return findActiveLetters.stream().map(ReplyMapLetterEntity::toDomain).toList();
+        return findActiveLetters.map(ReplyMapLetterEntity::toDomain);
     }
 
     @Override
@@ -75,4 +75,5 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
         Page<ReplyMapLetterEntity> letters = replyMapLetterJpaRepository.findAllSentReplyByUserId(userId, pageRequest);
         return letters.map(ReplyMapLetterEntity::toDomain);
     }
+
 }

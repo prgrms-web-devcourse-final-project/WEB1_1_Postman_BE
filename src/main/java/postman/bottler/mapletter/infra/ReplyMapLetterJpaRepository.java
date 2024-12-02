@@ -16,8 +16,8 @@ import java.util.Optional;
 public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLetterEntity, Long> {
 
     @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m WHERE m.createUserId = :userId " +
-            "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false ")
-    List<ReplyMapLetterEntity> findActiveReplyMapLettersBySourceUserId(Long userId);
+            "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false ORDER BY r.createdAt DESC ")
+    Page<ReplyMapLetterEntity> findActiveReplyMapLettersBySourceUserId(Long userId, Pageable pageable);
 
     @Query("SELECT r FROM ReplyMapLetterEntity r " +
             "WHERE r.sourceLetterId=:letterId AND r.isDeleted=false AND r.isBlocked = false")
