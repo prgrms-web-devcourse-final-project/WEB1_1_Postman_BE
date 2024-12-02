@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.dto.response;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import postman.bottler.mapletter.domain.MapLetter;
@@ -9,6 +10,8 @@ public record FindAllReceivedLetterResponseDTO(
         Long letterId,
         String title,
         String description,
+        BigDecimal latitude,
+        BigDecimal longitude,
         String label,
         String sendUserNickname,
         String sendUserProfileImg,
@@ -20,6 +23,8 @@ public record FindAllReceivedLetterResponseDTO(
                 .letterId(mapLetter.getId())
                 .title(mapLetter.getTitle())
                 .description(mapLetter.getDescription())
+                .latitude(mapLetter.getLatitude())
+                .longitude(mapLetter.getLongitude())
                 .label(mapLetter.getLabel())
                 .sendUserNickname(sendUserNickname)
                 .sendUserProfileImg(sendUserProfileImg)

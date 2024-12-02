@@ -311,7 +311,8 @@ public class MapLetterService {
     public Page<FindAllReceivedLetterResponseDTO> findAllReceivedLetter(int page, int size, Long userId) {
         Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
         return letters.map(letter -> {
-            String sendUserNickname = letter.getCreateUserId().toString(); //예시
+//            String sendUserNickname = letter.getCreateUserId().toString(); //예시
+            String sendUserNickname = "TS";
             String sendUserProfileImg = "www.profile.com"; //예시
 
 //             sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
