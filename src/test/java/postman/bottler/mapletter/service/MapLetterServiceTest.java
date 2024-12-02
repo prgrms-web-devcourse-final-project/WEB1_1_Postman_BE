@@ -1,34 +1,33 @@
 package postman.bottler.mapletter.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
-import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
-import postman.bottler.mapletter.dto.response.FindReceivedMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class MapLetterServiceTest {
-    @Autowired
+    @InjectMocks
     private MapLetterService mapLetterService;
-    @MockBean
+    @Mock
     private MapLetterRepository mapLetterRepository;
 
     @BeforeEach
@@ -485,6 +484,7 @@ class MapLetterServiceTest {
 //        Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByCreateUserId(userId);
 //
 //    }
+
 
 //    @Test
 //    @DisplayName("받은 지도 편지 조회에 성공한다.")

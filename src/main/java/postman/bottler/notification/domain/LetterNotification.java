@@ -1,12 +1,13 @@
 package postman.bottler.notification.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.Getter;
 import postman.bottler.notification.exception.NoLetterIdException;
 
 @Getter
 public class LetterNotification extends Notification {
-    private long letterId;
+    private final long letterId;
 
     protected LetterNotification(NotificationType type, long receiver, Long letterId, Boolean isRead) {
         super(type, receiver, isRead);
@@ -14,7 +15,7 @@ public class LetterNotification extends Notification {
         this.letterId = letterId;
     }
 
-    protected LetterNotification(Long id, NotificationType type, long receiver,
+    protected LetterNotification(UUID id, NotificationType type, long receiver,
                                  Long letterId, LocalDateTime createdAt, Boolean isRead) {
         super(id, type, receiver, createdAt, isRead);
         validateLetterId(letterId);

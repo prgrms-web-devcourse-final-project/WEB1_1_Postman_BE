@@ -1,16 +1,15 @@
 package postman.bottler.mapletter.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
 class MapLetterTest {
 
     @Test
@@ -30,7 +29,7 @@ class MapLetterTest {
         Long userId = 1L;
 
         //when
-        MapLetter mapLetter=MapLetter.createPublicMapLetter(requestDTO, userId);
+        MapLetter mapLetter = MapLetter.createPublicMapLetter(requestDTO, userId);
 
         //then
         assertNotNull(mapLetter);
@@ -47,7 +46,7 @@ class MapLetterTest {
     @DisplayName("타겟 편지 생성에 성공한다")
     void createTargetMapLetterTest() {
         //given
-        Long targetUserId=3L;
+        Long targetUserId = 3L;
 
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "타겟 편지",
@@ -63,7 +62,7 @@ class MapLetterTest {
         Long userId = 1L;
 
         //when
-        MapLetter mapLetter=MapLetter.createTargetMapLetter(requestDTO, userId);
+        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
 
         //then
         assertNotNull(mapLetter);
