@@ -1,12 +1,13 @@
 package postman.bottler.notification.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import postman.bottler.notification.domain.LetterNotification;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
 
 public record NotificationResponseDTO(
-        Long id,
+        UUID id,
         NotificationType type,
         Long receiver,
         LocalDateTime createdAt,

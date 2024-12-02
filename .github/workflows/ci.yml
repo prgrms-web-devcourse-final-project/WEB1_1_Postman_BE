@@ -8,11 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
     env:
       # 데이터베이스 환경변수 (RDS)
       DB_URL: ${{ secrets.DB_URL }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      ## Redis 환경변수
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+      # FCM 환경변수
+      BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
 
       # AWS 환경변수
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
@@ -58,6 +72,9 @@ jobs:
 
       - name: JSON 생성
         run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
+
+      - name: 로그 확인
+        run: ./gradlew test -i
 
       - name: Gradle로 테스트 및 커버리지 리포트 생성
         run: ./gradlew clean build jacocoTestReport

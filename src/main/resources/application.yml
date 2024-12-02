@@ -14,6 +14,12 @@ spring:
         format_sql: true
         highlight_sql: true
     show-sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 fcm:
-  private-key: bottler-fcm.json
+  private-key: ${BOTTLER_FCM_BASE64}
+
+

@@ -1,38 +1,40 @@
 package postman.bottler.mapletter.service;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import postman.bottler.mapletter.domain.Paper;
-import postman.bottler.mapletter.dto.PaperDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import postman.bottler.mapletter.domain.Paper;
+import postman.bottler.mapletter.dto.PaperDTO;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class PaperServiceTest {
 
-    @Autowired
+    @InjectMocks
     private PaperService paperService;
 
-    @MockBean
+    @Mock
     private PaperRepository paperRepository;
 
     @Test
     @DisplayName("편지지 전체 조회에 성공한다.")
-    void findAllPapersTest(){
+    void findAllPapersTest() {
         //given
-        List<Paper> mockPapers=List.of(
-            Paper.builder().paperId(1L).paperUrl("www.paper1.com").build(),
-            Paper.builder().paperId(2L).paperUrl("www.paper2.com").build()
+        List<Paper> mockPapers = List.of(
+                Paper.builder().paperId(1L).paperUrl("www.paper1.com").build(),
+                Paper.builder().paperId(2L).paperUrl("www.paper2.com").build()
         );
 
-        List<PaperDTO> expectedPapers=mockPapers.stream()
+        List<PaperDTO> expectedPapers = mockPapers.stream()
                 .map(Paper::toPaperDTO)
                 .toList();
 
