@@ -81,6 +81,8 @@ jobs:
           echo "DB_URL=${{ secrets.DB_URL }}" >> docker-compose/.env
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> docker-compose/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> docker-compose/.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker-compose/.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker-compose/.env
           echo "BOTTLER_FCM_BASE64=${{ secrets.BOTTLER_FCM_BASE64 }}" >> docker-compose/.env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> docker-compose/.env
           echo "BASE_URL=${{ secrets.BASE_URL }}" >> docker-compose/.env
