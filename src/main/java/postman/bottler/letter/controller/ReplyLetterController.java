@@ -1,6 +1,7 @@
 package postman.bottler.letter.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -70,7 +71,7 @@ public class ReplyLetterController {
     public ApiResponse<String> deleteReplyLetter(
             @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
     ) {
-        deleteManagerService.deleteLetter(letterDeleteRequestDTO);
+        deleteManagerService.deleteLetters(List.of(letterDeleteRequestDTO));
         return ApiResponse.onSuccess("success");
     }
 

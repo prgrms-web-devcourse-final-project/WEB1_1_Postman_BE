@@ -57,33 +57,16 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType) {
-        deleteByCondition(letterIds, letterType, null);
-    }
+    public void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
 
-    @Override
-    public void deleteByIdsAndTypes(List<Long> letterIds, LetterType letterType, BoxType boxType) {
-        deleteByCondition(letterIds, letterType, boxType);
-    }
-
-    @Override
-    public void deleteByIdAndType(Long letterId, LetterType letterType) {
-        deleteByCondition(List.of(letterId), letterType, null);
-    }
-
-    @Override
-    public void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType) {
-        deleteByCondition(List.of(letterId), letterType, boxType);
-    }
-
-    @Override
-    public boolean isSaved(Long userId, Long letterId) {
-        return true;
-    }
-
-    @Override
-    public void remove(Long userId, Long letterId) {
-//        letterBoxJpaRepository.deleteByUserIdAndLetterId(userId, letterId);
+        queryFactory.delete(letterBox)
+                .where(
+                        letterIds != null ? letterBox.letterId.in(letterIds) : null,
+                        letterType != LetterType.UNKNOWN ? letterBox.letterType.eq(letterType) : null,
+                        boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null
+                )
+                .execute();
     }
 
     private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
@@ -131,17 +114,5 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                         .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
                 .fetch()
                 .size();
-    }
-
-    private void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-
-        queryFactory.delete(letterBox)
-                .where(
-                        letterIds != null ? letterBox.letterId.in(letterIds) : null,
-                        letterType != null ? letterBox.letterType.eq(letterType) : null,
-                        boxType != null ? letterBox.boxType.eq(boxType) : null
-                )
-                .execute();
     }
 }

@@ -1,6 +1,7 @@
 package postman.bottler.letter.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,11 +39,11 @@ public class LetterController {
         return ApiResponse.onCreateSuccess(result);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{letterId}")
     public ApiResponse<String> deleteLetter(
             @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
     ) {
-        deleteManagerService.deleteLetter(letterDeleteRequestDTO);
+        deleteManagerService.deleteLetters(List.of(letterDeleteRequestDTO));
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 

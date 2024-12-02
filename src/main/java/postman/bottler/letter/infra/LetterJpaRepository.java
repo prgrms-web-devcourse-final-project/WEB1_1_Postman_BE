@@ -14,6 +14,6 @@ public interface LetterJpaRepository extends JpaRepository<LetterEntity, Long> {
     boolean existsByUserIdAndId(Long userId, Long id);
 
     @Modifying
-    @Query("DELETE FROM ReplyLetterEntity r WHERE r.id IN :letterIds")
+    @Query("DELETE FROM LetterEntity r WHERE r.id IN :letterIds")
     void deleteByIds(List<Long> letterIds);
 }

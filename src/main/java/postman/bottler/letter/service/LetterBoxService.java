@@ -43,23 +43,8 @@ public class LetterBoxService {
     }
 
     @Transactional
-    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType) {
-        letterBoxRepository.deleteByIdsAndType(letterIds, letterType);
-    }
-
-    @Transactional
-    public void deleteByIdsAndTypes(List<Long> letterIds, LetterType letterType, BoxType boxType) {
-        letterBoxRepository.deleteByIdsAndTypes(letterIds, letterType, boxType);
-    }
-
-    @Transactional
-    public void deleteByIdAndType(Long letterId, LetterType letterType) {
-        letterBoxRepository.deleteByIdAndType(letterId, letterType);
-    }
-
-    @Transactional
-    public void deleteByIdAndTypes(Long letterId, LetterType letterType, BoxType boxType) {
-        letterBoxRepository.deleteByIdAndTypes(letterId, letterType, boxType);
+    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+        letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
     }
 
     private Long getCurrentUserId() {
