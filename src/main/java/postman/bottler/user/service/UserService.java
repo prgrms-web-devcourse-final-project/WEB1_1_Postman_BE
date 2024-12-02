@@ -1,5 +1,7 @@
 package postman.bottler.user.service;
 
+import jakarta.mail.MessagingException;
+import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +34,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final EmailService emailService;
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int CODE_LENGTH = 8;
+    private static final SecureRandom random = new SecureRandom();
 
     @Transactional
     public void createUser(String email, String password, String nickname) {
@@ -133,5 +140,35 @@ public class UserService {
     @Transactional
     public ExistingUserResponseDTO findExistingUser(String nickname) {
         return new ExistingUserResponseDTO(userRepository.existsByNickname(nickname));
+    }
+
+    @Transactional
+    public void sendCodeToEmail(String email) {
+        String authCode = createCode();
+        String title = "BOTTLER 이메일 인증 번호";
+        String content = "<html>"
+                + "<body>"
+                + "<h1>BOTTLER 인증 코드: " + authCode + "</h1>"
+                + "<p>해당 코드를 홈페이지에 입력하세요.</p>"
+                + "</body>"
+                + "</html>";
+        try {
+            emailService.sendEmail(email, title, content);
+        } catch (RuntimeException | MessagingException e) {
+            throw new EmailException("인증코드 요청에 실패했습니다.");
+        }
+    }
+
+    private String createCode() {
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            code.append(CHARACTERS.charAt(index));
+        }
+        return code.toString();
+    }
+
+    @Transactional
+    public void verifyCode(String email, String code) {
     }
 }
