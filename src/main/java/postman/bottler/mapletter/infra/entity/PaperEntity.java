@@ -14,8 +14,8 @@ import postman.bottler.mapletter.domain.Paper;
 public class PaperEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long paperId;
-    String paperUrl;
+    private Long paperId;
+    private String paperUrl;
 
     @Builder
     public PaperEntity(String paperUrl) {

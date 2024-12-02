@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.infra.entity;
 
+import com.google.firebase.database.annotations.NotNull;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -16,7 +17,9 @@ public class MapLetterArchiveEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mapLetterArchiveId;
+    @NotNull
     private Long mapLetterId;
+    @NotNull
     private Long userId;
     private LocalDateTime createdAt;
 
