@@ -214,5 +214,4 @@ public class MapLetterController {
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
     }
-
 }

@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
@@ -20,11 +19,8 @@ import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
-import postman.bottler.mapletter.exception.BlockedLetterException;
-import postman.bottler.mapletter.exception.DistanceToFarException;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
-import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.math.BigDecimal;
 
@@ -38,7 +34,7 @@ public class MapLetterService {
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
 //    private final UserService userService;
 
-    private static final int VIEW_DISTANCE = 15;
+    private static final double VIEW_DISTANCE = 15;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -58,22 +54,11 @@ public class MapLetterService {
     public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId, BigDecimal latitude,
                                                  BigDecimal longitude) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
-                && !mapLetter.getCreateUserId().equals(userId))) {
-            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
-        }
-        if (mapLetter.isDeleted()) {
-            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        }
-        if (mapLetter.isBlocked()) {
-            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
-        }
 
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
-        if (distance > VIEW_DISTANCE) {
-            throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
-        }
+
+        mapLetter.validateFindOneMapLetter(userId, VIEW_DISTANCE, distance);
 
         String profileImg = ""; //user 서비스 메서드 불러서 받기
         return OneLetterResponseDTO.from(mapLetter, profileImg);
@@ -83,12 +68,7 @@ public class MapLetterService {
     public void deleteMapLetter(List<Long> letters, Long userId) {
         for (Long letterId : letters) {
             MapLetter findMapLetter = mapLetterRepository.findById(letterId);
-            if (!findMapLetter.getCreateUserId().equals(userId)) {
-                throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
-            }
-            if (findMapLetter.isBlocked()) {
-                throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
-            }
+            findMapLetter.validDeleteMapLetter(userId);
             mapLetterRepository.softDelete(letterId);
         }
     }
@@ -157,15 +137,8 @@ public class MapLetterService {
     public Page<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(int page, int size, Long letterId,
                                                                          Long userId) {
         MapLetter sourceLetter = mapLetterRepository.findById(letterId);
-        if (!sourceLetter.getCreateUserId().equals(userId)) {
-            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
-        }
-        if (sourceLetter.isDeleted()) {
-            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        }
-        if (sourceLetter.isBlocked()) {
-            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
-        }
+
+        sourceLetter.validFindAllReplyMapLetter(userId);
 
         Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
                 PageRequest.of(page - 1, size));
@@ -177,14 +150,9 @@ public class MapLetterService {
     public OneReplyLetterResponseDTO findOneReplyMapLetter(Long letterId, Long userId) {
         ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
         MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
-        if (replyMapLetter.isDeleted()) {
-            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        } else if (!replyMapLetter.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
-            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
-        }
-        if (sourceLetter.isBlocked()) {
-            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
-        }
+
+        replyMapLetter.validFindOneReplyMapLetter(userId, sourceLetter);
+        sourceLetter.validDeleteAndBlocked();
 
         return OneReplyLetterResponseDTO.from(replyMapLetter);
     }
@@ -192,14 +160,7 @@ public class MapLetterService {
     @Transactional
     public MapLetterArchive mapLetterArchive(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        if (mapLetter.isDeleted()) {
-            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
-            throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
-        }
-        if (mapLetter.isBlocked()) {
-            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
-        }
+        mapLetter.validMapLetterArchive();
 
         MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId)
                 .createdAt(LocalDateTime.now()).build();
@@ -221,9 +182,7 @@ public class MapLetterService {
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
         for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
-            if (!findArchiveInfo.getUserId().equals(userId)) {
-                throw new CommonForbiddenException("편지 보관 취소를 할 권한이 없습니다. 편지 보관 취소에 실패했습니다.");
-            }
+            findArchiveInfo.validDeleteArchivedLetter(userId);
             mapLetterArchiveRepository.deleteById(archiveId);
         }
     }
@@ -249,25 +208,14 @@ public class MapLetterService {
     public void deleteReplyMapLetter(List<Long> letters, Long userId) {
         for (Long letterId : letters) {
             ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
-            if (!replyMapLetter.getCreateUserId().equals(userId)) {
-                throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
-            }
+            replyMapLetter.validDeleteReplyMapLetter(userId);
             replyMapLetterRepository.softDelete(letterId);
         }
     }
 
     public OneLetterResponseDTO findArchiveOneLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
-                && !mapLetter.getCreateUserId().equals(userId))) {
-            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
-        }
-        if (mapLetter.isDeleted()) {
-            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
-        }
-        if (mapLetter.isBlocked()) {
-            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
-        }
+        mapLetter.validateAccess(userId);
 
         String profileImg = "www.profile.com"; //user 서비스 메서드 불러서 받기
 //        profileImg = userService.getProfileImgByCreateUserId(mapLetter.getCreateUserId());

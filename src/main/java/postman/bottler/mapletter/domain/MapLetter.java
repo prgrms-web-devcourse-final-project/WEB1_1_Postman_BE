@@ -7,9 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
+import postman.bottler.mapletter.exception.BlockedLetterException;
+import postman.bottler.mapletter.exception.DistanceToFarException;
+import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -76,5 +79,53 @@ public class MapLetter {
 
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
+    }
+
+    public void validateFindOneMapLetter(Long userId, double viewDistance, Double distance) {
+        validateAccess(userId);
+        validDeleteAndBlocked();
+        if (distance > viewDistance) {
+            throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
+        }
+    }
+
+    public void validateAccess(Long userId) {
+        if (this.getType() == MapLetterType.PRIVATE && (!this.getTargetUserId().equals(userId)
+                && !this.getCreateUserId().equals(userId))) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        validDeleteAndBlocked();
+    }
+
+    public void validDeleteMapLetter(Long userId) {
+        if (!this.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+        }
+        if (this.isBlocked()) {
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
+    }
+
+    public void validFindAllReplyMapLetter(Long userId) {
+        if (!this.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        validDeleteAndBlocked();
+    }
+
+    public void validMapLetterArchive() {
+        if (this.getType() == MapLetterType.PRIVATE) {
+            throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
+        }
+        validDeleteAndBlocked();
+    }
+
+    public void validDeleteAndBlocked(){
+        if (this.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
+        if (this.isBlocked()) {
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
     }
 }
