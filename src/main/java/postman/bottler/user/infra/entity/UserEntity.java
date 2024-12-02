@@ -26,6 +26,7 @@ public class UserEntity {
     private String email;
     private String password;
     private String nickname;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean isDeleted;
@@ -37,6 +38,7 @@ public class UserEntity {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
+                .imageUrl(user.getImageUrl())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .isDeleted(user.isDeleted())
@@ -50,7 +52,7 @@ public class UserEntity {
     }
 
     public User to() {
-        return User.createUser(this.userId, this.email, this.password, this.nickname, this.createdAt, this.updatedAt, this.isDeleted, this.isBanned);
+        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.createdAt, this.updatedAt, this.isDeleted, this.isBanned);
     }
 
     public void updateIsDelete() {

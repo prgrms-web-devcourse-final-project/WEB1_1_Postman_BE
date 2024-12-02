@@ -14,6 +14,7 @@ import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
+import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -87,5 +88,10 @@ public class UserService {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
         userRepository.softDeleteUser(user.getUserId());
+    }
+
+    public UserResponseDTO findUser(String email) {
+        User user = userRepository.findByEmail(email);
+        return UserResponseDTO.from(user);
     }
 }

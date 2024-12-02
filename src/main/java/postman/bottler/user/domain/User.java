@@ -11,17 +11,19 @@ public class User {
     private final String email;
     private String password;
     private String nickname;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean isDeleted;
     private boolean isBanned;
 
-    private User(Long userId, String email, String password, String nickname, LocalDateTime createdAt,
+    private User(Long userId, String email, String password, String nickname, String imageUrl, LocalDateTime createdAt,
                 LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
         this.userId = userId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.imageUrl = imageUrl;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.isDeleted = isDeleted;
@@ -38,8 +40,8 @@ public class User {
         this.isBanned = false;
     }
 
-    public static User createUser(Long userId, String email, String password, String nickname, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
-        return new User(userId, email, password, nickname, createdAt, updatedAt, isDeleted, isBanned);
+    public static User createUser(Long userId, String email, String password, String nickname, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
+        return new User(userId, email, password, nickname, imageUrl, createdAt, updatedAt, isDeleted, isBanned);
     }
 
     public static User createUser(String email, String password, String nickname) {

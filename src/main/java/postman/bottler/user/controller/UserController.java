@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import postman.bottler.user.dto.request.CheckDuplicateEmailRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
 import postman.bottler.user.dto.request.CheckPasswordDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
+import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -52,6 +54,12 @@ public class UserController {
         validateRequestDTO(bindingResult);
         userService.deleteUser(checkPasswordDTO.password(), userDetails.getUsername());
         return ApiResponse.onSuccess("성공적으로 탈퇴되었습니다.");
+    }
+
+    @GetMapping
+    public ApiResponse<UserResponseDTO> findUser(@AuthenticationPrincipal UserDetails userDetails) {
+        UserResponseDTO userResponseDTO = userService.findUser(userDetails.getUsername());
+        return ApiResponse.onSuccess(userResponseDTO);
     }
 
     private void validateRequestDTO(BindingResult bindingResult) {
