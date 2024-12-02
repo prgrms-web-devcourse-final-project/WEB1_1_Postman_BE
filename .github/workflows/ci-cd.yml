@@ -49,37 +49,36 @@ jobs:
           java-version: 17
           distribution: temurin
 
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2.6.0
-      - name: Execute Gradle build
-        run: |
-          cd backend/bottler # 프로젝트 위치에 맞게 추후 수정
-          ./gradlew build
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2.2.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Docker Image Build
-        run: |
-          cd backend/bottler
-          docker build --platform linux/arm64/v8 -t l2yupa/bottler -f Dockerfile-dev .
-
-      - name: Docker Hub Push
-        run: docker push l2yupa/bottler
-
   deploy:
-    runs-on: [self-hosted, Linux, 64]
-    needs: build
-
+    # 우리가 등록한 Github Self Hosted Runner 에서 실행합니다
+    runs-on: self-hosted
+    # 잡의 구체적인 단계입니다
     steps:
-      - name: Pull Latest Docker Image
+      # 처음 _work 폴더에 github actions 프로그램이 파일을 수정할 권한이 없어서, 권한을 부여해 주기 위한 작업입니다
+      # 이 명령을 통해서 이미 있는 폴더에 git pull 을 사용할 수 있습니다
+      - name: change permission
+        # 마지막 jwp-shopping-order 는 repository 이름입니다.
         run: |
-          sudo docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          sudo docker pull l2yupa/bottler
+          sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner/_work/WEB1_1_Postman_BE
 
-      - name: Docker Compose
+      # git clone, git pull, git fetch 같은 작업을 단순화 하기 위한 action 입니다. actions/checkout@v3
+      # 미리 다른 개발자가 만들어둔 action 을 사용한다는 의미입니다
+      - uses: actions/checkout@v3
+      # bootjar 를 만들고, 실행시키는 과정을 담고 있습니다
+      - name: gradle bootjar
+        # 처음에 ./gradlew 파일을 실행할 수 없어서, chmod 로 실행 가능하도록 바꿔줍니다
         run: |
-          sudo docker run --name spring-baton -p 8080:8080 2023baton/2023baton:latest 1>> build.log 2>> error.log &
+          chmod +x ./gradlew
+          ./gradlew bootjar
+        # 80 번 포트가 이미 있다면, 그 프로그램을 종료합니다
+      - name: kill 80 port if exist
+        run: |
+          if sudo lsof -i :80; then
+            echo "Port 80 is already in use. Killing the process..."
+            sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
+          fi
+
+      # 스프링 프로그램을 실행합니다
+      - name: deploy
+        run: |
+          sudo java -jar build/libs/WEB1_1_Postman_BE.jar --spring.profiles.active=prod &
