@@ -194,7 +194,4 @@ public class MapLetterController {
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
     }
-
-    @GetMapping
-
 }
