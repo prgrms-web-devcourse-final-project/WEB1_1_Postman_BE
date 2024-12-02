@@ -420,71 +420,69 @@ class MapLetterServiceTest {
         Mockito.verify(mapLetterRepository, Mockito.times(0)).softDelete(Mockito.anyLong());
     }
 
-//    @Test
-//    @DisplayName("보낸 지도 편지 조회에 성공한다.")
-//    void findSentMapLettersTest() {
-//        //given
-//        Long userId = 1L;
-//        Long userId2 = 2L;
-//
-//        List<MapLetter> mockMapLetters = List.of(
-//                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
-//                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
-//                                "www.paper.com", "www.label.com"), userId //조회 될 편지
-//                ),
-//                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
-//                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
-//                        "www.paper.com", "www.label.com"), userId //조회 될 편지
-//                ),
-//                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
-//                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
-//                        "www.paper.com", "www.label.com"), userId2 //다른 유저가 작성한 편지
-//                ),
-//                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-//                        "Target Title 1", "content 1", "장소 설명",new BigDecimal("12.1234"),
-//                        new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
-//                        2L),userId //조회 될 편지
-//                ),
-//                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title4", "content1",
-//                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
-//                        "www.paper.com", "www.label.com"), userId //삭제 될 편지
-//                ),
-//                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-//                        "Target Title 2", "content 2", "장소 설명",new BigDecimal("12.1234"),
-//                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-//                        2L),userId //조회 될 편지
-//                ),
-//                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-//                        "Target Title 3", "content 3", "장소 설명",new BigDecimal("12.1234"),
-//                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-//                        2L),userId2 //다른 유저가 작성한 편지
-//                )
-//        );
-//
-//        mockMapLetters.get(4).updateDelete(true);
-//
-//        List<MapLetter> filteredMapLetters = mockMapLetters.stream()
-//                .filter(letter -> letter.getCreateUserId().equals(userId))
-//                .filter(letter -> !letter.isDeleted())
-//                .toList();
-//
-//        Mockito.when(mapLetterRepository.findActiveByCreateUserId(userId)).thenReturn(filteredMapLetters);
-//
-//
-//        //when
-//        List<FindMapLetterResponseDTO> result=mapLetterService.findSentMapLetters(userId);
-//
-//        //then
-//        assertEquals(4, result.size());
-//        assertEquals("Title1", result.get(0).title());
-//        assertEquals("Title2", result.get(1).title());
-//        assertEquals("장소 설명", result.get(3).description());
-//        assertEquals("www.label4.com", result.get(3).label());
-//
-//        Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByCreateUserId(userId);
-//
-//    }
+    @Test
+    @DisplayName("보낸 지도 편지 조회에 성공한다.")
+    void findSentMapLettersTest() {
+        //given
+        Long userId = 1L;
+        Long userId2 = 2L;
 
+        List<MapLetter> mockMapLetters = List.of(
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "www.paper.com", "www.label.com"), userId //조회 될 편지
+                ),
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "www.paper.com", "www.label.com"), userId //조회 될 편지
+                ),
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "www.paper.com", "www.label.com"), userId2 //다른 유저가 작성한 편지
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 1", "content 1", "장소 설명", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com", "www.label.com",
+                        2L), userId //조회 될 편지
+                ),
+                MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title4", "content1",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "www.paper.com", "www.label.com"), userId //삭제 될 편지
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 2", "content 2", "장소 설명", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com", "www.label4.com",
+                        2L), userId //조회 될 편지
+                ),
+                MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
+                        "Target Title 3", "content 3", "장소 설명", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com", "www.label4.com",
+                        2L), userId2 //다른 유저가 작성한 편지
+                )
+        );
+
+        mockMapLetters.get(4).updateDelete(true);
+
+        List<MapLetter> filteredMapLetters = mockMapLetters.stream()
+                .filter(letter -> letter.getCreateUserId().equals(userId))
+                .filter(letter -> !letter.isDeleted())
+                .toList();
+
+        Mockito.when(mapLetterRepository.findActiveByCreateUserId(userId)).thenReturn(filteredMapLetters);
+
+        //when
+        List<FindMapLetterResponseDTO> result = mapLetterService.findSentMapLetters(userId);
+
+        //then
+        assertEquals(4, result.size());
+        assertEquals("Title1", result.get(0).title());
+        assertEquals("Title2", result.get(1).title());
+        assertEquals("장소 설명", result.get(3).description());
+        assertEquals("www.label4.com", result.get(3).label());
+
+        Mockito.verify(mapLetterRepository, Mockito.times(1)).findActiveByCreateUserId(userId);
+
+    }
 
 //    @Test
 //    @DisplayName("받은 지도 편지 조회에 성공한다.")

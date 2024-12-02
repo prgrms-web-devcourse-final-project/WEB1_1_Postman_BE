@@ -1,6 +1,5 @@
 package postman.bottler.mapletter.infra.entity;
 
-import com.google.firebase.database.annotations.NotNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,33 +25,20 @@ public class MapLetterEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mapLetterId;
-    @NotNull
     private String title;
-    @NotNull
     private String content;
-
-    @NotNull
     @Column(precision = 10, scale = 7) //총 10자리, 소수점 7자리(3, 7)
     private BigDecimal latitude;
-
-    @NotNull
     @Column(precision = 11, scale = 7) //총 11자리, 소수점 7자리(4, 7)
     private BigDecimal longitude;
-
-    @NotNull
     private String font;
-    @NotNull
     private String paper;
-    @NotNull
     private String label;
-    @NotNull
     private String description;
 
     @Enumerated(EnumType.STRING)
     private MapLetterType type;
     private Long targetUserId;
-
-    @NotNull
     private Long createUserId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

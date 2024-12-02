@@ -21,7 +21,7 @@ public class MapLetterController {
     private final MapLetterService mapLetterService;
 
     private void validateMapLetterRequest(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+        if(bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 switch (error.getField()) {
                     case "title":
@@ -35,8 +35,7 @@ public class MapLetterController {
                     case "sourceLetter":
                         throw new EmptyReplyMapLetterSourceException(error.getDefaultMessage());
                     default:
-                        throw new IllegalArgumentException(
-                                bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
+                        throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage()); //기타 오류
                 }
             });
         }
@@ -83,20 +82,13 @@ public class MapLetterController {
     }
 
     @GetMapping("/sent")
-    public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size, Long userId) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
+    public ApiResponse<List<FindMapLetterResponseDTO>> findSentMapLetters(Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findSentMapLetters(userId));
     }
 
     @GetMapping("/received")
-    public ApiResponse<MapLetterPageResponseDTO<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
+    public ApiResponse<List<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findReceivedMapLetters(userId));
     }
 
     @GetMapping
@@ -125,13 +117,9 @@ public class MapLetterController {
     }
 
     @GetMapping("/{letterId}/reply")
-    public ApiResponse<MapLetterPageResponseDTO<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @PathVariable Long letterId,
-            Long userId) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findAllReplyMapLetter(page, size, letterId, userId)));
+    public ApiResponse<List<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(@PathVariable Long letterId,
+                                                                                      Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findAllReplyMapLetter(letterId, userId));
     }
 
     @GetMapping("/reply/{letterId}")
@@ -146,12 +134,8 @@ public class MapLetterController {
     }
 
     @GetMapping("/archived")
-    public ApiResponse<MapLetterPageResponseDTO<FindAllArchiveLetters>> findArchiveLetters(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findArchiveLetters(page, size, userId)));
+    public ApiResponse<List<FindAllArchiveLetters>> findArchiveLetters(Long userId) {
+        return ApiResponse.onSuccess(mapLetterService.findArchiveLetters(userId));
     }
 
     @DeleteMapping("/archived")
@@ -170,48 +154,5 @@ public class MapLetterController {
     public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersRequestDTO letters, Long userId) {
         mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
         return ApiResponse.onDeleteSuccess(letters);
-    }
-
-    @GetMapping("/archive/{letterId}")
-    public ApiResponse<OneLetterResponseDTO> findArchiveOneLetter(@PathVariable Long letterId, Long userId) {
-        return ApiResponse.onSuccess(mapLetterService.findArchiveOneLetter(letterId, userId));
-    }
-
-    @GetMapping("/sent/reply")
-    public ApiResponse<MapLetterPageResponseDTO<FindAllSentReplyMapLetterResponseDTO>> findAllSentReplyMapLetter(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
-    }
-
-    @GetMapping("/sent/letter")
-    public ApiResponse<MapLetterPageResponseDTO<FindAllSentMapLetterResponseDTO>> findAllSentMapLetter(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
-    }
-
-    @GetMapping("/received/reply")
-    public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedReplyLetterResponseDTO>> findAllReceivedReplyMapLetter(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId
-    ) {
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
-    }
-
-    @GetMapping("/received/letter")
-    public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedLetterResponseDTO>> findAllReceivedMapLetter(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId
-    ){
-        return ApiResponse.onSuccess(
-                MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
     }
 }

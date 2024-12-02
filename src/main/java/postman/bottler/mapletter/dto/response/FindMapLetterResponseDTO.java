@@ -1,30 +1,27 @@
 package postman.bottler.mapletter.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.Builder;
-import postman.bottler.mapletter.dto.FindSentMapLetter;
+
+import java.time.LocalDateTime;
+import postman.bottler.mapletter.domain.MapLetter;
 
 @Builder
 public record FindMapLetterResponseDTO(
         Long letterId,
-        String title, // 답장 편지의 경우 Re: 답장 편지 이름
-        String description, // 답장 편지의 경우 생략
+        String title,
+        String description,
         String label,
-        String targetUserNickname, // 타겟 편지의 경우만
-        LocalDateTime createdAt,
-        String type, //REPLY(답장 편지), TARGET(타겟 편지), PUBLIC(퍼블릭 편지)
-        Long sourceLetterId //답장 편지의 경우 원본 편지 id
+        String targetUserNickname,
+        LocalDateTime createdAt
 ) {
-    public static FindMapLetterResponseDTO from(FindSentMapLetter projection, String targetUserNickname) {
+    public static FindMapLetterResponseDTO from(MapLetter mapLetter, String targetUserNickname) {
         return FindMapLetterResponseDTO.builder()
-                .letterId(projection.getLetterId())
-                .title(projection.getTitle())
-                .description(projection.getDescription())
-                .label(projection.getLabel())
+                .letterId(mapLetter.getId())
+                .title(mapLetter.getTitle())
+                .description(mapLetter.getDescription())
+                .label(mapLetter.getLabel())
+                .createdAt(mapLetter.getCreatedAt())
                 .targetUserNickname(targetUserNickname)
-                .createdAt(projection.getCreatedAt())
-                .type(projection.getType())
-                .sourceLetterId(projection.getSourceLetterId())
                 .build();
     }
 }

@@ -5,13 +5,8 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
-import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
-import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.SourceMapLetterNotFountException;
@@ -47,17 +42,21 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    public Page<MapLetter> findActiveByCreateUserId(Long userId, Pageable pageable) {
-        Page<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByCreateUserId(userId, pageable);
+    public List<MapLetter> findActiveByCreateUserId(Long userId) {
+        List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByCreateUserId(userId);
 
-        return findActiveLetters.map(MapLetterEntity::toDomain);
+        return findActiveLetters.stream()
+                .map(MapLetterEntity::toDomain)
+                .toList();
     }
 
     @Override
-    public Page<MapLetter> findActiveByTargetUserId(Long userId, Pageable pageable) {
-        Page<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByTargetUserId(userId, pageable);
+    public List<MapLetter> findActiveByTargetUserId(Long userId) {
+        List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByTargetUserId(userId);
 
-        return findActiveLetters.map(MapLetterEntity::toDomain);
+        return findActiveLetters.stream()
+                .map(MapLetterEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -83,15 +82,5 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     public Double findDistanceByLatitudeAndLongitudeAndLetterId(BigDecimal latitude, BigDecimal longitude,
                                                                  Long letterId) {
         return mapLetterJpaRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude, letterId);
-    }
-
-    @Override
-    public Page<FindSentMapLetter> findSentLettersByUserId(Long userId, Pageable pageable) {
-        return mapLetterJpaRepository.findSentLettersByUserId(userId, pageable);
-    }
-
-    @Override
-    public Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest) {
-       return mapLetterJpaRepository.findActiveReceivedMapLettersByUserId(userId, pageRequest);
     }
 }

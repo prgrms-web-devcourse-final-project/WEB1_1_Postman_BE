@@ -1,31 +1,30 @@
 package postman.bottler.mapletter.service;
 
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
-import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
-import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.*;
+import postman.bottler.mapletter.exception.DistanceToFarException;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
+import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 import java.math.BigDecimal;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import postman.bottler.mapletter.exception.PageRequestException;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +33,6 @@ public class MapLetterService {
     private final ReplyMapLetterRepository replyMapLetterRepository;
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
 //    private final UserService userService;
-
-    private static final double VIEW_DISTANCE = 15;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -55,65 +52,72 @@ public class MapLetterService {
     public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId, BigDecimal latitude,
                                                  BigDecimal longitude) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-
+        if (mapLetter.getType() == MapLetterType.PRIVATE && (!mapLetter.getTargetUserId().equals(userId)
+                && !mapLetter.getCreateUserId().equals(userId))) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        if (mapLetter.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
-
-        mapLetter.validateFindOneMapLetter(userId, VIEW_DISTANCE, distance);
+        if (distance > 15) {
+            throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
+        }
 
         String profileImg = ""; //user 서비스 메서드 불러서 받기
-        return OneLetterResponseDTO.from(mapLetter, profileImg);
+        return OneLetterResponseDTO.from(mapLetter, profileImg); //from으로 수정하기
     }
 
     @Transactional
     public void deleteMapLetter(List<Long> letters, Long userId) {
         for (Long letterId : letters) {
             MapLetter findMapLetter = mapLetterRepository.findById(letterId);
-            findMapLetter.validDeleteMapLetter(userId);
+            if (!findMapLetter.getCreateUserId().equals(userId)) {
+                throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+            }
             mapLetterRepository.softDelete(letterId);
         }
     }
 
     @Transactional(readOnly = true)
-    public Page<FindMapLetterResponseDTO> findSentMapLetters(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
-                PageRequest.of(page - 1, size));
-        validMaxPage(sentMapLetters.getTotalPages(), page);
+    public List<FindMapLetterResponseDTO> findSentMapLetters(Long userId) {
+        List<MapLetter> mapLetters = mapLetterRepository.findActiveByCreateUserId(userId);
 
-        return sentMapLetters.map(this::toFindSentMapLetter);
+        return mapLetters.stream()
+                .map(this::toFindSentMapLetter)
+                .toList();
     }
 
-    private FindMapLetterResponseDTO toFindSentMapLetter(FindSentMapLetter findSentMapLetter) {
-        String targetUserNickname = null;
-        if (findSentMapLetter.getType().equals("TARGET")) {
-            targetUserNickname = "TS"; //추후 변경. 테스트용
+    private FindMapLetterResponseDTO toFindSentMapLetter(MapLetter mapLetter) {
+        String targetUserNickname = "";
+        if (mapLetter.getType() == MapLetterType.PRIVATE) {
 //            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
         }
 
-        return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname);
+        return FindMapLetterResponseDTO.from(mapLetter, targetUserNickname);
     }
 
     @Transactional(readOnly = true)
-    public Page<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<FindReceivedMapLetterDTO> letters = mapLetterRepository.findActiveReceivedMapLettersByUserId(userId,
-                PageRequest.of(page - 1, size));
-        validMaxPage(letters.getTotalPages(), page);
+    public List<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(Long userId) {
+        List<FindReceivedMapLetterResponseDTO> result = new ArrayList<>();
 
-        return letters.map(letter -> {
-            String senderNickname = null;
-            String senderProfileImg = null;
-
-            if ("TARGET".equals(letter.getType())) {
-                senderNickname = "TS"; // 예시 닉네임 (유저 서비스에서 가져와야 함)
-                senderProfileImg = "www.profile.com"; // 예시 프로필 이미지
-                // senderNickname = userService.getNicknameById(projection.getSenderId());
-                // senderProfileImg = userService.getProfileImgById(projection.getSenderId());
+        List<MapLetter> targetMapLetters = mapLetterRepository.findActiveByTargetUserId(userId);
+        for (MapLetter mapLetter : targetMapLetters) {
+            String senderNickname = "";
+            if (mapLetter.getType() == MapLetterType.PRIVATE) {
+                // senderNickname = userService.getNicknameById(mapLetter.getTargetUserId());
             }
+            result.add(FindReceivedMapLetterResponseDTO.fromTargetMapLetter(mapLetter, senderNickname));
+        }
 
-            return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg);
-        });
+        List<ReplyMapLetter> replyMapLetters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId);
+        for (ReplyMapLetter mapLetter : replyMapLetters) {
+            result.add(FindReceivedMapLetterResponseDTO.fromReplyMapLetter(mapLetter));
+        }
+
+        result.sort(Comparator.comparing(FindReceivedMapLetterResponseDTO::createdAt).reversed());
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -121,7 +125,9 @@ public class MapLetterService {
                                                                    Long userId) {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
-        return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
+        return letters.stream()
+                .map(FindNearbyLettersResponseDTO::from)
+                .toList();
     }
 
     @Transactional
@@ -139,28 +145,31 @@ public class MapLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(int page, int size, Long letterId,
-                                                                         Long userId) {
-        validMinPage(page);
+    public List<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(Long letterId, Long userId) {
         MapLetter sourceLetter = mapLetterRepository.findById(letterId);
+        if (!sourceLetter.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        if (sourceLetter.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
 
-        sourceLetter.validFindAllReplyMapLetter(userId);
+        List<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId);
 
-        Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
-                PageRequest.of(page - 1, size));
-
-        validMaxPage(findReply.getTotalPages(), page);
-
-        return findReply.map(FindAllReplyMapLettersResponseDTO::from);
+        return findReply.stream()
+                .map(FindAllReplyMapLettersResponseDTO::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public OneReplyLetterResponseDTO findOneReplyMapLetter(Long letterId, Long userId) {
         ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
         MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
-
-        replyMapLetter.validFindOneReplyMapLetter(userId, sourceLetter);
-        sourceLetter.validDeleteAndBlocked();
+        if (replyMapLetter.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        } else if (!replyMapLetter.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
 
         return OneReplyLetterResponseDTO.from(replyMapLetter);
     }
@@ -168,10 +177,15 @@ public class MapLetterService {
     @Transactional
     public MapLetterArchive mapLetterArchive(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        mapLetter.validMapLetterArchive();
-
-        MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId)
-                .createdAt(LocalDateTime.now()).build();
+        if (mapLetter.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
+            throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
+        }
+        MapLetterArchive archive = MapLetterArchive.builder()
+                .mapLetterId(letterId)
+                .userId(userId)
+                .build();
 
         boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
         if (isArchived) {
@@ -181,20 +195,17 @@ public class MapLetterService {
         return mapLetterArchiveRepository.save(archive);
     }
 
-    @Transactional(readOnly = true)
-    public Page<FindAllArchiveLetters> findArchiveLetters(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<FindAllArchiveLetters> letters = mapLetterArchiveRepository.findAllById(userId,
-                PageRequest.of(page - 1, size));
-        validMaxPage(letters.getTotalPages(), page);
-        return letters;
+    public List<FindAllArchiveLetters> findArchiveLetters(Long userId) {
+        return mapLetterArchiveRepository.findAllById(userId);
     }
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
         for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
-            findArchiveInfo.validDeleteArchivedLetter(userId);
+            if (!findArchiveInfo.getUserId().equals(userId)) {
+                throw new CommonForbiddenException("편지 보관 취소를 할 권한이 없습니다. 편지 보관 취소에 실패했습니다.");
+            }
             mapLetterArchiveRepository.deleteById(archiveId);
         }
     }
@@ -205,101 +216,22 @@ public class MapLetterService {
     }
 
     @Transactional
-    public Long letterBlock(BlockMapLetterType type, Long letterId) { //userId return
+    public void letterBlock(BlockMapLetterType type, Long letterId) {
         if (type == BlockMapLetterType.MAP_LETTER) {
             mapLetterRepository.letterBlock(letterId);
-            return mapLetterRepository.findById(letterId).getCreateUserId();
         } else if (type == BlockMapLetterType.REPLY) {
             replyMapLetterRepository.letterBlock(letterId);
-            return replyMapLetterRepository.findById(letterId).getCreateUserId();
         }
-        return null;
     }
 
     @Transactional
     public void deleteReplyMapLetter(List<Long> letters, Long userId) {
         for (Long letterId : letters) {
             ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
-            replyMapLetter.validDeleteReplyMapLetter(userId);
-            replyMapLetterRepository.softDelete(letterId);
-        }
-    }
-
-    public OneLetterResponseDTO findArchiveOneLetter(Long letterId, Long userId) {
-        MapLetter mapLetter = mapLetterRepository.findById(letterId);
-        mapLetter.validateAccess(userId);
-
-        String profileImg = "www.profile.com"; //user 서비스 메서드 불러서 받기
-//        profileImg = userService.getProfileImgByCreateUserId(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg);
-    }
-
-    public Page<FindAllSentReplyMapLetterResponseDTO> findAllSentReplyMapLetter(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<ReplyMapLetter> letters = replyMapLetterRepository.findAllSentReplyByUserId(userId,
-                PageRequest.of(page - 1, size));
-        validMaxPage(letters.getTotalPages(), page);
-
-        return letters.map(replyMapLetter -> {
-            MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
-            String title = "Re: " + sourceLetter.getTitle();
-
-            return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title);
-        });
-    }
-
-    public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(userId, PageRequest.of(page - 1, size));
-        validMaxPage(letters.getTotalPages(), page);
-
-        return letters.map(mapLetter -> {
-            String targetUserNickname = null;
-            if (mapLetter.getType() == MapLetterType.PRIVATE) {
-//                targetUserNickname=userService.findNicknameByUserId(mapLetter.getTargetUserId());
-                targetUserNickname = "TS";
+            if (!replyMapLetter.getCreateUserId().equals(userId)) {
+                throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
             }
-            return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
-        });
-    }
-
-    public Page<FindAllReceivedReplyLetterResponseDTO> findAllReceivedReplyLetter(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<ReplyMapLetter> letters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId,
-                PageRequest.of(page - 1, size));
-        validMaxPage(letters.getTotalPages(), page);
-
-        return letters.map(replyMapLetter -> {
-            MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
-            String title = "Re: " + sourceLetter.getTitle();
-            return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title);
-        });
-    }
-
-    public Page<FindAllReceivedLetterResponseDTO> findAllReceivedLetter(int page, int size, Long userId) {
-        validMinPage(page);
-        Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
-        validMaxPage(letters.getTotalPages(), page);
-        return letters.map(letter -> {
-//            String sendUserNickname = letter.getCreateUserId().toString(); //예시
-            String sendUserNickname = "TS";
-            String sendUserProfileImg = "www.profile.com"; //예시
-
-//             sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
-//             sendUserProfileImg = userService.getProfileImgById(letter.getCreateUserId());
-            return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg);
-        });
-    }
-
-    private void validMaxPage(int maxPage, int nowPage){
-        if(maxPage < nowPage){
-            throw new PageRequestException("페이지가 존재하지 않습니다.");
-        }
-    }
-
-    private void validMinPage(int nowPage){
-        if(nowPage < 1){
-            throw new PageRequestException("페이지가 존재하지 않습니다.");
+            replyMapLetterRepository.softDelete(letterId);
         }
     }
 }

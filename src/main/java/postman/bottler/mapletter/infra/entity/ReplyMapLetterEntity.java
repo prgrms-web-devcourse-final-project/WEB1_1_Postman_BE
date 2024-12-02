@@ -1,6 +1,5 @@
 package postman.bottler.mapletter.infra.entity;
 
-import com.google.firebase.database.annotations.NotNull;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,21 +17,15 @@ public class ReplyMapLetterEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long replyLetterId;
-    @NotNull
     private Long sourceLetterId;
-    @NotNull
     private String font;
-    @NotNull
     private String paper;
-    @NotNull
     private String label;
-    @NotNull
     private String content;
     private boolean isBlocked;
     private boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @NotNull
     private Long createUserId;
 
     @Builder
