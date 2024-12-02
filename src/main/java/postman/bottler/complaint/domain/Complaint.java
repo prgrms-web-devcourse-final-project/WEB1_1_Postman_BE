@@ -1,5 +1,6 @@
 package postman.bottler.complaint.domain;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,17 +15,21 @@ public class Complaint {
 
     private String description;
 
+    private LocalDateTime createdAt;
+
     protected Complaint(Long letterId, Long reporterId, String description) {
         this.letterId = letterId;
         this.reporterId = reporterId;
         this.description = description;
+        this.createdAt = LocalDateTime.now();
     }
 
-    protected Complaint(Long id, Long letterId, Long reporterId, String description) {
+    protected Complaint(Long id, Long letterId, Long reporterId, String description, LocalDateTime createdAt) {
         this.id = id;
         this.letterId = letterId;
         this.reporterId = reporterId;
         this.description = description;
+        this.createdAt = createdAt;
     }
 
     public Boolean isReporter(Long reporterId) {

@@ -53,7 +53,7 @@ public class ComplaintController {
         return ApiResponse.onCreateSuccess(response);
     }
 
-    @PostMapping("/keyword/{letterId}/reply/complaint")
+    @PostMapping("/letters/{letterId}/reply/complaint")
     public ApiResponse<?> complainKeywordReplyLetter(@PathVariable Long letterId,
                                                      @RequestBody ComplaintRequestDTO complaintRequest,
                                                      BindingResult bindingResult) {
