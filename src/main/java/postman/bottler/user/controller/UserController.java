@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.dto.request.ChangePasswordRequestDTO;
@@ -20,6 +21,7 @@ import postman.bottler.user.dto.request.CheckPasswordRequestDTO;
 import postman.bottler.user.dto.request.NicknameRequestDTO;
 import postman.bottler.user.dto.request.ProfileImgRequestDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
+import postman.bottler.user.dto.response.ExistingUserResponseDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
@@ -93,6 +95,12 @@ public class UserController {
         validateRequestDTO(bindingResult);
         userService.createProfileImg(profileImgRequestDTO.imageUrl());
         return ApiResponse.onCreateSuccess("프로필 이미지 DB 저장 성공");
+    }
+
+    @GetMapping("/exists")
+    public ApiResponse<ExistingUserResponseDTO> findUser(@RequestParam String nickname) {
+        ExistingUserResponseDTO existingUserResponseDTO = userService.findExistingUser(nickname);
+        return ApiResponse.onSuccess(existingUserResponseDTO);
     }
 
     private void validateRequestDTO(BindingResult bindingResult) {

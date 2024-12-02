@@ -14,6 +14,7 @@ import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
+import postman.bottler.user.dto.response.ExistingUserResponseDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
@@ -127,5 +128,10 @@ public class UserService {
     public void createProfileImg(String profileImageUrl) {
         ProfileImage profileImage = ProfileImage.createProfileImg(profileImageUrl);
         profileImageRepository.save(profileImage);
+    }
+
+    @Transactional
+    public ExistingUserResponseDTO findExistingUser(String nickname) {
+        return new ExistingUserResponseDTO(userRepository.existsByNickname(nickname));
     }
 }
