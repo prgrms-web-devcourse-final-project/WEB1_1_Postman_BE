@@ -8,4 +8,5 @@ public interface UserRepository {
     boolean existsByNickname(String nickname);
     User findByEmail(String email);
     void softDeleteUser(Long userId);
+    void updateNickname(Long userId, String nickname);
 }

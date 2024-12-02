@@ -40,7 +40,8 @@ public class SecurityConfig  {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("").authenticated()
+//                        .requestMatchers("/auth/signin").permitAll()
+                        .requestMatchers("/user").authenticated()
                         //개발 중에는 일단 모두 허용
                         .anyRequest().permitAll()
                 )

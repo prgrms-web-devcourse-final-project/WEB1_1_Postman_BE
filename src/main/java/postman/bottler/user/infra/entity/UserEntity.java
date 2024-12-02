@@ -59,4 +59,8 @@ public class UserEntity {
         this.isDeleted = true;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

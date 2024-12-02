@@ -94,4 +94,9 @@ public class UserService {
         User user = userRepository.findByEmail(email);
         return UserResponseDTO.from(user);
     }
+
+    public void updateNickname(String nickname, String email) {
+        User user = userRepository.findByEmail(email);
+        userRepository.updateNickname(user.getUserId(), nickname);
+    }
 }
