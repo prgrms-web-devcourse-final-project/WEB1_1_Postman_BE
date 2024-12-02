@@ -71,11 +71,11 @@ jobs:
       # 미리 다른 개발자가 만들어둔 action 을 사용한다는 의미입니다
       - uses: actions/checkout@v3
       # bootjar 를 만들고, 실행시키는 과정을 담고 있습니다
-      - name: gradle bootjar
+      - name: gradle build
         # 처음에 ./gradlew 파일을 실행할 수 없어서, chmod 로 실행 가능하도록 바꿔줍니다
         run: |
           chmod +x ./gradlew
-          ./gradlew bootjar
+          ./gradlew build -x test
         # 80 번 포트가 이미 있다면, 그 프로그램을 종료합니다
       - name: kill 80 port if exist
         run: |
