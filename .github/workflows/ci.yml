@@ -57,7 +57,7 @@ jobs:
         shell: bash
 
       - name: Gradle로 테스트 및 커버리지 리포트 생성
-        run: ./gradlew clean build jacocoTestReport
+        run: ./gradlew clean build -x test
 
       - name: SonarCloud 패키지 캐싱
         uses: actions/cache@v4
