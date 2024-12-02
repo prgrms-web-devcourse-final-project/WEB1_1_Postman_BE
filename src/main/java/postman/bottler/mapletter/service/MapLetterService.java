@@ -25,6 +25,7 @@ import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import java.math.BigDecimal;
 
 import java.util.List;
+import postman.bottler.mapletter.exception.PageRequestException;
 
 @Service
 @RequiredArgsConstructor
@@ -75,8 +76,10 @@ public class MapLetterService {
 
     @Transactional(readOnly = true)
     public Page<FindMapLetterResponseDTO> findSentMapLetters(int page, int size, Long userId) {
+        validMinPage(page);
         Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
+        validMaxPage(sentMapLetters.getTotalPages(), page);
 
         return sentMapLetters.map(this::toFindSentMapLetter);
     }
@@ -93,8 +96,10 @@ public class MapLetterService {
 
     @Transactional(readOnly = true)
     public Page<FindReceivedMapLetterResponseDTO> findReceivedMapLetters(int page, int size, Long userId) {
+        validMinPage(page);
         Page<FindReceivedMapLetterDTO> letters = mapLetterRepository.findActiveReceivedMapLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
+        validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(letter -> {
             String senderNickname = null;
@@ -136,12 +141,15 @@ public class MapLetterService {
     @Transactional(readOnly = true)
     public Page<FindAllReplyMapLettersResponseDTO> findAllReplyMapLetter(int page, int size, Long letterId,
                                                                          Long userId) {
+        validMinPage(page);
         MapLetter sourceLetter = mapLetterRepository.findById(letterId);
 
         sourceLetter.validFindAllReplyMapLetter(userId);
 
         Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
                 PageRequest.of(page - 1, size));
+
+        validMaxPage(findReply.getTotalPages(), page);
 
         return findReply.map(FindAllReplyMapLettersResponseDTO::from);
     }
@@ -175,7 +183,11 @@ public class MapLetterService {
 
     @Transactional(readOnly = true)
     public Page<FindAllArchiveLetters> findArchiveLetters(int page, int size, Long userId) {
-        return mapLetterArchiveRepository.findAllById(userId, PageRequest.of(page - 1, size));
+        validMinPage(page);
+        Page<FindAllArchiveLetters> letters = mapLetterArchiveRepository.findAllById(userId,
+                PageRequest.of(page - 1, size));
+        validMaxPage(letters.getTotalPages(), page);
+        return letters;
     }
 
     @Transactional
@@ -223,8 +235,10 @@ public class MapLetterService {
     }
 
     public Page<FindAllSentReplyMapLetterResponseDTO> findAllSentReplyMapLetter(int page, int size, Long userId) {
+        validMinPage(page);
         Page<ReplyMapLetter> letters = replyMapLetterRepository.findAllSentReplyByUserId(userId,
                 PageRequest.of(page - 1, size));
+        validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(replyMapLetter -> {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
@@ -235,7 +249,9 @@ public class MapLetterService {
     }
 
     public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
+        validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(userId, PageRequest.of(page - 1, size));
+        validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(mapLetter -> {
             String targetUserNickname = null;
@@ -248,8 +264,10 @@ public class MapLetterService {
     }
 
     public Page<FindAllReceivedReplyLetterResponseDTO> findAllReceivedReplyLetter(int page, int size, Long userId) {
+        validMinPage(page);
         Page<ReplyMapLetter> letters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId,
                 PageRequest.of(page - 1, size));
+        validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(replyMapLetter -> {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
@@ -259,7 +277,9 @@ public class MapLetterService {
     }
 
     public Page<FindAllReceivedLetterResponseDTO> findAllReceivedLetter(int page, int size, Long userId) {
+        validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
+        validMaxPage(letters.getTotalPages(), page);
         return letters.map(letter -> {
 //            String sendUserNickname = letter.getCreateUserId().toString(); //예시
             String sendUserNickname = "TS";
@@ -269,5 +289,17 @@ public class MapLetterService {
 //             sendUserProfileImg = userService.getProfileImgById(letter.getCreateUserId());
             return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg);
         });
+    }
+
+    private void validMaxPage(int maxPage, int nowPage){
+        if(maxPage < nowPage){
+            throw new PageRequestException("페이지가 존재하지 않습니다.");
+        }
+    }
+
+    private void validMinPage(int nowPage){
+        if(nowPage < 1){
+            throw new PageRequestException("페이지가 존재하지 않습니다.");
+        }
     }
 }
