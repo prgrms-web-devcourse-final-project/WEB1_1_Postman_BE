@@ -63,7 +63,7 @@ public class MapLetterService {
         if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
-        if(mapLetter.isBlocked()){
+        if (mapLetter.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
 
@@ -84,7 +84,7 @@ public class MapLetterService {
             if (!findMapLetter.getCreateUserId().equals(userId)) {
                 throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
             }
-            if(findMapLetter.isBlocked()){
+            if (findMapLetter.isBlocked()) {
                 throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
             }
             mapLetterRepository.softDelete(letterId);
@@ -161,7 +161,7 @@ public class MapLetterService {
         if (sourceLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
-        if(sourceLetter.isBlocked()){
+        if (sourceLetter.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
 
@@ -180,7 +180,7 @@ public class MapLetterService {
         } else if (!replyMapLetter.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
             throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
         }
-        if(sourceLetter.isBlocked()){
+        if (sourceLetter.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
 
@@ -195,12 +195,12 @@ public class MapLetterService {
         } else if (mapLetter.getType() == MapLetterType.PRIVATE) {
             throw new CommonForbiddenException("편지를 저장할 수 있는 권한이 없습니다.");
         }
-        if(mapLetter.isBlocked()){
+        if (mapLetter.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
 
-        MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId).createdAt(
-                LocalDateTime.now()).build();
+        MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId)
+                .createdAt(LocalDateTime.now()).build();
 
         boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
         if (isArchived) {
@@ -212,8 +212,7 @@ public class MapLetterService {
 
     @Transactional(readOnly = true)
     public Page<FindAllArchiveLetters> findArchiveLetters(int page, int size, Long userId) {
-        return mapLetterArchiveRepository.findAllById(userId,
-                PageRequest.of(page - 1, size));
+        return mapLetterArchiveRepository.findAllById(userId, PageRequest.of(page - 1, size));
     }
 
     @Transactional
@@ -264,7 +263,7 @@ public class MapLetterService {
         if (mapLetter.isDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
         }
-        if(mapLetter.isBlocked()){
+        if (mapLetter.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
 
@@ -278,10 +277,24 @@ public class MapLetterService {
                 PageRequest.of(page - 1, size));
 
         return letters.map(replyMapLetter -> {
-            MapLetter sourceLetter=mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
-            String title="Re: "+sourceLetter.getTitle();
+            MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+            String title = "Re: " + sourceLetter.getTitle();
 
             return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title);
+        });
+    }
+
+    public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
+        Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(
+                userId, PageRequest.of(page - 1, size));
+
+        return letters.map(mapLetter -> {
+            String targetUserNickname=null;
+            if(mapLetter.getType() == MapLetterType.PRIVATE) {
+//                targetUserNickname=userService.findNicknameByUserId(mapLetter.getTargetUserId());
+                targetUserNickname="TS";
+            }
+            return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
         });
     }
 }
