@@ -90,11 +90,13 @@ public class UserService {
         userRepository.softDeleteUser(user.getUserId());
     }
 
+    @Transactional
     public UserResponseDTO findUser(String email) {
         User user = userRepository.findByEmail(email);
         return UserResponseDTO.from(user);
     }
 
+    @Transactional
     public void updateNickname(String nickname, String email) {
         User user = userRepository.findByEmail(email);
         userRepository.updateNickname(user.getUserId(), nickname);
