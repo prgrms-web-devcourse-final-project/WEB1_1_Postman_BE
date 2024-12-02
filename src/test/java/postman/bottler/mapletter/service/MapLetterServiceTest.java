@@ -1,34 +1,33 @@
 package postman.bottler.mapletter.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
-import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
-import postman.bottler.mapletter.dto.response.FindReceivedMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class MapLetterServiceTest {
-    @Autowired
+    @InjectMocks
     private MapLetterService mapLetterService;
-    @MockBean
+    @Mock
     private MapLetterRepository mapLetterRepository;
 
     @BeforeEach
@@ -430,11 +429,11 @@ class MapLetterServiceTest {
 
         List<MapLetter> mockMapLetters = List.of(
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title1", "content1",
-                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
-                                "www.paper.com", "www.label.com"), userId //조회 될 편지
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "www.paper.com", "www.label.com"), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title2", "content2",
-                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.3456"), "맑은고딕",
                         "www.paper.com", "www.label.com"), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title3", "content2",
@@ -442,23 +441,23 @@ class MapLetterServiceTest {
                         "www.paper.com", "www.label.com"), userId2 //다른 유저가 작성한 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 1", "content 1", "장소 설명",new BigDecimal("12.1234"),
-                        new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com","www.label.com",
-                        2L),userId //조회 될 편지
+                        "Target Title 1", "content 1", "장소 설명", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "맑은 고딕", "www.paper.com", "www.label.com",
+                        2L), userId //조회 될 편지
                 ),
                 MapLetter.createPublicMapLetter(new CreatePublicMapLetterRequestDTO("Title4", "content1",
-                        "장소 설명",new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
+                        "장소 설명", new BigDecimal("37.566"), new BigDecimal("127.34567"), "프리텐다드",
                         "www.paper.com", "www.label.com"), userId //삭제 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 2", "content 2", "장소 설명",new BigDecimal("12.1234"),
-                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-                        2L),userId //조회 될 편지
+                        "Target Title 2", "content 2", "장소 설명", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com", "www.label4.com",
+                        2L), userId //조회 될 편지
                 ),
                 MapLetter.createTargetMapLetter(new CreateTargetMapLetterRequestDTO(
-                        "Target Title 3", "content 3", "장소 설명",new BigDecimal("12.1234"),
-                        new BigDecimal("127.12345"), "굴림체", "www.paper.com","www.label4.com",
-                        2L),userId2 //다른 유저가 작성한 편지
+                        "Target Title 3", "content 3", "장소 설명", new BigDecimal("12.1234"),
+                        new BigDecimal("127.12345"), "굴림체", "www.paper.com", "www.label4.com",
+                        2L), userId2 //다른 유저가 작성한 편지
                 )
         );
 
@@ -471,9 +470,8 @@ class MapLetterServiceTest {
 
         Mockito.when(mapLetterRepository.findActiveByCreateUserId(userId)).thenReturn(filteredMapLetters);
 
-
         //when
-        List<FindMapLetterResponseDTO> result=mapLetterService.findSentMapLetters(userId);
+        List<FindMapLetterResponseDTO> result = mapLetterService.findSentMapLetters(userId);
 
         //then
         assertEquals(4, result.size());

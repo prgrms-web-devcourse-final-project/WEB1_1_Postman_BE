@@ -22,7 +22,6 @@ public class FcmConfig {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(privateKey);
             InputStream serviceAccount = new ByteArrayInputStream(decodedBytes);
-
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();

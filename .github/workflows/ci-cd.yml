@@ -17,6 +17,21 @@ jobs:
       # FCM 환경변수
       BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
 
+      ## Redis 환경변수
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+      # FCM 환경변수
+      BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
+
+      # AWS 환경변수
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # ECR 환경변수
+      ECR_URI: ${{ secrets.ECR_URI }}
+
       # S3 환경변수
       BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
       BASE_URL: ${{ secrets.BASE_URL }}
@@ -48,8 +63,17 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
+      - name: JSON 디렉토리 생성
+        run: mkdir -p WEB1_1_Postman_BE/src/resources
+
+      - name: JSON 생성
+        run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
+        
       - name: Gradle 테스트
         run: ./gradlew clean build
+      
+      - name: JSON 삭제
+        run: rm src/resources/bottler-fcm.json
 
       - name: Docker Hub 로그인
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
