@@ -19,7 +19,7 @@ import java.util.List;
 @Repository
 public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, Long> {
     @Query("SELECT m FROM MapLetterEntity m "
-            + "WHERE m.createUserId = :userId AND m.isDeleted = false AND m.isBlocked = false")
+            + "WHERE m.createUserId = :userId AND m.isDeleted = false AND m.isBlocked = false ORDER BY m.createdAt DESC ")
     Page<MapLetterEntity> findActiveByCreateUserId(Long userId, Pageable pageable);
 
     @Query("SELECT m FROM MapLetterEntity m "

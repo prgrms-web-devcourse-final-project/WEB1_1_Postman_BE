@@ -29,6 +29,7 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
     @Query("UPDATE ReplyMapLetterEntity r SET r.isBlocked = true WHERE r.replyLetterId = :letterId")
     void letterBlock(Long letterId);
 
-    @Query("SELECT r FROM ReplyMapLetterEntity r WHERE r.createUserId=:userId AND r.isBlocked=false AND r.isDeleted=false")
+    @Query("SELECT r FROM ReplyMapLetterEntity r WHERE r.createUserId=:userId AND r.isBlocked=false AND r.isDeleted=false"
+            + " ORDER BY r.createdAt DESC")
     Page<ReplyMapLetterEntity> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
 }
