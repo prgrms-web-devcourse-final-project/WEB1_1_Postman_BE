@@ -14,6 +14,13 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
+      ## Redis 환경변수
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+      # FCM 환경변수
+      BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
+
       # AWS 환경변수
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
