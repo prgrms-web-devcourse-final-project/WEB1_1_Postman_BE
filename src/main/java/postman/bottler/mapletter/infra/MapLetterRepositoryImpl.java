@@ -54,12 +54,10 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    public List<MapLetter> findActiveByTargetUserId(Long userId) {
-        List<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByTargetUserId(userId);
+    public Page<MapLetter> findActiveByTargetUserId(Long userId, Pageable pageable) {
+        Page<MapLetterEntity> findActiveLetters = mapLetterJpaRepository.findActiveByTargetUserId(userId, pageable);
 
-        return findActiveLetters.stream()
-                .map(MapLetterEntity::toDomain)
-                .toList();
+        return findActiveLetters.map(MapLetterEntity::toDomain);
     }
 
     @Override

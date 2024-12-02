@@ -23,7 +23,7 @@ public interface MapLetterRepository {
 
     Page<MapLetter> findActiveByCreateUserId(Long userId, Pageable pageable);
 
-    List<MapLetter> findActiveByTargetUserId(Long userId);
+    Page<MapLetter> findActiveByTargetUserId(Long userId, Pageable pageable);
 
     List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId);
 

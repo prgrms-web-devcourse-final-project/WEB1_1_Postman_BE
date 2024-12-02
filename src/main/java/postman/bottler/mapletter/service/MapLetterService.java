@@ -285,8 +285,7 @@ public class MapLetterService {
     }
 
     public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
-        Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(
-                userId, PageRequest.of(page - 1, size));
+        Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(userId, PageRequest.of(page - 1, size));
 
         return letters.map(mapLetter -> {
             String targetUserNickname = null;
@@ -306,6 +305,18 @@ public class MapLetterService {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
             String title = "Re: " + sourceLetter.getTitle();
             return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title);
+        });
+    }
+
+    public Page<FindAllReceivedLetterResponseDTO> findAllReceivedLetter(int page, int size, Long userId) {
+        Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
+        return letters.map(letter -> {
+            String sendUserNickname = letter.getCreateUserId().toString(); //예시
+            String sendUserProfileImg = "www.profile.com"; //예시
+
+//             sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
+//             sendUserProfileImg = userService.getProfileImgById(letter.getCreateUserId());
+            return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg);
         });
     }
 }
