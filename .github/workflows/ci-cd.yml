@@ -14,9 +14,6 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-      # FCM 환경변수
-      BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
-
       ## Redis 환경변수
       REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
@@ -63,12 +60,6 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: JSON 디렉토리 생성
-        run: mkdir -p WEB1_1_Postman_BE/src/resources
-
-      - name: JSON 생성
-        run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
-        
       - name: Gradle 테스트
         run: ./gradlew clean build
       
