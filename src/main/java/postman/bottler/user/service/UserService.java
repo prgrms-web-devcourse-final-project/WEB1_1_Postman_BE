@@ -101,4 +101,13 @@ public class UserService {
         User user = userRepository.findByEmail(email);
         userRepository.updateNickname(user.getUserId(), nickname);
     }
+
+    @Transactional
+    public void updatePassword(String existingPassword, String newPassword,String email) {
+        User user = userRepository.findByEmail(email);
+        if (!passwordEncoder.matches(existingPassword, user.getPassword())) {
+            throw new PasswordException("비밀번호가 일치하지 않습니다.");
+        }
+        userRepository.updatePassword(user.getUserId(), passwordEncoder.encode(newPassword));
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.user.dto.request.ChangePasswordRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateEmailRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
 import postman.bottler.user.dto.request.CheckPasswordRequestDTO;
@@ -71,12 +72,19 @@ public class UserController {
         return ApiResponse.onSuccess("닉네임이 수정되었습니다.");
     }
 
+    @PatchMapping("/password")
+    public ApiResponse<?> updatePassword(@Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDetails userDetails) {
+        validateRequestDTO(bindingResult);
+        userService.updatePassword(changePasswordRequestDTO.existingPassword(), changePasswordRequestDTO.newPassword(), userDetails.getUsername());
+        return ApiResponse.onSuccess("비밀번호가 수정되었습니다.");
+    }
+
     private void validateRequestDTO(BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
                 switch (error.getField()) {
                     case "email" -> throw new EmailException(error.getDefaultMessage());
-                    case "password" -> throw new PasswordException(error.getDefaultMessage());
+                    case "password", "existingPassword", "newPassword" -> throw new PasswordException(error.getDefaultMessage());
                     case "nickname" -> throw new NicknameException(error.getDefaultMessage());
                     default -> throw new IllegalArgumentException(
                             bindingResult.getAllErrors().get(0).getDefaultMessage());

@@ -9,4 +9,5 @@ public interface UserRepository {
     User findByEmail(String email);
     void softDeleteUser(Long userId);
     void updateNickname(Long userId, String nickname);
+    void updatePassword(Long userId, String password);
 }
