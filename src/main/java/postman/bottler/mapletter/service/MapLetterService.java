@@ -38,6 +38,8 @@ public class MapLetterService {
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
 //    private final UserService userService;
 
+    private static final int VIEW_DISTANCE = 15;
+
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
                                            Long userId) {
@@ -69,7 +71,7 @@ public class MapLetterService {
 
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
-        if (distance > 15) {
+        if (distance > VIEW_DISTANCE) {
             throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
         }
 
