@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.auth.JwtTokenProvider;
+import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
@@ -18,6 +19,7 @@ import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
+import postman.bottler.user.exception.ProfileImageException;
 import postman.bottler.user.exception.TokenException;
 
 @Service
@@ -25,6 +27,7 @@ import postman.bottler.user.exception.TokenException;
 public class UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ProfileImageRepository profileImageRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -103,11 +106,26 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(String existingPassword, String newPassword,String email) {
+    public void updatePassword(String existingPassword, String newPassword, String email) {
         User user = userRepository.findByEmail(email);
         if (!passwordEncoder.matches(existingPassword, user.getPassword())) {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
         userRepository.updatePassword(user.getUserId(), passwordEncoder.encode(newPassword));
+    }
+
+    @Transactional
+    public void updateProfileImage(String newProfileImage, String email) {
+        if (!profileImageRepository.existsByUrl(newProfileImage)) {
+            throw new ProfileImageException("유효하지 않은 프로필 이미지 URL입니다.");
+        }
+        User user = userRepository.findByEmail(email);
+        userRepository.updateProfileImageUrl(user.getUserId(), newProfileImage);
+    }
+
+    @Transactional
+    public void createProfileImg(String profileImageUrl) {
+        ProfileImage profileImage = ProfileImage.createProfileImg(profileImageUrl);
+        profileImageRepository.save(profileImage);
     }
 }

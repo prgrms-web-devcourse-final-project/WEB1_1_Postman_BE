@@ -67,4 +67,8 @@ public class UserEntity {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

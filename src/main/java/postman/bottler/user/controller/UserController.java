@@ -18,11 +18,13 @@ import postman.bottler.user.dto.request.CheckDuplicateEmailRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
 import postman.bottler.user.dto.request.CheckPasswordRequestDTO;
 import postman.bottler.user.dto.request.NicknameRequestDTO;
+import postman.bottler.user.dto.request.ProfileImgRequestDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
+import postman.bottler.user.exception.ProfileImageException;
 import postman.bottler.user.service.UserService;
 
 @RestController
@@ -56,7 +58,7 @@ public class UserController {
     public ApiResponse<?> deleteUser(@Valid @RequestBody CheckPasswordRequestDTO checkPasswordRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDetails userDetails) {
         validateRequestDTO(bindingResult);
         userService.deleteUser(checkPasswordRequestDTO.password(), userDetails.getUsername());
-        return ApiResponse.onSuccess("성공적으로 탈퇴되었습니다.");
+        return ApiResponse.onDeleteSuccess("성공적으로 탈퇴되었습니다.");
     }
 
     @GetMapping
@@ -79,6 +81,20 @@ public class UserController {
         return ApiResponse.onSuccess("비밀번호가 수정되었습니다.");
     }
 
+    @PatchMapping("/profileImg")
+    public ApiResponse<?> updateProfileImage(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDetails userDetails) {
+        validateRequestDTO(bindingResult);
+        userService.updateProfileImage(profileImgRequestDTO.imageUrl(), userDetails.getUsername());
+        return ApiResponse.onSuccess("프로필 이미지가 수정되었습니다.");
+    }
+
+    @PostMapping("/profileImg")
+    public ApiResponse<?> createProfileImg(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO, BindingResult bindingResult) {
+        validateRequestDTO(bindingResult);
+        userService.createProfileImg(profileImgRequestDTO.imageUrl());
+        return ApiResponse.onCreateSuccess("프로필 이미지 DB 저장 성공");
+    }
+
     private void validateRequestDTO(BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
@@ -86,6 +102,7 @@ public class UserController {
                     case "email" -> throw new EmailException(error.getDefaultMessage());
                     case "password", "existingPassword", "newPassword" -> throw new PasswordException(error.getDefaultMessage());
                     case "nickname" -> throw new NicknameException(error.getDefaultMessage());
+                    case "imageUrl" -> throw new ProfileImageException(error.getDefaultMessage());
                     default -> throw new IllegalArgumentException(
                             bindingResult.getAllErrors().get(0).getDefaultMessage());
                 }

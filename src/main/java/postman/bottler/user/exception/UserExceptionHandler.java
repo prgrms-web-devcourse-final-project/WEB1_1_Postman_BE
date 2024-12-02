@@ -44,4 +44,10 @@ public class UserExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.INVALID_USER.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(ProfileImageException.class)
+    public ApiResponse<?> handleProfileImageException(ProfileImageException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.INVALID_PROFILE_IMAGE.getCode(), e.getMessage(), null);
+    }
 }
