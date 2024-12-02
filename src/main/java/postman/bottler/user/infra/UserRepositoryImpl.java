@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
+import postman.bottler.user.exception.TokenException;
 import postman.bottler.user.infra.entity.UserEntity;
 import postman.bottler.user.service.UserRepository;
 
@@ -18,12 +19,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean findUserByEmail(String email) {
+    public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
     }
 
     @Override
-    public boolean findUserByNickname(String nickname) {
+    public boolean existsByNickname(String nickname) {
         return userJpaRepository.existsByNickname(nickname);
     }
 
@@ -32,5 +33,12 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity userEntity = userJpaRepository.findByEmail(email)
                 .orElseThrow(() -> new EmailException("유저를 찾을 수 없습니다. " + email));
         return UserEntity.toUser(userEntity);
+    }
+
+    @Override
+    public void softDeleteUser(Long userId) {
+        UserEntity userEntity = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new TokenException("해당 토큰에 대한 유저를 찾을 수 없습니다."));
+        userEntity.updateIsDelete();
     }
 }

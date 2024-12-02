@@ -16,18 +16,19 @@ public class User {
     private boolean isDeleted;
     private boolean isBanned;
 
-    private User(Long userId, String email) {
-        this.userId = userId;
-        this.email = email;
-    }
-
-    private User(Long userId, String email, String password) {
+    private User(Long userId, String email, String password, String nickname, LocalDateTime createdAt,
+                LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
         this.userId = userId;
         this.email = email;
         this.password = password;
+        this.nickname = nickname;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.isDeleted = isDeleted;
+        this.isBanned = isBanned;
     }
 
-    public User(String email, String password, String nickname) {
+    private User(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -37,8 +38,8 @@ public class User {
         this.isBanned = false;
     }
 
-    public static User createUser(Long userId, String email, String password) {
-        return new User(userId, email, password);
+    public static User createUser(Long userId, String email, String password, String nickname, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
+        return new User(userId, email, password, nickname, createdAt, updatedAt, isDeleted, isBanned);
     }
 
     public static User createUser(String email, String password, String nickname) {

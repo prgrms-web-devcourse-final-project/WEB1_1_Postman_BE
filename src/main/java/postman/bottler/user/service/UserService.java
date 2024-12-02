@@ -34,18 +34,21 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void checkEmail(String email) {
-        if (userRepository.findUserByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new EmailException("이메일이 중복되었습니다.");
         }
     }
 
+    @Transactional
     public void checkNickname(String nickname) {
-        if (userRepository.findUserByNickname(nickname)) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new NicknameException("닉네임이 중복되었습니다.");
         }
     }
 
+    @Transactional
     public SignInResponseDTO signin(String email, String password) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -63,6 +66,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public AccessTokenResponseDTO validateRefreshToken(String refreshToken) {
         //db에 저장되어 있는 email과 refreshToken의 email과 같은지 비교
         String emailFromRefreshToken = jwtTokenProvider.getEmailFromToken(refreshToken);
@@ -74,5 +78,14 @@ public class UserService {
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         String newAccessToken = jwtTokenProvider.createToken(authentication);
         return new AccessTokenResponseDTO(newAccessToken);
+    }
+
+    @Transactional
+    public void deleteUser(String password, String email) {
+        User user = userRepository.findByEmail(email);
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new PasswordException("비밀번호가 일치하지 않습니다.");
+        }
+        userRepository.softDeleteUser(user.getUserId());
     }
 }

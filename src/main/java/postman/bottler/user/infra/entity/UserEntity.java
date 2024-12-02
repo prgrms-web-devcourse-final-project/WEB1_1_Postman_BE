@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import postman.bottler.user.domain.User;
+import postman.bottler.user.exception.UserException;
 
 @Entity
 @Builder
@@ -32,6 +33,7 @@ public class UserEntity {
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
@@ -43,10 +45,16 @@ public class UserEntity {
     }
 
     public static User toUser(UserEntity userEntity) {
+        if (userEntity.isDeleted) throw new UserException("탈퇴한 유저입니다.");
         return userEntity.to();
     }
 
     public User to() {
-        return User.createUser(this.userId, this.email, this.password);
+        return User.createUser(this.userId, this.email, this.password, this.nickname, this.createdAt, this.updatedAt, this.isDeleted, this.isBanned);
+    }
+
+    public void updateIsDelete() {
+        this.isDeleted = true;
+        this.updatedAt = LocalDateTime.now();
     }
 }

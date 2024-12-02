@@ -2,7 +2,10 @@ package postman.bottler.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.dto.request.CheckDuplicateEmailRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
+import postman.bottler.user.dto.request.CheckPasswordDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
@@ -41,6 +45,13 @@ public class UserController {
         validateRequestDTO(bindingResult);
         userService.checkNickname(checkDuplicateNicknameRequestDTO.nickname());
         return ApiResponse.onSuccess("사용 가능한 닉네임입니다.");
+    }
+
+    @DeleteMapping
+    public ApiResponse<?> deleteUser(@Valid @RequestBody CheckPasswordDTO checkPasswordDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDetails userDetails) {
+        validateRequestDTO(bindingResult);
+        userService.deleteUser(checkPasswordDTO.password(), userDetails.getUsername());
+        return ApiResponse.onSuccess("성공적으로 탈퇴되었습니다.");
     }
 
     private void validateRequestDTO(BindingResult bindingResult) {
