@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.keyword.domain.UserKeyword;
 import postman.bottler.keyword.infra.entity.UserKeywordEntity;
-import postman.bottler.keyword.service.UserKeywordJpaRepository;
 import postman.bottler.keyword.service.UserKeywordRepository;
 
 @Repository
@@ -20,5 +19,18 @@ public class UserKeywordRepositoryImpl implements UserKeywordRepository {
         return userKeywordEntities.stream()
                 .map(UserKeywordEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void saveAll(List<UserKeyword> userKeywords) {
+        List<UserKeywordEntity> userKeywordEntities = userKeywords.stream()
+                .map(UserKeywordEntity::from)
+                .toList();
+        userKeywordJpaRepository.saveAll(userKeywordEntities);
+    }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        userKeywordJpaRepository.deleteAllByUserId(userId);
     }
 }
