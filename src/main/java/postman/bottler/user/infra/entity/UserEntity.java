@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import postman.bottler.user.domain.Role;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.UserException;
 
@@ -17,6 +19,7 @@ import postman.bottler.user.exception.UserException;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Table(name = "user")
 public class UserEntity {
     @Id
@@ -27,6 +30,7 @@ public class UserEntity {
     private String password;
     private String nickname;
     private String imageUrl;
+    private Role role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean isDeleted;
@@ -39,6 +43,7 @@ public class UserEntity {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .imageUrl(user.getImageUrl())
+                .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .isDeleted(user.isDeleted())
@@ -47,12 +52,15 @@ public class UserEntity {
     }
 
     public static User toUser(UserEntity userEntity) {
-        if (userEntity.isDeleted) throw new UserException("탈퇴한 유저입니다.");
+        if (userEntity.isDeleted) {
+            throw new UserException("탈퇴한 유저입니다.");
+        }
         return userEntity.to();
     }
 
     public User to() {
-        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.createdAt, this.updatedAt, this.isDeleted, this.isBanned);
+        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.role, this.createdAt,
+                this.updatedAt, this.isDeleted, this.isBanned);
     }
 
     public void updateIsDelete() {

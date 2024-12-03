@@ -12,18 +12,20 @@ public class User {
     private String password;
     private String nickname;
     private String imageUrl;
+    private Role role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean isDeleted;
     private boolean isBanned;
 
-    private User(Long userId, String email, String password, String nickname, String imageUrl, LocalDateTime createdAt,
+    private User(Long userId, String email, String password, String nickname, String imageUrl, Role role, LocalDateTime createdAt,
                 LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
         this.userId = userId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.imageUrl = imageUrl;
+        this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.isDeleted = isDeleted;
@@ -34,14 +36,15 @@ public class User {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.role = Role.USER;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.isDeleted = false;
         this.isBanned = false;
     }
 
-    public static User createUser(Long userId, String email, String password, String nickname, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
-        return new User(userId, email, password, nickname, imageUrl, createdAt, updatedAt, isDeleted, isBanned);
+    public static User createUser(Long userId, String email, String password, String nickname, String imageUrl, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBanned) {
+        return new User(userId, email, password, nickname, imageUrl, role, createdAt, updatedAt, isDeleted, isBanned);
     }
 
     public static User createUser(String email, String password, String nickname) {

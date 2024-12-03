@@ -9,8 +9,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import postman.bottler.user.exception.TokenException;
 
@@ -111,7 +108,7 @@ public class JwtTokenProvider implements InitializingBean {
             authorities.add(new SimpleGrantedAuthority((String) authoritiesObj));
         }
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
         return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
     }
