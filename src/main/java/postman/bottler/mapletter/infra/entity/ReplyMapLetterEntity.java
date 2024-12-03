@@ -1,13 +1,17 @@
 package postman.bottler.mapletter.infra.entity;
 
-import jakarta.persistence.*;
+import com.google.firebase.database.annotations.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reply_map_letter")
@@ -17,15 +21,21 @@ public class ReplyMapLetterEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long replyLetterId;
+    @NotNull
     private Long sourceLetterId;
+    @NotNull
     private String font;
+    @NotNull
     private String paper;
+    @NotNull
     private String label;
+    @NotNull
     private String content;
     private boolean isBlocked;
     private boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @NotNull
     private Long createUserId;
 
     @Builder
