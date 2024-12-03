@@ -8,7 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import postman.bottler.keyword.domain.UserKeyword;
 
 @Entity
 @Table(name = "user_keyword")
@@ -23,4 +25,25 @@ public class UserKeywordEntity {
 
     @Column(nullable = false)
     private String keyword;
+
+    @Builder
+    public UserKeywordEntity(Long userId, String keyword) {
+        this.userId = userId;
+        this.keyword = keyword;
+    }
+
+    public static UserKeywordEntity from(UserKeyword userKeyword) {
+        return UserKeywordEntity.builder()
+                .userId(userKeyword.getUserId())
+                .keyword(userKeyword.getKeyword())
+                .build();
+    }
+
+    public UserKeyword toDomain() {
+        return UserKeyword.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .keyword(this.keyword)
+                .build();
+    }
 }
