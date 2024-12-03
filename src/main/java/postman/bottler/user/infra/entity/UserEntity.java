@@ -1,5 +1,6 @@
 package postman.bottler.user.infra.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,14 +27,31 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private String nickname;
+
+    @Column(nullable = false)
     private String imageUrl;
+
+    @Column(nullable = false)
     private Role role;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
     private boolean isDeleted;
+
+    @Column(nullable = false)
     private boolean isBanned;
 
     public static UserEntity from(User user) {

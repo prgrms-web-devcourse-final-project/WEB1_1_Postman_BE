@@ -1,5 +1,6 @@
 package postman.bottler.user.infra.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,9 +25,16 @@ public class EmailCodeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long emailCodeId;
 
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false, unique = true)
     private String code;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime expiresAt;
 
     public static EmailCodeEntity from(EmailCode emailCode) {
