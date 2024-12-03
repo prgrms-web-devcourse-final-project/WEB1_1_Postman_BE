@@ -29,7 +29,7 @@ public class LabelController {
 
     @Operation(summary = "라벨 생성", description = "라벨 이미지 URL을 DB에 저장합니다. 실제 서비스에서 사용하는 API는 아닙니다!")
     @PostMapping
-    public ApiResponse<?> createLabel(@RequestParam String labelImageUrl,
+    public ApiResponse<String> createLabel(@RequestParam String labelImageUrl,
                                       @RequestParam(required = false) Integer limitCount) {
         validateLabelImageUrl(labelImageUrl);
         limitCount = validateLimitCount(limitCount);
@@ -56,21 +56,21 @@ public class LabelController {
 
     @Operation(summary = "전체 라벨 조회", description = "(로그인 필요) 모든 라벨을 조회합니다.")
     @GetMapping
-    public ApiResponse<?> findAllLabels() {
+    public ApiResponse<List<LabelResponseDTO>> findAllLabels() {
         List<LabelResponseDTO> labelResponseDTO = labelService.findAllLabels();
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
     @Operation(summary = "사용자 라벨 조회", description = "(로그인 필요) 로그인한 사용자가 소유한 라벨을 조회합니다.")
     @GetMapping("/user")
-    public ApiResponse<?> findUserLabels(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<List<LabelResponseDTO>> findUserLabels(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<LabelResponseDTO> labelResponseDTO = labelService.findUserLabels(customUserDetails.getUserId());
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
     @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 입력된 라벨 ID에 해당하는 라벨을 선착순으로 가져갑니다.")
     @PostMapping("/{labelId}")
-    public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId,
+    public ApiResponse<String> createFirstComeFirstServedLabel(@PathVariable Long labelId,
                                                           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         labelService.createFirstComeFirstServedLabel(labelId, customUserDetails.getUserId());
         return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
