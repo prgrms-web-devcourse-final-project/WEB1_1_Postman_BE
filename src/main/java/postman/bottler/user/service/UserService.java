@@ -114,6 +114,9 @@ public class UserService {
 
     @Transactional
     public void updateNickname(String nickname, String email) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new NicknameException("닉네임이 중복되었습니다.");
+        }
         User user = userRepository.findByEmail(email);
         userRepository.updateNickname(user.getUserId(), nickname);
     }
