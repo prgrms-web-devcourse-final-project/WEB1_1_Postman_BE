@@ -18,7 +18,7 @@ public class ReplyService {
 
     public List<ReplyResponseDTO> findRecentReplyLetters(Long userId){
         String key="REPLY:"+userId;
-        List<Object> values=redisTemplate.opsForList().range(key, 0,3);
+        List<Object> values=redisTemplate.opsForList().range(key, 0,2);
 
         return values.stream()
                 .map(value->{
