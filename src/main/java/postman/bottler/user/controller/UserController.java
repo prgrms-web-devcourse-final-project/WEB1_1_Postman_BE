@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.user.auth.CustomUserDetails;
 import postman.bottler.user.dto.request.AuthEmailRequestDTO;
 import postman.bottler.user.dto.request.ChangePasswordRequestDTO;
 import postman.bottler.user.dto.request.CheckDuplicateNicknameRequestDTO;
@@ -69,16 +69,16 @@ public class UserController {
     @Operation(summary = "유저 탈퇴", description = "(로그인 필요) 비밀번호를 확인 후 탈퇴를 진행합니다.")
     @DeleteMapping
     public ApiResponse<?> deleteUser(@Valid @RequestBody CheckPasswordRequestDTO checkPasswordRequestDTO,
-                                     BindingResult bindingResult, @AuthenticationPrincipal UserDetails userDetails) {
+                                     BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
-        userService.deleteUser(checkPasswordRequestDTO.password(), userDetails.getUsername());
+        userService.deleteUser(checkPasswordRequestDTO.password(), customUserDetails.getEmail());
         return ApiResponse.onDeleteSuccess("성공적으로 탈퇴되었습니다.");
     }
 
     @Operation(summary = "유저 정보 조회", description = "(로그인 필요) 로그인한 유저의 정보를 조회합니다.")
     @GetMapping
-    public ApiResponse<UserResponseDTO> findUser(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponseDTO userResponseDTO = userService.findUser(userDetails.getUsername());
+    public ApiResponse<UserResponseDTO> findUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UserResponseDTO userResponseDTO = userService.findUser(customUserDetails.getEmail());
         return ApiResponse.onSuccess(userResponseDTO);
     }
 
@@ -86,9 +86,9 @@ public class UserController {
     @PatchMapping("/nickname")
     public ApiResponse<?> updateNickname(@Valid @RequestBody NicknameRequestDTO nicknameRequestDTO,
                                          BindingResult bindingResult,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
+                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
-        userService.updateNickname(nicknameRequestDTO.nickname(), userDetails.getUsername());
+        userService.updateNickname(nicknameRequestDTO.nickname(), customUserDetails.getEmail());
         return ApiResponse.onSuccess("닉네임이 수정되었습니다.");
     }
 
@@ -96,10 +96,10 @@ public class UserController {
     @PatchMapping("/password")
     public ApiResponse<?> updatePassword(@Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO,
                                          BindingResult bindingResult,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
+                                         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
         userService.updatePassword(changePasswordRequestDTO.existingPassword(), changePasswordRequestDTO.newPassword(),
-                userDetails.getUsername());
+                customUserDetails.getEmail());
         return ApiResponse.onSuccess("비밀번호가 수정되었습니다.");
     }
 
@@ -107,9 +107,9 @@ public class UserController {
     @PatchMapping("/profileImg")
     public ApiResponse<?> updateProfileImage(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO,
                                              BindingResult bindingResult,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
+                                             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
-        userService.updateProfileImage(profileImgRequestDTO.imageUrl(), userDetails.getUsername());
+        userService.updateProfileImage(profileImgRequestDTO.imageUrl(), customUserDetails.getEmail());
         return ApiResponse.onSuccess("프로필 이미지가 수정되었습니다.");
     }
 
