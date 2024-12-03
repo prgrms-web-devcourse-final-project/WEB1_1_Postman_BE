@@ -34,6 +34,6 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
 
     @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m "
             + "WHERE r.sourceLetterId = m.mapLetterId AND m.createUserId=:userId AND r.isDeleted = false AND r.isBlocked = false "
-            + "ORDER BY r.createdAt DESC LIMIT :itemsToFetch")
+            + "ORDER BY r.createdAt DESC")
     List<ReplyMapLetterEntity> findRecentReplyByUserId(Long userId, Pageable pageable);
 }

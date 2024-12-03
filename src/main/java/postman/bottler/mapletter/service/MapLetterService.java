@@ -45,7 +45,7 @@ public class MapLetterService {
     private final ReplyMapLetterRepository replyMapLetterRepository;
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
     //    private final UserService userService;
-    private final RedisTemplate<String, LetterLogDTO> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private static final double VIEW_DISTANCE = 15;
     private static final int REDIS_SAVED_REPLY = 6;
