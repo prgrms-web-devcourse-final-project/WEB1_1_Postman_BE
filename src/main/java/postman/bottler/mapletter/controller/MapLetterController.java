@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ import postman.bottler.mapletter.exception.EmptyMapLetterTitleException;
 import postman.bottler.mapletter.exception.EmptyReplyMapLetterSourceException;
 import postman.bottler.mapletter.exception.LocationNotFoundException;
 import postman.bottler.mapletter.service.MapLetterService;
+import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController
 @RequestMapping("/map")
@@ -76,7 +78,8 @@ public class MapLetterController {
     @Operation(summary = "지도 퍼블릭 편지 생성", description = "로그인 필수. 제목 없으면 무제로 넣어주세요.")
     public ApiResponse<?> createMapLetter(
             @Valid @RequestBody CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
-            BindingResult bindingResult, Long userId) {
+            BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         validateMapLetterRequest(bindingResult);
         mapLetterService.createPublicMapLetter(createPublicMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("지도 편지 생성이 성공되었습니다.");
@@ -86,7 +89,8 @@ public class MapLetterController {
     @Operation(summary = "지도 타겟 편지 생성", description = "로그인 필수. 제목 없으면 무제로 넣어주세요.")
     public ApiResponse<?> createTargetLetter(
             @Valid @RequestBody CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
-            BindingResult bindingResult, Long userId) {
+            BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         validateMapLetterRequest(bindingResult);
         mapLetterService.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("타겟 편지 생성이 성공되었습니다.");
@@ -96,7 +100,9 @@ public class MapLetterController {
     @Operation(summary = "편지 상세 조회", description = "로그인 필수. 위경도 필수. 반경 15m 내 편지만 상세조회 가능. 내가 타겟인 편지와 퍼블릭 편지만 조회 가능. 나머지는 오류")
     public ApiResponse<OneLetterResponseDTO> findOneMapLetter(@RequestParam String latitude,
                                                               @RequestParam String longitude,
-                                                              @PathVariable Long letterId, Long userId) {
+                                                              @PathVariable Long letterId,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         BigDecimal lat = BigDecimal.ZERO;
         BigDecimal lon = BigDecimal.ZERO;
         try {
@@ -111,7 +117,9 @@ public class MapLetterController {
 
     @DeleteMapping
     @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능")
-    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO letters, Long userId) {
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO letters,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         mapLetterService.deleteMapLetter(letters.letterIds(), userId);
         return ApiResponse.onDeleteSuccess(letters);
     }
@@ -120,7 +128,8 @@ public class MapLetterController {
     @Operation(summary = "보낸 편지 전체 조회", description = "로그인 필수. 내가 보낸 편지, 답장 전체 조회. 페이징 처리(1페이지부터). ")
     public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size, Long userId) {
+            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
     }
@@ -130,7 +139,8 @@ public class MapLetterController {
     public ApiResponse<MapLetterPageResponseDTO<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
-            Long userId) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
     }
@@ -139,7 +149,8 @@ public class MapLetterController {
     @Operation(summary = "주변 편지 조회", description = "로그인 필수. 반경 500m 내 퍼블릭 편지, 나에게 타겟으로 온 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude,
                                                                                 @RequestParam String longitude,
-                                                                                Long userId) {
+                                                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         BigDecimal lat = BigDecimal.ZERO;
         BigDecimal lon = BigDecimal.ZERO;
         try {
@@ -156,7 +167,8 @@ public class MapLetterController {
     @Operation(summary = "답장 편지 생성", description = "로그인 필수. 지도편지 답장을 생성한다.")
     public ApiResponse<?> createReplyMapLetter(
             @Valid @RequestBody CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
-            BindingResult bindingResult, Long userId) {
+            BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         validateMapLetterRequest(bindingResult);
         mapLetterService.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         return ApiResponse.onCreateSuccess("답장 편지 생성이 성공되었습니다.");
@@ -167,21 +179,25 @@ public class MapLetterController {
     public ApiResponse<MapLetterPageResponseDTO<FindAllReplyMapLettersResponseDTO>> findAllReplyMapLetter(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
-            @PathVariable Long letterId,
-            Long userId) {
+            @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllReplyMapLetter(page, size, letterId, userId)));
     }
 
     @GetMapping("/reply/{letterId}")
     @Operation(summary = "답장 편지 상세 조회", description = "로그인 필수. 답장 편지를 상세조회한다.")
-    public ApiResponse<OneReplyLetterResponseDTO> findOneReplyMapLetter(@PathVariable Long letterId, Long userId) {
+    public ApiResponse<OneReplyLetterResponseDTO> findOneReplyMapLetter(@PathVariable Long letterId,
+                                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(mapLetterService.findOneReplyMapLetter(letterId, userId));
     }
 
     @PostMapping("/{letterId}")
     @Operation(summary = "편지 보관", description = "로그인 필수. 퍼블릭 편지를 보관한다.")
-    public ApiResponse<?> mapLetterArchive(@PathVariable Long letterId, Long userId) {
+    public ApiResponse<?> mapLetterArchive(@PathVariable Long letterId,
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         mapLetterService.mapLetterArchive(letterId, userId);
         return ApiResponse.onCreateSuccess("편지 저장이 성공되었습니다.");
     }
@@ -191,7 +207,8 @@ public class MapLetterController {
     public ApiResponse<MapLetterPageResponseDTO<FindAllArchiveLetters>> findArchiveLetters(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
-            Long userId) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findArchiveLetters(page, size, userId)));
     }
@@ -199,26 +216,33 @@ public class MapLetterController {
     @DeleteMapping("/archived")
     @Operation(summary = "편지 보관 취소(삭제)", description = "로그인 필수. 편지를 보관함에서 삭제한다.(리스트로 1~n개 까지의 편지를 한 번에 삭제 한다.")
     public ApiResponse<?> archiveLetter(@RequestBody DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO
-            , Long userId) {
+            , @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         mapLetterService.deleteArchivedLetter(deleteArchivedLettersRequestDTO, userId);
         return ApiResponse.onDeleteSuccess(deleteArchivedLettersRequestDTO);
     }
 
     @GetMapping("/reply/check/{letterId}")
     @Operation(summary = "유저가 해당 편지에 답장을 보냈는지 확인합니다.", description = "로그인 필수. 편지 보관할 때 이미 답장이 있으면 에러를 터트리지만 혹시 몰라서 넣었어요.")
-    public ApiResponse<CheckReplyMapLetterResponseDTO> checkReplyMapLetter(@PathVariable Long letterId, Long userId) {
+    public ApiResponse<CheckReplyMapLetterResponseDTO> checkReplyMapLetter(@PathVariable Long letterId,
+                                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(mapLetterService.checkReplyMapLetter(letterId, userId));
     }
 
     @GetMapping("/archive/{letterId}")
     @Operation(summary = "마이페이지에 있는 편지 상세 조회", description = "로그인 필수. 기존 편지 상세 조회는 15m 내에 있는 편지만 조회가 가능해서 거리 제한 없이 편지 조회가 가능한 api 별도 생성")
-    public ApiResponse<OneLetterResponseDTO> findArchiveOneLetter(@PathVariable Long letterId, Long userId) {
+    public ApiResponse<OneLetterResponseDTO> findArchiveOneLetter(@PathVariable Long letterId,
+                                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(mapLetterService.findArchiveOneLetter(letterId, userId));
     }
 
     @DeleteMapping("/reply")
     @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태")
-    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersRequestDTO letters, Long userId) {
+    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersRequestDTO letters,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
         return ApiResponse.onDeleteSuccess(letters);
     }
@@ -228,7 +252,8 @@ public class MapLetterController {
     public ApiResponse<MapLetterPageResponseDTO<FindAllSentReplyMapLetterResponseDTO>> findAllSentReplyMapLetter(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int size,
-            Long userId) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
     }
@@ -237,8 +262,8 @@ public class MapLetterController {
     @Operation(summary = "보낸 지도 편지 조회", description = "보낸 편지 조회에서 지도 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
     public ApiResponse<MapLetterPageResponseDTO<FindAllSentMapLetterResponseDTO>> findAllSentMapLetter(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId) {
+            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
     }
@@ -247,9 +272,8 @@ public class MapLetterController {
     @Operation(summary = "받은 답장 편지 조회", description = "받은 편지 조회에서 답장 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
     public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedReplyLetterResponseDTO>> findAllReceivedReplyMapLetter(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId
-    ) {
+            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
     }
@@ -258,9 +282,8 @@ public class MapLetterController {
     @Operation(summary = "받은 타겟 편지 조회", description = "받은 편지 조회에서 타겟 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
     public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedLetterResponseDTO>> findAllReceivedMapLetter(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
-            Long userId
-    ) {
+            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
     }
