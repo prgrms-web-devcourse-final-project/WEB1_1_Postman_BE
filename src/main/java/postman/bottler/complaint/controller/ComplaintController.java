@@ -24,10 +24,10 @@ public class ComplaintController {
 
     @Operation(summary = "키워드 편지 신고", description = "신고하는 편지 ID와 신고 사유를 등록합니다.")
     @PostMapping("/letters/{letterId}/complaint")
-    public ApiResponse<?> complainKeywordLetter(@PathVariable Long letterId,
-                                                @RequestBody ComplaintRequestDTO complaintRequest,
-                                                BindingResult bindingResult,
-                                                @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<ComplaintResponseDTO> complainKeywordLetter(@PathVariable Long letterId,
+                                                                   @RequestBody ComplaintRequestDTO complaintRequest,
+                                                                   BindingResult bindingResult,
+                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
@@ -38,10 +38,10 @@ public class ComplaintController {
 
     @Operation(summary = "지도 편지 신고", description = "신고하는 편지 ID와 신고 사유를 등록합니다.")
     @PostMapping("/map/{letterId}/complaint")
-    public ApiResponse<?> complainMapLetter(@PathVariable Long letterId,
-                                            @RequestBody ComplaintRequestDTO complaintRequest,
-                                            BindingResult bindingResult,
-                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<ComplaintResponseDTO> complainMapLetter(@PathVariable Long letterId,
+                                                               @RequestBody ComplaintRequestDTO complaintRequest,
+                                                               BindingResult bindingResult,
+                                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
@@ -52,10 +52,10 @@ public class ComplaintController {
 
     @Operation(summary = "지도 답장 편지 신고", description = "신고하는 편지 ID와 신고 사유를 등록합니다.")
     @PostMapping("/map/reply/{replyLetterId}/complaint")
-    public ApiResponse<?> complainMapReplyLetter(@PathVariable Long replyLetterId,
-                                                 @RequestBody ComplaintRequestDTO complaintRequest,
-                                                 BindingResult bindingResult,
-                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<ComplaintResponseDTO> complainMapReplyLetter(@PathVariable Long replyLetterId,
+                                                                    @RequestBody ComplaintRequestDTO complaintRequest,
+                                                                    BindingResult bindingResult,
+                                                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
@@ -66,10 +66,10 @@ public class ComplaintController {
 
     @Operation(summary = "키워드 답장 편지 신고", description = "신고하는 편지 ID와 신고 사유를 등록합니다.")
     @PostMapping("/letters/reply/{replyLetterId}/complaint")
-    public ApiResponse<?> complainKeywordReplyLetter(@PathVariable Long replyLetterId,
-                                                     @RequestBody ComplaintRequestDTO complaintRequest,
-                                                     BindingResult bindingResult,
-                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<ComplaintResponseDTO> complainKeywordReplyLetter(@PathVariable Long replyLetterId,
+                                                                        @RequestBody ComplaintRequestDTO complaintRequest,
+                                                                        BindingResult bindingResult,
+                                                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
@@ -77,6 +77,4 @@ public class ComplaintController {
                 customUserDetails.getUserId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
-
-
 }

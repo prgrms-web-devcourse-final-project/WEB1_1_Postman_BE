@@ -34,7 +34,7 @@ public class NotificationController {
 
     @Operation(summary = "알림 생성", description = "알림 유형, 알림 대상은 필수, 편지 관련 알림은 편지 ID를 등록합니다.")
     @PostMapping
-    public ApiResponse<?> create(@Valid @RequestBody NotificationRequestDTO notificationRequestDTO,
+    public ApiResponse<NotificationResponseDTO> create(@Valid @RequestBody NotificationRequestDTO notificationRequestDTO,
                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidNotificationRequestException(bindingResult.getAllErrors().get(0).getDefaultMessage());
@@ -48,7 +48,7 @@ public class NotificationController {
 
     @Operation(summary = "알림 조회", description = "사용자의 알림을 조회합니다.")
     @GetMapping
-    public ApiResponse<?> getNotifications(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<List<NotificationResponseDTO>> getNotifications(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<NotificationResponseDTO> userNotifications = notificationService.getUserNotifications(
                 customUserDetails.getUserId());
         return ApiResponse.onSuccess(userNotifications);
@@ -56,7 +56,7 @@ public class NotificationController {
 
     @Operation(summary = "알림 허용", description = "사용자의 기기 토큰을 등록합니다.")
     @PostMapping("/subscribe")
-    public ApiResponse<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest,
+    public ApiResponse<SubscriptionResponseDTO> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest,
                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         SubscriptionResponseDTO response = subscriptionService.subscribe(
                 customUserDetails.getUserId(),
@@ -66,14 +66,14 @@ public class NotificationController {
 
     @Operation(summary = "전체 알림 비허용", description = "사용자의 알림 기기를 모두 삭제합니다.")
     @DeleteMapping("/subscribe/all")
-    public ApiResponse<?> unsubscribeAll(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<String> unsubscribeAll(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         subscriptionService.unsubscribeAll(customUserDetails.getUserId());
         return ApiResponse.onDeleteSuccess("삭제 성공");
     }
 
     @Operation(summary = "기기 알림 비허용", description = "특정 토큰을 삭제합니다.")
     @DeleteMapping("/subscribe")
-    public ApiResponse<?> unsubscribe(@RequestBody UnsubscriptionRequestDTO unsubscriptionRequest) {
+    public ApiResponse<String> unsubscribe(@RequestBody UnsubscriptionRequestDTO unsubscriptionRequest) {
         subscriptionService.unsubscribe(unsubscriptionRequest.token());
         return ApiResponse.onDeleteSuccess("삭제 성공");
     }
