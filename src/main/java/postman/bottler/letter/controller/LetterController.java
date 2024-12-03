@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
+import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController
 @RequestMapping("/letters")
@@ -39,10 +41,11 @@ public class LetterController {
     )
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(
-            @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult
+            @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateLetterRequest(bindingResult);
-        LetterResponseDTO result = letterService.createLetter(letterRequestDTO);
+        LetterResponseDTO result = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
         return ApiResponse.onCreateSuccess(result);
     }
 
@@ -63,8 +66,10 @@ public class LetterController {
             description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다."
     )
     @GetMapping("/detail/{letterId}")
-    public ApiResponse<LetterDetailResponseDTO> getLetter(@PathVariable Long letterId) {
-        LetterDetailResponseDTO result = letterService.getLetterDetail(letterId);
+    public ApiResponse<LetterDetailResponseDTO> getLetter(
+            @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 

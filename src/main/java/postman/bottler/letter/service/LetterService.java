@@ -23,8 +23,7 @@ public class LetterService {
     private final LetterBoxService letterBoxService;
 
     @Transactional
-    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO) {
-        Long userId = getCurrentUserId();
+    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
         String userProfile = "profile url";
 
         Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
@@ -35,21 +34,13 @@ public class LetterService {
     }
 
     @Transactional
-    public void deleteLetter(Long letterId) {
-        Long userId = getCurrentUserId();
-        validateLetterOwnership(userId, letterId);
-        letterRepository.delete(letterId);
-    }
-
-    @Transactional
     public void deleteLetters(List<Long> letterIds) {
         letterRepository.deleteByIds(letterIds);
     }
 
     @Transactional(readOnly = true)
-    public LetterDetailResponseDTO getLetterDetail(Long letterId) {
+    public LetterDetailResponseDTO getLetterDetail(Long letterId, Long userId) {
         Letter letter = findLetter(letterId);
-        Long userId = getCurrentUserId();
         return LetterDetailResponseDTO.from(letter, userId);
     }
 
@@ -72,9 +63,5 @@ public class LetterService {
     private Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
-    }
-
-    private Long getCurrentUserId() {
-        return 1L; // TODO: 실제 인증 로직으로 대체
     }
 }
