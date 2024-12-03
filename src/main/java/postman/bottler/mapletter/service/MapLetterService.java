@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.domain.MapLetter;
@@ -35,6 +36,7 @@ import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.reply.dto.LetterLogDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +44,11 @@ public class MapLetterService {
     private final MapLetterRepository mapLetterRepository;
     private final ReplyMapLetterRepository replyMapLetterRepository;
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
-//    private final UserService userService;
+    //    private final UserService userService;
+    private final RedisTemplate<String, LetterLogDTO> redisTemplate;
 
     private static final double VIEW_DISTANCE = 15;
+    private static final int REDIS_SAVED_REPLY = 6;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -144,7 +148,9 @@ public class MapLetterService {
 
         mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
-        return replyMapLetterRepository.save(replyMapLetter);
+        ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
+        saveRecentReply(save.getReplyLetterId(), save.getLabel());
+        return save;
     }
 
     @Transactional(readOnly = true)
@@ -310,5 +316,30 @@ public class MapLetterService {
         if (nowPage < 1) {
             throw new PageRequestException("페이지가 존재하지 않습니다.");
         }
+    }
+
+    private void saveRecentReply(Long letterId, String labelUrl) {
+        MapLetter sourceLetter = mapLetterRepository.findById(letterId);
+        String key = "REPLY:" + sourceLetter.getCreateUserId();
+        LetterLogDTO value = LetterLogDTO.from("MAP" + letterId, labelUrl);
+
+        Long size = redisTemplate.opsForList().size(key);
+        if (size != null && size >= REDIS_SAVED_REPLY) {
+            redisTemplate.opsForList().rightPop(key);
+        } else if (size == null || size <= 0) {
+            Long itemsToFetch = REDIS_SAVED_REPLY - size;
+            if (itemsToFetch > 0) {
+                List<ReplyMapLetter> recentReplyLetters = replyMapLetterRepository.findRecentReplyByUserId(
+                        sourceLetter.getCreateUserId(),
+                        itemsToFetch);
+                for (ReplyMapLetter replyMapLetter : recentReplyLetters) {
+                    LetterLogDTO tempValue = LetterLogDTO.from("MAP" + replyMapLetter.getReplyLetterId(),
+                            replyMapLetter.getLabel());
+                    redisTemplate.opsForList().leftPush(key, tempValue);
+                }
+            }
+        }
+
+        redisTemplate.opsForList().leftPush(key, value);
     }
 }

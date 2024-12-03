@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.infra;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,4 +31,9 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
     @Query("SELECT r FROM ReplyMapLetterEntity r WHERE r.createUserId=:userId AND r.isBlocked=false AND r.isDeleted=false"
             + " ORDER BY r.createdAt DESC")
     Page<ReplyMapLetterEntity> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
+
+    @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m "
+            + "WHERE r.sourceLetterId = m.mapLetterId AND m.createUserId=:userId AND r.isDeleted = false AND r.isBlocked = false "
+            + "ORDER BY r.createdAt DESC LIMIT :itemsToFetch")
+    List<ReplyMapLetterEntity> findRecentReplyByUserId(Long userId, Pageable pageable);
 }

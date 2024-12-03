@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.service;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,6 @@ public interface ReplyMapLetterRepository {
     void softDelete(Long letterId);
 
     Page<ReplyMapLetter> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
+
+    List<ReplyMapLetter> findRecentReplyByUserId(Long userId, long itemsToFetch);
 }
