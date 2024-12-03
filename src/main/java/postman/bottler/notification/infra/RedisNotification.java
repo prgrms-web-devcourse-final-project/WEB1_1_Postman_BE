@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisTemplate;
 import postman.bottler.notification.domain.LetterNotification;
 import postman.bottler.notification.domain.Notification;
@@ -19,7 +18,6 @@ import postman.bottler.notification.domain.NotificationType;
 @Builder
 @Getter
 public class RedisNotification {
-    @Id
     private UUID id;
 
     private Long receiver;
@@ -37,8 +35,8 @@ public class RedisNotification {
                 .id(notification.getId())
                 .receiver(notification.getReceiver())
                 .type(notification.getType())
-                .letterId(notification instanceof LetterNotification ? ((LetterNotification) notification).getLetterId()
-                        : null)
+                .letterId(notification.isLetterNotification() ?
+                        ((LetterNotification) notification).getLetterId() : null)
                 .createdAt(notification.getCreatedAt())
                 .isRead(notification.getIsRead())
                 .build();
@@ -50,23 +48,23 @@ public class RedisNotification {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("receiver", receiver);
-        map.put("type", type);
-        map.put("letterId", letterId);
-        map.put("createdAt", createdAt);
-        map.put("isRead", isRead);
+        map.put(NotificationHashKey.ID.getKey(), id);
+        map.put(NotificationHashKey.RECEIVER.getKey(), receiver);
+        map.put(NotificationHashKey.TYPE.getKey(), type);
+        map.put(NotificationHashKey.LETTER_ID.getKey(), letterId);
+        map.put(NotificationHashKey.CREATED_AT.getKey(), createdAt);
+        map.put(NotificationHashKey.IS_READ.getKey(), isRead);
         return map;
     }
 
     public static RedisNotification create(RedisTemplate<String, Object> redisTemplate, String key) {
         return RedisNotification.builder()
-                .id((UUID) redisTemplate.opsForHash().get(key, "id"))
-                .type((NotificationType) redisTemplate.opsForHash().get(key, "type"))
-                .receiver((Long) redisTemplate.opsForHash().get(key, "receiver"))
-                .createdAt((LocalDateTime) redisTemplate.opsForHash().get(key, "createdAt"))
-                .letterId((Long) redisTemplate.opsForHash().get(key, "letterId"))
-                .isRead((Boolean) redisTemplate.opsForHash().get(key, "isRead"))
+                .id((UUID) redisTemplate.opsForHash().get(key, NotificationHashKey.ID.getKey()))
+                .type((NotificationType) redisTemplate.opsForHash().get(key, NotificationHashKey.TYPE.getKey()))
+                .receiver((Long) redisTemplate.opsForHash().get(key, NotificationHashKey.RECEIVER.getKey()))
+                .createdAt((LocalDateTime) redisTemplate.opsForHash().get(key, NotificationHashKey.CREATED_AT.getKey()))
+                .letterId((Long) redisTemplate.opsForHash().get(key, NotificationHashKey.LETTER_ID.getKey()))
+                .isRead((Boolean) redisTemplate.opsForHash().get(key, NotificationHashKey.IS_READ.getKey()))
                 .build();
     }
 
