@@ -1,7 +1,7 @@
 name: Main Branch CD Pipeline
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
