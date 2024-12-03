@@ -62,4 +62,11 @@ public class UserRepositoryImpl implements UserRepository {
                 .orElseThrow(() -> new TokenException("해당 토큰에 대한 유저를 찾을 수 없습니다."));
         userEntity.updateImageUrl(imageUrl);
     }
+
+    @Override
+    public User findById(Long userId) {
+        UserEntity userEntity = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new EmailException("유저를 찾을 수 없습니다. " + userId));
+        return UserEntity.toUser(userEntity);
+    }
 }

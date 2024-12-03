@@ -1,4 +1,4 @@
-package postman.bottler.label.dto.response;
+package postman.bottler.label.dto;
 
 public record LabelResponseDTO(Long labelId, String imageUrl) {
 }

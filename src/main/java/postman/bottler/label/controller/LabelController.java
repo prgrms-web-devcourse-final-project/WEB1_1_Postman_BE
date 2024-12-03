@@ -3,6 +3,7 @@ package postman.bottler.label.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.label.exception.EmptyLabelInputException;
 import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.service.LabelService;
+import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController
 @RequestMapping("/labels")
@@ -61,16 +63,16 @@ public class LabelController {
 
     @Operation(summary = "사용자 라벨 조회", description = "(로그인 필요) 로그인한 사용자가 소유한 라벨을 조회합니다.")
     @GetMapping("/user")
-    public ApiResponse<?> findUserLabels(Long userId) { // TODO: 유저 로직 구현 후 변경 예정
-        List<LabelResponseDTO> labelResponseDTO = labelService.findUserLabels(userId);
+    public ApiResponse<?> findUserLabels(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<LabelResponseDTO> labelResponseDTO = labelService.findUserLabels(customUserDetails.getUserId());
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
     @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 입력된 라벨 ID에 해당하는 라벨을 선착순으로 가져갑니다.")
     @PostMapping("/{labelId}")
     public ApiResponse<?> createFirstComeFirstServedLabel(@PathVariable Long labelId,
-                                                          Long userId) {  // TODO: 유저 로직 구현 후 변경 예정
-        labelService.createFirstComeFirstServedLabel(labelId, userId);
+                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        labelService.createFirstComeFirstServedLabel(labelId, customUserDetails.getUserId());
         return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
     }
 }
