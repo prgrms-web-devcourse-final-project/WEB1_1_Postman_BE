@@ -3,6 +3,8 @@ package postman.bottler.mapletter.service;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -149,7 +151,7 @@ public class MapLetterService {
         mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
-        saveRecentReply(save.getReplyLetterId(), save.getLabel());
+        saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
         return save;
     }
 
@@ -318,8 +320,8 @@ public class MapLetterService {
         }
     }
 
-    private void saveRecentReply(Long letterId, String labelUrl) {
-        MapLetter sourceLetter = mapLetterRepository.findById(letterId);
+    private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
+        MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
         String key = "REPLY:" + sourceLetter.getCreateUserId();
         String value = ReplyType.MAP+":"+letterId+":"+labelUrl;
 
@@ -339,6 +341,8 @@ public class MapLetterService {
             }
         }
 
-        redisTemplate.opsForList().leftPush(key, value);
+        if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
+            redisTemplate.opsForList().leftPush(key, value);
+        }
     }
 }
