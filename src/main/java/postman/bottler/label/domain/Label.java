@@ -1,7 +1,7 @@
 package postman.bottler.label.domain;
 
 import lombok.Getter;
-import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.label.exception.InvalidLabelException;
 
 @Getter

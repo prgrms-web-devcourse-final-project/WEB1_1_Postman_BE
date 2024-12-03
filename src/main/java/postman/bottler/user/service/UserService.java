@@ -172,4 +172,9 @@ public class UserService {
     public void verifyCode(String email, String code) {
 
     }
+
+    @Transactional
+    public User findById(Long userId) {
+        return userRepository.findById(userId);
+    }
 }
