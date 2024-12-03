@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import postman.bottler.user.domain.EmailCode;
 
 @Entity
 @Builder
@@ -27,4 +28,25 @@ public class EmailCodeEntity {
     private String code;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
+
+    public static EmailCodeEntity from(EmailCode emailCode) {
+        return EmailCodeEntity.builder()
+                .email(emailCode.getEmail())
+                .code(emailCode.getCode())
+                .createdAt(emailCode.getCreatedAt())
+                .expiresAt(emailCode.getExpiresAt())
+                .build();
+    }
+
+    public EmailCode to() {
+        return EmailCode.createEmailCode(this.email, this.code, this.createdAt, this.expiresAt);
+    }
+
+    public static EmailCode toEmailCode(EmailCodeEntity emailCodeEntity) {
+        return emailCodeEntity.to();
+    }
+
+    public void changeCode(String code) {
+        this.code = code;
+    }
 }

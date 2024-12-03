@@ -26,6 +26,7 @@ import postman.bottler.user.dto.request.ProfileImgRequestDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
 import postman.bottler.user.dto.response.ExistingUserResponseDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
+import postman.bottler.user.exception.EmailCodeException;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -139,7 +140,7 @@ public class UserController {
 
     @Operation(summary = "이메일 인증 코드 검사", description = "인증 코드를 검사합니다.")
     @PostMapping("/email/verify")
-    public ApiResponse<?> verifyEmail(@RequestBody AuthEmailRequestDTO authEmailRequestDTO) {
+    public ApiResponse<?> verifyEmail(@Valid @RequestBody AuthEmailRequestDTO authEmailRequestDTO) {
         userService.verifyCode(authEmailRequestDTO.email(), authEmailRequestDTO.code());
         return ApiResponse.onSuccess("이메일 인증을 성공했습니다.");
     }
@@ -153,6 +154,7 @@ public class UserController {
                             throw new PasswordException(error.getDefaultMessage());
                     case "nickname" -> throw new NicknameException(error.getDefaultMessage());
                     case "imageUrl" -> throw new ProfileImageException(error.getDefaultMessage());
+                    case "code" -> throw new EmailCodeException(error.getDefaultMessage());
                     default -> throw new IllegalArgumentException(
                             bindingResult.getAllErrors().get(0).getDefaultMessage());
                 }

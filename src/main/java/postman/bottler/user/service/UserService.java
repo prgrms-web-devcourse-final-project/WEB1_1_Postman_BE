@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.auth.JwtTokenProvider;
+import postman.bottler.user.domain.EmailCode;
 import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
@@ -19,6 +20,7 @@ import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.ExistingUserResponseDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
+import postman.bottler.user.exception.EmailCodeException;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -31,6 +33,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ProfileImageRepository profileImageRepository;
+    private final EmailCodeRepository emailCodeRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -150,10 +154,12 @@ public class UserService {
                 + "<body>"
                 + "<h1>BOTTLER 인증 코드: " + authCode + "</h1>"
                 + "<p>해당 코드를 홈페이지에 입력하세요.</p>"
+                + "<p>인증 코드 유효시간은 5분입니다.</p>"
                 + "</body>"
                 + "</html>";
         try {
             emailService.sendEmail(email, title, content);
+            emailCodeRepository.save(EmailCode.createEmailCode(email, authCode));
         } catch (RuntimeException | MessagingException e) {
             throw new EmailException("인증코드 요청에 실패했습니다.");
         }
@@ -170,7 +176,8 @@ public class UserService {
 
     @Transactional
     public void verifyCode(String email, String code) {
-
+        EmailCode emailCode = emailCodeRepository.findEmailCode(email, code);
+        emailCode.checkExpiration();
     }
 
     @Transactional
