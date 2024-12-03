@@ -20,6 +20,32 @@ spring:
       port: ${REDIS_PORT}
 
 fcm:
-  private-key: ${BOTTLER_FCM_BASE64}
+  private-key: bottler-fcm.json
 
+jwt:
+  secret: ${JWT_SECRET_KEY}  # JWT 비밀 키
+  access:
+    token:
+      expiration: 1800000  # 액세스 토큰 유효 시간 (30분)
+  #      expiration: 10000  # 액세스 토큰 유효 시간 (10초)
+  refresh:
+    token:
+      expiration: 604800000  # 리프레시 토큰 유효 시간 (7일)
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: ${EMAIL_USER_NAME}
+  password: ${EMAIL_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+        connectiontimeout: 5000
+        timeout: 5000
+        writetimeout: 5000
+  auth-code-expiration-millis: 1800000
 
