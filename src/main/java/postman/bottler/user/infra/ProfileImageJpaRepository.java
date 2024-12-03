@@ -7,6 +7,6 @@ import postman.bottler.user.infra.entity.ProfileImageEntity;
 public interface ProfileImageJpaRepository extends JpaRepository<ProfileImageEntity, Long> {
     boolean existsByImageUrl(String newProfileImage);
 
-    @Query("SELECT p FROM ProfileImageEntity p ORDER BY FUNCTION('RAND') LIMIT 1")
+    @Query("SELECT p.imageUrl FROM ProfileImageEntity p ORDER BY FUNCTION('RAND') LIMIT 1")
     String findRandomProfileImage();
 }
