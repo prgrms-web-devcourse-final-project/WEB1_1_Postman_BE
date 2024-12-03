@@ -1,5 +1,6 @@
 package postman.bottler.notification.domain;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.Builder;
@@ -21,12 +22,14 @@ public class Notifications {
         notifications.sort(Comparator.comparing(Notification::getCreatedAt).reversed());
     }
 
-    public void markAsRead() {
+    public Notifications markAsRead() {
+        List<Notification> changed = new ArrayList<>();
         for (Notification notification : notifications) {
             if (!notification.getIsRead()) {
-                notification.read();
+                changed.add(notification.read());
             }
         }
+        return new Notifications(changed);
     }
 
     public List<NotificationResponseDTO> createDTO() {
