@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.notification.domain.Notification;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.domain.Subscriptions;
@@ -20,7 +21,7 @@ public class NotificationService {
     private final PushNotificationProvider pushNotificationProvider;
 
     @Transactional
-    public NotificationResponseDTO sendNotification(String type, Long userId, Long letterId) {
+    public NotificationResponseDTO sendNotification(NotificationType type, Long userId, Long letterId) {
         Notification notification = Notification.create(type, userId, letterId);
         Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);
         NotificationResponseDTO result = NotificationResponseDTO.from(notificationRepository.save(notification));

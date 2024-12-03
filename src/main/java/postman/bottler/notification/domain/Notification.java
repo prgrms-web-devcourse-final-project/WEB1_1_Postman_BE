@@ -32,12 +32,11 @@ public class Notification {
         this.isRead = isRead;
     }
 
-    public static Notification create(String type, Long receiver, Long letterId) {
-        NotificationType notificationType = NotificationType.from(type);
-        if (notificationType.isLetterNotification()) {
-            return new LetterNotification(notificationType, receiver, letterId, false);
+    public static Notification create(NotificationType type, Long receiver, Long letterId) {
+        if (type.isLetterNotification()) {
+            return new LetterNotification(type, receiver, letterId, false);
         }
-        return new Notification(notificationType, receiver, false);
+        return new Notification(type, receiver, false);
     }
 
     public static Notification of(UUID id, NotificationType type, Long receiver,
