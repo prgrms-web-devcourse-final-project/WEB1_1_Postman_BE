@@ -25,29 +25,22 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO) {
-        Long userId = getCurrentUserId();
+    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO) {
-        Long userId = getCurrentUserId();
+    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO) {
-        Long userId = getCurrentUserId();
+    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional
     public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
-    }
-
-    private Long getCurrentUserId() {
-        return 1L; // TODO: 실제 인증 로직으로 대체
     }
 }

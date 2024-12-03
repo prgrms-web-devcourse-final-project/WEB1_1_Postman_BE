@@ -34,7 +34,6 @@ public class DeleteManagerService {
             Map<BoxType, List<Long>> letterBoxMap = groupedByTypeAndBox.get(LetterType.LETTER);
             if (letterBoxMap.containsKey(BoxType.SEND)) {
                 List<Long> letterIds = letterBoxMap.get(BoxType.SEND);
-                log.error(letterIds.toString());
                 letterService.deleteLetters(letterIds); // LetterService에서 삭제
                 letterBoxService.deleteByIdsAndType(letterIds, LetterType.LETTER, BoxType.UNKNOWN);
             }

@@ -25,12 +25,12 @@ public class ReplyLetterService {
     private final LetterBoxService letterBoxService;
 
     @Transactional
-    public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO) {
+    public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO,
+                                                    Long senderId) {
         ReceiverDTO receiverInfo = letterService.getReceiverInfoById(letterId);
         String title = generateReplyTitle(receiverInfo.title());
         Long receiverId = receiverInfo.receiverId();
 
-        Long senderId = getCurrentUserId();
         String userProfile = getCurrentUserProfile();
 
         ReplyLetter replyLetter = replyLetterRepository.save(
@@ -48,9 +48,8 @@ public class ReplyLetterService {
 
     @Transactional(readOnly = true)
     public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeadersById(
-            Long letterId, PageRequestDTO pageRequestDTO
+            Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
-        Long receiverId = getCurrentUserId();
         return replyLetterRepository.findAllByLetterId(letterId, receiverId, pageRequestDTO.toPageable())
                 .map(ReplyLetterHeadersResponseDTO::from);
     }
@@ -74,10 +73,6 @@ public class ReplyLetterService {
 
     private String generateReplyTitle(String title) {
         return "RE: [" + title + "]";
-    }
-
-    private Long getCurrentUserId() {
-        return 2L;
     }
 
     private String getCurrentUserProfile() {

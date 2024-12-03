@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.ReplyLetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
+import postman.bottler.user.auth.CustomUserDetails;
 
 @Slf4j
 @RestController
@@ -47,10 +49,12 @@ public class ReplyLetterController {
     public ApiResponse<ReplyLetterResponseDTO> createReply(
             @RequestBody @Valid ReplyLetterRequestDTO letterReplyRequestDTO,
             BindingResult bindingResult,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long letterId
     ) {
         validateReplyLetterRequest(bindingResult);
-        ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO);
+        ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO,
+                userDetails.getUserId());
         return ApiResponse.onCreateSuccess(result);
     }
 
@@ -62,11 +66,12 @@ public class ReplyLetterController {
     public ApiResponse<PageResponseDTO<ReplyLetterHeadersResponseDTO>> getReplyForLetter(
             @PathVariable Long letterId,
             @Valid PageRequestDTO pageRequestDTO,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
         Page<ReplyLetterHeadersResponseDTO> result =
-                letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO);
+                letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
