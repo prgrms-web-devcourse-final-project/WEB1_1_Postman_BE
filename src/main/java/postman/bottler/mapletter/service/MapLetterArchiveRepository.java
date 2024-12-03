@@ -1,16 +1,16 @@
 package postman.bottler.mapletter.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
-
-import java.util.List;
 
 @Repository
 public interface MapLetterArchiveRepository {
     MapLetterArchive save(MapLetterArchive archive);
 
-    List<FindAllArchiveLetters> findAllById(Long userId);
+    Page<FindAllArchiveLetters> findAllById(Long userId, Pageable pageable);
 
     MapLetterArchive findById(Long letterId);
 

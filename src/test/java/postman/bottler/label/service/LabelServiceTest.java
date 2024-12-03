@@ -17,7 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.label.domain.Label;
-import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.user.infra.UserJpaRepository;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,0 +1,117 @@
+name: Main Branch CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # 데이터베이스 환경변수 (RDS)
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      # Email 인증
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USER_NAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+      # JWT
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+
+      ## Redis 환경변수
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+      # FCM 환경변수
+      BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
+
+      # AWS 환경변수
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # ECR 환경변수
+      ECR_URI: ${{ secrets.ECR_URI }}
+
+      # S3 환경변수
+      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      BASE_URL: ${{ secrets.BASE_URL }}
+
+      # gpt 환경변수
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: JDK 17 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Gradle 의존성 캐싱
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/caches/build-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Gradle 권한 부여
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Gradle 테스트
+        run: ./gradlew clean build -x test
+
+      - name: 빌드 결과 확인
+        run: ls build/libs/
+
+      - name: Docker Hub 로그인
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Docker 이미지 빌드
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/bottler:${{ github.sha }} .
+
+      - name: Docker 이미지 푸시
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/bottler:${{ github.sha }}
+
+      - name: .env 파일 작성
+        run: |
+          mkdir -p docker-compose
+          echo "DB_URL=${{ secrets.DB_URL }}" >> docker-compose/.env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> docker-compose/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> docker-compose/.env
+          echo "EMAIL_USER_NAME=${{ secrets.EMAIL_USER_NAME }}" >> docker-compose/.env
+          echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> docker-compose/.env
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> docker-compose/.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker-compose/.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker-compose/.env
+          echo "BOTTLER_FCM_BASE64=${{ secrets.BOTTLER_FCM_BASE64 }}" >> docker-compose/.env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> docker-compose/.env
+          echo "BASE_URL=${{ secrets.BASE_URL }}" >> docker-compose/.env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> docker-compose/.env
+          echo "TAG=${{ github.sha }}" >> docker-compose/.env
+
+      - name: docker-compose.yml, .env 파일 EC2로 복사
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > bottler-keypair.pem
+          chmod 600 bottler-keypair.pem
+          scp -o StrictHostKeyChecking=no -i bottler-keypair.pem docker-compose/docker-compose.yml ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -i bottler-keypair.pem docker-compose/.env ubuntu@${{ secrets.EC2_PUBLIC_IP }}:~/docker-compose/.env
+
+      - name: Docker 이미지 Pull 및 배포
+        run: |
+          ssh -o StrictHostKeyChecking=no -i bottler-keypair.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
+          docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+          docker pull ${{ secrets.DOCKER_USERNAME }}/bottler:${{ github.sha }}
+          docker stop bottler || true
+          docker rm bottler || true
+          docker run -d --name bottler -p 80:8080 --env-file ~/docker-compose/.env ${{ secrets.DOCKER_USERNAME }}/bottler:${{ github.sha }}
+          EOF

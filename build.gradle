@@ -24,7 +24,8 @@ sonarqube {
         property "sonar.organization", "prgrms-web-devcourse-final-project"                 // SonarCloud 조직 이름
         property "sonar.host.url", "https://sonarcloud.io"                                 // SonarCloud URL
         property "sonar.login", System.getenv("SONAR_TOKEN")                                // 토큰은 환경 변수로 관리
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"  // JaCoCo 커버리지 경로
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+        // JaCoCo 커버리지 경로
     }
 }
 
@@ -60,10 +61,30 @@ dependencies {
     // Firebase Admin SDK
     implementation 'com.google.firebase:firebase-admin:9.2.0'
 
+    // Querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'com.h2database:h2'
 
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+    // email 인증
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 }
 
 tasks.named('test') {

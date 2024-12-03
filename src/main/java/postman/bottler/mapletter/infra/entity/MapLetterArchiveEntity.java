@@ -1,6 +1,12 @@
 package postman.bottler.mapletter.infra.entity;
 
-import jakarta.persistence.*;
+import com.google.firebase.database.annotations.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,14 +21,18 @@ public class MapLetterArchiveEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mapLetterArchiveId;
+    @NotNull
     private Long mapLetterId;
+    @NotNull
     private Long userId;
+    private LocalDateTime createdAt;
 
     @Builder
-    public MapLetterArchiveEntity(Long mapLetterArchiveId, Long mapLetterId, Long userId) {
+    public MapLetterArchiveEntity(Long mapLetterArchiveId, Long mapLetterId, Long userId, LocalDateTime createdAt) {
         this.mapLetterArchiveId = mapLetterArchiveId;
         this.mapLetterId = mapLetterId;
         this.userId = userId;
+        this.createdAt = createdAt;
     }
 
     public static MapLetterArchiveEntity from(MapLetterArchive mapLetterArchive) {
@@ -30,6 +40,7 @@ public class MapLetterArchiveEntity {
                 .mapLetterArchiveId(mapLetterArchive.getMapLetterArchiveId())
                 .mapLetterId(mapLetterArchive.getMapLetterId())
                 .userId(mapLetterArchive.getUserId())
+                .createdAt(mapLetterArchive.getCreatedAt())
                 .build();
     }
 
@@ -38,6 +49,7 @@ public class MapLetterArchiveEntity {
                 .mapLetterArchiveId(mapLetterArchiveEntity.getMapLetterArchiveId())
                 .mapLetterId(mapLetterArchiveEntity.getMapLetterId())
                 .userId(mapLetterArchiveEntity.getUserId())
+                .createdAt(mapLetterArchiveEntity.getCreatedAt())
                 .build();
     }
 }

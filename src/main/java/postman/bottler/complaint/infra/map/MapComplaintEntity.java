@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import postman.bottler.complaint.domain.MapComplaint;
 
 @Entity
@@ -31,7 +30,6 @@ public class MapComplaintEntity {
 
     private String description;
 
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     public static MapComplaintEntity from(MapComplaint complaint) {
@@ -40,10 +38,11 @@ public class MapComplaintEntity {
                 .letterId(complaint.getLetterId())
                 .reporterId(complaint.getReporterId())
                 .description(complaint.getDescription())
+                .createdAt(complaint.getCreatedAt())
                 .build();
     }
 
     public MapComplaint toDomain() {
-        return MapComplaint.of(id, letterId, reporterId, description);
+        return MapComplaint.of(id, letterId, reporterId, description, createdAt);
     }
 }
