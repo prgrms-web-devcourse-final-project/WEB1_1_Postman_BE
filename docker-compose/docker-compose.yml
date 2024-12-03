@@ -1,20 +1,8 @@
-version: '3.8'
-
 services:
   app:
-    image: ${ECR_URI}/bottler-backend:${TAG}
+    image: ${DOCKER_USERNAME}/bottler:${TAG}  # Docker Hub 이미지 사용
     container_name: app-server
     ports:
-      - "8080:8080"
-    environment:
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - AWS_REGION=${AWS_REGION}
-      - ECR_URI=${ECR_URI}
-      - BUCKET_NAME=${BUCKET_NAME}
-      - BASE_URL=${BASE_URL}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    restart: always
+      - "8080:8080"  # 컨테이너 포트를 8080으로 노출
+    env_file:        # 환경 변수 파일(.env) 참조
+      - .env

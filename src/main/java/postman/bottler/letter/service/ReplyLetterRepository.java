@@ -1,5 +1,6 @@
 package postman.bottler.letter.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,5 +15,7 @@ public interface ReplyLetterRepository {
 
     Optional<ReplyLetter> findById(Long replyLetterId);
 
-    void remove(Long replyLetterId);
+    void delete(Long replyLetterId);
+
+    void deleteByIds(List<Long> letterIds);
 }

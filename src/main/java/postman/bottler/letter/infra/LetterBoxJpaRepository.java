@@ -5,14 +5,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import postman.bottler.letter.infra.entity.LetterBoxEntity;
 import postman.bottler.letter.infra.entity.LetterEntity;
-import postman.bottler.letter.infra.entity.SavedLetterEntity;
 
-public interface SavedLetterJpaRepository extends JpaRepository<SavedLetterEntity, Long> {
+public interface LetterBoxJpaRepository extends JpaRepository<LetterBoxEntity, Long> {
 
     @Query("""
             SELECT l
-            FROM SavedLetterEntity s
+            FROM LetterBoxEntity s
             JOIN LetterEntity l ON s.letterId = l.id
             WHERE s.userId = :userId
             """)

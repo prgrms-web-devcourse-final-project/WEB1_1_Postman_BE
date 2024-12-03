@@ -1,10 +1,13 @@
 package postman.bottler.letter.exception;
 
+import static postman.bottler.global.response.code.ErrorStatus.INVALID_SORT_FIELD;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ACCESS_DENIED;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ALREADY_SAVED;
+import static postman.bottler.global.response.code.ErrorStatus.LETTER_DELETE_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_NOT_FOUND;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_UNKNOWN_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_VALIDATION_ERROR;
+import static postman.bottler.global.response.code.ErrorStatus.PAGINATION_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.REPLY_LETTER_VALIDATION_ERROR;
 
 import java.util.Map;
@@ -55,12 +58,14 @@ public class LetterExceptionHandler {
             BaseLetterValidationException e) {
         ErrorStatus status;
 
-        log.error("오류 들어옴");
-
         if (e instanceof InvalidLetterRequestException) {
             status = LETTER_VALIDATION_ERROR;
         } else if (e instanceof InvalidReplyLetterRequestException) {
             status = REPLY_LETTER_VALIDATION_ERROR;
+        } else if (e instanceof InvalidPageRequestException) {
+            status = PAGINATION_VALIDATION_ERROR;
+        } else if (e instanceof InvalidDeleteRequestException) {
+            status = LETTER_DELETE_VALIDATION_ERROR;
         } else {
             status = LETTER_UNKNOWN_VALIDATION_ERROR; // 기본 처리
         }
@@ -76,5 +81,12 @@ public class LetterExceptionHandler {
                                 e.getErrors()
                         )
                 );
+    }
+
+    @ExceptionHandler(InvalidSortFieldException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidSortFieldException(InvalidSortFieldException e) {
+        return ResponseEntity
+                .status(INVALID_SORT_FIELD.getHttpStatus())
+                .body(ApiResponse.onFailure(INVALID_SORT_FIELD.getCode(), e.getMessage(), null));
     }
 }

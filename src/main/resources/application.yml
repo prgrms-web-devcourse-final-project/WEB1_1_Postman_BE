@@ -14,6 +14,10 @@ spring:
         format_sql: true
         highlight_sql: true
     show-sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 fcm:
   private-key: bottler-fcm.json
@@ -44,3 +48,4 @@ mail:
         timeout: 5000
         writetimeout: 5000
   auth-code-expiration-millis: 1800000
+

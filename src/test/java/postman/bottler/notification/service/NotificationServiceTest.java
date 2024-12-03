@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
+import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
@@ -183,13 +185,18 @@ public class NotificationServiceTest {
         @DisplayName("사용자의 알림을 조회한다.")
         public void getNotifications() {
             // GIVEN
-            List<Notification> notReadNotification = List.of(Notification.create("NEW_LETTER", 1L, 1L),
-                    Notification.create("TARGET_LETTER", 1L, 1L), Notification.create("REPLY_LETTER", 1L, 1L),
-                    Notification.create("WARNING", 1L, null), Notification.create("BAN", 1L, null));
+            ArrayList<Notification> notifications = new ArrayList<>();
+            notifications.add(Notification.create("NEW_LETTER", 1L, 1L));
+            notifications.add(Notification.create("TARGET_LETTER", 1L, 1L));
+            notifications.add(Notification.create("REPLY_LETTER", 1L, 1L));
+            notifications.add(Notification.create("WARNING", 1L, null));
+            notifications.add(Notification.create("BAN", 1L, null));
+
+            Notifications notReadNotification = Notifications.from(notifications);
 
             when(notificationRepository.findByReceiver(any())).thenReturn(notReadNotification)
                     .thenAnswer(invocation -> {
-                        notReadNotification.forEach(Notification::read);
+                        notReadNotification.markAsRead();
                         return notReadNotification;
                     });
 

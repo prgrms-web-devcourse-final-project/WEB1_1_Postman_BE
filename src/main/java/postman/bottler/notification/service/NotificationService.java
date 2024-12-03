@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.notification.domain.Notification;
+import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
@@ -22,10 +23,11 @@ public class NotificationService {
     public NotificationResponseDTO sendNotification(String type, Long userId, Long letterId) {
         Notification notification = Notification.create(type, userId, letterId);
         Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);
+        NotificationResponseDTO result = NotificationResponseDTO.from(notificationRepository.save(notification));
         if (subscriptions.isPushEnabled()) {
             sendPushMessagesToUser(subscriptions, notification);
         }
-        return NotificationResponseDTO.from(notificationRepository.save(notification));
+        return result;
     }
 
     private void sendPushMessagesToUser(Subscriptions subscriptions, Notification notification) {
@@ -35,13 +37,10 @@ public class NotificationService {
 
     @Transactional
     public List<NotificationResponseDTO> getUserNotifications(Long userId) {
-        List<Notification> notifications = notificationRepository.findByReceiver(userId);
-        List<NotificationResponseDTO> result = notifications.stream()
-                .map(NotificationResponseDTO::from)
-                .toList();
-        notifications.stream()
-                .filter(notification -> !notification.getIsRead())
-                .forEach(Notification::read);
+        Notifications notifications = notificationRepository.findByReceiver(userId);
+        notifications.orderByCreatedAt();
+        List<NotificationResponseDTO> result = notifications.createDTO();
+        notifications.markAsRead();
         notificationRepository.updateNotifications(notifications);
         return result;
     }

@@ -23,8 +23,8 @@ public record LetterResponseDTO(
                 letter.getKeywords(),
                 letter.getFont(),
                 letter.getPaper(),
-                letter.getLabel(),
                 letter.getProfile(),
+                letter.getLabel(),
                 letter.getCreatedAt()
         );
     }

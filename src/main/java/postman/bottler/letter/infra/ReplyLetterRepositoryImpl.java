@@ -1,5 +1,6 @@
 package postman.bottler.letter.infra;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,12 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    public void remove(Long replyLetterId) {
+    public void delete(Long replyLetterId) {
         replyLetterJpaRepository.deleteById(replyLetterId);
+    }
+
+    @Override
+    public void deleteByIds(List<Long> letterIds) {
+        replyLetterJpaRepository.deleteByIds(letterIds);
     }
 }
