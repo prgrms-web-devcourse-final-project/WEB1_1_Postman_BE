@@ -48,7 +48,12 @@ public class Notification {
         return new Notification(id, type, receiver, createdAt, isRead);
     }
 
-    public void read() {
-        this.isRead = true;
+    public Boolean isLetterNotification() {
+        return type.isLetterNotification();
+    }
+
+    public Notification read() {
+        return Notification.of(id, type, receiver,
+                isLetterNotification() ? ((LetterNotification) this).getLetterId() : null, createdAt, true);
     }
 }

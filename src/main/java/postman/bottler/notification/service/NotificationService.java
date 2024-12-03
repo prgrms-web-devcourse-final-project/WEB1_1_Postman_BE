@@ -40,8 +40,8 @@ public class NotificationService {
         Notifications notifications = notificationRepository.findByReceiver(userId);
         notifications.orderByCreatedAt();
         List<NotificationResponseDTO> result = notifications.createDTO();
-        notifications.markAsRead();
-        notificationRepository.updateNotifications(notifications);
+        Notifications changed = notifications.markAsRead();
+        notificationRepository.updateNotifications(changed);
         return result;
     }
 }
