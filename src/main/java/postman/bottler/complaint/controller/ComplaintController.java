@@ -47,7 +47,7 @@ public class ComplaintController {
     }
 
     @Operation(summary = "지도 답장 편지 신고", description = "신고하는 편지 ID와 신고 사유를 등록합니다.")
-    @PostMapping("/map/{letterId}/reply/{replyLetterId}/complaint")
+    @PostMapping("/map/reply/{replyLetterId}/complaint")
     public ApiResponse<?> complainMapReplyLetter(@PathVariable Long replyLetterId,
                                                  @RequestBody ComplaintRequestDTO complaintRequest,
                                                  BindingResult bindingResult) {
@@ -60,7 +60,7 @@ public class ComplaintController {
     }
 
     @Operation(summary = "키워드 답장 편지 신고", description = "신고하는 편지 ID와 신고 사유를 등록합니다.")
-    @PostMapping("/letters/{letterId}/reply/{replyLetterId}/complaint")
+    @PostMapping("/letters/reply/{replyLetterId}/complaint")
     public ApiResponse<?> complainKeywordReplyLetter(@PathVariable Long replyLetterId,
                                                      @RequestBody ComplaintRequestDTO complaintRequest,
                                                      BindingResult bindingResult) {
