@@ -32,10 +32,11 @@ public class User {
         this.isBanned = isBanned;
     }
 
-    private User(String email, String password, String nickname) {
+    private User(String email, String password, String nickname, String imageUrl) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.imageUrl = imageUrl;
         this.role = Role.USER;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -47,8 +48,8 @@ public class User {
         return new User(userId, email, password, nickname, imageUrl, role, createdAt, updatedAt, isDeleted, isBanned);
     }
 
-    public static User createUser(String email, String password, String nickname) {
-        return new User(email, password, nickname);
+    public static User createUser(String email, String password, String nickname, String imageUrl) {
+        return new User(email, password, nickname, imageUrl);
     }
 
     public org.springframework.security.core.userdetails.User toUserDetails() {

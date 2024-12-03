@@ -46,7 +46,8 @@ public class UserService {
 
     @Transactional
     public void createUser(String email, String password, String nickname) {
-        User user = User.createUser(email, passwordEncoder.encode(password), nickname);
+        String profileImageUrl = profileImageRepository.findProfileImage();
+        User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         userRepository.save(user);
     }
 
