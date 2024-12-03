@@ -7,4 +7,7 @@ public record ReplyResponseDTO(
         String labelUrl,
         Long letterId
 ) {
+    public static ReplyResponseDTO from(ReplyType replyType, String labelUrl, Long letterId) {
+        return new ReplyResponseDTO(replyType, labelUrl, letterId);
+    }
 }

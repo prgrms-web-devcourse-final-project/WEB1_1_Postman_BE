@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import postman.bottler.reply.dto.LetterLogDTO;
+import postman.bottler.reply.dto.ReplyType;
+import postman.bottler.reply.dto.response.ReplyResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -15,12 +16,15 @@ public class ReplyService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    public List<LetterLogDTO> findRecentReplyLetters(Long userId){
+    public List<ReplyResponseDTO> findRecentReplyLetters(Long userId){
         String key="REPLY:"+userId;
-        List<Object> objects=redisTemplate.opsForList().range(key, 0,3);
-        assert objects != null;
-        return objects.stream()
-                .map(object -> objectMapper.convertValue(object, LetterLogDTO.class))
+        List<Object> values=redisTemplate.opsForList().range(key, 0,3);
+
+        return values.stream()
+                .map(value->{
+                    String[] parts=value.toString().split(":");
+                    return ReplyResponseDTO.from(ReplyType.valueOf(parts[0]), parts[2], Long.parseLong(parts[1]));
+                })
                 .collect(Collectors.toList());
     }
 }

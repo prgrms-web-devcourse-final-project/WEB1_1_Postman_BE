@@ -36,7 +36,7 @@ import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
-import postman.bottler.reply.dto.LetterLogDTO;
+import postman.bottler.reply.dto.ReplyType;
 
 @Service
 @RequiredArgsConstructor
@@ -321,7 +321,7 @@ public class MapLetterService {
     private void saveRecentReply(Long letterId, String labelUrl) {
         MapLetter sourceLetter = mapLetterRepository.findById(letterId);
         String key = "REPLY:" + sourceLetter.getCreateUserId();
-        LetterLogDTO value = LetterLogDTO.from("MAP" + letterId, labelUrl);
+        String value = ReplyType.MAP+":"+letterId+":"+labelUrl;
 
         Long size = redisTemplate.opsForList().size(key);
         if (size != null && size >= REDIS_SAVED_REPLY) {
@@ -333,8 +333,7 @@ public class MapLetterService {
                         sourceLetter.getCreateUserId(),
                         itemsToFetch);
                 for (ReplyMapLetter replyMapLetter : recentReplyLetters) {
-                    LetterLogDTO tempValue = LetterLogDTO.from("MAP" + replyMapLetter.getReplyLetterId(),
-                            replyMapLetter.getLabel());
+                    String tempValue = ReplyType.MAP+":"+replyMapLetter.getReplyLetterId()+":"+replyMapLetter.getLabel();
                     redisTemplate.opsForList().leftPush(key, tempValue);
                 }
             }

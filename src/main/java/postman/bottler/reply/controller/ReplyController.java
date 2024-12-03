@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.reply.dto.LetterLogDTO;
+import postman.bottler.reply.dto.response.ReplyResponseDTO;
 import postman.bottler.reply.service.ReplyService;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -20,7 +20,7 @@ public class ReplyController {
     private final ReplyService replyService;
 
     @GetMapping
-    public ApiResponse<List<LetterLogDTO>> findRecentReplyLetters(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ApiResponse<List<ReplyResponseDTO>> findRecentReplyLetters(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         return ApiResponse.onSuccess(replyService.findRecentReplyLetters(customUserDetails.getUserId()));
     }
 }
