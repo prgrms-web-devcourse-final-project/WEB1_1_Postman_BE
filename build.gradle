@@ -81,6 +81,10 @@ dependencies {
 
     // email 인증
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 }
 
 tasks.named('test') {

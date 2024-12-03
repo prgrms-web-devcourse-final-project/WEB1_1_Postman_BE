@@ -21,7 +21,7 @@ import postman.bottler.user.auth.JwtTokenProvider;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-public class SecurityConfig  {
+public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -34,16 +34,21 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers("/auth/signin").permitAll()
-                        .requestMatchers("/user").authenticated()
-                        //개발 중에는 일단 모두 허용
-                        .anyRequest().permitAll()
+                                .requestMatchers("/user").authenticated()
+                                //개발 중에는 일단 모두 허용
+                                .anyRequest().permitAll()
+//                        .requestMatchers("/swagger-ui/**").permitAll()
+//                        .requestMatchers("/swagger-ui.html").permitAll()
+//                        .requestMatchers("/swagger-ui/index.html").permitAll()
+//                        .requestMatchers("/v3/api-docs").permitAll()
+//                        .requestMatchers("/v3/api-docs/**").permitAll()
+//                        .requestMatchers("/v3/**").permitAll()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

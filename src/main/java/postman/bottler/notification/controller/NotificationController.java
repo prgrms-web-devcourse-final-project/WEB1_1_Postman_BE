@@ -1,5 +1,7 @@
 package postman.bottler.notification.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,12 @@ import postman.bottler.notification.service.SubscriptionService;
 @RestController
 @RequestMapping("/notification")
 @RequiredArgsConstructor
+@Tag(name = "알림 API", description = "로그인 사용자만 가능")
 public class NotificationController {
     private final NotificationService notificationService;
     private final SubscriptionService subscriptionService;
 
+    @Operation(summary = "알림 생성", description = "알림 유형, 알림 대상은 필수, 편지 관련 알림은 편지 ID를 등록합니다.")
     @PostMapping
     public ApiResponse<?> create(@Valid @RequestBody NotificationRequestDTO notificationRequestDTO,
                                  BindingResult bindingResult) {
@@ -42,6 +46,7 @@ public class NotificationController {
         return ApiResponse.onCreateSuccess(response);
     }
 
+    @Operation(summary = "알림 조회", description = "사용자의 알림을 조회합니다.")
     @GetMapping
     public ApiResponse<?> getNotifications(@RequestBody UserNotificationRequestDTO userNotificationRequestDTO) {
         // TODO 추후 JWT를 통해 사용자 획득
@@ -50,6 +55,7 @@ public class NotificationController {
         return ApiResponse.onSuccess(userNotifications);
     }
 
+    @Operation(summary = "알림 허용", description = "사용자의 기기 토큰을 등록합니다.")
     @PostMapping("/subscribe")
     public ApiResponse<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest) {
         // TODO 추후 JWT를 통해 사용자 획득
@@ -59,6 +65,7 @@ public class NotificationController {
         return ApiResponse.onCreateSuccess(response);
     }
 
+    @Operation(summary = "전체 알림 비허용", description = "사용자의 알림 기기를 모두 삭제합니다.")
     @DeleteMapping("/subscribe/all")
     public ApiResponse<?> unsubscribeAll(@RequestBody Map<String, Long> userId) {
         // TODO 추후 JWT를 통해 사용자 획득
@@ -66,6 +73,7 @@ public class NotificationController {
         return ApiResponse.onDeleteSuccess("삭제 성공");
     }
 
+    @Operation(summary = "기기 알림 비허용", description = "특정 토큰을 삭제합니다.")
     @DeleteMapping("/subscribe")
     public ApiResponse<?> unsubscribe(@RequestBody UnsubscriptionRequestDTO unsubscriptionRequest) {
         subscriptionService.unsubscribe(unsubscriptionRequest.token());

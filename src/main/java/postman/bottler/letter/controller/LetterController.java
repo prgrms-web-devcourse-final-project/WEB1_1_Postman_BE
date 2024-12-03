@@ -1,5 +1,7 @@
 package postman.bottler.letter.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +26,17 @@ import postman.bottler.letter.utiil.ValidationUtil;
 @RestController
 @RequestMapping("/letters")
 @RequiredArgsConstructor
+@Tag(name = "Letters", description = "키워드 편지 API")
 public class LetterController {
 
     private final LetterService letterService;
     private final DeleteManagerService deleteManagerService;
     private final ValidationUtil validationUtil;
 
+    @Operation(
+            summary = "키워드 편지 생성",
+            description = "새로운 키워드 편지를 생성합니다."
+    )
     @PostMapping
     public ApiResponse<LetterResponseDTO> createLetter(
             @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult
@@ -39,7 +46,11 @@ public class LetterController {
         return ApiResponse.onCreateSuccess(result);
     }
 
-    @DeleteMapping("/{letterId}")
+    @Operation(
+            summary = "키워드 편지 삭제",
+            description = "키워드 편지ID, 편지타입(LETTER, REPLY_LETTER), 송수신 타입(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
+    )
+    @DeleteMapping
     public ApiResponse<String> deleteLetter(
             @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
     ) {
@@ -47,6 +58,10 @@ public class LetterController {
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 
+    @Operation(
+            summary = "키워드 편지 상세 조회",
+            description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다."
+    )
     @GetMapping("/detail/{letterId}")
     public ApiResponse<LetterDetailResponseDTO> getLetter(@PathVariable Long letterId) {
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId);
