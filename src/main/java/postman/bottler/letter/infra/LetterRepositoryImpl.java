@@ -3,8 +3,6 @@ package postman.bottler.letter.infra;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.infra.entity.LetterEntity;
@@ -23,30 +21,9 @@ public class LetterRepositoryImpl implements LetterRepository {
     }
 
     @Override
-    public void delete(Long letterId) {
-        letterJpaRepository.deleteById(letterId);
-    }
-
-    @Override
     public Optional<Letter> findById(Long letterId) {
-        return letterJpaRepository.findById(letterId)
+        return letterJpaRepository.findActiveById(letterId)
                 .map(LetterEntity::toDomain);
-    }
-
-    @Override
-    public boolean existsById(Long letterId) {
-        return letterJpaRepository.existsById(letterId);
-    }
-
-    @Override
-    public Page<Letter> findAll(Long userId, Pageable pageable) {
-        return letterJpaRepository.findAllByUserId(userId, pageable)
-                .map(LetterEntity::toDomain);
-    }
-
-    @Override
-    public boolean existsByUserIdAndLetterId(Long userId, Long letterId) {
-        return letterJpaRepository.existsByUserIdAndId(userId, letterId);
     }
 
     @Override

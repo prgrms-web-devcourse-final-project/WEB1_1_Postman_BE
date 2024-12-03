@@ -40,19 +40,15 @@ public class LetterBoxEntity {
     private BoxType boxType;
 
     @Column(nullable = false)
-    private boolean isDeleted;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    private LetterBoxEntity(Long userId, Long letterId, LetterType letterType, BoxType boxType, boolean isDeleted,
+    private LetterBoxEntity(Long userId, Long letterId, LetterType letterType, BoxType boxType,
                             LocalDateTime createdAt) {
         this.userId = userId;
         this.letterId = letterId;
         this.letterType = letterType;
         this.boxType = boxType;
-        this.isDeleted = isDeleted;
         this.createdAt = createdAt;
     }
 
@@ -62,7 +58,6 @@ public class LetterBoxEntity {
                 .letterId(letterBox.getLetterId())
                 .letterType(letterBox.getLetterType())
                 .boxType(letterBox.getBoxType())
-                .isDeleted(letterBox.isDeleted())
                 .createdAt(letterBox.getCreatedAt())
                 .build();
     }
@@ -74,7 +69,6 @@ public class LetterBoxEntity {
                 .letterId(this.letterId)
                 .letterType(this.letterType)
                 .boxType(this.boxType)
-                .isDeleted(this.isDeleted)
                 .createdAt(this.createdAt)
                 .build();
     }

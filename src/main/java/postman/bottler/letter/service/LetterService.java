@@ -12,7 +12,6 @@ import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
-import postman.bottler.letter.exception.LetterAccessDeniedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
 @Service
@@ -52,12 +51,6 @@ public class LetterService {
     public ReceiverDTO getReceiverInfoById(Long letterId) {
         Letter letter = findLetter(letterId);
         return ReceiverDTO.from(letter);
-    }
-
-    private void validateLetterOwnership(Long userId, Long letterId) {
-        if (!letterRepository.existsByUserIdAndLetterId(userId, letterId)) {
-            throw new LetterAccessDeniedException("해당 편지의 작성자가 아닙니다.");
-        }
     }
 
     private Letter findLetter(Long letterId) {

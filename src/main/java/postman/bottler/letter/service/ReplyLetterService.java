@@ -62,11 +62,6 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public void deleteReplyLetter(Long replyLetterId) {
-        replyLetterRepository.delete(replyLetterId);
-    }
-
-    @Transactional
     public void deleteReplyLetters(List<Long> letterIds) {
         replyLetterRepository.deleteByIds(letterIds);
     }
