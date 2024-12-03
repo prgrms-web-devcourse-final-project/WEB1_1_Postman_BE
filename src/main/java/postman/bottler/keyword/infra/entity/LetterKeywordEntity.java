@@ -7,7 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import postman.bottler.keyword.domain.LetterKeyword;
 
 @Entity
 @Table(name = "letter_keyword")
@@ -23,4 +25,17 @@ public class LetterKeywordEntity {
 
     @Column(nullable = false)
     private String keyword;
+
+    @Builder
+    public LetterKeywordEntity(Long letterId, String keyword) {
+        this.letterId = letterId;
+        this.keyword = keyword;
+    }
+
+    public static LetterKeywordEntity from(LetterKeyword letterKeyword) {
+        return LetterKeywordEntity.builder()
+                .letterId(letterKeyword.getLetterId())
+                .keyword(letterKeyword.getKeyword())
+                .build();
+    }
 }

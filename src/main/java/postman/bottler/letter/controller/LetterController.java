@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.keyword.service.LetterKeywordService;
+import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
@@ -33,6 +35,7 @@ public class LetterController {
 
     private final LetterService letterService;
     private final DeleteManagerService deleteManagerService;
+    private final LetterKeywordService letterKeywordService;
     private final ValidationUtil validationUtil;
 
     @Operation(
@@ -45,8 +48,9 @@ public class LetterController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateLetterRequest(bindingResult);
-        LetterResponseDTO result = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
-        return ApiResponse.onCreateSuccess(result);
+        Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
+        letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
+        return ApiResponse.onCreateSuccess(LetterResponseDTO.from(letter, letterRequestDTO.keywords()));
     }
 
     @Operation(

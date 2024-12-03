@@ -11,7 +11,6 @@ import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.LetterAccessDeniedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
@@ -23,14 +22,14 @@ public class LetterService {
     private final LetterBoxService letterBoxService;
 
     @Transactional
-    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
+    public Letter createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
         String userProfile = "profile url";
 
         Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
         letterBoxService.saveLetter(
                 LetterBoxDTO.of(userId, letter.getId(), LetterType.LETTER, BoxType.SEND, letter.getCreatedAt())
         );
-        return LetterResponseDTO.from(letter);
+        return letter;
     }
 
     @Transactional
