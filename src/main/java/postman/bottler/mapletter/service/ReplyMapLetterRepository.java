@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
+import postman.bottler.mapletter.dto.ReplyProjectDTO;
 
 @Repository
 public interface ReplyMapLetterRepository {
@@ -26,4 +27,6 @@ public interface ReplyMapLetterRepository {
     Page<ReplyMapLetter> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
 
     List<ReplyMapLetter> findRecentReplyByUserId(Long userId, long itemsToFetch);
+
+    List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
 }

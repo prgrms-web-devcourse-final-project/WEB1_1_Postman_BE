@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
+import postman.bottler.mapletter.dto.ReplyProjectDTO;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 import postman.bottler.mapletter.service.ReplyMapLetterRepository;
@@ -80,6 +81,11 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
         List<ReplyMapLetterEntity> replyLetters = replyMapLetterJpaRepository.findRecentReplyByUserId(userId,
                 PageRequest.of(0, (int) itemsToFetch));
         return replyLetters.stream().map(ReplyMapLetterEntity::toDomain).toList();
+    }
+
+    @Override
+    public List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize) {
+        return replyMapLetterJpaRepository.findRecentMapKeywordReplyByUserId(userId, fetchItemSize);
     }
 
 }

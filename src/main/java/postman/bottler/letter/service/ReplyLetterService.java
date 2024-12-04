@@ -99,17 +99,6 @@ public class ReplyLetterService {
         Long size = redisTemplate.opsForList().size(key);
         if (size != null && size >= REDIS_SAVED_REPLY) {
             redisTemplate.opsForList().rightPop(key);
-        } else if (size == null || size <= 0) {
-            Long itemsToFetch = REDIS_SAVED_REPLY - size;
-            if (itemsToFetch > 0) {
-                List<ReplyLetter> recentReplyLetters = replyLetterRepository.findAllByReceiverId(
-                        sourceLetterCreateUserId, PageRequest.of(0, itemsToFetch.intValue()));
-                for (ReplyLetter replyLetter : recentReplyLetters) {
-                    String tempValue =
-                            ReplyType.KEYWORD + ":" + replyLetter.getId() + ":" + replyLetter.getLabel();
-                    redisTemplate.opsForList().leftPush(key, tempValue);
-                }
-            }
         }
 
         if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {

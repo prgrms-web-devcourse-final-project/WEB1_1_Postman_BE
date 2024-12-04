@@ -3,6 +3,8 @@ package postman.bottler.mapletter.service;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
+import postman.bottler.mapletter.dto.ReplyProjectDTO;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
@@ -328,17 +331,6 @@ public class MapLetterService {
         Long size = redisTemplate.opsForList().size(key);
         if (size != null && size >= REDIS_SAVED_REPLY) {
             redisTemplate.opsForList().rightPop(key);
-        } else if (size == null || size <= 0) {
-            Long itemsToFetch = REDIS_SAVED_REPLY - size;
-            if (itemsToFetch > 0) {
-                List<ReplyMapLetter> recentReplyLetters = replyMapLetterRepository.findRecentReplyByUserId(
-                        sourceLetter.getCreateUserId(),
-                        itemsToFetch);
-                for (ReplyMapLetter replyMapLetter : recentReplyLetters) {
-                    String tempValue = ReplyType.MAP+":"+replyMapLetter.getReplyLetterId()+":"+replyMapLetter.getLabel();
-                    redisTemplate.opsForList().leftPush(key, tempValue);
-                }
-            }
         }
 
         if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
@@ -352,5 +344,20 @@ public class MapLetterService {
         String value = ReplyType.MAP+":"+letterId+":"+labelUrl;
 
         redisTemplate.opsForList().remove(key, 1, value);
+    }
+
+    public void fetchRecentReply(Long userId, int fetchItemSize) {
+        List<ReplyProjectDTO> recentMapKeywordReplyByUserId = replyMapLetterRepository.findRecentMapKeywordReplyByUserId(
+                userId, fetchItemSize);
+
+        String key="REPLY:"+userId;
+
+        List<ReplyProjectDTO> reversedList = new ArrayList<>(recentMapKeywordReplyByUserId);
+        Collections.reverse(reversedList);
+
+        for (ReplyProjectDTO replyLetter : reversedList) {
+            String tempValue = replyLetter.getType()+":"+replyLetter.getId()+":"+replyLetter.getLabel();
+            redisTemplate.opsForList().leftPush(key, tempValue);
+        }
     }
 }
