@@ -15,11 +15,13 @@ public class LetterKeyword {
     private Long id;
     private Long letterId;
     private String keyword;
+    private boolean isDeleted;
 
     public static LetterKeyword from(Long letterId, String keyword) {
         return LetterKeyword.builder()
                 .letterId(letterId)
                 .keyword(keyword)
+                .isDeleted(false)
                 .build();
     }
 }

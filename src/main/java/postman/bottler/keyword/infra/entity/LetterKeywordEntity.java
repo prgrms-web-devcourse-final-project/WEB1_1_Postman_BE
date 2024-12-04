@@ -26,16 +26,21 @@ public class LetterKeywordEntity {
     @Column(nullable = false)
     private String keyword;
 
+    @Column(nullable = false)
+    private boolean isDeleted;
+
     @Builder
-    public LetterKeywordEntity(Long letterId, String keyword) {
+    public LetterKeywordEntity(Long letterId, String keyword, boolean isDeleted) {
         this.letterId = letterId;
         this.keyword = keyword;
+        this.isDeleted = false;
     }
 
     public static LetterKeywordEntity from(LetterKeyword letterKeyword) {
         return LetterKeywordEntity.builder()
                 .letterId(letterKeyword.getLetterId())
                 .keyword(letterKeyword.getKeyword())
+                .isDeleted(letterKeyword.isDeleted())
                 .build();
     }
 
@@ -44,6 +49,7 @@ public class LetterKeywordEntity {
                 .id(this.id)
                 .letterId(this.letterId)
                 .keyword(this.keyword)
+                .isDeleted(this.isDeleted)
                 .build();
     }
 }

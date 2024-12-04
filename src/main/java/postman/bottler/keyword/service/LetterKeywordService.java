@@ -28,4 +28,9 @@ public class LetterKeywordService {
         return letterKeywords.stream()
                 .map(LetterKeyword::getKeyword).toList();
     }
+
+    @Transactional
+    public void markKeywordsAsDeleted(List<Long> letterIds) {
+        letterKeywordRepository.markKeywordsAsDeleted(letterIds);
+    }
 }
