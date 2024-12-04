@@ -40,6 +40,11 @@ jobs:
       # gpt 환경변수
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
+      # Kakao 환경변수
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+      KAKAO_REDIRECT_URL: ${{ secrets.KAKAO_REDIRECT_URL }}
+
     steps:
       - name: 코드 가져오기
         uses: actions/checkout@v4

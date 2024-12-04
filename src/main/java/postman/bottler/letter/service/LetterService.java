@@ -53,12 +53,6 @@ public class LetterService {
         return ReceiverDTO.from(letter);
     }
 
-    private void validateLetterOwnership(Long userId, Long letterId) {
-        if (!letterRepository.existsByUserIdAndLetterId(userId, letterId)) {
-            throw new LetterAccessDeniedException("해당 편지의 작성자가 아닙니다.");
-        }
-    }
-
     private Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));

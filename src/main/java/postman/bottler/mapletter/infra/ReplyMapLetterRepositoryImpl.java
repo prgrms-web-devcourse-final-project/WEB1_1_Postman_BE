@@ -1,12 +1,14 @@
 package postman.bottler.mapletter.infra;
 
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
+import postman.bottler.mapletter.dto.ReplyProjectDTO;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 import postman.bottler.mapletter.service.ReplyMapLetterRepository;
@@ -72,6 +74,11 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
     public Page<ReplyMapLetter> findAllSentReplyByUserId(Long userId, PageRequest pageRequest) {
         Page<ReplyMapLetterEntity> letters = replyMapLetterJpaRepository.findAllSentReplyByUserId(userId, pageRequest);
         return letters.map(ReplyMapLetterEntity::toDomain);
+    }
+
+    @Override
+    public List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize) {
+        return replyMapLetterJpaRepository.findRecentMapKeywordReplyByUserId(userId, fetchItemSize);
     }
 
 }
