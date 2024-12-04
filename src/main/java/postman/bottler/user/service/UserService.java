@@ -3,7 +3,6 @@ package postman.bottler.user.service;
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -72,16 +71,7 @@ public class UserService {
     @Transactional
     public SignInResponseDTO signin(String email, String password) {
         try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(email, password);
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String accessToken = jwtTokenProvider.createToken(authentication);
-            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-
-            refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));
-
-            return new SignInResponseDTO(accessToken, refreshToken);
+            return authenticateAndGenerateTokens(email, password);
         } catch (BadCredentialsException e) {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
@@ -199,16 +189,19 @@ public class UserService {
             User user = User.createKakaoUser(kakaoId, nickname, profileImageUrl, passwordEncoder.encode(kakaoId));
             userRepository.save(user);
         }
+        return authenticateAndGenerateTokens(kakaoId, kakaoId);
+    }
 
+    private SignInResponseDTO authenticateAndGenerateTokens(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(kakaoId, kakaoId);
+                new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken = jwtTokenProvider.createToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-        refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(kakaoId, refreshToken));
+        refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));
 
         return new SignInResponseDTO(accessToken, refreshToken);
     }
