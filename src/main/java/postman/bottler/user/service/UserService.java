@@ -244,7 +244,7 @@ public class UserService {
     }
 
     //전체 유저 아이디 조회
-    public List<Long> getAllUserId() {
+    public List<Long> getAllUserIds() {
         List<User> users = userRepository.findAllUserId();
         return users.stream()
                 .map(User::getUserId)
