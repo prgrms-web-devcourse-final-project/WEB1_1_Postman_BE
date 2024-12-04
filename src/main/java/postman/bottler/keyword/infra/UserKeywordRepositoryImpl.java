@@ -11,26 +11,25 @@ import postman.bottler.keyword.service.UserKeywordRepository;
 @RequiredArgsConstructor
 public class UserKeywordRepositoryImpl implements UserKeywordRepository {
 
-    private final UserKeywordJpaRepository userKeywordJpaRepository;
+    private final UserKeywordJpaRepository jpaRepository;
+    private final UserKeywordJdbcRepository jdbcRepository;
 
     @Override
     public List<UserKeyword> findAllByUserId(Long userId) {
-        List<UserKeywordEntity> userKeywordEntities = userKeywordJpaRepository.findAllByUserId(userId);
+        List<UserKeywordEntity> userKeywordEntities = jpaRepository.findAllByUserId(userId);
         return userKeywordEntities.stream()
                 .map(UserKeywordEntity::toDomain)
                 .toList();
     }
 
     @Override
-    public void saveAll(List<UserKeyword> userKeywords) {
-        List<UserKeywordEntity> userKeywordEntities = userKeywords.stream()
-                .map(UserKeywordEntity::from)
-                .toList();
-        userKeywordJpaRepository.saveAll(userKeywordEntities);
+    public void replaceAllByUserId(List<UserKeyword> userKeywords, Long userId) {
+        jdbcRepository.deleteAllByUserId(userId);
+        jdbcRepository.batchInsertKeywords(userKeywords);
     }
 
     @Override
-    public void deleteAllByUserId(Long userId) {
-        userKeywordJpaRepository.deleteAllByUserId(userId);
+    public List<String> findKeywordsByUserId(Long userId) {
+        return jpaRepository.findUserKeywordEntitiesByUserId(userId);
     }
 }

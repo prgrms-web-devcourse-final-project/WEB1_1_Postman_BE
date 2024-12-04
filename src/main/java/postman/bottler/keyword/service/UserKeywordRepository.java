@@ -6,7 +6,7 @@ import postman.bottler.keyword.domain.UserKeyword;
 public interface UserKeywordRepository {
     List<UserKeyword> findAllByUserId(Long userId);
 
-    void saveAll(List<UserKeyword> userKeywords);
+    void replaceAllByUserId(List<UserKeyword> userKeywords, Long userId);
 
-    void deleteAllByUserId(Long userId);
+    List<String> findKeywordsByUserId(Long userId);
 }

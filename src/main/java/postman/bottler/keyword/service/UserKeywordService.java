@@ -15,14 +15,18 @@ public class UserKeywordService {
     private final UserKeywordRepository userKeywordRepository;
 
     @Transactional(readOnly = true)
-    public UserKeywordResponseDTO getKeywords(Long userId) {
+    public UserKeywordResponseDTO getUserKeywords(Long userId) {
         List<UserKeyword> userKeywords = userKeywordRepository.findAllByUserId(userId);
         return UserKeywordResponseDTO.from(userKeywords);
     }
 
     @Transactional
     public void createKeywords(UserKeywordRequestDTO userKeywordRequestDTO, Long userId) {
-        userKeywordRepository.deleteAllByUserId(userId);
-        userKeywordRepository.saveAll(userKeywordRequestDTO.toDomain(userId));
+        userKeywordRepository.replaceAllByUserId(userKeywordRequestDTO.toDomain(userId), userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getKeywordsByUserId(Long userId) {
+        return userKeywordRepository.findKeywordsByUserId(userId);
     }
 }
