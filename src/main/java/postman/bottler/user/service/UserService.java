@@ -37,6 +37,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final ProfileImageRepository profileImageRepository;
     private final EmailCodeRepository emailCodeRepository;
+    private final BanService banService;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -237,7 +238,9 @@ public class UserService {
     //유저 경고 횟수 증가
     public void updateWarningCount(Long userId) {
         User user = userRepository.findById(userId);
-        user.updateWarningCount();
+        if (user.updateWarningCount()) {
+            banService.banUser(user);
+        }
     }
 
     //전체 유저 아이디 조회

@@ -15,4 +15,5 @@ public interface UserRepository {
     User findById(Long userId);
     boolean existsByEmailAndProvider(String kakaoId);
     List<User> findAllUserId();
+    void update(User user);
 }

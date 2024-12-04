@@ -76,17 +76,21 @@ public class User {
         return new User(email, nickname, imageUrl, password, Provider.KAKAO);
     }
 
-    public void updateWarningCount() {
-        if (this.warningCount >= MAX_WARNING_COUNT) { //정지
-            this.role = Role.BAN_USER;
+    public boolean updateWarningCount() {
+        if (this.warningCount >= MAX_WARNING_COUNT) {
             this.updatedAt = LocalDateTime.now();
             this.warningCount = 0;
-        } else {
-            this.warningCount++;
+            return true;
         }
+        this.warningCount++;
+        return false;
     }
 
     public boolean isBanned() {
         return this.role == Role.BAN_USER;
+    }
+
+    public void banned() {
+        this.role = Role.BAN_USER;
     }
 }
