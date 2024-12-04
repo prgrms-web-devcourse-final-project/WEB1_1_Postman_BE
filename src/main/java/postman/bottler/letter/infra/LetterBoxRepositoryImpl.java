@@ -96,7 +96,6 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                 .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
                         .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
                 .where(letterBox.userId.eq(userId)
-                        .and(letterBox.isDeleted.isFalse())
                         .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
                 .orderBy(letterBox.createdAt.desc())
                 .offset(pageable.getOffset())
@@ -110,7 +109,6 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                 .select(letterBox.id)
                 .from(letterBox)
                 .where(letterBox.userId.eq(userId)
-                        .and(letterBox.isDeleted.isFalse())
                         .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
                 .fetch()
                 .size();
