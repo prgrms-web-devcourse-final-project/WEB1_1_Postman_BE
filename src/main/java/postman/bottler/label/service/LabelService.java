@@ -1,7 +1,5 @@
 package postman.bottler.label.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,14 +9,10 @@ import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.label.exception.DuplicateLabelException;
 import postman.bottler.label.exception.FirstComeFirstServedLabelException;
 import postman.bottler.user.domain.User;
-import postman.bottler.user.infra.entity.UserEntity;
 import postman.bottler.user.service.UserService;
 
 @Service
 public class LabelService {
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final LabelRepository labelRepository;
     private final UserService userService;
 
