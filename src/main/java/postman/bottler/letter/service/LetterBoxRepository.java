@@ -18,4 +18,6 @@ public interface LetterBoxRepository {
     Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
 
     void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType);
+
+    List<Long> getReceivedLettersById(Long userId);
 }
