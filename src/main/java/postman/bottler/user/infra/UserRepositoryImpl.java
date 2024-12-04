@@ -2,6 +2,7 @@ package postman.bottler.user.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.TokenException;
@@ -68,5 +69,10 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity userEntity = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new EmailException("유저를 찾을 수 없습니다. " + userId));
         return UserEntity.toUser(userEntity);
+    }
+
+    @Override
+    public boolean existsByEmailAndProvider(String kakaoId) {
+        return userJpaRepository.existsByEmailAndProvider(kakaoId, Provider.KAKAO);
     }
 }
