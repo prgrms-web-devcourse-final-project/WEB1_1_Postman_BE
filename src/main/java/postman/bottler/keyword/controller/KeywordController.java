@@ -1,5 +1,6 @@
 package postman.bottler.keyword.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,10 @@ public class KeywordController {
     private final UserKeywordService userKeywordService;
     private final KeywordService keywordService;
 
+    @Operation(
+            summary = "유저 키워드 목록 조회",
+            description = "유저가 설정한 키워드 목록을 조회합니다."
+    )
     @GetMapping
     public ApiResponse<UserKeywordResponseDTO> getKeywords(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -31,6 +36,10 @@ public class KeywordController {
         return ApiResponse.onSuccess(result);
     }
 
+    @Operation(
+            summary = "유저 키워드 등록",
+            description = "유저가 설정한 키워드로 변경합니다."
+    )
     @PostMapping
     public ApiResponse<String> createKeywords(
             @RequestBody UserKeywordRequestDTO userKeywordRequestDTO,
@@ -40,6 +49,10 @@ public class KeywordController {
         return ApiResponse.onSuccess("사용자 키워드를 생성하였습니다.");
     }
 
+    @Operation(
+            summary = "전체 키워드 조회",
+            description = "카테고리별로 등록된 키워드 목록을 조회합니다."
+    )
     @GetMapping("/list")
     public ApiResponse<KeywordResponseDTO> getKeywordList() {
         KeywordResponseDTO result = keywordService.getKeywords();
