@@ -14,7 +14,6 @@ import postman.bottler.reply.dto.response.ReplyResponseDTO;
 public class ReplyService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ObjectMapper objectMapper;
 
     public List<ReplyResponseDTO> findRecentReplyLetters(Long userId){
         String key="REPLY:"+userId;

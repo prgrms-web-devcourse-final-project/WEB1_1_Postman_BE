@@ -17,8 +17,6 @@ import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
-import postman.bottler.mapletter.domain.MapLetter;
-import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.reply.dto.ReplyType;
 
 @Service
