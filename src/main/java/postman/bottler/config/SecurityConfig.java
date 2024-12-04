@@ -40,8 +40,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/signin").permitAll()
-                                .requestMatchers("/user").authenticated()
+                        .requestMatchers("/oauth/kakao").permitAll()
+//                                .requestMatchers("/user").authenticated()
                                 //개발 중에는 일단 모두 허용
                                 .anyRequest().permitAll()
 //                        .requestMatchers("/swagger-ui/**").permitAll()

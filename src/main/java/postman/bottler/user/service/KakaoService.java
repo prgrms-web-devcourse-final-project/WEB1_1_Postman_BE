@@ -33,6 +33,12 @@ public class KakaoService {
     @Value("${kakao.redirect.url}")
     private String KAKAO_REDIRECT_URL;
 
+    public String getRequestURL() {
+        return "https://kauth.kakao.com/oauth/authorize?response_type=code"
+                + "&client_id=" + KAKAO_CLIENT_ID
+                + "&redirect_uri=" + KAKAO_REDIRECT_URL;
+    }
+
 
     public String getKakaoAccessToken(String code) {
         HttpHeaders headers = new HttpHeaders();
