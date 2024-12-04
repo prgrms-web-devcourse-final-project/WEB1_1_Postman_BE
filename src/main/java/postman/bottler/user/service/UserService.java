@@ -238,7 +238,8 @@ public class UserService {
     //유저 경고 횟수 증가
     public void updateWarningCount(Long userId) {
         User user = userRepository.findById(userId);
-        if (user.updateWarningCount()) {
+        user.updateWarningCount();
+        if (user.checkBan()) {
             banService.banUser(user);
         }
     }

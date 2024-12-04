@@ -76,13 +76,17 @@ public class User {
         return new User(email, nickname, imageUrl, password, Provider.KAKAO);
     }
 
-    public boolean updateWarningCount() {
+    public void updateWarningCount() {
+        this.warningCount++;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean checkBan() {
         if (this.warningCount >= MAX_WARNING_COUNT) {
-            this.updatedAt = LocalDateTime.now();
             this.warningCount = 0;
+            this.updatedAt = LocalDateTime.now();
             return true;
         }
-        this.warningCount++;
         return false;
     }
 
