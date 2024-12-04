@@ -20,7 +20,6 @@ import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterService;
@@ -43,14 +42,14 @@ public class LetterController {
             description = "새로운 키워드 편지를 생성합니다."
     )
     @PostMapping
-    public ApiResponse<LetterResponseDTO> createLetter(
+    public ApiResponse<String> createLetter(
             @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateLetterRequest(bindingResult);
         Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
         letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
-        return ApiResponse.onCreateSuccess(LetterResponseDTO.from(letter, letterRequestDTO.keywords()));
+        return ApiResponse.onCreateSuccess("키워드 편지 생성");
     }
 
     @Operation(
@@ -73,7 +72,8 @@ public class LetterController {
     public ApiResponse<LetterDetailResponseDTO> getLetter(
             @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, userDetails.getUserId());
+        List<String> keywords = letterKeywordService.getKeywords(letterId);
+        LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, keywords, userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 

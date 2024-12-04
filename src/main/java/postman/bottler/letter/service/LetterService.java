@@ -38,9 +38,9 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public LetterDetailResponseDTO getLetterDetail(Long letterId, Long userId) {
+    public LetterDetailResponseDTO getLetterDetail(Long letterId, List<String> keywords, Long userId) {
         Letter letter = findLetter(letterId);
-        return LetterDetailResponseDTO.from(letter, userId);
+        return LetterDetailResponseDTO.from(letter, keywords, userId);
     }
 
     public void blockLetter(Long letterId) {

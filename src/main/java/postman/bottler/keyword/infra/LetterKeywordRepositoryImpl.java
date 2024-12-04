@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.keyword.infra.entity.LetterKeywordEntity;
+import postman.bottler.keyword.infra.entity.QLetterKeywordEntity;
 import postman.bottler.keyword.service.LetterKeywordRepository;
 
 @Repository
@@ -25,5 +26,19 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
         }
         entityManager.flush();
         entityManager.clear();
+    }
+
+    @Override
+    public List<LetterKeyword> getKeywordsByLetterId(Long letterId) {
+        QLetterKeywordEntity letterKeywordEntity = QLetterKeywordEntity.letterKeywordEntity;
+
+        List<LetterKeywordEntity> letterKeywordEntities = queryFactory
+                .selectFrom(letterKeywordEntity)
+                .where(letterKeywordEntity.letterId.eq(letterId))
+                .fetch();
+
+        return letterKeywordEntities.stream()
+                .map(LetterKeywordEntity::toDomain)
+                .toList();
     }
 }
