@@ -3,13 +3,18 @@ package postman.bottler.user.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import postman.bottler.user.domain.Ban;
+import postman.bottler.user.domain.Role;
+import postman.bottler.user.domain.User;
 
+@Service
 @RequiredArgsConstructor
 public class BanService {
     private static final Long BAN_DAYS = 7L;
 
     private final BanRepository banRepository;
+    private final UserRepository userRepository;
 
     public void unbanExpiredUsers() {
         List<Ban> unbanned = banRepository.findUnbanned(LocalDateTime.now());
@@ -23,19 +28,16 @@ public class BanService {
         banRepository.deleteBans(unbanned);
     }
 
-    public void banUser(Long userId) {
-        /** TODO 유저 정지
-         * User user = userRepository.findById(userId);
-         * if (user.isBanned()) {
-         *     Ban ban = banRepository.findById(userId).orElseThrow()
-         *     ban.extendBanDuration(BAN_DAYS);
-         *     banRepository.update(ban);
-         *     return;
-         * }
-         * Ban ban = Ban.create(userId, BAN_DAYS);
-         * user.banned();
-         * banRepository.save(ban);
-         * userRepository.update(user);
-         */
+    public void banUser(User user) {
+//        if (user.isBanned()) {
+//            Ban ban = banRepository.findByUserId(userId).orElseThrow();
+//            ban.extendBanDuration(BAN_DAYS);
+//            banRepository.updateBan(ban);
+//            return;
+//        }
+//        Ban ban = Ban.create(userId, BAN_DAYS);
+//        user.banned();
+//        banRepository.save(ban);
+//        userRepository.update(user);
     }
 }

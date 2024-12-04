@@ -2,6 +2,7 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.auth.JwtTokenProvider;
+import postman.bottler.user.domain.EmailCode;
+import postman.bottler.user.domain.EmailForm;
 import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
@@ -31,6 +34,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ProfileImageRepository profileImageRepository;
+    private final EmailCodeRepository emailCodeRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -42,7 +47,8 @@ public class UserService {
 
     @Transactional
     public void createUser(String email, String password, String nickname) {
-        User user = User.createUser(email, passwordEncoder.encode(password), nickname);
+        String profileImageUrl = profileImageRepository.findProfileImage();
+        User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         userRepository.save(user);
     }
 
@@ -109,6 +115,9 @@ public class UserService {
 
     @Transactional
     public void updateNickname(String nickname, String email) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new NicknameException("닉네임이 중복되었습니다.");
+        }
         User user = userRepository.findByEmail(email);
         userRepository.updateNickname(user.getUserId(), nickname);
     }
@@ -145,15 +154,14 @@ public class UserService {
     @Transactional
     public void sendCodeToEmail(String email) {
         String authCode = createCode();
-        String title = "BOTTLER 이메일 인증 번호";
-        String content = "<html>"
-                + "<body>"
-                + "<h1>BOTTLER 인증 코드: " + authCode + "</h1>"
-                + "<p>해당 코드를 홈페이지에 입력하세요.</p>"
-                + "</body>"
-                + "</html>";
+        EmailForm emailForm = EmailForm.EMAIL_AUTH;
+
+        String title = emailForm.getTitle();
+        String content = emailForm.getContent(authCode);
+
         try {
             emailService.sendEmail(email, title, content);
+            emailCodeRepository.save(EmailCode.createEmailCode(email, authCode));
         } catch (RuntimeException | MessagingException e) {
             throw new EmailException("인증코드 요청에 실패했습니다.");
         }
@@ -170,11 +178,62 @@ public class UserService {
 
     @Transactional
     public void verifyCode(String email, String code) {
-
+        EmailCode emailCode = emailCodeRepository.findEmailCode(email, code);
+        emailCode.checkExpiration();
     }
 
     @Transactional
     public User findById(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    @Transactional
+    public SignInResponseDTO kakaoSignin(String kakaoId, String nickname) {
+        if (!userRepository.existsByEmailAndProvider(kakaoId)) {
+            nickname = generateUniqueNickname(nickname);
+            String profileImageUrl = profileImageRepository.findProfileImage();
+            User user = User.createKakaoUser(kakaoId, nickname, profileImageUrl, passwordEncoder.encode(kakaoId));
+            userRepository.save(user);
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(kakaoId, kakaoId);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String accessToken = jwtTokenProvider.createToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+
+        refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(kakaoId, refreshToken));
+
+        return new SignInResponseDTO(accessToken, refreshToken);
+    }
+
+    private String generateUniqueNickname(String nickname) {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+
+        while (userRepository.existsByNickname(nickname)) {
+            int randomNumber = random.nextInt(10000);
+            nickname = nickname + randomNumber;
+        }
+        return nickname;
+    }
+
+    //아이디로 프로필 이미지 조회
+    public String getProfileImageUrlById(Long userId) {
+        return userRepository.findById(userId).getImageUrl();
+    }
+
+    //아이디로 닉네임 조회
+    public String getNicknameById(Long userId) {
+        return userRepository.findById(userId).getNickname();
+    }
+
+    //유저 경고 횟수 증가
+    public void updateWarningCount(Long userId) {
+        User user = userRepository.findById(userId);
+        user.updateWarningCount();
     }
 }

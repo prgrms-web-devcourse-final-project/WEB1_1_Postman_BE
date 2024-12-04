@@ -1,6 +1,8 @@
 package postman.bottler.user.infra.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -17,6 +19,9 @@ import postman.bottler.user.domain.Ban;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class BanEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long banId;
+
     private Long userId;
 
     private LocalDateTime bannedAt;
