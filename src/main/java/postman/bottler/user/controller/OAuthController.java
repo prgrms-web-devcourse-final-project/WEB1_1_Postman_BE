@@ -23,12 +23,12 @@ public class OAuthController {
     private final KakaoService kakaoService;
     private final UserService userService;
 
+    @Operation(summary = "카카오 소셜로그인", description = "카카오 서버로 요청을 보내 회원가입 및 로그인을 합니다.")
     @GetMapping("/kakao")
     public RedirectView kakaoCode() {
         return new RedirectView(kakaoService.getRequestURL());
     }
 
-    @Operation(summary = "카카오 소셜로그인", description = "인가코드로 유저정보를 받아와 회원가입 및 로그인을 합니다.")
     @GetMapping("/kakao/token")
     public ApiResponse<SignInResponseDTO> kakaoSignin(@RequestParam("code") String code) {
         if (code == null || code.trim().isEmpty()) {
