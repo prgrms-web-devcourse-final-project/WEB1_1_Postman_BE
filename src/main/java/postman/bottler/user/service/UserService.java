@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.auth.JwtTokenProvider;
 import postman.bottler.user.domain.EmailCode;
+import postman.bottler.user.domain.EmailForm;
 import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
@@ -153,14 +154,11 @@ public class UserService {
     @Transactional
     public void sendCodeToEmail(String email) {
         String authCode = createCode();
-        String title = "BOTTLER 이메일 인증 번호";
-        String content = "<html>"
-                + "<body>"
-                + "<h1>BOTTLER 인증 코드: " + authCode + "</h1>"
-                + "<p>해당 코드를 홈페이지에 입력하세요.</p>"
-                + "<p>인증 코드 유효시간은 5분입니다.</p>"
-                + "</body>"
-                + "</html>";
+        EmailForm emailForm = EmailForm.EMAIL_AUTH;
+
+        String title = emailForm.getTitle();
+        String content = emailForm.getContent(authCode);
+
         try {
             emailService.sendEmail(email, title, content);
             emailCodeRepository.save(EmailCode.createEmailCode(email, authCode));
