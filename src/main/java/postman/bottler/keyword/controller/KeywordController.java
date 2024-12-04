@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.keyword.dto.request.UserKeywordRequestDTO;
+import postman.bottler.keyword.dto.response.KeywordResponseDTO;
 import postman.bottler.keyword.dto.response.UserKeywordResponseDTO;
+import postman.bottler.keyword.service.KeywordService;
 import postman.bottler.keyword.service.UserKeywordService;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -19,6 +21,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 public class KeywordController {
 
     private final UserKeywordService userKeywordService;
+    private final KeywordService keywordService;
 
     @GetMapping
     public ApiResponse<UserKeywordResponseDTO> getKeywords(
@@ -35,5 +38,11 @@ public class KeywordController {
     ) {
         userKeywordService.createKeywords(userKeywordRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess("사용자 키워드를 생성하였습니다.");
+    }
+
+    @GetMapping("/list")
+    public ApiResponse<KeywordResponseDTO> getKeywordList() {
+        KeywordResponseDTO result = keywordService.getKeywords();
+        return ApiResponse.onSuccess(result);
     }
 }
