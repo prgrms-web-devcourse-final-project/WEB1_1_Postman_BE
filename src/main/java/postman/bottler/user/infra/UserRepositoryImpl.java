@@ -3,6 +3,7 @@ package postman.bottler.user.infra;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.TokenException;
@@ -74,5 +75,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void unbanUsers(List<Long> ids) {
         userJpaRepository.unbanUsers(ids);
+    }
+  
+    public boolean existsByEmailAndProvider(String kakaoId) {
+        return userJpaRepository.existsByEmailAndProvider(kakaoId, Provider.KAKAO);
     }
 }

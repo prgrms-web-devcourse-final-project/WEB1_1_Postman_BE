@@ -9,13 +9,9 @@ import postman.bottler.letter.domain.ReplyLetter;
 public interface ReplyLetterRepository {
     ReplyLetter save(ReplyLetter replyLetter);
 
-    Page<ReplyLetter> findAll(Long receiverId, Pageable pageable);
-
     Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable);
 
     Optional<ReplyLetter> findById(Long replyLetterId);
-
-    void delete(Long replyLetterId);
 
     void deleteByIds(List<Long> letterIds);
 }

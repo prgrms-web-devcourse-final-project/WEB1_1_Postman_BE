@@ -26,6 +26,7 @@ import postman.bottler.user.dto.request.ProfileImgRequestDTO;
 import postman.bottler.user.dto.request.SignUpRequestDTO;
 import postman.bottler.user.dto.response.ExistingUserResponseDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
+import postman.bottler.user.exception.EmailCodeException;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -41,7 +42,7 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "이메일, 비밀번호, 닉네임으로 회원가입을 합니다.")
     @PostMapping("/signup")
-    public ApiResponse<?> signup(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO, BindingResult bindingResult) {
+    public ApiResponse<String> signup(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO, BindingResult bindingResult) {
         validateRequestDTO(bindingResult);
         userService.createUser(signUpRequestDTO.email(), signUpRequestDTO.password(), signUpRequestDTO.nickname());
         return ApiResponse.onCreateSuccess("회원가입 성공");
@@ -49,7 +50,7 @@ public class UserController {
 
     @Operation(summary = "이메일 중복 확인", description = "입력된 이메일이 이미 등록된 이메일인지 확인합니다.")
     @PostMapping("/duplicate-check/email")
-    public ApiResponse<?> checkDuplicateEmail(@Valid @RequestBody EmailRequestDTO emailRequestDTO,
+    public ApiResponse<String> checkDuplicateEmail(@Valid @RequestBody EmailRequestDTO emailRequestDTO,
                                               BindingResult bindingResult) {
         validateRequestDTO(bindingResult);
         userService.checkEmail(emailRequestDTO.email());
@@ -58,7 +59,7 @@ public class UserController {
 
     @Operation(summary = "닉네임 중복 확인", description = "입력된 닉네임이 이미 등록된 닉네임인지 확인합니다.")
     @PostMapping("/duplicate-check/nickname")
-    public ApiResponse<?> checkDuplicateNickname(
+    public ApiResponse<String> checkDuplicateNickname(
             @Valid @RequestBody CheckDuplicateNicknameRequestDTO checkDuplicateNicknameRequestDTO,
             BindingResult bindingResult) {
         validateRequestDTO(bindingResult);
@@ -68,7 +69,7 @@ public class UserController {
 
     @Operation(summary = "유저 탈퇴", description = "(로그인 필요) 비밀번호를 확인 후 탈퇴를 진행합니다.")
     @DeleteMapping
-    public ApiResponse<?> deleteUser(@Valid @RequestBody CheckPasswordRequestDTO checkPasswordRequestDTO,
+    public ApiResponse<String> deleteUser(@Valid @RequestBody CheckPasswordRequestDTO checkPasswordRequestDTO,
                                      BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
         userService.deleteUser(checkPasswordRequestDTO.password(), customUserDetails.getEmail());
@@ -84,7 +85,7 @@ public class UserController {
 
     @Operation(summary = "닉네임 수정", description = "(로그인 필요) 입력된 닉네임으로 수정합니다.")
     @PatchMapping("/nickname")
-    public ApiResponse<?> updateNickname(@Valid @RequestBody NicknameRequestDTO nicknameRequestDTO,
+    public ApiResponse<String> updateNickname(@Valid @RequestBody NicknameRequestDTO nicknameRequestDTO,
                                          BindingResult bindingResult,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
@@ -94,7 +95,7 @@ public class UserController {
 
     @Operation(summary = "비밀번호 수정", description = "(로그인 필요) 입력된 비밀번호를 확인 후 수정합니다.")
     @PatchMapping("/password")
-    public ApiResponse<?> updatePassword(@Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO,
+    public ApiResponse<String> updatePassword(@Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO,
                                          BindingResult bindingResult,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
@@ -105,7 +106,7 @@ public class UserController {
 
     @Operation(summary = "프로필 이미지 수정", description = "(로그인 필요) 입력된 프로필 이미지 URL을 확인 후 수정합니다.")
     @PatchMapping("/profileImg")
-    public ApiResponse<?> updateProfileImage(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO,
+    public ApiResponse<String> updateProfileImage(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO,
                                              BindingResult bindingResult,
                                              @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         validateRequestDTO(bindingResult);
@@ -115,7 +116,7 @@ public class UserController {
 
     @Operation(summary = "프로필 이미지 생성", description = "프로필 이미지 URL을 DB에 저장합니다. 실제 서비스에서 사용하는 API는 아닙니다!")
     @PostMapping("/profileImg")
-    public ApiResponse<?> createProfileImg(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO,
+    public ApiResponse<String> createProfileImg(@Valid @RequestBody ProfileImgRequestDTO profileImgRequestDTO,
                                            BindingResult bindingResult) {
         validateRequestDTO(bindingResult);
         userService.createProfileImg(profileImgRequestDTO.imageUrl());
@@ -131,7 +132,7 @@ public class UserController {
 
     @Operation(summary = "이메일 인증 코드 요청", description = "입력된 이메일로 인증 코드 요청 이메일을 보냅니다.")
     @PostMapping("/email/send")
-    public ApiResponse<?> sendEmail(@Valid @RequestBody EmailRequestDTO emailRequestDTO, BindingResult bindingResult) {
+    public ApiResponse<String> sendEmail(@Valid @RequestBody EmailRequestDTO emailRequestDTO, BindingResult bindingResult) {
         validateRequestDTO(bindingResult);
         userService.sendCodeToEmail(emailRequestDTO.email());
         return ApiResponse.onSuccess("이메일 인증 요청을 성공했습니다.");
@@ -139,7 +140,7 @@ public class UserController {
 
     @Operation(summary = "이메일 인증 코드 검사", description = "인증 코드를 검사합니다.")
     @PostMapping("/email/verify")
-    public ApiResponse<?> verifyEmail(@RequestBody AuthEmailRequestDTO authEmailRequestDTO) {
+    public ApiResponse<String> verifyEmail(@Valid @RequestBody AuthEmailRequestDTO authEmailRequestDTO) {
         userService.verifyCode(authEmailRequestDTO.email(), authEmailRequestDTO.code());
         return ApiResponse.onSuccess("이메일 인증을 성공했습니다.");
     }
@@ -153,6 +154,7 @@ public class UserController {
                             throw new PasswordException(error.getDefaultMessage());
                     case "nickname" -> throw new NicknameException(error.getDefaultMessage());
                     case "imageUrl" -> throw new ProfileImageException(error.getDefaultMessage());
+                    case "code" -> throw new EmailCodeException(error.getDefaultMessage());
                     default -> throw new IllegalArgumentException(
                             bindingResult.getAllErrors().get(0).getDefaultMessage());
                 }

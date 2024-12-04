@@ -14,4 +14,5 @@ public interface UserRepository {
     void updateProfileImageUrl(Long userId, String imageUrl);
     User findById(Long userId);
     void unbanUsers(List<Long> ids);
+    boolean existsByEmailAndProvider(String kakaoId);
 }

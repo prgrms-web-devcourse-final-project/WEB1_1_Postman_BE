@@ -45,16 +45,19 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/signin").permitAll()
-                                .requestMatchers("/user").authenticated()
-                                //개발 중에는 일단 모두 허용
-                                .anyRequest().permitAll()
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/oauth/**").permitAll()
+                                .requestMatchers("/user/signup").permitAll()
+                                .requestMatchers("/user/duplicate-check/**").permitAll()
+                                .requestMatchers("/user/email/**").permitAll()
+                                .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**").permitAll()
 //                        .requestMatchers("/swagger-ui.html").permitAll()
 //                        .requestMatchers("/swagger-ui/index.html").permitAll()
 //                        .requestMatchers("/v3/api-docs").permitAll()
 //                        .requestMatchers("/v3/api-docs/**").permitAll()
 //                        .requestMatchers("/v3/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
