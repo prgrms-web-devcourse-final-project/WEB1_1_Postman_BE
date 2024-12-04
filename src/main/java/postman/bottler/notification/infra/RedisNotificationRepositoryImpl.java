@@ -1,5 +1,7 @@
 package postman.bottler.notification.infra;
 
+import static postman.bottler.notification.infra.NotificationHashKey.NOTIFICATION_KEY;
+
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +24,7 @@ public class RedisNotificationRepositoryImpl implements NotificationRepository {
     @Override
     public Notification save(Notification notification) {
         RedisNotification redisNotification = RedisNotification.from(notification);
-        String notificationKey = NotificationHashKey.NOTIFICATION_KEY.getKey() + redisNotification.createRedisKey();
+        String notificationKey = NOTIFICATION_KEY.getKey() + redisNotification.createRedisKey();
         redisTemplate.opsForHash().putAll(notificationKey, redisNotification.toMap());
         redisTemplate.expire(notificationKey, TTL, TimeUnit.DAYS);
         return redisNotification.toDomain();
@@ -30,7 +32,7 @@ public class RedisNotificationRepositoryImpl implements NotificationRepository {
 
     @Override
     public Notifications findByReceiver(Long userId) {
-        Set<String> keys = redisTemplate.keys(NotificationHashKey.NOTIFICATION_KEY.getKey() + ":" + userId + ":*");
+        Set<String> keys = redisTemplate.keys(NOTIFICATION_KEY.getKey() + ":" + userId + ":*");
         List<Notification> notifications = keys.stream()
                 .map(key -> RedisNotification.create(redisTemplate, key))
                 .map(RedisNotification::toDomain)
@@ -42,7 +44,7 @@ public class RedisNotificationRepositoryImpl implements NotificationRepository {
     public void updateNotifications(Notifications notifications) {
         notifications.getNotifications().forEach(notification -> {
             RedisNotification redisNotification = RedisNotification.from(notification);
-            String notificationKey = NotificationHashKey.NOTIFICATION_KEY.getKey() + redisNotification.createRedisKey();
+            String notificationKey = NOTIFICATION_KEY.getKey() + redisNotification.createRedisKey();
             redisTemplate.opsForHash().putAll(notificationKey, redisNotification.toMap());
         });
     }
