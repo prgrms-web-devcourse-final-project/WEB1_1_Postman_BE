@@ -81,8 +81,7 @@ public class MapLetter {
         this.isDeleted = deleted;
     }
 
-    public void validateFindOneMapLetter(Long userId, double viewDistance, Double distance) {
-        validateAccess(userId);
+    public void validateFindOneMapLetter(double viewDistance, Double distance) {
         validDeleteAndBlocked();
         if (distance > viewDistance) {
             throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
@@ -128,4 +127,5 @@ public class MapLetter {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
     }
+
 }

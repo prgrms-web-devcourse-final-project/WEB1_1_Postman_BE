@@ -303,4 +303,21 @@ public class MapLetterController {
 
         return ApiResponse.onSuccess(mapLetterService.guestFindNearByMapLetters(lat, lon));
     }
+
+    @GetMapping("/guest/{letterId}")
+    @Operation(summary = "편지 상세 조회", description = "위경도 필수. 반경 15m 내 편지만 상세조회 가능. 내가 타겟인 편지와 퍼블릭 편지만 조회 가능. 나머지는 오류")
+    public ApiResponse<OneLetterResponseDTO> guestFindOneMapLetter(@RequestParam String latitude,
+                                                              @RequestParam String longitude,
+                                                              @PathVariable Long letterId) {
+        BigDecimal lat = BigDecimal.ZERO;
+        BigDecimal lon = BigDecimal.ZERO;
+        try {
+            lat = new BigDecimal(latitude);
+            lon = new BigDecimal(longitude);
+        } catch (Exception e) {
+            throw new LocationNotFoundException("해당 위치를 찾을 수 없습니다.");
+        }
+
+        return ApiResponse.onSuccess(mapLetterService.guestFindOneMapLetter(letterId, lat, lon));
+    }
 }
