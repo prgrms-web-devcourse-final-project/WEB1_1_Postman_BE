@@ -370,6 +370,7 @@ public class MapLetterService {
         return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
     }
 
+    @Transactional(readOnly = true)
     public OneLetterResponseDTO guestFindOneMapLetter(Long letterId, BigDecimal latitude, BigDecimal longitude) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
 
