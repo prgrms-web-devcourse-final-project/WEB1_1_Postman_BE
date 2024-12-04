@@ -107,6 +107,7 @@ public class UserService {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
         userRepository.softDeleteUser(user.getUserId());
+        refreshTokenRepository.deleteByEmail(email);
     }
 
     @Transactional
