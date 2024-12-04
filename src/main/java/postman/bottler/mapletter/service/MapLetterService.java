@@ -360,4 +360,11 @@ public class MapLetterService {
             redisTemplate.opsForList().leftPush(key, tempValue);
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<FindNearbyLettersResponseDTO> guestFindNearByMapLetters(BigDecimal latitude, BigDecimal longitude) {
+        List<MapLetterAndDistance> letters = mapLetterRepository.guestFindLettersByUserLocation(latitude, longitude);
+
+        return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
+    }
 }

@@ -287,4 +287,20 @@ public class MapLetterController {
         return ApiResponse.onSuccess(
                 MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
     }
+
+    @GetMapping("/guest")
+    @Operation(summary = "로그인 하지 않은 유저 주변 편지 조회", description = "로그인 하지 않은 유저의 반경 500m 내 퍼블릭 편지 조회")
+    public ApiResponse<List<FindNearbyLettersResponseDTO>> guestFindNearbyMapLetters(@RequestParam String latitude,
+                                                                                @RequestParam String longitude) {
+        BigDecimal lat = BigDecimal.ZERO;
+        BigDecimal lon = BigDecimal.ZERO;
+        try {
+            lat = new BigDecimal(latitude);
+            lon = new BigDecimal(longitude);
+        } catch (Exception e) {
+            throw new LocationNotFoundException("해당 위치를 찾을 수 없습니다.");
+        }
+
+        return ApiResponse.onSuccess(mapLetterService.guestFindNearByMapLetters(lat, lon));
+    }
 }

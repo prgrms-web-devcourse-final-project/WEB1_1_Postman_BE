@@ -67,11 +67,11 @@ public class ReplyLetterService {
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
-    @Transactional
-    public void deleteReplyLetter(Long replyLetterId) {
-        replyLetterRepository.delete(replyLetterId);
-        deleteRecentReply(replyLetterId);
-    }
+//    @Transactional
+//    public void deleteReplyLetter(Long replyLetterId) {
+//        replyLetterRepository.delete(replyLetterId);
+//        deleteRecentReply(replyLetterId);
+//    }
 
     @Transactional
     public void deleteReplyLetters(List<Long> letterIds) {
