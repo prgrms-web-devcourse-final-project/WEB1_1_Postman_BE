@@ -26,7 +26,5 @@ public interface ReplyMapLetterRepository {
 
     Page<ReplyMapLetter> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
 
-    List<ReplyMapLetter> findRecentReplyByUserId(Long userId, long itemsToFetch);
-
     List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
 }

@@ -1,10 +1,8 @@
 package postman.bottler.letter.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +16,6 @@ import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
-import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.reply.dto.ReplyType;
 
 @Service

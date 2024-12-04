@@ -16,6 +16,4 @@ public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntit
     @Modifying
     @Query("DELETE FROM LetterEntity l WHERE l.id IN :letterIds")
     void deleteByIds(List<Long> letterIds);
-
-    Page<ReplyLetterEntity> findAllByReceiverIdOrderByCreatedAtAsc(Long userId, Pageable pageable);
 }

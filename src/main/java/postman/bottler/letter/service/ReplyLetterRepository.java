@@ -18,6 +18,4 @@ public interface ReplyLetterRepository {
     void delete(Long replyLetterId);
 
     void deleteByIds(List<Long> letterIds);
-
-    List<ReplyLetter> findAllByReceiverId(Long sourceLetterCreateUserId, Pageable pageable);
 }

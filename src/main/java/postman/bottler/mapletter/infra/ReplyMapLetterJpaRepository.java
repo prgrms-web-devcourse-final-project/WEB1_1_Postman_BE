@@ -33,12 +33,6 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
             + " ORDER BY r.createdAt DESC")
     Page<ReplyMapLetterEntity> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
 
-    @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m "
-            + "WHERE r.sourceLetterId = m.mapLetterId AND m.createUserId=:userId AND r.isDeleted = false AND r.isBlocked = false "
-            + "ORDER BY r.createdAt ASC ")
-    List<ReplyMapLetterEntity> findRecentReplyByUserId(Long userId, Pageable pageable);
-
-
     @Query(value = """
         SELECT id, label, created_at, type
         FROM(

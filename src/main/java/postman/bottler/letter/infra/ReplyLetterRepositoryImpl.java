@@ -51,10 +51,4 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     public void deleteByIds(List<Long> letterIds) {
         replyLetterJpaRepository.deleteByIds(letterIds);
     }
-
-    @Override
-    public List<ReplyLetter> findAllByReceiverId(Long sourceLetterCreateUserId, Pageable pageable) {
-        return replyLetterJpaRepository.findAllByReceiverIdOrderByCreatedAtAsc(sourceLetterCreateUserId, pageable)
-                .stream().map(ReplyLetterEntity::toDomain).toList();
-    }
 }

@@ -77,13 +77,6 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
     }
 
     @Override
-    public List<ReplyMapLetter> findRecentReplyByUserId(Long userId, long itemsToFetch) {
-        List<ReplyMapLetterEntity> replyLetters = replyMapLetterJpaRepository.findRecentReplyByUserId(userId,
-                PageRequest.of(0, (int) itemsToFetch));
-        return replyLetters.stream().map(ReplyMapLetterEntity::toDomain).toList();
-    }
-
-    @Override
     public List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize) {
         return replyMapLetterJpaRepository.findRecentMapKeywordReplyByUserId(userId, fetchItemSize);
     }
