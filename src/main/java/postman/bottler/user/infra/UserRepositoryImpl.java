@@ -1,5 +1,7 @@
 package postman.bottler.user.infra;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.Provider;
@@ -74,5 +76,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsByEmailAndProvider(String kakaoId) {
         return userJpaRepository.existsByEmailAndProvider(kakaoId, Provider.KAKAO);
+    }
+
+    @Override
+    public List<User> findAllUserId() {
+        List<UserEntity> userEntities = userJpaRepository.findAll();
+        return userEntities.stream()
+                .map(UserEntity::toUser)
+                .collect(Collectors.toList());
     }
 }

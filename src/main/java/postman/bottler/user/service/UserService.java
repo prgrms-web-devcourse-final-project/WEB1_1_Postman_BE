@@ -2,7 +2,9 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -235,5 +237,13 @@ public class UserService {
     public void updateWarningCount(Long userId) {
         User user = userRepository.findById(userId);
         user.updateWarningCount();
+    }
+
+    //전체 유저 아이디 조회
+    public List<Long> getAllUserId() {
+        List<User> users = userRepository.findAllUserId();
+        return users.stream()
+                .map(User::getUserId)
+                .collect(Collectors.toList());
     }
 }
