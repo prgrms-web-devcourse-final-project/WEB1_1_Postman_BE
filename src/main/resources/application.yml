@@ -47,5 +47,11 @@ mail:
         connectiontimeout: 5000
         timeout: 5000
         writetimeout: 5000
-  auth-code-expiration-millis: 1800000
+
+kakao:
+  client:
+    id: ${KAKAO_CLIENT_ID}
+    secret: ${KAKAO_CLIENT_SECRET}
+  redirect:
+    url: ${KAKAO_REDIRECT_URL}
 

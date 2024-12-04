@@ -12,4 +12,5 @@ public interface UserRepository {
     void updatePassword(Long userId, String password);
     void updateProfileImageUrl(Long userId, String imageUrl);
     User findById(Long userId);
+    boolean existsByEmailAndProvider(String kakaoId);
 }

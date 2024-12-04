@@ -2,11 +2,16 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +25,6 @@ import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.ExistingUserResponseDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
-import postman.bottler.user.exception.EmailCodeException;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -187,5 +191,36 @@ public class UserService {
     @Transactional
     public User findById(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    @Transactional
+    public SignInResponseDTO kakaoSignin(String kakaoId, String nickname) {
+        if (!userRepository.existsByEmailAndProvider(kakaoId)) {
+            nickname = generateUniqueNickname(nickname);
+            String profileImageUrl = profileImageRepository.findProfileImage();
+            User user = User.createKakaoUser(kakaoId, nickname, profileImageUrl, passwordEncoder.encode(kakaoId));
+            userRepository.save(user);
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(kakaoId, kakaoId);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String accessToken = jwtTokenProvider.createToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+
+        refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(kakaoId, refreshToken));
+
+        return new SignInResponseDTO(accessToken, refreshToken);
+    }
+
+    public String generateUniqueNickname(String nickname) {
+        Random random = new Random();
+        while (userRepository.existsByNickname(nickname)) {
+            int randomNumber = random.nextInt(10000);
+            nickname = nickname + randomNumber;
+        }
+        return nickname;
     }
 }

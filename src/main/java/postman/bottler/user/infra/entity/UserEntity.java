@@ -2,6 +2,8 @@ package postman.bottler.user.infra.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.Role;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.UserException;
@@ -30,7 +33,6 @@ public class UserEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -39,6 +41,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String imageUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
@@ -54,6 +57,9 @@ public class UserEntity {
     @Column(nullable = false)
     private boolean isBanned;
 
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
+
     public static UserEntity from(User user) {
         return UserEntity.builder()
                 .userId(user.getUserId())
@@ -62,6 +68,7 @@ public class UserEntity {
                 .nickname(user.getNickname())
                 .imageUrl(user.getImageUrl())
                 .role(user.getRole())
+                .provider(user.getProvider())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .isDeleted(user.isDeleted())
@@ -77,7 +84,8 @@ public class UserEntity {
     }
 
     public User to() {
-        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.role, this.createdAt,
+        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.role,
+                this.provider, this.createdAt,
                 this.updatedAt, this.isDeleted, this.isBanned);
     }
 

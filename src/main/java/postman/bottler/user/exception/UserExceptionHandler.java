@@ -56,4 +56,16 @@ public class UserExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.INVALID_EMAIL_CODE.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(KakaoAuthCodeException.class)
+    public ApiResponse<?> handleKakaoAuthCodeException(KakaoAuthCodeException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.INVALID_KAKAO_CODE.getCode(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(KakaoException.class)
+    public ApiResponse<?> handleKakaoException(KakaoException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.FAILED_KAKAO_SIGNIN.getCode(), e.getMessage(), null);
+    }
 }
