@@ -237,6 +237,8 @@ public class MapLetterService {
             ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
             replyMapLetter.validDeleteReplyMapLetter(userId);
             replyMapLetterRepository.softDelete(letterId);
+
+            deleteRecentReply(letterId, replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
         }
     }
 
@@ -342,5 +344,13 @@ public class MapLetterService {
         if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
             redisTemplate.opsForList().leftPush(key, value);
         }
+    }
+
+    private void deleteRecentReply(Long letterId, String labelUrl, Long sourceLetterId){
+        MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
+        String key = "REPLY:" + sourceLetter.getCreateUserId();
+        String value = ReplyType.MAP+":"+letterId+":"+labelUrl;
+
+        redisTemplate.opsForList().remove(key, 1, value);
     }
 }
