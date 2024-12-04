@@ -91,7 +91,6 @@ public class User {
     }
 
     public void unban() {
-        this.isBanned = false;
         this.role = Role.USER;
     }
 }

@@ -21,7 +21,7 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Long>  {
     Optional<UserEntity> findByEmail(String email);
 
     @Modifying
-    @Query("update UserEntity u set u.isBanned = false, u.role = postman.bottler.user.domain.Role.USER "
+    @Query("update UserEntity u set u.role = postman.bottler.user.domain.Role.USER "
             + "where u.userId in :ids")
     void unbanUsers(List<Long> ids);
   

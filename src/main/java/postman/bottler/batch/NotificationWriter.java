@@ -25,7 +25,6 @@ public class NotificationWriter implements ItemWriter<Notification> {
                     .letterId(((LetterNotification) notification).getLetterId())
                     .letterType(LetterType.LETTER)
                     .boxType(BoxType.RECEIVE)
-                    .isDeleted(false)
                     .createdAt(LocalDateTime.now())
                     .build());
             repository.save(notification);
