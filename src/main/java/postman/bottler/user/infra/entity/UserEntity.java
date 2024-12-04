@@ -55,7 +55,7 @@ public class UserEntity {
     private boolean isDeleted;
 
     @Column(nullable = false)
-    private boolean isBanned;
+    private int warningCount;
 
     @Enumerated(EnumType.STRING)
     private Provider provider;
@@ -72,7 +72,7 @@ public class UserEntity {
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .isDeleted(user.isDeleted())
-                .isBanned(user.isBanned())
+                .warningCount(user.getWarningCount())
                 .build();
     }
 
@@ -85,8 +85,7 @@ public class UserEntity {
 
     public User to() {
         return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.role,
-                this.provider, this.createdAt,
-                this.updatedAt, this.isDeleted, this.isBanned);
+                this.provider, this.createdAt, this.updatedAt, this.isDeleted, this.warningCount);
     }
 
     public void updateIsDelete() {

@@ -211,12 +211,28 @@ public class UserService {
         return new SignInResponseDTO(accessToken, refreshToken);
     }
 
-    public String generateUniqueNickname(String nickname) {
+    private String generateUniqueNickname(String nickname) {
         Random random = new Random();
         while (userRepository.existsByNickname(nickname)) {
             int randomNumber = random.nextInt(10000);
             nickname = nickname + randomNumber;
         }
         return nickname;
+    }
+
+    //아이디로 프로필 이미지 조회
+    public String getProfileImageUrlById(Long userId) {
+        return userRepository.findById(userId).getImageUrl();
+    }
+
+    //아이디로 닉네임 조회
+    public String getNicknameById(Long userId) {
+        return userRepository.findById(userId).getNickname();
+    }
+
+    //유저 경고 횟수 증가
+    public void updateWarningCount(Long userId) {
+        User user = userRepository.findById(userId);
+        user.updateWarningCount();
     }
 }
