@@ -212,7 +212,10 @@ public class UserService {
     }
 
     private String generateUniqueNickname(String nickname) {
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+
         while (userRepository.existsByNickname(nickname)) {
             int randomNumber = random.nextInt(10000);
             nickname = nickname + randomNumber;
