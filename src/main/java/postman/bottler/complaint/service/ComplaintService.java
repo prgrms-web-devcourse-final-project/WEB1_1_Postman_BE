@@ -9,6 +9,7 @@ import postman.bottler.complaint.domain.KeywordReplyComplaint;
 import postman.bottler.complaint.domain.MapComplaint;
 import postman.bottler.complaint.domain.MapReplyComplaint;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
+import postman.bottler.notification.service.NotificationService;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,8 @@ public class ComplaintService {
     private final MapComplaintRepository mapComplaintRepository;
     private final KeywordReplyComplaintRepository keywordReplyComplaintRepository;
     private final MapReplyComplaintRepository mapReplyComplaintRepository;
+
+    private final NotificationService notificationService;
 
     @Transactional
     public ComplaintResponseDTO complainKeywordLetter(Long letterId, Long reporterId,

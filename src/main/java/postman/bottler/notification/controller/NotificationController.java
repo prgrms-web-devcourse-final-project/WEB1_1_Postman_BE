@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.dto.request.SubscriptionRequestDTO;
 import postman.bottler.notification.dto.request.UnsubscriptionRequestDTO;
@@ -34,13 +35,13 @@ public class NotificationController {
 
     @Operation(summary = "알림 생성", description = "알림 유형, 알림 대상은 필수, 편지 관련 알림은 편지 ID를 등록합니다.")
     @PostMapping
-    public ApiResponse<NotificationResponseDTO> create(@Valid @RequestBody NotificationRequestDTO notificationRequestDTO,
-                                 BindingResult bindingResult) {
+    public ApiResponse<NotificationResponseDTO> create(
+            @Valid @RequestBody NotificationRequestDTO notificationRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidNotificationRequestException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         NotificationResponseDTO response = notificationService.sendNotification(
-                notificationRequestDTO.notificationType(),
+                NotificationType.from(notificationRequestDTO.notificationType()),
                 notificationRequestDTO.receiver(),
                 notificationRequestDTO.letterId());
         return ApiResponse.onCreateSuccess(response);
@@ -48,7 +49,8 @@ public class NotificationController {
 
     @Operation(summary = "알림 조회", description = "사용자의 알림을 조회합니다.")
     @GetMapping
-    public ApiResponse<List<NotificationResponseDTO>> getNotifications(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<List<NotificationResponseDTO>> getNotifications(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         List<NotificationResponseDTO> userNotifications = notificationService.getUserNotifications(
                 customUserDetails.getUserId());
         return ApiResponse.onSuccess(userNotifications);
@@ -57,7 +59,7 @@ public class NotificationController {
     @Operation(summary = "알림 허용", description = "사용자의 기기 토큰을 등록합니다.")
     @PostMapping("/subscribe")
     public ApiResponse<SubscriptionResponseDTO> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequest,
-                                    @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         SubscriptionResponseDTO response = subscriptionService.subscribe(
                 customUserDetails.getUserId(),
                 subscriptionRequest.token());
