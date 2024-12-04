@@ -33,6 +33,9 @@ jobs:
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
+      RECOMMEND_CRON : ${{ secrets.RECOMMEND_CRON }}
+      UNBAN_CRON : ${{ secrets.UNBAN_CRON }}
+
       # ECR 환경변수
       ECR_URI: ${{ secrets.ECR_URI }}
 

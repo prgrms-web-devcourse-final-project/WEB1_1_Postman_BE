@@ -8,7 +8,7 @@ spring:
     job:
       enabled: false
     jdbc:
-      initialize-schema: always
+      initialize-schema: never
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,6 +22,11 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+
+batch:
+  cron:
+    recommend: ${RECOMMEND_CRON}
+    unban: ${UNBAN_CRON}
 
 fcm:
   private-key: ${BOTTLER_FCM_BASE64}

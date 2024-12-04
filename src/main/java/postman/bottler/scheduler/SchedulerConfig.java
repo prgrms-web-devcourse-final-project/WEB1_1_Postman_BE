@@ -17,14 +17,14 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class SchedulerConfig {
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "${batch.cron.recommend}")
     public void sendRecommendKeywordLetter()
             throws NoSuchJobException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -35,12 +35,12 @@ public class SchedulerConfig {
         jobLauncher.run(jobRegistry.getJob("recommendKeywordBatchJob"), jobParameters);
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "${batch.cron.unban}")
     public void unban()
             throws NoSuchJobException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         LocalDateTime now = LocalDateTime.now();
         JobParameters jobParameters = new JobParametersBuilder()
-                .addLocalDateTime("now", now)
+                .addString("now", now.toString())
                 .toJobParameters();
 
         jobLauncher.run(jobRegistry.getJob("unbanJob"), jobParameters);
