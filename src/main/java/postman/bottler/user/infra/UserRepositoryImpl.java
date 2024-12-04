@@ -1,5 +1,6 @@
 package postman.bottler.user.infra;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.User;
@@ -68,5 +69,10 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity userEntity = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new EmailException("유저를 찾을 수 없습니다. " + userId));
         return UserEntity.toUser(userEntity);
+    }
+
+    @Override
+    public void unbanUsers(List<Long> ids) {
+        userJpaRepository.unbanUsers(ids);
     }
 }

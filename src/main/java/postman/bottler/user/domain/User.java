@@ -54,4 +54,9 @@ public class User {
     public org.springframework.security.core.userdetails.User toUserDetails() {
         return new org.springframework.security.core.userdetails.User(this.email, this.password, List.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
+
+    public void unban() {
+        this.isBanned = false;
+        this.role = Role.USER;
+    }
 }
