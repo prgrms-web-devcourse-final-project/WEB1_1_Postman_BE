@@ -21,6 +21,11 @@ public class LetterKeywordService {
         letterKeywordRepository.saveAll(letterKeywords);
     }
 
-    public void getKeywords(Long userId) {
+    @Transactional(readOnly = true)
+    public List<String> getKeywords(Long letterId) {
+        List<LetterKeyword> letterKeywords = letterKeywordRepository.getKeywordsByLetterId(letterId);
+
+        return letterKeywords.stream()
+                .map(LetterKeyword::getKeyword).toList();
     }
 }

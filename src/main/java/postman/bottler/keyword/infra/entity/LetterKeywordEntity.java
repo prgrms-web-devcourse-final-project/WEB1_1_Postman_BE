@@ -38,4 +38,12 @@ public class LetterKeywordEntity {
                 .keyword(letterKeyword.getKeyword())
                 .build();
     }
+
+    public LetterKeyword toDomain() {
+        return LetterKeyword.builder()
+                .id(this.id)
+                .letterId(this.letterId)
+                .keyword(this.keyword)
+                .build();
+    }
 }
