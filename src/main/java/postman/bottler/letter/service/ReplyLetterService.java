@@ -1,6 +1,7 @@
 package postman.bottler.letter.service;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
+import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.reply.dto.ReplyType;
 
 @Service
@@ -71,11 +73,15 @@ public class ReplyLetterService {
     @Transactional
     public void deleteReplyLetter(Long replyLetterId) {
         replyLetterRepository.delete(replyLetterId);
+        deleteRecentReply(replyLetterId);
     }
 
     @Transactional
     public void deleteReplyLetters(List<Long> letterIds) {
         replyLetterRepository.deleteByIds(letterIds);
+        for (Long letterId : letterIds) {
+            deleteRecentReply(letterId);
+        }
     }
 
     private String generateReplyTitle(String title) {
@@ -109,5 +115,15 @@ public class ReplyLetterService {
         if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
             redisTemplate.opsForList().leftPush(key, value);
         }
+    }
+
+    private void deleteRecentReply(Long letterId) {
+        ReplyLetter replyLetter = replyLetterRepository.findById(letterId)
+                .orElseThrow(()-> new LetterNotFoundException("편지가 존재하지 않습니다."));
+
+        String key = "REPLY:" + replyLetter.getReceiverId();
+        String value = ReplyType.KEYWORD + ":" + letterId + ":" + replyLetter.getLabel();
+
+        redisTemplate.opsForList().remove(key, 1, value);
     }
 }
