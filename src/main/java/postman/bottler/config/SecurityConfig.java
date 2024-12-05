@@ -50,6 +50,7 @@ public class SecurityConfig {
                                 .requestMatchers("/user/signup").permitAll()
                                 .requestMatchers("/user/duplicate-check/**").permitAll()
                                 .requestMatchers("/user/email/**").permitAll()
+                                .requestMatchers("/map/guest/**").permitAll()
                                 .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**").permitAll()
 //                        .requestMatchers("/swagger-ui.html").permitAll()
@@ -57,7 +58,6 @@ public class SecurityConfig {
 //                        .requestMatchers("/v3/api-docs").permitAll()
 //                        .requestMatchers("/v3/api-docs/**").permitAll()
 //                        .requestMatchers("/v3/**").permitAll()
-                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

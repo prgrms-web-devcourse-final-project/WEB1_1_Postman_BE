@@ -16,12 +16,12 @@ public record LetterDetailResponseDTO(
         boolean isOwner,
         LocalDateTime createdAt
 ) {
-    public static LetterDetailResponseDTO from(Letter letter, Long userId) {
+    public static LetterDetailResponseDTO from(Letter letter, List<String> keywords, Long userId) {
         return new LetterDetailResponseDTO(
                 letter.getId(),
                 letter.getTitle(),
                 letter.getContent(),
-                letter.getKeywords(),
+                keywords,
                 letter.getFont(),
                 letter.getPaper(),
                 letter.getProfile(),

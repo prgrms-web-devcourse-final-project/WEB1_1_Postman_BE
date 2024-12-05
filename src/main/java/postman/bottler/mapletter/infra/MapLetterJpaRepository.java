@@ -108,4 +108,16 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
                     "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false) AS combined",
             nativeQuery = true)
     Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest);
+
+    @Query(value = """
+            SELECT m.map_letter_id as letterId, m.latitude, m.longitude, m.title, m.description, 
+            m.created_at as createdAt, m.target_user_id as targetUserId, m.create_user_id as createUserId, m.label, 
+            st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance 
+            FROM map_letter m 
+            WHERE m.type = 'PUBLIC' 
+            AND st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) <= 500 
+            AND m.is_deleted =false AND m.is_blocked=false 
+            AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30
+   """, nativeQuery = true)
+    List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
 }

@@ -69,6 +69,17 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
                 .execute();
     }
 
+    @Override
+    public List<Long> getReceivedLettersById(Long userId) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        return queryFactory
+                .select(letterBox.letterId) // letterId만 조회
+                .from(letterBox)
+                .where(letterBox.userId.eq(userId)
+                        .and(letterBox.boxType.eq(BoxType.RECEIVE)))
+                .fetch();
+    }
+
     private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         QLetterEntity letter = QLetterEntity.letterEntity;

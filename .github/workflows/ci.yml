@@ -37,6 +37,9 @@ jobs:
       BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
       BASE_URL: ${{ secrets.BASE_URL }}
 
+      RECOMMEND_CRON : ${{ secrets.RECOMMEND_CRON }}
+      UNBAN_CRON : ${{ secrets.UNBAN_CRON }}
+
       # gpt 환경변수
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
