@@ -1,21 +1,20 @@
 package postman.bottler.complaint.domain;
 
 import java.time.LocalDateTime;
-import lombok.Builder;
 import lombok.Getter;
+import postman.bottler.complaint.exception.DuplicateComplainException;
 
 @Getter
-@Builder
 public class Complaint {
     private Long id;
 
-    private Long letterId;
+    private final Long letterId;
 
-    private Long reporterId;
+    private final Long reporterId;
 
-    private String description;
+    private final String description;
 
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
     protected Complaint(Long letterId, Long reporterId, String description) {
         this.letterId = letterId;
@@ -32,7 +31,22 @@ public class Complaint {
         this.createdAt = createdAt;
     }
 
+    public static Complaint create(Long letterId, Long reporterId, String description) {
+        return new Complaint(letterId, reporterId, description);
+    }
+
+    public static Complaint of(Long id, Long letterId, Long reporterId, String description, LocalDateTime createdAt) {
+        return new Complaint(id, letterId, reporterId, description, createdAt);
+    }
+
+
     public Boolean isReporter(Long reporterId) {
         return this.reporterId.equals(reporterId);
+    }
+
+    public void validateDuplicateComplaint(Long letterId, Long reporterId) {
+        if (letterId.equals(this.letterId) && reporterId.equals(this.reporterId)) {
+            throw new DuplicateComplainException();
+        }
     }
 }

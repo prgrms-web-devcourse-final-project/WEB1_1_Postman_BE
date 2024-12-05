@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import postman.bottler.complaint.domain.KeywordReplyComplaint;
+import postman.bottler.complaint.domain.Complaint;
 
 @Entity
 @Table(name = "keyword_reply_complaint")
@@ -32,7 +32,7 @@ public class KeywordReplyComplaintEntity {
 
     private LocalDateTime createdAt;
 
-    public static KeywordReplyComplaintEntity from(KeywordReplyComplaint complaint) {
+    public static KeywordReplyComplaintEntity from(Complaint complaint) {
         return KeywordReplyComplaintEntity.builder()
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
@@ -42,7 +42,7 @@ public class KeywordReplyComplaintEntity {
                 .build();
     }
 
-    public KeywordReplyComplaint toDomain() {
-        return KeywordReplyComplaint.of(id, letterId, reporterId, description, createdAt);
+    public Complaint toDomain() {
+        return Complaint.of(id, letterId, reporterId, description, createdAt);
     }
 }
