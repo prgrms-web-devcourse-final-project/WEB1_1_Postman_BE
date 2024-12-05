@@ -51,7 +51,7 @@ public class SecurityConfig {
                                 .requestMatchers("/user/duplicate-check/**").permitAll()
                                 .requestMatchers("/user/email/**").permitAll()
                                 .requestMatchers("/map/guest/**").permitAll()
-//                                .anyRequest().authenticated()
+                                .anyRequest().authenticated()
 //                        .requestMatchers("/swagger-ui/**").permitAll()
 //                        .requestMatchers("/swagger-ui.html").permitAll()
 //                        .requestMatchers("/swagger-ui/index.html").permitAll()
