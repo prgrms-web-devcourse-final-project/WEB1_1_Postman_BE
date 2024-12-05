@@ -1,6 +1,7 @@
 package postman.bottler.letter.service;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,8 +27,6 @@ public class ReplyLetterService {
     private final LetterService letterService;
     private final LetterBoxService letterBoxService;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    private final int REDIS_SAVED_REPLY = 6;
 
     @Transactional
     public ReplyLetterResponseDTO createReplyLetter(Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO,
@@ -67,12 +66,6 @@ public class ReplyLetterService {
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
-//    @Transactional
-//    public void deleteReplyLetter(Long replyLetterId) {
-//        replyLetterRepository.delete(replyLetterId);
-//        deleteRecentReply(replyLetterId);
-//    }
-
     @Transactional
     public void deleteReplyLetters(List<Long> letterIds) {
         replyLetterRepository.deleteByIds(letterIds);
@@ -94,18 +87,19 @@ public class ReplyLetterService {
         String value = ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
 
         Long size = redisTemplate.opsForList().size(key);
+        int REDIS_SAVED_REPLY = 6;
         if (size != null && size >= REDIS_SAVED_REPLY) {
             redisTemplate.opsForList().rightPop(key);
         }
 
-        if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
+        if (!Objects.requireNonNull(redisTemplate.opsForList().range(key, 0, -1)).contains(value)) {
             redisTemplate.opsForList().leftPush(key, value);
         }
     }
 
     private void deleteRecentReply(Long letterId) {
         ReplyLetter replyLetter = replyLetterRepository.findById(letterId)
-                .orElseThrow(()-> new LetterNotFoundException("편지가 존재하지 않습니다."));
+                .orElseThrow(() -> new LetterNotFoundException("편지가 존재하지 않습니다."));
 
         String key = "REPLY:" + replyLetter.getReceiverId();
         String value = ReplyType.KEYWORD + ":" + letterId + ":" + replyLetter.getLabel();

@@ -43,4 +43,10 @@ public class LetterBoxService {
     public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
     }
+
+    @Transactional(readOnly = true)
+    public List<Long> getLettersByUserId(Long userId) {
+        return letterBoxRepository.getReceivedLettersById(userId);
+    }
+
 }
