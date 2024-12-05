@@ -1,7 +1,10 @@
 package postman.bottler.user.infra;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.TokenException;
@@ -67,6 +70,37 @@ public class UserRepositoryImpl implements UserRepository {
     public User findById(Long userId) {
         UserEntity userEntity = userJpaRepository.findById(userId)
                 .orElseThrow(() -> new EmailException("유저를 찾을 수 없습니다. " + userId));
+        return UserEntity.toUser(userEntity);
+    }
+
+    @Override
+    public void unbanUsers(List<Long> ids) {
+        userJpaRepository.unbanUsers(ids);
+    }
+  
+    public boolean existsByEmailAndProvider(String kakaoId) {
+        return userJpaRepository.existsByEmailAndProvider(kakaoId, Provider.KAKAO);
+    }
+
+    @Override
+    public List<User> findAllUserId() {
+        List<UserEntity> userEntities = userJpaRepository.findAll();
+        return userEntities.stream()
+                .map(UserEntity::toUser)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateWarningCount(User user) {
+        UserEntity userEntity = userJpaRepository.findById(user.getUserId())
+                .orElseThrow(() -> new TokenException("해당 토큰에 대한 유저를 찾을 수 없습니다."));
+        userEntity.updateBanUser(user);
+    }
+
+    @Override
+    public User findByNickname(String nickname) {
+        UserEntity userEntity = userJpaRepository.findByNickname(nickname)
+                .orElseThrow(() -> new TokenException("해당 닉네임에 대한 유저를 찾을 수 없습니다."));
         return UserEntity.toUser(userEntity);
     }
 }

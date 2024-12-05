@@ -1,6 +1,9 @@
 package postman.bottler.user.infra.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.Role;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.UserException;
@@ -26,15 +30,35 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(nullable = false)
     private String email;
+
     private String password;
+
+    @Column(nullable = false)
     private String nickname;
+
+    @Column(nullable = false)
     private String imageUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
     private boolean isDeleted;
-    private boolean isBanned;
+
+    @Column(nullable = false)
+    private int warningCount;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
@@ -44,10 +68,11 @@ public class UserEntity {
                 .nickname(user.getNickname())
                 .imageUrl(user.getImageUrl())
                 .role(user.getRole())
+                .provider(user.getProvider())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .isDeleted(user.isDeleted())
-                .isBanned(user.isBanned())
+                .warningCount(user.getWarningCount())
                 .build();
     }
 
@@ -59,8 +84,8 @@ public class UserEntity {
     }
 
     public User to() {
-        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.role, this.createdAt,
-                this.updatedAt, this.isDeleted, this.isBanned);
+        return User.createUser(this.userId, this.email, this.password, this.nickname, this.imageUrl, this.role,
+                this.provider, this.createdAt, this.updatedAt, this.isDeleted, this.warningCount);
     }
 
     public void updateIsDelete() {
@@ -78,5 +103,11 @@ public class UserEntity {
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void updateBanUser(User user) {
+        this.updatedAt = user.getUpdatedAt();
+        this.warningCount = user.getWarningCount();
+        this.role = user.getRole();
     }
 }

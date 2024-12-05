@@ -1,7 +1,8 @@
 package postman.bottler.notification.infra;
 
+import static postman.bottler.notification.infra.NotificationHashKey.NOTIFICATION_KEY;
+
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -18,13 +19,12 @@ import postman.bottler.notification.service.NotificationRepository;
 @Slf4j
 public class RedisNotificationRepositoryImpl implements NotificationRepository {
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final String NOTIFICATION_KEY = "notification";
     private static final long TTL = 7;
 
     @Override
     public Notification save(Notification notification) {
         RedisNotification redisNotification = RedisNotification.from(notification);
-        String notificationKey = NOTIFICATION_KEY + redisNotification.createRedisKey();
+        String notificationKey = NOTIFICATION_KEY.getKey() + redisNotification.createRedisKey();
         redisTemplate.opsForHash().putAll(notificationKey, redisNotification.toMap());
         redisTemplate.expire(notificationKey, TTL, TimeUnit.DAYS);
         return redisNotification.toDomain();
@@ -32,12 +32,8 @@ public class RedisNotificationRepositoryImpl implements NotificationRepository {
 
     @Override
     public Notifications findByReceiver(Long userId) {
-        Set<String> keys = redisTemplate.keys(NOTIFICATION_KEY + ":" + userId + ":*");
+        Set<String> keys = redisTemplate.keys(NOTIFICATION_KEY.getKey() + ":" + userId + ":*");
         List<Notification> notifications = keys.stream()
-                .filter(key -> {
-                    Long receiver = (Long) redisTemplate.opsForHash().get(key, "receiver");
-                    return Objects.equals(receiver, userId);
-                })
                 .map(key -> RedisNotification.create(redisTemplate, key))
                 .map(RedisNotification::toDomain)
                 .collect(Collectors.toList());
@@ -48,7 +44,7 @@ public class RedisNotificationRepositoryImpl implements NotificationRepository {
     public void updateNotifications(Notifications notifications) {
         notifications.getNotifications().forEach(notification -> {
             RedisNotification redisNotification = RedisNotification.from(notification);
-            String notificationKey = NOTIFICATION_KEY + redisNotification.createRedisKey();
+            String notificationKey = NOTIFICATION_KEY.getKey() + redisNotification.createRedisKey();
             redisTemplate.opsForHash().putAll(notificationKey, redisNotification.toMap());
         });
     }

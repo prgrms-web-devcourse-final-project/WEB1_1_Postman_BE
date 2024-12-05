@@ -2,6 +2,7 @@ package postman.bottler.letter.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.BoxType;
@@ -11,10 +12,9 @@ import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.LetterResponseDTO;
-import postman.bottler.letter.exception.LetterAccessDeniedException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LetterService {
@@ -23,14 +23,14 @@ public class LetterService {
     private final LetterBoxService letterBoxService;
 
     @Transactional
-    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
+    public Letter createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
         String userProfile = "profile url";
 
         Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
         letterBoxService.saveLetter(
                 LetterBoxDTO.of(userId, letter.getId(), LetterType.LETTER, BoxType.SEND, letter.getCreatedAt())
         );
-        return LetterResponseDTO.from(letter);
+        return letter;
     }
 
     @Transactional
@@ -39,25 +39,23 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public LetterDetailResponseDTO getLetterDetail(Long letterId, Long userId) {
+    public LetterDetailResponseDTO getLetterDetail(Long letterId, List<String> keywords, Long userId) {
         Letter letter = findLetter(letterId);
-        return LetterDetailResponseDTO.from(letter, userId);
+        return LetterDetailResponseDTO.from(letter, keywords, userId);
     }
 
-    public void blockLetter(Long letterId) {
-
+    @Transactional
+    public Long blockLetter(Long letterId) {
+        Letter letter = findLetter(letterId);
+        letterRepository.blockLetterById(letterId);
+        log.info("Letter blocked: {}", letterId);
+        return letter.getUserId();
     }
 
     @Transactional(readOnly = true)
     public ReceiverDTO getReceiverInfoById(Long letterId) {
         Letter letter = findLetter(letterId);
         return ReceiverDTO.from(letter);
-    }
-
-    private void validateLetterOwnership(Long userId, Long letterId) {
-        if (!letterRepository.existsByUserIdAndLetterId(userId, letterId)) {
-            throw new LetterAccessDeniedException("해당 편지의 작성자가 아닙니다.");
-        }
     }
 
     private Letter findLetter(Long letterId) {

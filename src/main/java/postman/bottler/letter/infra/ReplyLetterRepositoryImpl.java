@@ -25,12 +25,6 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    public Page<ReplyLetter> findAll(Long receiverId, Pageable pageable) {
-        return replyLetterJpaRepository.findAllByReceiverId(receiverId, pageable)
-                .map(ReplyLetterEntity::toDomain);
-    }
-
-    @Override
     public Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable) {
         return replyLetterJpaRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageable)
                 .map(ReplyLetterEntity::toDomain);
@@ -38,17 +32,17 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public Optional<ReplyLetter> findById(Long replyLetterId) {
-        return replyLetterJpaRepository.findById(replyLetterId)
+        return replyLetterJpaRepository.findActiveById(replyLetterId)
                 .map(ReplyLetterEntity::toDomain);
-    }
-
-    @Override
-    public void delete(Long replyLetterId) {
-        replyLetterJpaRepository.deleteById(replyLetterId);
     }
 
     @Override
     public void deleteByIds(List<Long> letterIds) {
         replyLetterJpaRepository.deleteByIds(letterIds);
+    }
+
+    @Override
+    public void blockReplyLetterById(Long replyLetterId) {
+        replyLetterJpaRepository.blockById(replyLetterId);
     }
 }

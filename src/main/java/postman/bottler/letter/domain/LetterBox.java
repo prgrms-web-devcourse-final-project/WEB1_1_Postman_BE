@@ -17,6 +17,5 @@ public class LetterBox {
     private Long letterId;
     private LetterType letterType;
     private BoxType boxType;
-    private boolean isDeleted;
     private LocalDateTime createdAt;
 }
