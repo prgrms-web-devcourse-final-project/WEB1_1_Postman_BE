@@ -105,9 +105,15 @@ jobs:
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker-compose/.env
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker-compose/.env
           echo "BOTTLER_FCM_BASE64=${{ secrets.BOTTLER_FCM_BASE64 }}" >> docker-compose/.env
+          echo "RECOMMEND_CRON=${{ secrets.RECOMMEND_CRON }}" >> docker-compose/.env
+          echo "UNBAN_CRON=${{ secrets.UNBAN_CRON }}" >> docker-compose/.env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> docker-compose/.env
           echo "BASE_URL=${{ secrets.BASE_URL }}" >> docker-compose/.env
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> docker-compose/.env
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> docker-compose/.env
+          echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> docker-compose/.env
+          echo "KAKAO_REDIRECT_URL=${{ secrets.KAKAO_REDIRECT_URL }}" >> docker-compose/.env
+          echo "SLACK_TOKEN=${{ secrets.SLACK_TOKEN }}" >> docker-compose/.env
           echo "TAG=${{ github.sha }}" >> docker-compose/.env
 
       - name: docker-compose.yml, .env 파일 EC2로 복사
