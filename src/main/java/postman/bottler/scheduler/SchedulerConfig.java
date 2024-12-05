@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SchedulerConfig {
 
+    private final RecommendationScheduler recommendationScheduler;
+
     @Scheduled(cron = "0 0 9/21 * * ?")
     public void sendKeywordLetterToAll() {
         // TODO 키워드 편지 보내기
@@ -22,5 +24,10 @@ public class SchedulerConfig {
         // TODO 정지 기한이 지난 유저들 조회
         // TODO 정지 기한이 지난 유저 정지 해제
         // TODO 정지 정보 삭제
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void executeRecommendationJob() {
+        recommendationScheduler.processAllUserRecommendations();
     }
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.service.LetterKeywordService;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
@@ -18,6 +19,7 @@ public class DeleteManagerService {
     private final LetterService letterService;
     private final ReplyLetterService replyLetterService;
     private final LetterBoxService letterBoxService;
+    private final LetterKeywordService letterKeywordService;
 
     @Transactional
     public void deleteLetters(List<LetterDeleteRequestDTO> letterDeleteRequestDTOs) {
@@ -35,6 +37,7 @@ public class DeleteManagerService {
             if (letterBoxMap.containsKey(BoxType.SEND)) {
                 List<Long> letterIds = letterBoxMap.get(BoxType.SEND);
                 letterService.deleteLetters(letterIds); // LetterService에서 삭제
+                letterKeywordService.markKeywordsAsDeleted(letterIds);
                 letterBoxService.deleteByIdsAndType(letterIds, LetterType.LETTER, BoxType.UNKNOWN);
             }
             if (letterBoxMap.containsKey(BoxType.RECEIVE)) {
