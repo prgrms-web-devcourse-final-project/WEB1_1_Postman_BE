@@ -53,7 +53,6 @@ public class MapLetterService {
 
     private static final double VIEW_DISTANCE = 15;
     private static final int REDIS_SAVED_REPLY = 6;
-    private final UserService userService;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
