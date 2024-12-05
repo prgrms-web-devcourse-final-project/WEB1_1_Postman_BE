@@ -56,8 +56,8 @@ public class ComplaintService {
         return switch (type) {
             case MAP_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.MAP_LETTER, letterId);
             case MAP_REPLY_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.REPLY, letterId);
-            case KEYWORD_LETTER -> 1L; // letterService.blockLetter(letterId);
-            case KEYWORD_REPLY_LETTER -> 1L; // replyLetterService.blockLetter(letterId);
+            case KEYWORD_LETTER -> letterService.blockLetter(letterId);
+            case KEYWORD_REPLY_LETTER -> replyLetterService.blockLetter(letterId);
         };
     }
 }
