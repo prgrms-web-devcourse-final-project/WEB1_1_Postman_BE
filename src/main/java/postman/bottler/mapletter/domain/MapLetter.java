@@ -57,7 +57,7 @@ public class MapLetter {
     }
 
     public static MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
-                                                  Long userId) {
+                                                  Long userId, Long targetUserId) {
         return MapLetter.builder()
                 .title(createTargetMapLetterRequestDTO.title())
                 .content(createTargetMapLetterRequestDTO.content())
@@ -68,7 +68,7 @@ public class MapLetter {
                 .label(createTargetMapLetterRequestDTO.label())
                 .type(MapLetterType.PRIVATE)
                 .createUserId(userId)
-                .targetUserId(createTargetMapLetterRequestDTO.target())
+                .targetUserId(targetUserId)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)

@@ -53,6 +53,7 @@ public class MapLetterService {
 
     private static final double VIEW_DISTANCE = 15;
     private static final int REDIS_SAVED_REPLY = 6;
+    private final UserService userService;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -64,7 +65,8 @@ public class MapLetterService {
     @Transactional
     public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
                                            Long userId) {
-        MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
+        Long targetUserId=userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
+        MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
         return mapLetterRepository.save(mapLetter);
     }
 
