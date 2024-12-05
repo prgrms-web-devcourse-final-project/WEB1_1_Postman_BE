@@ -25,6 +25,5 @@ public class BanService {
         Ban ban = Ban.create(user.getUserId(), BAN_DAYS);
         user.banned();
         banRepository.save(ban);
-        userRepository.update(user);
     }
 }
