@@ -61,8 +61,7 @@ public class ReplyLetterService {
 
     @Transactional(readOnly = true)
     public ReplyLetterResponseDTO getReplyLetterDetail(Long replyLetterId) {
-        ReplyLetter replyLetter = replyLetterRepository.findById(replyLetterId)
-                .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
+        ReplyLetter replyLetter = findReplyLetter(replyLetterId);
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
@@ -72,6 +71,18 @@ public class ReplyLetterService {
         for (Long letterId : letterIds) {
             deleteRecentReply(letterId);
         }
+    }
+
+    @Transactional
+    public Long blockLetter(Long replyLetterId) {
+        replyLetterRepository.blockReplyLetterById(replyLetterId);
+        ReplyLetter replyLetter = findReplyLetter(replyLetterId);
+        return replyLetter.getSenderId();
+    }
+
+    private ReplyLetter findReplyLetter(Long replyLetterId) {
+        return replyLetterRepository.findById(replyLetterId)
+                .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
     }
 
     private String generateReplyTitle(String title) {

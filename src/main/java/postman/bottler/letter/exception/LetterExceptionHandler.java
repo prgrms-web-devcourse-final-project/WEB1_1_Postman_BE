@@ -1,5 +1,6 @@
 package postman.bottler.letter.exception;
 
+import static postman.bottler.global.response.code.ErrorStatus.INVALID_LETTER_TYPE;
 import static postman.bottler.global.response.code.ErrorStatus.INVALID_SORT_FIELD;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ACCESS_DENIED;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ALREADY_SAVED;
@@ -88,5 +89,12 @@ public class LetterExceptionHandler {
         return ResponseEntity
                 .status(INVALID_SORT_FIELD.getHttpStatus())
                 .body(ApiResponse.onFailure(INVALID_SORT_FIELD.getCode(), e.getMessage(), null));
+    }
+
+    @ExceptionHandler(InvalidLetterTypeException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidLetterTypeException(InvalidLetterTypeException e) {
+        return ResponseEntity
+                .status(INVALID_LETTER_TYPE.getHttpStatus())
+                .body(ApiResponse.onFailure(INVALID_LETTER_TYPE.getCode(), e.getMessage(), null));
     }
 }

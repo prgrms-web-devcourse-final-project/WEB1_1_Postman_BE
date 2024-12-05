@@ -30,4 +30,9 @@ public class LetterRepositoryImpl implements LetterRepository {
     public void deleteByIds(List<Long> letterIds) {
         letterJpaRepository.deleteByIds(letterIds);
     }
+
+    @Override
+    public void blockLetterById(Long letterId) {
+        letterJpaRepository.blockById(letterId);
+    }
 }
