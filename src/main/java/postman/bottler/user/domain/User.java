@@ -94,6 +94,10 @@ public class User {
         return this.role == Role.BAN_USER;
     }
 
+    public void unban() {
+        this.role = Role.USER;
+    }
+
     public void banned() {
         this.role = Role.BAN_USER;
     }

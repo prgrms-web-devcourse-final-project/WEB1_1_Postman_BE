@@ -74,6 +74,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public void unbanUsers(List<Long> ids) {
+        userJpaRepository.unbanUsers(ids);
+    }
+  
     public boolean existsByEmailAndProvider(String kakaoId) {
         return userJpaRepository.existsByEmailAndProvider(kakaoId, Provider.KAKAO);
     }

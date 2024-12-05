@@ -13,6 +13,7 @@ public interface UserRepository {
     void updatePassword(Long userId, String password);
     void updateProfileImageUrl(Long userId, String imageUrl);
     User findById(Long userId);
+    void unbanUsers(List<Long> ids);
     boolean existsByEmailAndProvider(String kakaoId);
     List<User> findAllUserId();
     void update(User user);
