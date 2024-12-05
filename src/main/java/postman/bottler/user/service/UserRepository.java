@@ -1,5 +1,6 @@
 package postman.bottler.user.service;
 
+import java.util.List;
 import postman.bottler.user.domain.User;
 
 public interface UserRepository {
@@ -13,4 +14,6 @@ public interface UserRepository {
     void updateProfileImageUrl(Long userId, String imageUrl);
     User findById(Long userId);
     boolean existsByEmailAndProvider(String kakaoId);
+    List<User> findAllUserId();
+    void update(User user);
 }
