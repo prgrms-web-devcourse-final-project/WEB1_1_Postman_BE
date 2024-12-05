@@ -86,7 +86,6 @@ dependencies {
 
     //swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 
     // slack bot
     implementation("com.slack.api:bolt:1.44.2")

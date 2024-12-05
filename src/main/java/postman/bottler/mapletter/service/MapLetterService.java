@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
@@ -41,6 +40,7 @@ import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
 import postman.bottler.reply.dto.ReplyType;
+import postman.bottler.user.service.UserService;
 
 @Service
 @RequiredArgsConstructor
@@ -48,11 +48,12 @@ public class MapLetterService {
     private final MapLetterRepository mapLetterRepository;
     private final ReplyMapLetterRepository replyMapLetterRepository;
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
-    //    private final UserService userService;
+    private final UserService userService;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final double VIEW_DISTANCE = 15;
     private static final int REDIS_SAVED_REPLY = 6;
+    private final UserService userService;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -64,7 +65,8 @@ public class MapLetterService {
     @Transactional
     public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
                                            Long userId) {
-        MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId);
+        Long targetUserId=userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
+        MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
         return mapLetterRepository.save(mapLetter);
     }
 
@@ -79,7 +81,7 @@ public class MapLetterService {
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
         mapLetter.validateAccess(userId);
 
-        String profileImg = ""; //user 서비스 메서드 불러서 받기
+        String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg);
     }
 
@@ -105,8 +107,7 @@ public class MapLetterService {
     private FindMapLetterResponseDTO toFindSentMapLetter(FindSentMapLetter findSentMapLetter) {
         String targetUserNickname = null;
         if (findSentMapLetter.getType().equals("TARGET")) {
-            targetUserNickname = "TS"; //추후 변경. 테스트용
-//            targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId()); //나중에 유저 서비스에서 받기
+            targetUserNickname = userService.getNicknameById(findSentMapLetter.getTargetUser());
         }
 
         return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname);
@@ -124,10 +125,8 @@ public class MapLetterService {
             String senderProfileImg = null;
 
             if ("TARGET".equals(letter.getType())) {
-                senderNickname = "TS"; // 예시 닉네임 (유저 서비스에서 가져와야 함)
-                senderProfileImg = "www.profile.com"; // 예시 프로필 이미지
-                // senderNickname = userService.getNicknameById(projection.getSenderId());
-                // senderProfileImg = userService.getProfileImgById(projection.getSenderId());
+                 senderNickname = userService.getNicknameById(letter.getSenderId());
+                 senderProfileImg = userService.getProfileImageUrlById(letter.getSenderId());
             }
 
             return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg);
@@ -139,7 +138,12 @@ public class MapLetterService {
                                                                    Long userId) {
         List<MapLetterAndDistance> letters = mapLetterRepository.findLettersByUserLocation(latitude, longitude, userId);
 
-        return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
+        return letters.stream()
+                .map(letter -> {
+                            String nickname = userService.getNicknameById(letter.getCreateUserId());
+                            return FindNearbyLettersResponseDTO.from(letter, nickname);
+                        }
+                ).toList();
     }
 
     @Transactional
@@ -251,8 +255,7 @@ public class MapLetterService {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         mapLetter.validateAccess(userId);
 
-        String profileImg = "www.profile.com"; //user 서비스 메서드 불러서 받기
-//        profileImg = userService.getProfileImgByCreateUserId(mapLetter.getCreateUserId());
+        String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg);
     }
 
@@ -278,8 +281,7 @@ public class MapLetterService {
         return letters.map(mapLetter -> {
             String targetUserNickname = null;
             if (mapLetter.getType() == MapLetterType.PRIVATE) {
-//                targetUserNickname=userService.findNicknameByUserId(mapLetter.getTargetUserId());
-                targetUserNickname = "TS";
+                targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId());
             }
             return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
         });
@@ -303,12 +305,8 @@ public class MapLetterService {
         Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
         validMaxPage(letters.getTotalPages(), page);
         return letters.map(letter -> {
-//            String sendUserNickname = letter.getCreateUserId().toString(); //예시
-            String sendUserNickname = "TS";
-            String sendUserProfileImg = "www.profile.com"; //예시
-
-//             sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
-//             sendUserProfileImg = userService.getProfileImgById(letter.getCreateUserId());
+            String sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
+            String sendUserProfileImg = userService.getProfileImageUrlById(letter.getCreateUserId());
             return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg);
         });
     }
@@ -367,7 +365,12 @@ public class MapLetterService {
     public List<FindNearbyLettersResponseDTO> guestFindNearByMapLetters(BigDecimal latitude, BigDecimal longitude) {
         List<MapLetterAndDistance> letters = mapLetterRepository.guestFindLettersByUserLocation(latitude, longitude);
 
-        return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
+        return letters.stream()
+                .map(letter -> {
+                            String nickname = userService.getNicknameById(letter.getCreateUserId());
+                            return FindNearbyLettersResponseDTO.from(letter, nickname);
+                        }
+                ).toList();
     }
 
     @Transactional(readOnly = true)
@@ -381,7 +384,7 @@ public class MapLetterService {
 
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
 
-        String profileImg = ""; //user 서비스 메서드 불러서 받기
+        String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg);
     }
 }
