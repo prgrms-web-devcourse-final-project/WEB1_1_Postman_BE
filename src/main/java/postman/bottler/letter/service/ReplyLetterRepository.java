@@ -14,4 +14,6 @@ public interface ReplyLetterRepository {
     Optional<ReplyLetter> findById(Long replyLetterId);
 
     void deleteByIds(List<Long> letterIds);
+
+    void blockReplyLetterById(Long replyLetterId);
 }
