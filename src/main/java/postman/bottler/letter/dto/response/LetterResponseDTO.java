@@ -15,12 +15,12 @@ public record LetterResponseDTO(
         String label,
         LocalDateTime createdAt
 ) {
-    public static LetterResponseDTO from(Letter letter) {
+    public static LetterResponseDTO from(Letter letter, List<String> keywords) {
         return new LetterResponseDTO(
                 letter.getId(),
                 letter.getTitle(),
                 letter.getContent(),
-                letter.getKeywords(),
+                keywords,
                 letter.getFont(),
                 letter.getPaper(),
                 letter.getProfile(),

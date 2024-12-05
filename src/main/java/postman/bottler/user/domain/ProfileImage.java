@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class ProfileImage {
-    private Long profileImageId;
     private String imageUrl;
 
     private ProfileImage(String imageUrl) {

@@ -68,4 +68,10 @@ public class UserExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.FAILED_KAKAO_SIGNIN.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(UserBanException.class)
+    public ApiResponse<?> handleUserBanException(UserBanException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.EMPTY_USER_BAN.getCode(), e.getMessage(), null);
+    }
 }
