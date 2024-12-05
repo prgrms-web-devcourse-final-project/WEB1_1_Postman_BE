@@ -76,7 +76,7 @@ public class KeywordBatch {
                 if (subscriptions.isPushEnabled()) {
                     provider.pushAll(pushMessages);
                 }
-                return Notification.create("NEW_LETTER", user.getUserId(), letterId);
+                return Notification.create(NotificationType.NEW_LETTER, user.getUserId(), letterId);
             }
         };
     }
