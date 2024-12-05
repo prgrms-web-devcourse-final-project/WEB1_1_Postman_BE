@@ -12,7 +12,6 @@ public class BanService {
     private static final Long BAN_DAYS = 7L;
 
     private final BanRepository banRepository;
-    private final UserRepository userRepository;
 
     public void banUser(User user) {
         if (user.isBanned()) {
