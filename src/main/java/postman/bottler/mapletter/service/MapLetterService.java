@@ -377,9 +377,7 @@ public class MapLetterService {
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
 
-        if(mapLetter.getType()==MapLetterType.PRIVATE){
-            throw new CommonForbiddenException("해당 편지에 접근할 수 없습니다.");
-        }
+        mapLetter.isPrivate();
 
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
 
