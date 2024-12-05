@@ -21,4 +21,6 @@ public interface FindReceivedMapLetterDTO {
     Long getSourceLetterId(); // 답장 편지의 경우만 존재
 
     LocalDateTime getCreatedAt();
+
+    Long getSenderId();
 }
