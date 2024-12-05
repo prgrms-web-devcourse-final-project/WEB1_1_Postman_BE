@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.domain.MapComplaint;
 import postman.bottler.complaint.service.MapComplaintRepository;
 
 @Repository
@@ -14,7 +14,7 @@ public class MapComplaintRepositoryImpl implements MapComplaintRepository {
     private final JpaMapComplaintRepository jpaRepository;
 
     @Override
-    public MapComplaint save(MapComplaint complaint) {
+    public Complaint save(Complaint complaint) {
         return jpaRepository.save(MapComplaintEntity.from(complaint)).toDomain();
     }
 

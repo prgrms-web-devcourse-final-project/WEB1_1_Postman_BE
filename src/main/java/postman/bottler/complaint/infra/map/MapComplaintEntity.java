@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import postman.bottler.complaint.domain.MapComplaint;
+import postman.bottler.complaint.domain.Complaint;
 
 @Entity
 @Table(name = "map_complaint")
@@ -32,7 +32,7 @@ public class MapComplaintEntity {
 
     private LocalDateTime createdAt;
 
-    public static MapComplaintEntity from(MapComplaint complaint) {
+    public static MapComplaintEntity from(Complaint complaint) {
         return MapComplaintEntity.builder()
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
@@ -42,7 +42,7 @@ public class MapComplaintEntity {
                 .build();
     }
 
-    public MapComplaint toDomain() {
-        return MapComplaint.of(id, letterId, reporterId, description, createdAt);
+    public Complaint toDomain() {
+        return Complaint.of(id, letterId, reporterId, description, createdAt);
     }
 }
