@@ -15,4 +15,6 @@ public interface UserRepository {
     User findById(Long userId);
     void unbanUsers(List<Long> ids);
     boolean existsByEmailAndProvider(String kakaoId);
+    List<User> findAllUserId();
+    void update(User user);
 }

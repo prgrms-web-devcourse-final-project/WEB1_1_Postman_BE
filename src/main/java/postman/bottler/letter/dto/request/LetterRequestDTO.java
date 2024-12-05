@@ -20,7 +20,6 @@ public record LetterRequestDTO(
         return Letter.builder()
                 .title(validatedTitle)
                 .content(this.content)
-                .keywords(this.keywords)
                 .font(this.font)
                 .paper(this.paper)
                 .label(this.label)

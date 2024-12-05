@@ -77,13 +77,17 @@ public class User {
     }
 
     public void updateWarningCount() {
-        if (this.warningCount >= MAX_WARNING_COUNT) { //정지
-            this.role = Role.BAN_USER;
-            this.updatedAt = LocalDateTime.now();
+        this.warningCount++;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean checkBan() {
+        if (this.warningCount >= MAX_WARNING_COUNT) {
             this.warningCount = 0;
-        } else {
-            this.warningCount++;
+            this.updatedAt = LocalDateTime.now();
+            return true;
         }
+        return false;
     }
 
     public boolean isBanned() {
@@ -92,5 +96,9 @@ public class User {
 
     public void unban() {
         this.role = Role.USER;
+    }
+
+    public void banned() {
+        this.role = Role.BAN_USER;
     }
 }

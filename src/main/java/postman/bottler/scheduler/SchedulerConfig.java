@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class SchedulerConfig {
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
+    private final RecommendationScheduler recommendationScheduler;
 
     @Scheduled(cron = "${batch.cron.recommend}")
     public void sendRecommendKeywordLetter()
@@ -44,5 +45,10 @@ public class SchedulerConfig {
                 .toJobParameters();
 
         jobLauncher.run(jobRegistry.getJob("unbanJob"), jobParameters);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void executeRecommendationJob() {
+        recommendationScheduler.processAllUserRecommendations();
     }
 }
