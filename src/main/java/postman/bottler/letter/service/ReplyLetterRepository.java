@@ -16,4 +16,6 @@ public interface ReplyLetterRepository {
     void deleteByIds(List<Long> letterIds);
 
     void blockReplyLetterById(Long replyLetterId);
+
+    boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
 }
