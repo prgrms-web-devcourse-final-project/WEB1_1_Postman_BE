@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.slack.SlackConstant;
+import postman.bottler.slack.SlackService;
 import postman.bottler.user.auth.JwtTokenProvider;
 import postman.bottler.user.domain.EmailCode;
 import postman.bottler.user.domain.EmailForm;
@@ -42,6 +44,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final EmailService emailService;
+    private final SlackService slackService;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -232,8 +235,10 @@ public class UserService {
     public void updateWarningCount(Long userId) {
         User user = userRepository.findById(userId);
         user.updateWarningCount();
+        slackService.sendSlackMessage(SlackConstant.WARNING, userId);
         if (user.checkBan()) {
             banService.banUser(user);
+            slackService.sendSlackMessage(SlackConstant.BAN, userId);
         }
     }
 

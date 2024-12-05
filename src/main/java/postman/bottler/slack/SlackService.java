@@ -12,24 +12,25 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SlackService {
-    @Value("${jwt.secret}")
+    @Value("${slack.token}")
     String slackToken;
 
-    public void sendSlackMessage(String message){
+    private static final String CHANNEL_NAME = "#보틀러";
 
-        String channelAddress = SlackConstant.BOTTLER;
+    public void sendSlackMessage(SlackConstant slackConstant, Long userId) {
+        String message = String.format(slackConstant.getMessage(), userId);
 
-        try{
+        try {
             MethodsClient methods = Slack.getInstance().methods(slackToken);
 
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-                    .channel(channelAddress)
+                    .channel(CHANNEL_NAME)
                     .text(message)
                     .build();
 
             methods.chatPostMessage(request);
 
-            log.info("Slack " + channelAddress + " 에 메시지 보냄");
+            log.info("Slack " + CHANNEL_NAME + " 에 메세지 보냄");
         } catch (SlackApiException | IOException e) {
             log.error(e.getMessage());
         }
