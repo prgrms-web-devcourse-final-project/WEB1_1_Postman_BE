@@ -51,6 +51,9 @@ jobs:
       KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
       KAKAO_REDIRECT_URL: ${{ secrets.KAKAO_REDIRECT_URL }}
 
+      # Slack 환경변수
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
     steps:
       - name: 코드 가져오기
         uses: actions/checkout@v4

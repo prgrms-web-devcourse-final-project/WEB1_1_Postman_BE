@@ -70,3 +70,6 @@ kakao:
     secret: ${KAKAO_CLIENT_SECRET}
   redirect:
     url: ${KAKAO_REDIRECT_URL}
+
+slack:
+  token: ${SLACK_TOKEN}
