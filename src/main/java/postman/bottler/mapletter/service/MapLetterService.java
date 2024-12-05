@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
@@ -75,7 +76,8 @@ public class MapLetterService {
         Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
                 letterId);
 
-        mapLetter.validateFindOneMapLetter(userId, VIEW_DISTANCE, distance);
+        mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
+        mapLetter.validateAccess(userId);
 
         String profileImg = ""; //user 서비스 메서드 불러서 받기
         return OneLetterResponseDTO.from(mapLetter, profileImg);
@@ -326,7 +328,7 @@ public class MapLetterService {
     private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
         MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
         String key = "REPLY:" + sourceLetter.getCreateUserId();
-        String value = ReplyType.MAP+":"+letterId+":"+labelUrl;
+        String value = ReplyType.MAP + ":" + letterId + ":" + labelUrl;
 
         Long size = redisTemplate.opsForList().size(key);
         if (size != null && size >= REDIS_SAVED_REPLY) {
@@ -338,10 +340,10 @@ public class MapLetterService {
         }
     }
 
-    private void deleteRecentReply(Long letterId, String labelUrl, Long sourceLetterId){
+    private void deleteRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
         MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
         String key = "REPLY:" + sourceLetter.getCreateUserId();
-        String value = ReplyType.MAP+":"+letterId+":"+labelUrl;
+        String value = ReplyType.MAP + ":" + letterId + ":" + labelUrl;
 
         redisTemplate.opsForList().remove(key, 1, value);
     }
@@ -350,14 +352,36 @@ public class MapLetterService {
         List<ReplyProjectDTO> recentMapKeywordReplyByUserId = replyMapLetterRepository.findRecentMapKeywordReplyByUserId(
                 userId, fetchItemSize);
 
-        String key="REPLY:"+userId;
+        String key = "REPLY:" + userId;
 
         List<ReplyProjectDTO> reversedList = new ArrayList<>(recentMapKeywordReplyByUserId);
         Collections.reverse(reversedList);
 
         for (ReplyProjectDTO replyLetter : reversedList) {
-            String tempValue = replyLetter.getType()+":"+replyLetter.getId()+":"+replyLetter.getLabel();
+            String tempValue = replyLetter.getType() + ":" + replyLetter.getId() + ":" + replyLetter.getLabel();
             redisTemplate.opsForList().leftPush(key, tempValue);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<FindNearbyLettersResponseDTO> guestFindNearByMapLetters(BigDecimal latitude, BigDecimal longitude) {
+        List<MapLetterAndDistance> letters = mapLetterRepository.guestFindLettersByUserLocation(latitude, longitude);
+
+        return letters.stream().map(FindNearbyLettersResponseDTO::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public OneLetterResponseDTO guestFindOneMapLetter(Long letterId, BigDecimal latitude, BigDecimal longitude) {
+        MapLetter mapLetter = mapLetterRepository.findById(letterId);
+
+        Double distance = mapLetterRepository.findDistanceByLatitudeAndLongitudeAndLetterId(latitude, longitude,
+                letterId);
+
+        mapLetter.isPrivate();
+
+        mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
+
+        String profileImg = ""; //user 서비스 메서드 불러서 받기
+        return OneLetterResponseDTO.from(mapLetter, profileImg);
     }
 }
