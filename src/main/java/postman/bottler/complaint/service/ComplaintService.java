@@ -9,7 +9,13 @@ import postman.bottler.complaint.domain.KeywordReplyComplaint;
 import postman.bottler.complaint.domain.MapComplaint;
 import postman.bottler.complaint.domain.MapReplyComplaint;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
+import postman.bottler.letter.service.LetterService;
+import postman.bottler.letter.service.ReplyLetterService;
+import postman.bottler.mapletter.service.BlockMapLetterType;
+import postman.bottler.mapletter.service.MapLetterService;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
+import postman.bottler.user.service.UserService;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +26,10 @@ public class ComplaintService {
     private final MapReplyComplaintRepository mapReplyComplaintRepository;
 
     private final NotificationService notificationService;
+    private final LetterService letterService;
+    private final ReplyLetterService replyLetterService;
+    private final MapLetterService mapLetterService;
+    private final UserService userService;
 
     @Transactional
     public ComplaintResponseDTO complainKeywordLetter(Long letterId, Long reporterId,
@@ -29,9 +39,9 @@ public class ComplaintService {
         KeywordComplaint complaint = KeywordComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
+            Long writer = 1L; // letterService.blockLetter(letterId);
+            notificationService.sendNotification(NotificationType.WARNING, writer, letterId);
+            userService.updateWarningCount(writer);
         }
         return ComplaintResponseDTO.from(keywordComplaintRepository.save(complaint));
     }
@@ -44,9 +54,9 @@ public class ComplaintService {
         MapComplaint complaint = MapComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
+            Long writer = mapLetterService.letterBlock(BlockMapLetterType.MAP_LETTER, letterId);
+            notificationService.sendNotification(NotificationType.WARNING, writer, letterId);
+            userService.updateWarningCount(writer);
         }
         return ComplaintResponseDTO.from(mapComplaintRepository.save(complaint));
     }
@@ -59,9 +69,9 @@ public class ComplaintService {
         KeywordReplyComplaint complaint = KeywordReplyComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
+            Long writer = 1L; // replyLetterService.blockLetter(letterId);
+            notificationService.sendNotification(NotificationType.WARNING, writer, letterId);
+            userService.updateWarningCount(writer);
         }
         return ComplaintResponseDTO.from(keywordReplyComplaintRepository.save(complaint));
     }
@@ -74,9 +84,9 @@ public class ComplaintService {
         MapReplyComplaint complaint = MapReplyComplaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
+            Long writer = mapLetterService.letterBlock(BlockMapLetterType.REPLY, letterId);
+            notificationService.sendNotification(NotificationType.WARNING, writer, letterId);
+            userService.updateWarningCount(writer);
         }
         return ComplaintResponseDTO.from(mapReplyComplaintRepository.save(complaint));
     }
