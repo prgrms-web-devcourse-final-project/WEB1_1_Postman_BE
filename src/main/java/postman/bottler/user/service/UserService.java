@@ -244,4 +244,9 @@ public class UserService {
                 .map(User::getUserId)
                 .collect(Collectors.toList());
     }
+
+    public Long getUserIdByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return user.getUserId();
+    }
 }

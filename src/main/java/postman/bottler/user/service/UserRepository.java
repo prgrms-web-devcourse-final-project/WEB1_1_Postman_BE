@@ -17,4 +17,5 @@ public interface UserRepository {
     boolean existsByEmailAndProvider(String kakaoId);
     List<User> findAllUserId();
     void update(User user);
+    User findByNickname(String nickname);
 }

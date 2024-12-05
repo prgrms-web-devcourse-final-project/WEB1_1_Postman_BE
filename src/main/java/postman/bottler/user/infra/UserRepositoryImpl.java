@@ -96,4 +96,11 @@ public class UserRepositoryImpl implements UserRepository {
                 .orElseThrow(() -> new TokenException("해당 토큰에 대한 유저를 찾을 수 없습니다."));
         userEntity.updateBanUser(user);
     }
+
+    @Override
+    public User findByNickname(String nickname) {
+        UserEntity userEntity = userJpaRepository.findByNickname(nickname)
+                .orElseThrow(() -> new TokenException("해당 닉네임에 대한 유저를 찾을 수 없습니다."));
+        return UserEntity.toUser(userEntity);
+    }
 }
