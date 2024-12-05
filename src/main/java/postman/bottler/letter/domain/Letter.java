@@ -1,7 +1,6 @@
 package postman.bottler.letter.domain;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,6 @@ public class Letter {
     private Long id;
     private String title;
     private String content;
-    private List<String> keywords;
     private String font;
     private String paper;
     private String label;

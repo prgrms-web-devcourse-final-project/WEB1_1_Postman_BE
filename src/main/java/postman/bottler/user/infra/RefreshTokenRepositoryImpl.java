@@ -32,4 +32,9 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
                 .orElseThrow(() -> new TokenException("유효하지 않은 jwt 토큰입니다."));
         return refreshTokenEntity.getEmail();
     }
+
+    @Override
+    public void deleteByEmail(String email) {
+        refreshTokenJpaRepository.deleteByEmail(email);
+    }
 }
