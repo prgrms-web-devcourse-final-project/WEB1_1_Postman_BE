@@ -2,6 +2,7 @@ package postman.bottler.letter.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.BoxType;
@@ -13,6 +14,7 @@ import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LetterService {
@@ -42,8 +44,12 @@ public class LetterService {
         return LetterDetailResponseDTO.from(letter, keywords, userId);
     }
 
-    public void blockLetter(Long letterId) {
-
+    @Transactional
+    public Long blockLetter(Long letterId) {
+        Letter letter = findLetter(letterId);
+        letterRepository.blockLetterById(letterId);
+        log.info("Letter blocked: {}", letterId);
+        return letter.getUserId();
     }
 
     @Transactional(readOnly = true)

@@ -28,4 +28,6 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Long>  {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END " +
             "FROM UserEntity u WHERE u.email = :kakaoId AND u.provider = :provider AND u.isDeleted = false")
     boolean existsByEmailAndProvider(String kakaoId, Provider provider);
+
+    Optional<UserEntity> findByNickname(String nickname);
 }

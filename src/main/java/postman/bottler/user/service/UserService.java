@@ -219,29 +219,39 @@ public class UserService {
     }
 
     //아이디로 프로필 이미지 조회
+    @Transactional
     public String getProfileImageUrlById(Long userId) {
         return userRepository.findById(userId).getImageUrl();
     }
 
     //아이디로 닉네임 조회
+    @Transactional
     public String getNicknameById(Long userId) {
         return userRepository.findById(userId).getNickname();
     }
 
     //유저 경고 횟수 증가
+    @Transactional
     public void updateWarningCount(Long userId) {
         User user = userRepository.findById(userId);
         user.updateWarningCount();
         if (user.checkBan()) {
             banService.banUser(user);
         }
+        userRepository.updateWarningCount(user);
     }
 
     //전체 유저 아이디 조회
+    @Transactional
     public List<Long> getAllUserIds() {
         List<User> users = userRepository.findAllUserId();
         return users.stream()
                 .map(User::getUserId)
                 .collect(Collectors.toList());
+    }
+
+    public Long getUserIdByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return user.getUserId();
     }
 }
