@@ -18,8 +18,13 @@ public class SchedulerConfig {
         unbanScheduler.unbanUsers(LocalDateTime.now());
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 8,17,22 * * *")
     public void executeRecommendationJob() {
         recommendationScheduler.processAllUserRecommendations();
+    }
+
+    @Scheduled(cron = "0 0 9,18,23 * * ?")
+    public void recommendKeywordLetter() {
+        recommendationScheduler.updateAllRecommendations();
     }
 }
