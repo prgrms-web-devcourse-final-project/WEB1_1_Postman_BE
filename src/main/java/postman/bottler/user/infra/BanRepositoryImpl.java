@@ -27,7 +27,7 @@ public class BanRepositoryImpl implements BanRepository {
     }
 
     @Override
-    public List<Ban> findUnbanned(LocalDateTime now) {
+    public List<Ban> findExpiredBans(LocalDateTime now) {
         return banRepository.findByUnbansAtBefore(now).stream()
                 .map(BanEntity::toDomain)
                 .toList();
@@ -35,9 +35,7 @@ public class BanRepositoryImpl implements BanRepository {
 
     @Override
     public void deleteBans(List<Ban> bans) {
-        banRepository.deleteAll(bans.stream()
-                .map(BanEntity::from)
-                .toList());
+        banRepository.deleteAll(bans.stream().map(BanEntity::from).toList());
     }
 
     @Override
