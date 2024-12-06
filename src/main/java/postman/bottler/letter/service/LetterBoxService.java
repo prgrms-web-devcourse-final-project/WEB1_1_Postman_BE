@@ -1,6 +1,5 @@
 package postman.bottler.letter.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.domain.BoxType;
-import postman.bottler.letter.domain.Letter;
-import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
@@ -21,25 +18,10 @@ import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 public class LetterBoxService {
 
     private final LetterBoxRepository letterBoxRepository;
-    private final LetterHelperService letterHelperService;
 
     @Transactional
     public void saveLetter(LetterBoxDTO letterBoxDTO) {
         letterBoxRepository.save(letterBoxDTO.toDomain());
-    }
-
-    @Transactional
-    public void saveRecommendedLetter(List<Long> letterIds, Long userId) {
-        List<Letter> recommendLetters = letterHelperService.getRecommendedLetters(letterIds);
-        List<LetterBox> letterBoxes = recommendLetters.stream()
-                .map(recommendLetter ->
-                        LetterBoxDTO.of(
-                                userId, recommendLetter.getId(), LetterType.LETTER, BoxType.RECEIVE, LocalDateTime.now()
-                        ).toDomain()
-                )
-                .toList();
-
-        letterBoxRepository.saveRecommendedLetters(letterBoxes);
     }
 
     @Transactional(readOnly = true)

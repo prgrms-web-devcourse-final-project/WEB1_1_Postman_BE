@@ -12,9 +12,10 @@ public record OneReplyLetterResponseDTO(
         String font,
         String label,
         String paper,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean isOwner
 ) {
-    public static OneReplyLetterResponseDTO from(ReplyMapLetter replyMapLetter) {
+    public static OneReplyLetterResponseDTO from(ReplyMapLetter replyMapLetter, boolean isOwner) {
         return OneReplyLetterResponseDTO.builder()
                 .content(replyMapLetter.getContent())
                 .sourceLetterId(replyMapLetter.getSourceLetterId())
@@ -22,6 +23,7 @@ public record OneReplyLetterResponseDTO(
                 .label(replyMapLetter.getLabel())
                 .paper(replyMapLetter.getPaper())
                 .createdAt(replyMapLetter.getCreatedAt())
+                .isOwner(isOwner)
                 .build();
     }
 }

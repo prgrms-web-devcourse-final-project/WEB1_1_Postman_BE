@@ -1,7 +1,10 @@
 package postman.bottler.user.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.user.domain.Ban;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.UserBanException;
@@ -12,6 +15,7 @@ public class BanService {
     private static final Long BAN_DAYS = 7L;
 
     private final BanRepository banRepository;
+    private final UserRepository userRepository;
 
     public void banUser(User user) {
         if (user.isBanned()) {
@@ -24,5 +28,14 @@ public class BanService {
         Ban ban = Ban.create(user.getUserId(), BAN_DAYS);
         user.banned();
         banRepository.save(ban);
+    }
+
+    @Transactional
+    public void unbans(LocalDateTime now) {
+        List<Ban> expiredBans = banRepository.findExpiredBans(now);
+        List<User> willBeUnbanned = userRepository.findWillBeUnbannedUsers(expiredBans);
+        willBeUnbanned.forEach(User::unban);
+        userRepository.updateUsers(willBeUnbanned);
+        banRepository.deleteBans(expiredBans);
     }
 }

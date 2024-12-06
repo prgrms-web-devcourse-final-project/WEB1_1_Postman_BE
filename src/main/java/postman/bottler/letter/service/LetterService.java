@@ -73,8 +73,7 @@ public class LetterService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<Letter> getRecommendedLetters(List<Long> letterIds) {
-        return letterRepository.findAllByIds(letterIds);
+    public boolean checkLetterExists(Long letterId) {
+        return letterRepository.checkLetterExists(letterId);
     }
 }

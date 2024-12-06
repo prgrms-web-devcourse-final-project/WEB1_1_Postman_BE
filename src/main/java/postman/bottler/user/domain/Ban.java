@@ -7,9 +7,11 @@ import lombok.Getter;
 @Builder
 @Getter
 public class Ban {
-    private Long userId;
+    private final Long id;
 
-    private LocalDateTime bannedAt;
+    private final Long userId;
+
+    private final LocalDateTime bannedAt;
 
     private LocalDateTime unbansAt;
 
