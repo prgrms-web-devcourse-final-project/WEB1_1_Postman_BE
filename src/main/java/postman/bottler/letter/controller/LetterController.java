@@ -80,6 +80,11 @@ public class LetterController {
         return ApiResponse.onSuccess(result);
     }
 
+
+    @Operation(
+            summary = "추천 키워드 편지 조회",
+            description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다."
+    )
     @GetMapping("/recommend")
     public ApiResponse<List<LetterRecommendHeadersResponseDTO>> getRecommendLetters(
             @AuthenticationPrincipal CustomUserDetails userDetails

@@ -21,7 +21,7 @@ import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 public class LetterBoxService {
 
     private final LetterBoxRepository letterBoxRepository;
-    private final LetterService letterService;
+    private final LetterHelperService letterHelperService;
 
     @Transactional
     public void saveLetter(LetterBoxDTO letterBoxDTO) {
@@ -30,7 +30,7 @@ public class LetterBoxService {
 
     @Transactional
     public void saveRecommendedLetter(List<Long> letterIds, Long userId) {
-        List<Letter> recommendLetters = letterService.getRecommendedLetters(letterIds);
+        List<Letter> recommendLetters = letterHelperService.getRecommendedLetters(letterIds);
         List<LetterBox> letterBoxes = recommendLetters.stream()
                 .map(recommendLetter ->
                         LetterBoxDTO.of(
