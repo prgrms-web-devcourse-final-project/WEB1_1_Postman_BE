@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import postman.bottler.keyword.service.AsyncRecommendationService;
 import postman.bottler.keyword.service.RedisLetterService;
+import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.user.service.UserService;
 
 @Service
@@ -24,7 +25,8 @@ public class RecommendationScheduler {
         List<Long> userIds = userService.getAllUserIds(); // 사용자 ID 목록 가져오는 메서드
         // 알림전송
         for (Long userId : userIds) {
-            redisLetterService.updateRecommendationsFromTemp(userId);
+            RecommendNotificationRequestDTO recommendNotificationRequestDTO =
+                    redisLetterService.updateRecommendationsFromTemp(userId);
         }
     }
 }
