@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
+                        .requestMatchers("/.well-known/acme-challenge/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
