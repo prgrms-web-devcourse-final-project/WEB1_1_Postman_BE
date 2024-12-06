@@ -13,18 +13,18 @@ public class SchedulerConfig {
     private final RecommendationScheduler recommendationScheduler;
     private final UnbanScheduler unbanScheduler;
 
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void unban() {
-        unbanScheduler.unbanUsers(LocalDateTime.now());
-    }
-
-    @Scheduled(cron = "0 0 8,17,22 * * *")
-    public void executeRecommendationJob() {
-        recommendationScheduler.processAllUserRecommendations();
-    }
-
-    @Scheduled(cron = "0 0 9,18,23 * * ?")
-    public void recommendKeywordLetter() {
-        recommendationScheduler.updateAllRecommendations();
-    }
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void unban() {
+//        unbanScheduler.unbanUsers(LocalDateTime.now());
+//    }
+//
+//    @Scheduled(cron = "0 0 8,17,22 * * *")
+//    public void executeRecommendationJob() {
+//        recommendationScheduler.processAllUserRecommendations();
+//    }
+//
+//    @Scheduled(cron = "0 0 9,18,23 * * ?")
+//    public void recommendKeywordLetter() {
+//        recommendationScheduler.updateAllRecommendations();
+//    }
 }
