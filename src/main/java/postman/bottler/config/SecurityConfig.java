@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/.well-known/acme-challenge/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/oauth/**").permitAll()
                         .requestMatchers("/user/signup").permitAll()
@@ -80,4 +81,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 }
