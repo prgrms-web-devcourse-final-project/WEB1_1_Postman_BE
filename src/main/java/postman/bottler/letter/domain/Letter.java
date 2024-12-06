@@ -18,7 +18,6 @@ public class Letter {
     private String font;
     private String paper;
     private String label;
-    private String profile;
     private Long userId;
     private boolean isDeleted;
     private boolean isBlocked;

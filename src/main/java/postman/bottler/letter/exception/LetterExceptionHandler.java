@@ -1,5 +1,6 @@
 package postman.bottler.letter.exception;
 
+import static postman.bottler.global.response.code.ErrorStatus.DUPLICATE_REPLY_LETTER;
 import static postman.bottler.global.response.code.ErrorStatus.INVALID_LETTER_TYPE;
 import static postman.bottler.global.response.code.ErrorStatus.INVALID_SORT_FIELD;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ACCESS_DENIED;
@@ -52,6 +53,13 @@ public class LetterExceptionHandler {
         return ResponseEntity
                 .status(LETTER_ACCESS_DENIED.getHttpStatus())
                 .body(ApiResponse.onFailure(LETTER_ACCESS_DENIED.getCode(), e.getMessage(), null));
+    }
+
+    @ExceptionHandler(DuplicateReplyLetterException.class)
+    public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(DuplicateReplyLetterException e) {
+        return ResponseEntity
+                .status(DUPLICATE_REPLY_LETTER.getHttpStatus())
+                .body(ApiResponse.onFailure(DUPLICATE_REPLY_LETTER.getCode(), e.getMessage(), null));
     }
 
     @ExceptionHandler(BaseLetterValidationException.class)

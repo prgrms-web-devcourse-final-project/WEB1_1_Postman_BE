@@ -1,8 +1,10 @@
 package postman.bottler.scheduler;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import postman.bottler.keyword.service.AsyncRecommendationService;
+import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.user.service.UserService;
 
 @Service
@@ -11,13 +13,19 @@ public class RecommendationScheduler {
 
     private final AsyncRecommendationService asyncRecommendationService;
     private final UserService userService;
+    private final RedisLetterService redisLetterService;
 
     public void processAllUserRecommendations() {
-        // 모든 유저조회
-        /*
-            List<Long> allUserIds = userService.getAllUserIds;
-            allUserIds.foreach(asyncRecommendationService::processRecommendationForUser)
-         */
-        asyncRecommendationService.processRecommendationForUser(1L);
+        List<Long> userIds = userService.getAllUserIds();
+        userIds.forEach(asyncRecommendationService::processRecommendationForUser);
+    }
+
+    public void updateAllRecommendations() {
+        List<Long> userIds = userService.getAllUserIds(); // 사용자 ID 목록 가져오는 메서드
+        // 알림전송
+        for (Long userId : userIds) {
+            redisLetterService.updateRecommendationsFromTemp(userId);
+
+        }
     }
 }

@@ -24,4 +24,6 @@ public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntit
     @Modifying
     @Query("UPDATE ReplyLetterEntity l SET l.isBlocked = true, l.isDeleted = true WHERE l.id = :id")
     void blockById(Long id);
+
+    boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
 }

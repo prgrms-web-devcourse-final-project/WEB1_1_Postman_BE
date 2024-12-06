@@ -19,4 +19,7 @@ public interface LetterJpaRepository extends JpaRepository<LetterEntity, Long> {
     @Modifying
     @Query("UPDATE LetterEntity l SET l.isBlocked = true, l.isDeleted = true WHERE l.id = :id")
     void blockById(Long id);
+
+    @Query("SELECT l FROM LetterEntity l WHERE l.id IN :letterIds AND l.isDeleted = false")
+    List<LetterEntity> findAllByIds(List<Long> letterIds);
 }

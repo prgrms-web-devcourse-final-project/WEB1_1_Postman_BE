@@ -4,12 +4,14 @@ import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.User;
 
 public record UserResponseDTO(
-        Long userId,
+        String email,
         String nickname,
         String profileImageUrl,
-        Provider provider
+        Provider provider,
+        int warningCount
 ) {
     public static UserResponseDTO from(User user) {
-        return new UserResponseDTO(user.getUserId(), user.getNickname(), user.getImageUrl(), user.getProvider());
+        return new UserResponseDTO(user.getEmail(), user.getNickname(), user.getImageUrl(), user.getProvider(),
+                user.getWarningCount());
     }
 }
