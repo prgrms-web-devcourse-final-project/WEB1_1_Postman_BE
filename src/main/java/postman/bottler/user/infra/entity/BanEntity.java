@@ -32,6 +32,7 @@ public class BanEntity {
 
     public static BanEntity from(Ban ban) {
         return BanEntity.builder()
+                .banId(ban.getId())
                 .userId(ban.getUserId())
                 .bannedAt(ban.getBannedAt())
                 .unbansAt(ban.getUnbansAt())
@@ -40,6 +41,7 @@ public class BanEntity {
 
     public Ban toDomain() {
         return Ban.builder()
+                .id(banId)
                 .userId(userId)
                 .bannedAt(bannedAt)
                 .unbansAt(unbansAt)

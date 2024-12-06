@@ -10,7 +10,7 @@ public interface BanRepository {
 
     Optional<Ban> findByUserId(Long userId);
 
-    List<Ban> findUnbanned(LocalDateTime now);
+    List<Ban> findExpiredBans(LocalDateTime now);
 
     void deleteBans(List<Ban> bans);
 
