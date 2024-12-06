@@ -14,9 +14,10 @@ public record OneLetterResponseDTO(
         String font,
         String paper,
         String label,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean isOwner
 ) {
-    public static OneLetterResponseDTO from(MapLetter mapLetter, String profileImg) {
+    public static OneLetterResponseDTO from(MapLetter mapLetter, String profileImg, boolean isOwner) {
         return OneLetterResponseDTO.builder()
                 .title(mapLetter.getTitle())
                 .content(mapLetter.getContent())
@@ -26,6 +27,7 @@ public record OneLetterResponseDTO(
                 .profileImg(profileImg)
                 .createdAt(mapLetter.getCreatedAt())
                 .description(mapLetter.getDescription())
+                .isOwner(isOwner)
                 .build();
     }
 }
