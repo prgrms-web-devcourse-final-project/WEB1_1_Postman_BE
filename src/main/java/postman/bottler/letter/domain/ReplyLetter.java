@@ -18,7 +18,6 @@ public class ReplyLetter {
     private String font;
     private String paper;
     private String label;
-    private String profile;
     private Long letterId;
     private Long receiverId;
     private Long senderId;

@@ -12,4 +12,6 @@ public interface LetterRepository {
     void deleteByIds(List<Long> letterIds);
 
     void blockLetterById(Long letterId);
+
+    List<Letter> findAllByIds(List<Long> letterIds);
 }

@@ -24,7 +24,6 @@ public class ReplyLetterEntity {
     private String font;
     private String paper;
     private String label;
-    private String profile;
     private Long letterId;
     private Long receiverId;
     private Long senderId;
@@ -34,14 +33,13 @@ public class ReplyLetterEntity {
 
     @Builder
     private ReplyLetterEntity(String title, String content, String font, String paper,
-                              String label, String profile, Long letterId, Long receiverId, Long senderId,
+                              String label, Long letterId, Long receiverId, Long senderId,
                               boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
         this.font = font;
         this.paper = paper;
         this.label = label;
-        this.profile = profile;
         this.letterId = letterId;
         this.receiverId = receiverId;
         this.senderId = senderId;
@@ -57,7 +55,6 @@ public class ReplyLetterEntity {
                 .font(replyLetter.getFont())
                 .paper(replyLetter.getPaper())
                 .label(replyLetter.getLabel())
-                .profile(replyLetter.getProfile())
                 .letterId(replyLetter.getLetterId())
                 .receiverId(replyLetter.getReceiverId())
                 .senderId(replyLetter.getSenderId())
@@ -75,7 +72,6 @@ public class ReplyLetterEntity {
                 .font(this.font)
                 .paper(this.paper)
                 .label(this.label)
-                .profile(this.profile)
                 .letterId(this.letterId)
                 .receiverId(this.receiverId)
                 .senderId(this.senderId)
