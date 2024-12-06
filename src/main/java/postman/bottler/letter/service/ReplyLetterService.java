@@ -38,10 +38,9 @@ public class ReplyLetterService {
         ReceiverDTO receiverInfo = letterService.getReceiverInfoById(letterId);
         String title = generateReplyTitle(receiverInfo.title());
         Long receiverId = receiverInfo.receiverId();
-        String userProfile = getCurrentUserProfile();
 
         ReplyLetter replyLetter = replyLetterRepository.save(
-                letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId, userProfile)
+                letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId)
         );
 
         saveLetterToBox(senderId, replyLetter, receiverId);
@@ -102,10 +101,6 @@ public class ReplyLetterService {
 
     private String generateReplyTitle(String title) {
         return "RE: [" + title + "]";
-    }
-
-    private String getCurrentUserProfile() {
-        return "url";
     }
 
     private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterCreateUserId) {
