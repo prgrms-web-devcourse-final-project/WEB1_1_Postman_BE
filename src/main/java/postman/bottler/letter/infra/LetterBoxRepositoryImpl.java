@@ -11,7 +11,6 @@ import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
-import postman.bottler.letter.infra.entity.LetterBoxEntity;
 import postman.bottler.letter.service.LetterBoxRepository;
 
 @Repository
@@ -20,11 +19,11 @@ import postman.bottler.letter.service.LetterBoxRepository;
 public class LetterBoxRepositoryImpl implements LetterBoxRepository {
 
     private final LetterBoxQueryRepository letterBoxQueryRepository;
-    private final LetterBoxJpaRepository letterBoxJpaRepository;
+    private final LetterBoxJdbcRepository letterBoxJdbcRepository;
 
     @Override
     public void save(LetterBox letterBox) {
-        letterBoxJpaRepository.save(LetterBoxEntity.from(letterBox));
+        letterBoxJdbcRepository.save(letterBox);
     }
 
     @Override
@@ -56,6 +55,11 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     @Override
     public List<Long> getReceivedLettersById(Long userId) {
         return letterBoxQueryRepository.getReceivedLettersById(userId);
+    }
+
+    @Override
+    public void saveRecommendedLetters(List<LetterBox> letterBoxes) {
+        letterBoxJdbcRepository.saveAll(letterBoxes);
     }
 
     private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {

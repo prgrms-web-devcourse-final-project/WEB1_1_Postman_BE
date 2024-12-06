@@ -35,4 +35,11 @@ public class LetterRepositoryImpl implements LetterRepository {
     public void blockLetterById(Long letterId) {
         letterJpaRepository.blockById(letterId);
     }
+
+    @Override
+    public List<Letter> findAllByIds(List<Long> letterIds) {
+        return letterJpaRepository.findAllByIds(letterIds).stream()
+                .map(LetterEntity::toDomain)
+                .toList();
+    }
 }

@@ -25,7 +25,7 @@ public class SchedulerConfig {
     private final JobRegistry jobRegistry;
     private final RecommendationScheduler recommendationScheduler;
 
-    @Scheduled(cron = "${batch.cron.recommend}")
+    //    @Scheduled(cron = "${batch.cron.recommend}")
     public void sendRecommendKeywordLetter()
             throws NoSuchJobException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -36,7 +36,7 @@ public class SchedulerConfig {
         jobLauncher.run(jobRegistry.getJob("recommendKeywordBatchJob"), jobParameters);
     }
 
-    @Scheduled(cron = "${batch.cron.unban}")
+    //    @Scheduled(cron = "${batch.cron.unban}")
     public void unban()
             throws NoSuchJobException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         LocalDateTime now = LocalDateTime.now();

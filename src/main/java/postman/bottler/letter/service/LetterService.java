@@ -12,6 +12,7 @@ import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
+import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.user.service.UserService;
 
@@ -62,5 +63,18 @@ public class LetterService {
     private Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<LetterRecommendHeadersResponseDTO> getRecommendHeaders(List<Long> letterIds) {
+        List<Letter> letters = letterRepository.findAllByIds(letterIds);
+        return letters.stream()
+                .map(LetterRecommendHeadersResponseDTO::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Letter> getRecommendedLetters(List<Long> letterIds) {
+        return letterRepository.findAllByIds(letterIds);
     }
 }
