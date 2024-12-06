@@ -2,6 +2,8 @@ package postman.bottler.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.user.dto.response.SignInDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.KakaoAuthCodeException;
 import postman.bottler.user.service.KakaoService;
@@ -30,7 +33,7 @@ public class OAuthController {
     }
 
     @GetMapping("/kakao/token")
-    public ApiResponse<SignInResponseDTO> kakaoSignin(@RequestParam("code") String code) {
+    public ApiResponse<SignInResponseDTO> kakaoSignin(@RequestParam("code") String code, HttpServletResponse response) {
         if (code == null || code.trim().isEmpty()) {
             throw new KakaoAuthCodeException("인가 코드가 비어있습니다.");
         }
@@ -39,7 +42,19 @@ public class OAuthController {
         String kakaoId = userInfo.get("kakaoId");
         String nickname = userInfo.get("nickname");
 
-        SignInResponseDTO signInResponseDTO = userService.kakaoSignin(kakaoId, nickname);
-        return ApiResponse.onSuccess(signInResponseDTO);
+        SignInDTO signInDTO = userService.kakaoSignin(kakaoId, nickname);
+
+        addHttpOnlyCookie(response, "refreshToken", signInDTO.refreshToken());
+
+        return ApiResponse.onSuccess(new SignInResponseDTO(signInDTO.accessToken()));
+    }
+
+    private void addHttpOnlyCookie(HttpServletResponse response, String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(cookie);
     }
 }
