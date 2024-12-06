@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/.well-known/acme-challenge/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/oauth/**").permitAll()
                         .requestMatchers("/user/signup").permitAll()
@@ -56,7 +57,6 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
-                        .requestMatchers("/.well-known/acme-challenge/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -81,4 +81,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 }
