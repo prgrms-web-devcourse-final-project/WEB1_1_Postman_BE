@@ -2,6 +2,8 @@ package postman.bottler.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -13,6 +15,7 @@ import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.dto.request.RefreshTokenRequestDTO;
 import postman.bottler.user.dto.request.SignInRequestDTO;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
+import postman.bottler.user.dto.response.SignInDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.PasswordException;
@@ -28,11 +31,24 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
     @PostMapping("/signin")
-    public ApiResponse<SignInResponseDTO> signin(@Valid @RequestBody SignInRequestDTO signInRequestDTO,
-                                                 BindingResult bindingResult) {
+    public ApiResponse<SignInResponseDTO> signin(
+            @Valid @RequestBody SignInRequestDTO signInRequestDTO,
+            BindingResult bindingResult,
+            HttpServletResponse response) {
         validateRequestDTO(bindingResult);
-        SignInResponseDTO signInResponseDTO = userService.signin(signInRequestDTO.email(), signInRequestDTO.password());
-        return ApiResponse.onSuccess(signInResponseDTO);
+        SignInDTO signInDTO = userService.signin(signInRequestDTO.email(), signInRequestDTO.password());
+        addHttpOnlyCookie(response, "refreshToken", signInDTO.refreshToken());
+
+        return ApiResponse.onSuccess(new SignInResponseDTO(signInDTO.accessToken()));
+    }
+
+    private void addHttpOnlyCookie(HttpServletResponse response, String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(cookie);
     }
 
     @Operation(summary = "리프레시 토큰 유효성 검사", description = "리프레시 토큰 유효성 검사 성공 시 새로운 액세스 토큰 발급합니다.")

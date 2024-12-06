@@ -23,7 +23,7 @@ import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.ExistingUserResponseDTO;
-import postman.bottler.user.dto.response.SignInResponseDTO;
+import postman.bottler.user.dto.response.SignInDTO;
 import postman.bottler.user.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
@@ -72,7 +72,7 @@ public class UserService {
     }
 
     @Transactional
-    public SignInResponseDTO signin(String email, String password) {
+    public SignInDTO signin(String email, String password) {
         try {
             return authenticateAndGenerateTokens(email, password);
         } catch (BadCredentialsException e) {
@@ -185,7 +185,7 @@ public class UserService {
     }
 
     @Transactional
-    public SignInResponseDTO kakaoSignin(String kakaoId, String nickname) {
+    public SignInDTO kakaoSignin(String kakaoId, String nickname) {
         if (!userRepository.existsByEmailAndProvider(kakaoId)) {
             nickname = generateUniqueNickname(nickname);
             String profileImageUrl = profileImageRepository.findProfileImage();
@@ -195,7 +195,7 @@ public class UserService {
         return authenticateAndGenerateTokens(kakaoId, kakaoId);
     }
 
-    private SignInResponseDTO authenticateAndGenerateTokens(String email, String password) {
+    private SignInDTO authenticateAndGenerateTokens(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -206,7 +206,7 @@ public class UserService {
 
         refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));
 
-        return new SignInResponseDTO(accessToken, refreshToken);
+        return new SignInDTO(accessToken, refreshToken);
     }
 
     private String generateUniqueNickname(String nickname) {
