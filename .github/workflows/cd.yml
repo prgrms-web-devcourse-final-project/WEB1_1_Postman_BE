@@ -96,7 +96,6 @@ jobs:
       - name: .env 파일 작성
         run: |
           mkdir -p docker-compose
-          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> docker-compose/.env
           echo "DB_URL=${{ secrets.DB_URL }}" >> docker-compose/.env
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> docker-compose/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> docker-compose/.env
@@ -115,6 +114,7 @@ jobs:
           echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> docker-compose/.env
           echo "KAKAO_REDIRECT_URL=${{ secrets.KAKAO_REDIRECT_URL }}" >> docker-compose/.env
           echo "SLACK_TOKEN=${{ secrets.SLACK_TOKEN }}" >> docker-compose/.env
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> docker-compose/.env
           echo "TAG=${{ github.sha }}" >> docker-compose/.env
 
       - name: docker-compose.yml, .env 파일 EC2로 복사
