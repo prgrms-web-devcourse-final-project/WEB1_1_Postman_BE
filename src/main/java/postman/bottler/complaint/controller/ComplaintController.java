@@ -1,5 +1,10 @@
 package postman.bottler.complaint.controller;
 
+import static postman.bottler.complaint.domain.ComplaintType.KEYWORD_LETTER;
+import static postman.bottler.complaint.domain.ComplaintType.KEYWORD_REPLY_LETTER;
+import static postman.bottler.complaint.domain.ComplaintType.MAP_LETTER;
+import static postman.bottler.complaint.domain.ComplaintType.MAP_REPLY_LETTER;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +36,7 @@ public class ComplaintController {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        ComplaintResponseDTO response = complaintService.complainKeywordLetter(letterId,
+        ComplaintResponseDTO response = complaintService.complain(KEYWORD_LETTER, letterId,
                 customUserDetails.getUserId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
@@ -45,7 +50,7 @@ public class ComplaintController {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        ComplaintResponseDTO response = complaintService.complainMapLetter(letterId,
+        ComplaintResponseDTO response = complaintService.complain(MAP_LETTER, letterId,
                 customUserDetails.getUserId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
@@ -59,7 +64,7 @@ public class ComplaintController {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        ComplaintResponseDTO response = complaintService.complainMapReplyLetter(replyLetterId,
+        ComplaintResponseDTO response = complaintService.complain(MAP_REPLY_LETTER, replyLetterId,
                 customUserDetails.getUserId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }
@@ -73,7 +78,7 @@ public class ComplaintController {
         if (bindingResult.hasErrors()) {
             throw new InvalidComplainException(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        ComplaintResponseDTO response = complaintService.complainKeywordReplyLetter(replyLetterId,
+        ComplaintResponseDTO response = complaintService.complain(KEYWORD_REPLY_LETTER, replyLetterId,
                 customUserDetails.getUserId(), complaintRequest.description());
         return ApiResponse.onCreateSuccess(response);
     }

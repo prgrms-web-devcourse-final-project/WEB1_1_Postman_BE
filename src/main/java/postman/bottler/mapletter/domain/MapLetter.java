@@ -57,7 +57,7 @@ public class MapLetter {
     }
 
     public static MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
-                                                  Long userId) {
+                                                  Long userId, Long targetUserId) {
         return MapLetter.builder()
                 .title(createTargetMapLetterRequestDTO.title())
                 .content(createTargetMapLetterRequestDTO.content())
@@ -68,7 +68,7 @@ public class MapLetter {
                 .label(createTargetMapLetterRequestDTO.label())
                 .type(MapLetterType.PRIVATE)
                 .createUserId(userId)
-                .targetUserId(createTargetMapLetterRequestDTO.target())
+                .targetUserId(targetUserId)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)
@@ -81,8 +81,7 @@ public class MapLetter {
         this.isDeleted = deleted;
     }
 
-    public void validateFindOneMapLetter(Long userId, double viewDistance, Double distance) {
-        validateAccess(userId);
+    public void validateFindOneMapLetter(double viewDistance, Double distance) {
         validDeleteAndBlocked();
         if (distance > viewDistance) {
             throw new DistanceToFarException("편지와의 거리가 멀어서 조회가 불가능합니다.");
@@ -128,4 +127,11 @@ public class MapLetter {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
     }
+
+    public void isPrivate(){
+        if (this.getType()==MapLetterType.PRIVATE){
+            throw new CommonForbiddenException("해당 편지에 접근할 수 없습니다.");
+        }
+    }
+
 }

@@ -3,13 +3,17 @@ package postman.bottler.complaint.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.complaint.domain.Complaint;
+import postman.bottler.complaint.domain.ComplaintType;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.domain.KeywordComplaint;
-import postman.bottler.complaint.domain.KeywordReplyComplaint;
-import postman.bottler.complaint.domain.MapComplaint;
-import postman.bottler.complaint.domain.MapReplyComplaint;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
+import postman.bottler.letter.service.LetterService;
+import postman.bottler.letter.service.ReplyLetterService;
+import postman.bottler.mapletter.service.BlockMapLetterType;
+import postman.bottler.mapletter.service.MapLetterService;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
+import postman.bottler.user.service.UserService;
 
 @Service
 @RequiredArgsConstructor
@@ -20,64 +24,40 @@ public class ComplaintService {
     private final MapReplyComplaintRepository mapReplyComplaintRepository;
 
     private final NotificationService notificationService;
+    private final LetterService letterService;
+    private final ReplyLetterService replyLetterService;
+    private final MapLetterService mapLetterService;
+    private final UserService userService;
 
     @Transactional
-    public ComplaintResponseDTO complainKeywordLetter(Long letterId, Long reporterId,
-                                                      String description) {
-        Complaints complaints = keywordComplaintRepository.findByLetterId(letterId);
-        complaints.validateDuplication(reporterId);
-        KeywordComplaint complaint = KeywordComplaint.create(letterId, reporterId, description);
+    public ComplaintResponseDTO complain(ComplaintType type, Long letterId, Long reporterId, String description) {
+        ComplaintRepository repository = getRepositoryByType(type);
+        Complaints complaints = repository.findByLetterId(letterId);
+        Complaint complaint = Complaint.create(letterId, reporterId, description);
         complaints.add(complaint);
         if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
+            Long writer = blockLetter(type, letterId);
+            notificationService.sendNotification(NotificationType.WARNING, writer, letterId);
+            userService.updateWarningCount(writer);
         }
-        return ComplaintResponseDTO.from(keywordComplaintRepository.save(complaint));
+        return ComplaintResponseDTO.from(repository.save(complaint));
     }
 
-    @Transactional
-    public ComplaintResponseDTO complainMapLetter(Long letterId, Long reporterId,
-                                                  String description) {
-        Complaints complaints = mapComplaintRepository.findByLetterId(letterId);
-        complaints.validateDuplication(reporterId);
-        MapComplaint complaint = MapComplaint.create(letterId, reporterId, description);
-        complaints.add(complaint);
-        if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
-        }
-        return ComplaintResponseDTO.from(mapComplaintRepository.save(complaint));
+    private ComplaintRepository getRepositoryByType(ComplaintType type) {
+        return switch (type) {
+            case MAP_LETTER -> mapComplaintRepository;
+            case MAP_REPLY_LETTER -> mapReplyComplaintRepository;
+            case KEYWORD_LETTER -> keywordComplaintRepository;
+            case KEYWORD_REPLY_LETTER -> keywordReplyComplaintRepository;
+        };
     }
 
-    @Transactional
-    public ComplaintResponseDTO complainKeywordReplyLetter(Long letterId, Long reporterId,
-                                                           String description) {
-        Complaints complaints = keywordReplyComplaintRepository.findByLetterId(letterId);
-        complaints.validateDuplication(reporterId);
-        KeywordReplyComplaint complaint = KeywordReplyComplaint.create(letterId, reporterId, description);
-        complaints.add(complaint);
-        if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
-        }
-        return ComplaintResponseDTO.from(keywordReplyComplaintRepository.save(complaint));
-    }
-
-    @Transactional
-    public ComplaintResponseDTO complainMapReplyLetter(Long letterId, Long reporterId,
-                                                       String description) {
-        Complaints complaints = mapReplyComplaintRepository.findByLetterId(letterId);
-        complaints.validateDuplication(reporterId);
-        MapReplyComplaint complaint = MapReplyComplaint.create(letterId, reporterId, description);
-        complaints.add(complaint);
-        if (complaints.needsWarningNotification()) {
-            // TODO 편지 블락 처리
-            // TODO 편지 작성자에게 경고 알림
-            // TODO 편지 작성자 경고 횟수 증가
-        }
-        return ComplaintResponseDTO.from(mapReplyComplaintRepository.save(complaint));
+    private Long blockLetter(ComplaintType type, Long letterId) {
+        return switch (type) {
+            case MAP_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.MAP_LETTER, letterId);
+            case MAP_REPLY_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.REPLY, letterId);
+            case KEYWORD_LETTER -> letterService.blockLetter(letterId);
+            case KEYWORD_REPLY_LETTER -> replyLetterService.blockLetter(letterId);
+        };
     }
 }

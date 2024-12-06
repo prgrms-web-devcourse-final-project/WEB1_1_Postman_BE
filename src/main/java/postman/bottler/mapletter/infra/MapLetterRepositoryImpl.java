@@ -93,4 +93,9 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     public Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest) {
         return mapLetterJpaRepository.findActiveReceivedMapLettersByUserId(userId, pageRequest);
     }
+
+    @Override
+    public List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude) {
+        return mapLetterJpaRepository.guestFindLettersByUserLocation(latitude, longitude);
+    }
 }

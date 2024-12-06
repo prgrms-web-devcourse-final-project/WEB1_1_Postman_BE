@@ -2,7 +2,8 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
-import java.util.Random;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.slack.SlackConstant;
+import postman.bottler.slack.SlackService;
 import postman.bottler.user.auth.JwtTokenProvider;
 import postman.bottler.user.domain.EmailCode;
 import postman.bottler.user.domain.EmailForm;
@@ -35,11 +38,13 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final ProfileImageRepository profileImageRepository;
     private final EmailCodeRepository emailCodeRepository;
+    private final BanService banService;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final EmailService emailService;
+    private final SlackService slackService;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -69,16 +74,7 @@ public class UserService {
     @Transactional
     public SignInResponseDTO signin(String email, String password) {
         try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(email, password);
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String accessToken = jwtTokenProvider.createToken(authentication);
-            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-
-            refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));
-
-            return new SignInResponseDTO(accessToken, refreshToken);
+            return authenticateAndGenerateTokens(email, password);
         } catch (BadCredentialsException e) {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
@@ -105,6 +101,7 @@ public class UserService {
             throw new PasswordException("비밀번호가 일치하지 않습니다.");
         }
         userRepository.softDeleteUser(user.getUserId());
+        refreshTokenRepository.deleteByEmail(email);
     }
 
     @Transactional
@@ -195,16 +192,19 @@ public class UserService {
             User user = User.createKakaoUser(kakaoId, nickname, profileImageUrl, passwordEncoder.encode(kakaoId));
             userRepository.save(user);
         }
+        return authenticateAndGenerateTokens(kakaoId, kakaoId);
+    }
 
+    private SignInResponseDTO authenticateAndGenerateTokens(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(kakaoId, kakaoId);
+                new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken = jwtTokenProvider.createToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-        refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(kakaoId, refreshToken));
+        refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));
 
         return new SignInResponseDTO(accessToken, refreshToken);
     }
@@ -222,18 +222,41 @@ public class UserService {
     }
 
     //아이디로 프로필 이미지 조회
+    @Transactional
     public String getProfileImageUrlById(Long userId) {
         return userRepository.findById(userId).getImageUrl();
     }
 
     //아이디로 닉네임 조회
+    @Transactional
     public String getNicknameById(Long userId) {
         return userRepository.findById(userId).getNickname();
     }
 
     //유저 경고 횟수 증가
+    @Transactional
     public void updateWarningCount(Long userId) {
         User user = userRepository.findById(userId);
         user.updateWarningCount();
+        slackService.sendSlackMessage(SlackConstant.WARNING, userId);
+        if (user.checkBan()) {
+            banService.banUser(user);
+            slackService.sendSlackMessage(SlackConstant.BAN, userId);
+        }
+        userRepository.updateWarningCount(user);
+    }
+
+    //전체 유저 아이디 조회
+    @Transactional
+    public List<Long> getAllUserIds() {
+        List<User> users = userRepository.findAllUserId();
+        return users.stream()
+                .map(User::getUserId)
+                .collect(Collectors.toList());
+    }
+
+    public Long getUserIdByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return user.getUserId();
     }
 }

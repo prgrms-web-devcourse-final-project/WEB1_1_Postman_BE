@@ -40,4 +40,9 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     public void deleteByIds(List<Long> letterIds) {
         replyLetterJpaRepository.deleteByIds(letterIds);
     }
+
+    @Override
+    public void blockReplyLetterById(Long replyLetterId) {
+        replyLetterJpaRepository.blockById(replyLetterId);
+    }
 }

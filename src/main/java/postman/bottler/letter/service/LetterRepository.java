@@ -10,4 +10,6 @@ public interface LetterRepository {
     Optional<Letter> findById(Long letterId);
 
     void deleteByIds(List<Long> letterIds);
+
+    void blockLetterById(Long letterId);
 }

@@ -104,4 +104,10 @@ public class UserEntity {
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public void updateBanUser(User user) {
+        this.updatedAt = user.getUpdatedAt();
+        this.warningCount = user.getWarningCount();
+        this.role = user.getRole();
+    }
 }
