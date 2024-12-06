@@ -42,4 +42,9 @@ public class LetterRepositoryImpl implements LetterRepository {
                 .map(LetterEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean checkLetterExists(Long letterId) {
+        return letterJpaRepository.existsById(letterId);
+    }
 }
