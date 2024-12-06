@@ -25,7 +25,6 @@ public class RecommendationScheduler {
         // 알림전송
         for (Long userId : userIds) {
             redisLetterService.updateRecommendationsFromTemp(userId);
-
         }
     }
 }

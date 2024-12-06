@@ -59,5 +59,13 @@ public class RecommendationController {
         }
     }
 
-
+    @Operation(
+            summary = "추천 된 편지 조회 요청",
+            description = "현재 추천된 편지의 id 들을 반환합니다"
+    )
+    @GetMapping("/temp")
+    public ResponseEntity<List<Long>> getRecommendTemp(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<Long> result = redisLetterService.getRecommendedTemp(userDetails.getUserId());
+        return ResponseEntity.ok(result);
+    }
 }
