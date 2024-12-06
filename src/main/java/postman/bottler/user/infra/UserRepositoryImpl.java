@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.user.domain.Ban;
 import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
@@ -74,10 +75,21 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void unbanUsers(List<Long> ids) {
-        userJpaRepository.unbanUsers(ids);
+    public void updateUsers(List<User> users) {
+        List<UserEntity> userEntities = users.stream().map(UserEntity::from).toList();
+        userJpaRepository.saveAll(userEntities);
     }
-  
+
+    @Override
+    public List<User> findWillBeUnbannedUsers(List<Ban> bans) {
+        List<Long> ids = bans.stream()
+                .map(Ban::getUserId)
+                .toList();
+        return userJpaRepository.findByUserIdIn(ids).stream()
+                .map(UserEntity::toUser)
+                .toList();
+    }
+
     public boolean existsByEmailAndProvider(String kakaoId) {
         return userJpaRepository.existsByEmailAndProvider(kakaoId, Provider.KAKAO);
     }

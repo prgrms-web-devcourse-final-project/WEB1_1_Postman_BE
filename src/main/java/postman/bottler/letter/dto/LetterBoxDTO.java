@@ -12,9 +12,9 @@ public record LetterBoxDTO(
         BoxType boxType,
         LocalDateTime createdAt
 ) {
-    public static LetterBoxDTO of(Long userId, Long id, LetterType letterType, BoxType boxType,
+    public static LetterBoxDTO of(Long userId, Long letterId, LetterType letterType, BoxType boxType,
                                   LocalDateTime createdAt) {
-        return new LetterBoxDTO(userId, id, letterType, boxType, createdAt);
+        return new LetterBoxDTO(userId, letterId, letterType, boxType, createdAt);
     }
 
     public LetterBox toDomain() {

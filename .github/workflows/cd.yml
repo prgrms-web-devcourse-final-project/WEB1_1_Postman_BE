@@ -127,8 +127,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i bottler-keypair.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} <<EOF
           docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
-          docker pull ${{ secrets.DOCKER_USERNAME }}/bottler:${{ github.sha }}
-          docker stop bottler || true
-          docker rm bottler || true
-          docker run -d --name bottler -p 80:8080 --env-file ~/docker-compose/.env ${{ secrets.DOCKER_USERNAME }}/bottler:${{ github.sha }}
+          cd ~/docker-compose
+          docker-compose down || true
+          docker-compose pull
+          docker-compose up -d
           EOF

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -64,7 +65,7 @@ public class MapLetterService {
     @Transactional
     public MapLetter createTargetMapLetter(CreateTargetMapLetterRequestDTO createTargetMapLetterRequestDTO,
                                            Long userId) {
-        Long targetUserId=userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
+        Long targetUserId = userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
         return mapLetterRepository.save(mapLetter);
     }
@@ -81,7 +82,7 @@ public class MapLetterService {
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, userId == mapLetter.getCreateUserId());
     }
 
     @Transactional
@@ -124,8 +125,8 @@ public class MapLetterService {
             String senderProfileImg = null;
 
             if ("TARGET".equals(letter.getType())) {
-                 senderNickname = userService.getNicknameById(letter.getSenderId());
-                 senderProfileImg = userService.getProfileImageUrlById(letter.getSenderId());
+                senderNickname = userService.getNicknameById(letter.getSenderId());
+                senderProfileImg = userService.getProfileImageUrlById(letter.getSenderId());
             }
 
             return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg);
@@ -185,7 +186,7 @@ public class MapLetterService {
         replyMapLetter.validFindOneReplyMapLetter(userId, sourceLetter);
         sourceLetter.validDeleteAndBlocked();
 
-        return OneReplyLetterResponseDTO.from(replyMapLetter);
+        return OneReplyLetterResponseDTO.from(replyMapLetter, userId == replyMapLetter.getCreateUserId());
     }
 
     @Transactional
@@ -255,7 +256,7 @@ public class MapLetterService {
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId);
     }
 
     public Page<FindAllSentReplyMapLetterResponseDTO> findAllSentReplyMapLetter(int page, int size, Long userId) {
@@ -280,7 +281,7 @@ public class MapLetterService {
         return letters.map(mapLetter -> {
             String targetUserNickname = null;
             if (mapLetter.getType() == MapLetterType.PRIVATE) {
-                targetUserNickname=userService.getNicknameById(mapLetter.getTargetUserId());
+                targetUserNickname = userService.getNicknameById(mapLetter.getTargetUserId());
             }
             return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
         });
@@ -384,6 +385,6 @@ public class MapLetterService {
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, false);
     }
 }

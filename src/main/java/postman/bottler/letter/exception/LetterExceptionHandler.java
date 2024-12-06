@@ -11,6 +11,7 @@ import static postman.bottler.global.response.code.ErrorStatus.LETTER_UNKNOWN_VA
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.PAGINATION_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.REPLY_LETTER_VALIDATION_ERROR;
+import static postman.bottler.global.response.code.ErrorStatus.TEMP_RECOMMENDATIONS_NOT_FOUND;
 
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -104,5 +105,13 @@ public class LetterExceptionHandler {
         return ResponseEntity
                 .status(INVALID_LETTER_TYPE.getHttpStatus())
                 .body(ApiResponse.onFailure(INVALID_LETTER_TYPE.getCode(), e.getMessage(), null));
+    }
+
+    @ExceptionHandler(TempRecommendationsNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidLetterTypeException(
+            TempRecommendationsNotFoundException e) {
+        return ResponseEntity
+                .status(TEMP_RECOMMENDATIONS_NOT_FOUND.getHttpStatus())
+                .body(ApiResponse.onFailure(TEMP_RECOMMENDATIONS_NOT_FOUND.getCode(), e.getMessage(), null));
     }
 }

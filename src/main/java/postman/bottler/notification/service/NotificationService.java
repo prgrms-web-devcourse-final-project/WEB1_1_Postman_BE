@@ -10,6 +10,7 @@ import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.domain.Subscriptions;
+import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
 
 @Service
@@ -26,14 +27,10 @@ public class NotificationService {
         Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);
         NotificationResponseDTO result = NotificationResponseDTO.from(notificationRepository.save(notification));
         if (subscriptions.isPushEnabled()) {
-            sendPushMessagesToUser(subscriptions, notification);
+            PushMessages pushMessages = subscriptions.makeMessages(type);
+            pushNotificationProvider.pushAll(pushMessages);
         }
         return result;
-    }
-
-    private void sendPushMessagesToUser(Subscriptions subscriptions, Notification notification) {
-        PushMessages pushMessages = subscriptions.makeMessages(notification.getType());
-        pushNotificationProvider.pushAll(pushMessages);
     }
 
     @Transactional
@@ -44,5 +41,18 @@ public class NotificationService {
         Notifications changed = notifications.markAsRead();
         notificationRepository.updateNotifications(changed);
         return result;
+    }
+
+    @Transactional
+    public void sendKeywordNotifications(List<RecommendNotificationRequestDTO> requests) {
+        requests.forEach(request -> {
+            notificationRepository.save(Notification.create(NotificationType.NEW_LETTER, request.userId(),
+                    request.letterId()));
+        });
+        Subscriptions allSubscriptions = subscriptionRepository.findAll();
+        if (allSubscriptions.isPushEnabled()) {
+            PushMessages pushMessages = allSubscriptions.makeMessages(NotificationType.NEW_LETTER);
+            pushNotificationProvider.pushAll(pushMessages);
+        }
     }
 }
