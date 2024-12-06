@@ -1,7 +1,7 @@
 name: Main Branch CD Pipeline
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -33,8 +33,8 @@ jobs:
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      RECOMMEND_CRON : ${{ secrets.RECOMMEND_CRON }}
-      UNBAN_CRON : ${{ secrets.UNBAN_CRON }}
+      RECOMMEND_CRON: ${{ secrets.RECOMMEND_CRON }}
+      UNBAN_CRON: ${{ secrets.UNBAN_CRON }}
 
       # ECR 환경변수
       ECR_URI: ${{ secrets.ECR_URI }}
@@ -96,6 +96,7 @@ jobs:
       - name: .env 파일 작성
         run: |
           mkdir -p docker-compose
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> docker-compose/.env
           echo "DB_URL=${{ secrets.DB_URL }}" >> docker-compose/.env
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> docker-compose/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> docker-compose/.env
