@@ -33,9 +33,6 @@ jobs:
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      RECOMMEND_CRON: ${{ secrets.RECOMMEND_CRON }}
-      UNBAN_CRON: ${{ secrets.UNBAN_CRON }}
-
       # ECR 환경변수
       ECR_URI: ${{ secrets.ECR_URI }}
 
@@ -105,8 +102,6 @@ jobs:
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker-compose/.env
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker-compose/.env
           echo "BOTTLER_FCM_BASE64=${{ secrets.BOTTLER_FCM_BASE64 }}" >> docker-compose/.env
-          echo "RECOMMEND_CRON=${{ secrets.RECOMMEND_CRON }}" >> docker-compose/.env
-          echo "UNBAN_CRON=${{ secrets.UNBAN_CRON }}" >> docker-compose/.env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> docker-compose/.env
           echo "BASE_URL=${{ secrets.BASE_URL }}" >> docker-compose/.env
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> docker-compose/.env
