@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.keyword.service.LetterKeywordService;
+import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
+import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterService;
@@ -36,6 +38,7 @@ public class LetterController {
     private final DeleteManagerService deleteManagerService;
     private final LetterKeywordService letterKeywordService;
     private final ValidationUtil validationUtil;
+    private final RedisLetterService redisLetterService;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -74,6 +77,20 @@ public class LetterController {
     ) {
         List<String> keywords = letterKeywordService.getKeywords(letterId);
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, keywords, userDetails.getUserId());
+        return ApiResponse.onSuccess(result);
+    }
+
+
+    @Operation(
+            summary = "추천 키워드 편지 조회",
+            description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다."
+    )
+    @GetMapping("/recommend")
+    public ApiResponse<List<LetterRecommendHeadersResponseDTO>> getRecommendLetters(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        List<Long> letterIds = redisLetterService.getRecommendations(userDetails.getUserId());
+        List<LetterRecommendHeadersResponseDTO> result = letterService.getRecommendHeaders(letterIds);
         return ApiResponse.onSuccess(result);
     }
 
