@@ -4,11 +4,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-  batch:
-    job:
-      enabled: false
-    jdbc:
-      initialize-schema: never
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,12 +18,6 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-
-
-batch:
-  cron:
-    recommend: ${RECOMMEND_CRON}
-    unban: ${UNBAN_CRON}
 
 logging:
   level:
