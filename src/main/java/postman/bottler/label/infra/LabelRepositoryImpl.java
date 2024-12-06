@@ -18,8 +18,6 @@ import postman.bottler.user.infra.entity.UserEntity;
 @Repository
 @RequiredArgsConstructor
 public class LabelRepositoryImpl implements LabelRepository {
-//    @PersistenceContext
-//    private EntityManager entityManager;
 
     private final LabelJpaRepository labelJpaRepository;
     private final UserLabelJpaRepository userLabelJpaRepository;
@@ -60,7 +58,6 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public void updateOwnedCount(Label label) {
-//        label.increaseOwnedCount();
         LabelEntity labelEntity = labelJpaRepository.findById(label.getLabelId())
                 .orElseThrow();
         labelEntity.updateOwnedCount();
@@ -68,10 +65,8 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public void createUserLabel(User user, Label label) {
-//        LabelEntity labelEntity = entityManager.find(LabelEntity.class, label.getLabelId());
         LabelEntity labelEntity = labelJpaRepository.findById(label.getLabelId())
                 .orElseThrow();
-//        UserEntity userEntity = entityManager.find(UserEntity.class, user.getUserId());
         UserEntity userEntity = userJpaRepository.findById(user.getUserId())
                 .orElseThrow();
 
