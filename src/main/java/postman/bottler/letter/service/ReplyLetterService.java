@@ -81,16 +81,16 @@ public class ReplyLetterService {
 
     @Transactional
     public void deleteReplyLetters(List<Long> letterIds) {
-        replyLetterRepository.deleteByIds(letterIds);
         for (Long letterId : letterIds) {
             deleteRecentReply(letterId);
         }
+        replyLetterRepository.deleteByIds(letterIds);
     }
 
     @Transactional
     public Long blockLetter(Long replyLetterId) {
-        replyLetterRepository.blockReplyLetterById(replyLetterId);
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
+        replyLetterRepository.blockReplyLetterById(replyLetterId);
         return replyLetter.getSenderId();
     }
 

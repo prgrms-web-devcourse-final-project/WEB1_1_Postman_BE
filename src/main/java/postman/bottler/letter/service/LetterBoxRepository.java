@@ -19,6 +19,8 @@ public interface LetterBoxRepository {
 
     void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType);
 
+    void deleteByConditionAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId);
+
     List<Long> getReceivedLettersById(Long userId);
 
     void saveRecommendedLetters(List<LetterBox> letterBoxes);

@@ -53,6 +53,11 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
+    public void deleteByConditionAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId) {
+        letterBoxQueryRepository.deleteByConditionAndUserId(letterIds, letterType, boxType, userId);
+    }
+
+    @Override
     public List<Long> getReceivedLettersById(Long userId) {
         return letterBoxQueryRepository.getReceivedLettersById(userId);
     }
