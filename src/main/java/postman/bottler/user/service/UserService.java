@@ -90,7 +90,7 @@ public class UserService {
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-        String newAccessToken = jwtTokenProvider.createToken(authentication);
+        String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
         return new AccessTokenResponseDTO(newAccessToken);
     }
 
@@ -201,7 +201,7 @@ public class UserService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = jwtTokenProvider.createToken(authentication);
+        String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
         refreshTokenRepository.createRefreshToken(RefreshToken.createRefreshToken(email, refreshToken));

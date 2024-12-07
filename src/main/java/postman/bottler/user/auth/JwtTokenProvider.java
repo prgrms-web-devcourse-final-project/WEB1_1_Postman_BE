@@ -53,7 +53,7 @@ public class JwtTokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(Authentication authentication) {
+    private String createToken(Authentication authentication, String type) {
         String email = authentication.getName();
 
         String authorities = authentication.getAuthorities().stream()
@@ -62,7 +62,13 @@ public class JwtTokenProvider implements InitializingBean {
                 .collect(Collectors.joining(","));
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + accessTokenExpirationTime);
+        Date expiryDate = null;
+
+        if (type.equals("access")) {
+            expiryDate = new Date(now.getTime() + accessTokenExpirationTime);
+        } else if (type.equals("refresh")) {
+            expiryDate = new Date(now.getTime() + accessTokenExpirationTime);
+        }
 
         return Jwts.builder()
                 .setSubject(email)
@@ -73,18 +79,12 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
     }
 
+    public String createAccessToken(Authentication authentication) {
+        return createToken(authentication, "access");
+    }
+
     public String createRefreshToken(Authentication authentication) {
-        String email = authentication.getName();
-
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + refreshTokenExpirationTime);
-
-        return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
+        return createToken(authentication, "refresh");
     }
 
     public Authentication getAuthentication(String token) {
