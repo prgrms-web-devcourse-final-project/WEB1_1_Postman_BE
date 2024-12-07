@@ -2,7 +2,6 @@ package postman.bottler.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.user.auth.CookieService;
 import postman.bottler.user.dto.response.SignInDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.KakaoAuthCodeException;
@@ -25,6 +25,7 @@ import postman.bottler.user.service.UserService;
 public class OAuthController {
     private final KakaoService kakaoService;
     private final UserService userService;
+    private final CookieService cookieService;
 
     @Operation(summary = "카카오 소셜로그인", description = "카카오 서버로 요청을 보내 회원가입 및 로그인을 합니다.")
     @GetMapping("/kakao")
@@ -44,17 +45,7 @@ public class OAuthController {
 
         SignInDTO signInDTO = userService.kakaoSignin(kakaoId, nickname);
 
-        addHttpOnlyCookie(response, "refreshToken", signInDTO.refreshToken());
-
+        cookieService.addCookie(response, "refreshToken", signInDTO.refreshToken());
         return ApiResponse.onSuccess(new SignInResponseDTO(signInDTO.accessToken()));
-    }
-
-    private void addHttpOnlyCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-        response.addCookie(cookie);
     }
 }

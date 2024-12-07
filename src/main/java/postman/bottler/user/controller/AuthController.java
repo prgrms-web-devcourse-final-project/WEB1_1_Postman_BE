@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.user.auth.CookieService;
 import postman.bottler.user.dto.request.SignInRequestDTO;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.SignInDTO;
@@ -28,6 +29,7 @@ import postman.bottler.user.service.UserService;
 @Tag(name = "유저", description = "유저 관련 API")
 public class AuthController {
     private final UserService userService;
+    private final CookieService cookieService;
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
     @PostMapping("/signin")
@@ -37,18 +39,8 @@ public class AuthController {
             HttpServletResponse response) {
         validateRequestDTO(bindingResult);
         SignInDTO signInDTO = userService.signin(signInRequestDTO.email(), signInRequestDTO.password());
-        addHttpOnlyCookie(response, "refreshToken", signInDTO.refreshToken());
-
+        cookieService.addCookie(response, "refreshToken", signInDTO.refreshToken());
         return ApiResponse.onSuccess(new SignInResponseDTO(signInDTO.accessToken()));
-    }
-
-    private void addHttpOnlyCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-        response.addCookie(cookie);
     }
 
     @Operation(summary = "리프레시 토큰 유효성 검사", description = "리프레시 토큰 유효성 검사 성공 시 새로운 액세스 토큰 발급합니다.")
