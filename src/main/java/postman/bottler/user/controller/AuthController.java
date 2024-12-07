@@ -3,6 +3,7 @@ package postman.bottler.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.user.dto.request.RefreshTokenRequestDTO;
 import postman.bottler.user.dto.request.SignInRequestDTO;
 import postman.bottler.user.dto.response.AccessTokenResponseDTO;
 import postman.bottler.user.dto.response.SignInDTO;
@@ -53,11 +53,25 @@ public class AuthController {
 
     @Operation(summary = "리프레시 토큰 유효성 검사", description = "리프레시 토큰 유효성 검사 성공 시 새로운 액세스 토큰 발급합니다.")
     @PostMapping("/validate")
-    public ApiResponse<AccessTokenResponseDTO> validateRefreshToken(
-            @Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO, BindingResult bindingResult) {
-        validateRequestDTO(bindingResult);
-        AccessTokenResponseDTO newAccessToken = userService.validateRefreshToken(refreshTokenRequestDTO.refreshToken());
+    public ApiResponse<AccessTokenResponseDTO> validateRefreshToken(HttpServletRequest request) {
+        String refreshToken = getCookieValue(request);
+        if (refreshToken == null) {
+            throw new TokenException("Refresh token이 존재하지 않습니다.");
+        }
+
+        AccessTokenResponseDTO newAccessToken = userService.validateRefreshToken(refreshToken);
         return ApiResponse.onSuccess(newAccessToken);
+    }
+
+    private String getCookieValue(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     private void validateRequestDTO(BindingResult bindingResult) {
@@ -66,7 +80,6 @@ public class AuthController {
                 switch (error.getField()) {
                     case "email" -> throw new EmailException(error.getDefaultMessage());
                     case "password" -> throw new PasswordException(error.getDefaultMessage());
-                    case "refreshToken" -> throw new TokenException(error.getDefaultMessage());
                     default -> throw new IllegalArgumentException(
                             bindingResult.getAllErrors().get(0).getDefaultMessage());
                 }
