@@ -62,11 +62,6 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
         return letterBoxQueryRepository.getReceivedLettersById(userId);
     }
 
-    @Override
-    public void saveRecommendedLetters(List<LetterBox> letterBoxes) {
-        letterBoxJdbcRepository.saveAll(letterBoxes);
-    }
-
     private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
         return letterBoxQueryRepository.fetchLetters(userId, boxType, pageable);
     }
