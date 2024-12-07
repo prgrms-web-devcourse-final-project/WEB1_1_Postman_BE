@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +39,7 @@ import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.reply.dto.ReplyType;
 import postman.bottler.user.service.UserService;
 
@@ -386,5 +386,13 @@ public class MapLetterService {
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg, false);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NotificationLabelRequestDTO> getLabels(List<Long> ids) {
+        List<MapLetter> finds = mapLetterRepository.findAllByIds(ids);
+        return finds.stream()
+                .map(find -> new NotificationLabelRequestDTO(find.getId(), find.getLabel()))
+                .toList();
     }
 }

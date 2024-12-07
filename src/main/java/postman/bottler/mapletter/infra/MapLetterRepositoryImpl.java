@@ -98,4 +98,11 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     public List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude) {
         return mapLetterJpaRepository.guestFindLettersByUserLocation(latitude, longitude);
     }
+
+    @Override
+    public List<MapLetter> findAllByIds(List<Long> ids) {
+        return mapLetterJpaRepository.findAllById(ids).stream()
+                .map(MapLetterEntity::toDomain)
+                .toList();
+    }
 }

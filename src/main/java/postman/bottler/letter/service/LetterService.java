@@ -14,6 +14,7 @@ import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
+import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.user.service.UserService;
 
 @Slf4j
@@ -75,5 +76,11 @@ public class LetterService {
 
     public boolean checkLetterExists(Long letterId) {
         return letterRepository.checkLetterExists(letterId);
+    }
+
+    public List<NotificationLabelRequestDTO> getLabels(List<Long> ids) {
+        return letterRepository.findAllByIds(ids).stream()
+                .map(find -> new NotificationLabelRequestDTO(find.getId(), find.getLabel()))
+                .toList();
     }
 }

@@ -51,6 +51,14 @@ public class Notification {
         return type.isLetterNotification();
     }
 
+    public Boolean isKeywordLetterNotification() {
+        return type.equals(NotificationType.NEW_LETTER);
+    }
+
+    public Boolean isMapLetterNotification() {
+        return type.equals(NotificationType.TARGET_LETTER);
+    }
+
     public Notification read() {
         return Notification.of(id, type, receiver,
                 isLetterNotification() ? ((LetterNotification) this).getLetterId() : null, createdAt, true);

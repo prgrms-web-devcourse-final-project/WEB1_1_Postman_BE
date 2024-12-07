@@ -36,4 +36,6 @@ public interface MapLetterRepository {
     Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest);
 
     List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
+
+    List<MapLetter> findAllByIds(List<Long> ids);
 }
