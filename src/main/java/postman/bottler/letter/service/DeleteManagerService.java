@@ -51,7 +51,7 @@ public class DeleteManagerService {
             Map<BoxType, List<Long>> letterBoxMap = groupedByTypeAndBox.get(LetterType.LETTER);
             if (letterBoxMap.containsKey(BoxType.SEND)) {
                 List<Long> letterIds = letterBoxMap.get(BoxType.SEND);
-                letterService.deleteLetters(letterIds);
+                letterService.deleteLetters(letterIds, userId);
                 letterKeywordService.markKeywordsAsDeleted(letterIds);
                 letterBoxService.deleteByIdsAndType(letterIds, LetterType.LETTER, BoxType.UNKNOWN);
             }
@@ -65,7 +65,7 @@ public class DeleteManagerService {
             Map<BoxType, List<Long>> replyLetterBoxMap = groupedByTypeAndBox.get(LetterType.REPLY_LETTER);
             if (replyLetterBoxMap.containsKey(BoxType.SEND)) {
                 List<Long> replyLetterIds = replyLetterBoxMap.get(BoxType.SEND);
-                replyLetterService.deleteReplyLetters(replyLetterIds);
+                replyLetterService.deleteReplyLetters(replyLetterIds, userId);
                 letterBoxService.deleteByIdsAndType(replyLetterIds, LetterType.REPLY_LETTER, BoxType.UNKNOWN);
             }
             if (replyLetterBoxMap.containsKey(BoxType.RECEIVE)) {

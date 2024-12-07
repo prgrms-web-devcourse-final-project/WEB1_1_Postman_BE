@@ -62,6 +62,11 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
         return letterBoxQueryRepository.getReceivedLettersById(userId);
     }
 
+    @Override
+    public boolean existsByLetterIdAndUserId(Long letterId, Long userId) {
+        return letterBoxJdbcRepository.existsByUserIdAndLetterId(letterId, userId);
+    }
+
     private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
         return letterBoxQueryRepository.fetchLetters(userId, boxType, pageable);
     }

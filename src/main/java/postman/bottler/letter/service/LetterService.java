@@ -13,6 +13,7 @@ import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
+import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.user.service.UserService;
 
@@ -35,7 +36,12 @@ public class LetterService {
     }
 
     @Transactional
-    public void deleteLetters(List<Long> letterIds) {
+    public void deleteLetters(List<Long> letterIds, Long userId) {
+        letterIds.forEach(letterId -> {
+            if (!findLetter(letterId).getUserId().equals(userId)) {
+                throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
+            }
+        });
         letterRepository.deleteByIds(letterIds);
     }
 

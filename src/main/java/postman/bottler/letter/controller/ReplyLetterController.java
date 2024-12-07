@@ -26,6 +26,7 @@ import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
+import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.ReplyLetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -40,6 +41,7 @@ public class ReplyLetterController {
     private final ReplyLetterService letterReplyService;
     private final DeleteManagerService deleteManagerService;
     private final ValidationUtil validationUtil;
+    private final LetterBoxService letterBoxService;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -70,6 +72,7 @@ public class ReplyLetterController {
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         validatePageRequest(bindingResult);
         Page<ReplyLetterHeadersResponseDTO> result =
                 letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO, userDetails.getUserId());
@@ -82,8 +85,10 @@ public class ReplyLetterController {
     )
     @GetMapping("/detail/{replyLetterId}")
     public ApiResponse<ReplyLetterResponseDTO> getReplyLetter(
-            @PathVariable Long replyLetterId
+            @PathVariable Long replyLetterId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        letterBoxService.validateLetterInUserBox(replyLetterId, userDetails.getUserId());
         ReplyLetterResponseDTO result = letterReplyService.getReplyLetterDetail(replyLetterId);
         return ApiResponse.onSuccess(result);
     }

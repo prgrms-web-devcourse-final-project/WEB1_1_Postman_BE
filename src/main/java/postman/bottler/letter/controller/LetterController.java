@@ -25,6 +25,7 @@ import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
+import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.LetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -40,6 +41,7 @@ public class LetterController {
     private final LetterKeywordService letterKeywordService;
     private final ValidationUtil validationUtil;
     private final RedisLetterService redisLetterService;
+    private final LetterBoxService letterBoxService;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -77,6 +79,7 @@ public class LetterController {
     public ApiResponse<LetterDetailResponseDTO> getLetter(
             @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         List<String> keywords = letterKeywordService.getKeywords(letterId);
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, keywords, userDetails.getUserId());
         return ApiResponse.onSuccess(result);
