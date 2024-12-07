@@ -5,11 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.service.LetterRepository;
+import postman.bottler.mapletter.service.MapLetterRepository;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.domain.Subscriptions;
+import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
 
@@ -20,6 +23,9 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PushNotificationProvider pushNotificationProvider;
+
+    private final MapLetterRepository mapLetterRepository;
+    private final LetterRepository keywordLetterRepository;
 
     @Transactional
     public NotificationResponseDTO sendNotification(NotificationType type, Long userId, Long letterId) {
@@ -36,10 +42,17 @@ public class NotificationService {
     @Transactional
     public List<NotificationResponseDTO> getUserNotifications(Long userId) {
         Notifications notifications = notificationRepository.findByReceiver(userId);
+        List<Long> mapIds = notifications.extractMapIds();
+        List<NotificationLabelRequestDTO> mapLabels = mapLetterRepository.findAllByIds(mapIds).stream()
+                .map(letter -> new NotificationLabelRequestDTO(letter.getId(), letter.getLabel())).toList();
+        notifications.setMapLabels(mapLabels);
+        List<Long> keywordIds = notifications.extractKeywordIds();
+        List<NotificationLabelRequestDTO> keywordLabels = keywordLetterRepository.findAllByIds(keywordIds)
+                .stream().map(letter -> new NotificationLabelRequestDTO(letter.getId(), letter.getLabel())).toList();
+        notifications.setKeywordLabels(keywordLabels);
         notifications.orderByCreatedAt();
         List<NotificationResponseDTO> result = notifications.createDTO();
-        Notifications changed = notifications.markAsRead();
-        notificationRepository.updateNotifications(changed);
+        notificationRepository.updateNotifications(notifications.markAsRead());
         return result;
     }
 

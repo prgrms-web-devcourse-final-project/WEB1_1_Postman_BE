@@ -12,7 +12,8 @@ public record NotificationResponseDTO(
         Long receiver,
         LocalDateTime createdAt,
         Long letterId,
-        Boolean isRead
+        Boolean isRead,
+        String label
 ) {
     public static NotificationResponseDTO from(final Notification notification) {
         return new NotificationResponseDTO(
@@ -21,6 +22,7 @@ public record NotificationResponseDTO(
                 notification.getReceiver(),
                 notification.getCreatedAt(),
                 notification instanceof LetterNotification ? ((LetterNotification) notification).getLetterId() : null,
-                notification.getIsRead());
+                notification.getIsRead(),
+                notification instanceof LetterNotification ? ((LetterNotification) notification).getLabel() : null);
     }
 }
