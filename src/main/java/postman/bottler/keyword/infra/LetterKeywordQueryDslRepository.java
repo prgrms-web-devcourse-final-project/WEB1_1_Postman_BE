@@ -1,5 +1,6 @@
 package postman.bottler.keyword.infra;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -57,6 +58,24 @@ public class LetterKeywordQueryDslRepository {
                         .and(qLetter.isDeleted.eq(false)))
                 .orderBy(Expressions.stringTemplate("function('RAND')").asc())
                 .limit(limit)
+                .fetch();
+    }
+
+    public List<LetterKeywordEntity> getFrequentKeywords(List<Long> letterIds) {
+        QLetterKeywordEntity letterKeyword = QLetterKeywordEntity.letterKeywordEntity;
+
+        return queryFactory
+                .select(Projections.constructor(LetterKeywordEntity.class,
+                        letterKeyword.letterId.min(),
+                        letterKeyword.keyword,
+                        letterKeyword.isDeleted
+                ))
+                .from(letterKeyword)
+                .where(letterKeyword.letterId.in(letterIds)
+                        .and(letterKeyword.isDeleted.eq(false)))
+                .groupBy(letterKeyword.keyword)
+                .orderBy(letterKeyword.keyword.count().desc())
+                .limit(5)
                 .fetch();
     }
 }

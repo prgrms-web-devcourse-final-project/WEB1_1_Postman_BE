@@ -35,4 +35,11 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
     public void markKeywordsAsDeleted(List<Long> letterIds) {
         jdbcRepository.batchUpdateIsDeleted(letterIds);
     }
+
+    @Override
+    public List<LetterKeyword> getFrequentKeywords(List<Long> letterIds) {
+        return queryDslRepository.getFrequentKeywords(letterIds).stream()
+                .map(LetterKeywordEntity::toDomain)
+                .toList();
+    }
 }

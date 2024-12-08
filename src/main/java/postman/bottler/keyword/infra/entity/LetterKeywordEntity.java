@@ -33,7 +33,7 @@ public class LetterKeywordEntity {
     public LetterKeywordEntity(Long letterId, String keyword, boolean isDeleted) {
         this.letterId = letterId;
         this.keyword = keyword;
-        this.isDeleted = false;
+        this.isDeleted = isDeleted;
     }
 
     public static LetterKeywordEntity from(LetterKeyword letterKeyword) {

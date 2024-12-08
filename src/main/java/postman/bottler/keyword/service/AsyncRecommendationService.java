@@ -14,7 +14,7 @@ public class AsyncRecommendationService {
     private final RecommendService recommendService;
     private final UserKeywordService userKeywordService;
     private final LetterBoxService letterBoxService;
-    private static final int RECOMMENDATION_LIMIT = 3;
+    private static final int RECOMMENDATION_LIMIT = 10;
     private final RedisLetterService redisLetterService;
 
     @Async
