@@ -1,5 +1,7 @@
 package postman.bottler.mapletter.service;
 
+import static postman.bottler.notification.domain.NotificationType.*;
+
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,7 +41,9 @@ import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
+import postman.bottler.notification.service.NotificationService;
 import postman.bottler.reply.dto.ReplyType;
 import postman.bottler.user.service.UserService;
 
@@ -50,6 +54,7 @@ public class MapLetterService {
     private final ReplyMapLetterRepository replyMapLetterRepository;
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final double VIEW_DISTANCE = 15;
@@ -67,7 +72,9 @@ public class MapLetterService {
                                            Long userId) {
         Long targetUserId = userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
-        return mapLetterRepository.save(mapLetter);
+        MapLetter save = mapLetterRepository.save(mapLetter);
+        notificationService.sendNotification(TARGET_LETTER, targetUserId, mapLetter.getId(), mapLetter.getLabel());
+        return save;
     }
 
     @Transactional(readOnly = true)
@@ -155,10 +162,12 @@ public class MapLetterService {
             throw new LetterAlreadyReplyException("해당 편지에 이미 답장을 했습니다.");
         }
 
-        mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
+        MapLetter source = mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
         saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
+        notificationService.sendNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
+                save.getLabel());
         return save;
     }
 
