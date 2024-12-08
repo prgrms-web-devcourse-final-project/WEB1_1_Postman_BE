@@ -1,5 +1,7 @@
 package postman.bottler.letter.service;
 
+import static postman.bottler.notification.domain.NotificationType.KEYWORD_REPLY;
+
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
+import postman.bottler.notification.service.NotificationService;
 import postman.bottler.reply.dto.ReplyType;
 
 @Service
@@ -28,6 +31,7 @@ public class ReplyLetterService {
     private final ReplyLetterRepository replyLetterRepository;
     private final LetterService letterService;
     private final LetterBoxService letterBoxService;
+    private final NotificationService notificationService;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
@@ -46,6 +50,8 @@ public class ReplyLetterService {
 
         saveLetterToBox(senderId, replyLetter, receiverId);
         saveRecentReply(letterId, letterReplyRequestDTO.label(), receiverId);
+        notificationService.sendNotification(KEYWORD_REPLY, receiverInfo.receiverId(), replyLetter.getLetterId(),
+                replyLetter.getLabel());
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
