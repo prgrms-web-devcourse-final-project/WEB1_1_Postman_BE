@@ -16,4 +16,6 @@ public interface LetterRepository {
     List<Letter> findAllByIds(List<Long> letterIds);
 
     boolean checkLetterExists(Long letterId);
+
+    List<Letter> findAllByUserId(Long userId);
 }

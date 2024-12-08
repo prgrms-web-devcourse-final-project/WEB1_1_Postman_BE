@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.util.RedisLetterKeyUtil;
 import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
@@ -26,11 +28,13 @@ public class RedisLetterService {
     private static final int MAX_RECOMMENDATIONS = 3;
     private final LetterService letterService;
 
+    @Transactional
     public void saveRecommendationsTemp(Long userId, List<Long> recommendations) {
         String key = RedisLetterKeyUtil.getTempRecommendationKey(userId);
         redisTemplate.opsForValue().set(key, recommendations);
     }
 
+    @Transactional
     public RecommendNotificationRequestDTO updateRecommendationsFromTemp(Long userId) {
         String tempKey = RedisLetterKeyUtil.getTempRecommendationKey(userId);
         String activeKey = RedisLetterKeyUtil.getActiveRecommendationKey(userId);
@@ -41,10 +45,11 @@ public class RedisLetterService {
         Long recommendId = findFirstValidLetter(tempRecommendations);
         updateActiveRecommendations(recommendId, activeRecommendations, activeKey);
         saveLetterToBox(userId, recommendId);
-        
+        Letter letter = letterService.findLetter(recommendId);
+
         redisTemplate.delete(tempKey);
 
-        return RecommendNotificationRequestDTO.of(userId, recommendId);
+        return RecommendNotificationRequestDTO.of(userId, recommendId, letter.getLabel());
     }
 
     private void saveLetterToBox(Long userId, Long letterId) {

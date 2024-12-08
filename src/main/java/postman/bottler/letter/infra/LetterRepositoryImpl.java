@@ -47,4 +47,11 @@ public class LetterRepositoryImpl implements LetterRepository {
     public boolean checkLetterExists(Long letterId) {
         return letterJpaRepository.existsById(letterId);
     }
+
+    @Override
+    public List<Letter> findAllByUserId(Long userId) {
+        return letterJpaRepository.findAllByUserId(userId).stream()
+                .map(LetterEntity::toDomain)
+                .toList();
+    }
 }

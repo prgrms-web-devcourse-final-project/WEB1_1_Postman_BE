@@ -67,7 +67,8 @@ public class LetterService {
         return ReceiverDTO.from(letter);
     }
 
-    private Letter findLetter(Long letterId) {
+    @Transactional(readOnly = true)
+    public Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
@@ -87,6 +88,13 @@ public class LetterService {
     public List<NotificationLabelRequestDTO> getLabels(List<Long> ids) {
         return letterRepository.findAllByIds(ids).stream()
                 .map(find -> new NotificationLabelRequestDTO(find.getId(), find.getLabel()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findAllByUserId(Long userId) {
+        return letterRepository.findAllByUserId(userId).stream()
+                .map(Letter::getId)
                 .toList();
     }
 }
