@@ -42,149 +42,156 @@ public class NotificationServiceTest {
         @DisplayName("새 편지 알림을 보낸다.")
         public void sendNewLetterNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("NEW_LETTER", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("NEW_LETTER", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()),
-                    request.receiver(),
-                    request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId(),
+                    request.label());
 
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.NEW_LETTER);
             assertThat(response.letterId()).isEqualTo(1L);
+            assertThat(response.label()).isEqualTo(request.label());
         }
 
         @Test
         @DisplayName("타겟 편지 알림을 보낸다.")
         public void sendTargetLetterNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("TARGET_LETTER", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("TARGET_LETTER", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId(),
+                    request.label());
 
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.TARGET_LETTER);
             assertThat(response.letterId()).isEqualTo(1L);
+            assertThat(response.label()).isEqualTo(request.label());
         }
 
         @Test
         @DisplayName("지도 답장 편지 알림을 보낸다.")
         public void sendMapReplyLetterNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("MAP_REPLY", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("MAP_REPLY", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId(),
+                    request.label());
 
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.MAP_REPLY);
             assertThat(response.letterId()).isEqualTo(1L);
+            assertThat(response.label()).isNull();
         }
 
         @Test
         @DisplayName("키워드 답장 편지 알림을 보낸다.")
         public void sendKeywordReplyLetterNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("KEYWORD_REPLY", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("KEYWORD_REPLY", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId(),
+                    request.label());
 
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.KEYWORD_REPLY);
             assertThat(response.letterId()).isEqualTo(1L);
+            assertThat(response.label()).isNull();
         }
 
         @Test
         @DisplayName("경고 알림을 보낸다.")
         public void sendWarningNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("WARNING", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("WARNING", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId(),
+                    request.label());
 
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.WARNING);
             assertThat(response.letterId()).isNull();
+            assertThat(response.label()).isNull();
         }
 
         @Test
         @DisplayName("경고 알림을 보낸다.")
         public void sendBanNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
             NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId(),
+                    request.label());
 
             // THEN
             assertThat(response.receiver()).isEqualTo(1L);
             assertThat(response.type()).isEqualTo(NotificationType.BAN);
             assertThat(response.letterId()).isNull();
+            assertThat(response.label()).isNull();
         }
 
         @Test
         @DisplayName("알림 보낼 기기가 없다면, 보내지 않는다.")
         public void notSendPushNotification() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L, "label");
             Notification notification = Notification.create(NotificationType.from(request.notificationType()),
-                    request.receiver(), request.letterId());
+                    request.receiver(), request.letterId(), request.label());
             when(notificationRepository.save(any())).thenReturn(notification);
             when(subscriptionRepository.findByUserId(1L))
                     .thenReturn(Subscriptions.from(List.of()));
 
             // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(
-                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+            notificationService.sendNotification(NotificationType.from(request.notificationType()), request.receiver(),
+                    request.letterId(), request.label());
 
             // THEN
-            assertThat(response.receiver()).isEqualTo(1L);
-            assertThat(response.type()).isEqualTo(NotificationType.BAN);
-            assertThat(response.letterId()).isNull();
             verify(pushNotificationProvider, times(0)).pushAll(any());
         }
     }
@@ -197,12 +204,12 @@ public class NotificationServiceTest {
         public void getNotifications() {
             // GIVEN
             ArrayList<Notification> notifications = new ArrayList<>();
-            notifications.add(Notification.create(NotificationType.from("NEW_LETTER"), 1L, 1L));
-            notifications.add(Notification.create(NotificationType.from("TARGET_LETTER"), 1L, 1L));
-            notifications.add(Notification.create(NotificationType.from("MAP_REPLY"), 1L, 1L));
-            notifications.add(Notification.create(NotificationType.from("KEYWORD_REPLY"), 1L, 1L));
-            notifications.add(Notification.create(NotificationType.from("WARNING"), 1L, null));
-            notifications.add(Notification.create(NotificationType.from("BAN"), 1L, null));
+            notifications.add(Notification.create(NotificationType.from("NEW_LETTER"), 1L, 1L, "label"));
+            notifications.add(Notification.create(NotificationType.from("TARGET_LETTER"), 1L, 1L, "label"));
+            notifications.add(Notification.create(NotificationType.from("MAP_REPLY"), 1L, 1L, null));
+            notifications.add(Notification.create(NotificationType.from("KEYWORD_REPLY"), 1L, 1L, null));
+            notifications.add(Notification.create(NotificationType.from("WARNING"), 1L, null, null));
+            notifications.add(Notification.create(NotificationType.from("BAN"), 1L, null, null));
 
             Notifications notReadNotification = Notifications.from(notifications);
 
