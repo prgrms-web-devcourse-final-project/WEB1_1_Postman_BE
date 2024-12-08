@@ -15,14 +15,16 @@ public class NotificationTypeTest {
         // GIVEN
         NotificationType newLetter = NotificationType.NEW_LETTER;
         NotificationType targetLetter = NotificationType.TARGET_LETTER;
-        NotificationType replyLetter = NotificationType.REPLY_LETTER;
+        NotificationType mapReply = NotificationType.MAP_REPLY;
+        NotificationType keywordReply = NotificationType.KEYWORD_REPLY;
         NotificationType warning = NotificationType.WARNING;
         NotificationType ban = NotificationType.BAN;
 
         // WHEN
         Boolean letter1 = newLetter.isLetterNotification();
         Boolean letter2 = targetLetter.isLetterNotification();
-        Boolean letter3 = replyLetter.isLetterNotification();
+        Boolean letter3 = mapReply.isLetterNotification();
+        Boolean letter4 = keywordReply.isLetterNotification();
         Boolean nonLetter1 = warning.isLetterNotification();
         Boolean nonLetter2 = ban.isLetterNotification();
 
@@ -40,21 +42,24 @@ public class NotificationTypeTest {
         // GIVEN
         String newLetter = "NEW_LETTER";
         String targetLetter = "TARGET_LETTER";
-        String replyLetter = "REPLY_LETTER";
+        String mapReply = "MAP_REPLY";
+        String keywordReply = "KEYWORD_REPLY";
         String warning = "WARNING";
         String ban = "BAN";
 
         // WHEN
         NotificationType newLetterType = NotificationType.from(newLetter);
         NotificationType targetLetterType = NotificationType.from(targetLetter);
-        NotificationType replyLetterType = NotificationType.from(replyLetter);
+        NotificationType mapReplyType = NotificationType.from(mapReply);
+        NotificationType keywordReplyType = NotificationType.from(keywordReply);
         NotificationType warningType = NotificationType.from(warning);
         NotificationType banType = NotificationType.from(ban);
 
         // THEN
         assertThat(newLetterType).isEqualTo(NotificationType.NEW_LETTER);
         assertThat(targetLetterType).isEqualTo(NotificationType.TARGET_LETTER);
-        assertThat(replyLetterType).isEqualTo(NotificationType.REPLY_LETTER);
+        assertThat(mapReplyType).isEqualTo(NotificationType.MAP_REPLY);
+        assertThat(keywordReplyType).isEqualTo(NotificationType.KEYWORD_REPLY);
         assertThat(warningType).isEqualTo(NotificationType.WARNING);
         assertThat(banType).isEqualTo(NotificationType.BAN);
     }

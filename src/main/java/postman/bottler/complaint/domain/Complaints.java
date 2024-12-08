@@ -1,9 +1,10 @@
 package postman.bottler.complaint.domain;
 
 import java.util.List;
-import postman.bottler.complaint.exception.DuplicateComplainException;
 
 public class Complaints {
+    private static final int WARNING_CONDITION_COUNT = 3;
+
     private List<Complaint> complaints;
 
     private Complaints(List<Complaint> complaints) {
@@ -14,19 +15,12 @@ public class Complaints {
         return new Complaints(complaints);
     }
 
-    public void validateDuplication(Long reporterId) {
-        for (Complaint complaint : complaints) {
-            if (complaint.isReporter(reporterId)) {
-                throw new DuplicateComplainException();
-            }
-        }
-    }
-
     public void add(Complaint complaint) {
+        complaints.forEach(c -> c.validateDuplicateComplaint(complaint.getLetterId(), complaint.getReporterId()));
         complaints.add(complaint);
     }
 
     public Boolean needsWarningNotification() {
-        return complaints.size() == 3;
+        return complaints.size() == WARNING_CONDITION_COUNT;
     }
 }

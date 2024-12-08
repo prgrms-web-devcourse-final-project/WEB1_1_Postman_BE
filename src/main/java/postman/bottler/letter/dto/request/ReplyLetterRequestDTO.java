@@ -10,14 +10,13 @@ public record ReplyLetterRequestDTO(
         @NotBlank(message = "편지지는 필수입니다.") String paper,
         @NotBlank(message = "라벨은 필수입니다.") String label
 ) {
-    public ReplyLetter toDomain(String title, Long letterId, Long receiverId, Long senderId, String profile) {
+    public ReplyLetter toDomain(String title, Long letterId, Long receiverId, Long senderId) {
         return ReplyLetter.builder()
                 .title(title)
                 .content(this.content)
                 .font(this.font)
                 .paper(this.paper)
                 .label(this.label)
-                .profile(profile)
                 .letterId(letterId)
                 .receiverId(receiverId)
                 .senderId(senderId)

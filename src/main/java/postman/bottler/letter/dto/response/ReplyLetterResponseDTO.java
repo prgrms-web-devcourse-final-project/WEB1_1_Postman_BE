@@ -8,7 +8,6 @@ public record ReplyLetterResponseDTO(
         String content,
         String font,
         String paper,
-        String profile,
         String label,
         LocalDateTime createdAt
 ) {
@@ -18,7 +17,6 @@ public record ReplyLetterResponseDTO(
                 replyLetter.getContent(),
                 replyLetter.getFont(),
                 replyLetter.getPaper(),
-                replyLetter.getProfile(),
                 replyLetter.getLabel(),
                 replyLetter.getCreatedAt()
         );

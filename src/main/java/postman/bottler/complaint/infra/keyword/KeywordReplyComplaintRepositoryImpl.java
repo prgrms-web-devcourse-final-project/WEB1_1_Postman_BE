@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.domain.KeywordReplyComplaint;
 import postman.bottler.complaint.service.KeywordReplyComplaintRepository;
 
 @Repository
@@ -14,7 +14,7 @@ public class KeywordReplyComplaintRepositoryImpl implements KeywordReplyComplain
     private final JpaKeywordReplyComplaintRepository repository;
 
     @Override
-    public KeywordReplyComplaint save(KeywordReplyComplaint complaint) {
+    public Complaint save(Complaint complaint) {
         return repository.save(KeywordReplyComplaintEntity.from(complaint)).toDomain();
     }
 
