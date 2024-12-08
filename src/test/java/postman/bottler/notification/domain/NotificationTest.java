@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import postman.bottler.notification.dto.request.NotificationRequestDTO;
-import postman.bottler.notification.exception.InvalidNotificationRequestException;
 import postman.bottler.notification.exception.NoLetterIdException;
 import postman.bottler.notification.exception.NoTypeException;
 
@@ -21,7 +20,8 @@ public class NotificationTest {
         NotificationRequestDTO wrong = new NotificationRequestDTO("WRONG", 1L, 1L);
 
         // WHEN - THEN
-        assertThatThrownBy(() -> Notification.create(wrong.notificationType(), wrong.receiver(), wrong.letterId()))
+        assertThatThrownBy(() -> Notification.create(NotificationType.from(wrong.notificationType()), wrong.receiver(),
+                wrong.letterId()))
                 .isInstanceOf(NoTypeException.class);
     }
 
@@ -36,9 +36,7 @@ public class NotificationTest {
 
             // WHEN
             Notification notification = Notification.create(
-                    request.notificationType(),
-                    request.receiver(),
-                    request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
 
             // THEN
             assertThat(notification.getType()).isEqualTo(NotificationType.NEW_LETTER);
@@ -55,7 +53,8 @@ public class NotificationTest {
 
             // WHEN
             assertThatThrownBy(
-                    () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
+                    () -> Notification.create(NotificationType.from(request.notificationType()), request.receiver(),
+                            request.letterId()))
                     .isInstanceOf(NoLetterIdException.class);
         }
 
@@ -67,9 +66,7 @@ public class NotificationTest {
 
             // WHEN
             Notification notification = Notification.create(
-                    request.notificationType(),
-                    request.receiver(),
-                    request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
 
             // THEN
             assertThat(notification.getType()).isEqualTo(NotificationType.TARGET_LETTER);
@@ -86,24 +83,40 @@ public class NotificationTest {
 
             // WHEN
             assertThatThrownBy(
-                    () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
+                    () -> Notification.create(NotificationType.from(request.notificationType()), request.receiver(),
+                            request.letterId()))
                     .isInstanceOf(NoLetterIdException.class);
         }
 
         @Test
-        @DisplayName("편지 답장 알림을 생성한다.")
-        public void replyLetterNotificationTest() {
+        @DisplayName("지도 편지 답장 알림을 생성한다.")
+        public void replyMapLetterNotificationTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("REPLY_LETTER", 1L, 1L);
+            NotificationRequestDTO request = new NotificationRequestDTO("MAP_REPLY", 1L, 1L);
 
             // WHEN
             Notification notification = Notification.create(
-                    request.notificationType(),
-                    request.receiver(),
-                    request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
 
             // THEN
-            assertThat(notification.getType()).isEqualTo(NotificationType.REPLY_LETTER);
+            assertThat(notification.getType()).isEqualTo(NotificationType.MAP_REPLY);
+            assertThat(notification.getReceiver()).isEqualTo(1L);
+            assertThat(notification).isInstanceOf(LetterNotification.class);
+            assertThat(((LetterNotification) notification).getLetterId()).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("키워드 편지 답장 알림을 생성한다.")
+        public void replyKeywordLetterNotificationTest() {
+            // GIVEN
+            NotificationRequestDTO request = new NotificationRequestDTO("KEYWORD_REPLY", 1L, 1L);
+
+            // WHEN
+            Notification notification = Notification.create(
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
+
+            // THEN
+            assertThat(notification.getType()).isEqualTo(NotificationType.KEYWORD_REPLY);
             assertThat(notification.getReceiver()).isEqualTo(1L);
             assertThat(notification).isInstanceOf(LetterNotification.class);
             assertThat(((LetterNotification) notification).getLetterId()).isEqualTo(1L);
@@ -114,11 +127,12 @@ public class NotificationTest {
         @DisplayName("새 편지 생성 시, 편지 ID가 없으면 예외를 발생시킨다.")
         public void replyLetterNoLetterIdTest() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("REPLY_LETTER", 1L, null);
+            NotificationRequestDTO request = new NotificationRequestDTO("KEYWORD_REPLY", 1L, null);
 
             // WHEN
             assertThatThrownBy(
-                    () -> Notification.create(request.notificationType(), request.receiver(), request.letterId()))
+                    () -> Notification.create(NotificationType.from(request.notificationType()), request.receiver(),
+                            request.letterId()))
                     .isInstanceOf(NoLetterIdException.class);
         }
 
@@ -130,9 +144,7 @@ public class NotificationTest {
 
             // WHEN
             Notification notification = Notification.create(
-                    request.notificationType(),
-                    request.receiver(),
-                    request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
 
             // THEN
             assertThat(notification.getType()).isEqualTo(NotificationType.WARNING);
@@ -148,9 +160,7 @@ public class NotificationTest {
 
             // WHEN
             Notification notification = Notification.create(
-                    request.notificationType(),
-                    request.receiver(),
-                    request.letterId());
+                    NotificationType.from(request.notificationType()), request.receiver(), request.letterId());
 
             // THEN
             assertThat(notification.getType()).isEqualTo(NotificationType.BAN);
@@ -166,13 +176,13 @@ public class NotificationTest {
         @DisplayName("알림을 읽는다면, 읽음 표시를 한다.")
         public void readNotification() {
             // GIVEN
-            Notification notification = Notification.create("NEW_LETTER", 1L, 1L);
+            Notification notification = Notification.create(NotificationType.NEW_LETTER, 1L, 1L);
 
             // WHEN
-            notification.read();
+            Notification read = notification.read();
 
             // THEN
-            assertThat(notification.getIsRead()).isTrue();
+            assertThat(read.getIsRead()).isTrue();
         }
     }
 }

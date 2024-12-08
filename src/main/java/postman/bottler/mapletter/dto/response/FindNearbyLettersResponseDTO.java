@@ -15,11 +15,11 @@ public record FindNearbyLettersResponseDTO(
         LocalDateTime createdAt,
         BigDecimal distance,
         Long target,
-        Long createUserId,
+        String createUserNickname,
         String label,
         String description
 ) {
-    public static FindNearbyLettersResponseDTO from(MapLetterAndDistance letterWithDistance) {
+    public static FindNearbyLettersResponseDTO from(MapLetterAndDistance letterWithDistance, String nickname) {
         return FindNearbyLettersResponseDTO.builder()
                 .letterId(letterWithDistance.getLetterId())
                 .latitude(letterWithDistance.getLatitude())
@@ -28,7 +28,7 @@ public record FindNearbyLettersResponseDTO(
                 .createdAt(letterWithDistance.getCreatedAt())
                 .distance(letterWithDistance.getDistance())
                 .target(letterWithDistance.getTargetUserId())
-                .createUserId(letterWithDistance.getCreateUserId())
+                .createUserNickname(nickname)
                 .label(letterWithDistance.getLabel())
                 .description(letterWithDistance.getDescription())
                 .build();
