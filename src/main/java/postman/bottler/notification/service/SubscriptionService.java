@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
+import postman.bottler.notification.exception.DuplicateTokenException;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,9 @@ public class SubscriptionService {
     @Transactional
     public SubscriptionResponseDTO subscribe(Long userId, String token) {
         Subscription subscribe = Subscription.create(userId, token);
+        if (subscriptionRepository.isDuplicate(subscribe)) {
+            throw new DuplicateTokenException();
+        }
         Subscription save = subscriptionRepository.save(subscribe);
         return SubscriptionResponseDTO.from(save);
     }
