@@ -162,10 +162,12 @@ public class MapLetterService {
             throw new LetterAlreadyReplyException("해당 편지에 이미 답장을 했습니다.");
         }
 
-        mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
+        MapLetter source = mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
         saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
+        notificationService.sendNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
+                save.getLabel());
         return save;
     }
 
