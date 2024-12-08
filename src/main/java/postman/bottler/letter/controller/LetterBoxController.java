@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
+import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
@@ -39,6 +39,7 @@ public class LetterBoxController {
     @Operation(
             summary = "보관된 모든 편지 조회",
             description = "페이지네이션을 사용하여 보관된 모든 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
+                    + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping
     public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getAllLetters(
@@ -54,7 +55,8 @@ public class LetterBoxController {
 
     @Operation(
             summary = "보낸 편지 조회",
-            description = "페이지네이션을 사용하여 보관된 보낸 편지의 헤더 정보를 조회합니다."
+            description = "페이지네이션을 사용하여 보관된 보낸 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
+                    + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/sent")
     public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getSentLetters(
@@ -71,6 +73,7 @@ public class LetterBoxController {
     @Operation(
             summary = "받은 편지 조회",
             description = "페이지네이션을 사용하여 보관된 받은 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
+                    + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/received")
     public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getReceivedLetters(
@@ -90,9 +93,10 @@ public class LetterBoxController {
     )
     @DeleteMapping
     public ApiResponse<String> deleteSavedLetter(
-            @RequestBody @Valid List<LetterDeleteRequestDTO> letterDeleteRequestDTOS
+            @RequestBody @Valid List<LetterDeleteDTO> letterDeleteDTOS,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetters(letterDeleteRequestDTOS);
+        deleteManagerService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
         return ApiResponse.onSuccess("편지 보관을 취소했습니다.");
     }
 

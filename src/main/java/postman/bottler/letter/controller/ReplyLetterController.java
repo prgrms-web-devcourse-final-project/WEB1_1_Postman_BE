@@ -3,7 +3,6 @@ package postman.bottler.letter.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
+import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
+import postman.bottler.letter.dto.request.ReplyLetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
@@ -26,6 +26,7 @@ import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
+import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.ReplyLetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -40,6 +41,7 @@ public class ReplyLetterController {
     private final ReplyLetterService letterReplyService;
     private final DeleteManagerService deleteManagerService;
     private final ValidationUtil validationUtil;
+    private final LetterBoxService letterBoxService;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -61,6 +63,7 @@ public class ReplyLetterController {
     @Operation(
             summary = "특정 키워드 편지에 대한 답장 목록 조회",
             description = "지정된 편지 ID에 대한 답장들의 제목, 라벨이미지, 작성날짜를 페이지네이션 형태로 반환합니다."
+                    + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/{letterId}")
     public ApiResponse<PageResponseDTO<ReplyLetterHeadersResponseDTO>> getReplyForLetter(
@@ -69,6 +72,7 @@ public class ReplyLetterController {
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         validatePageRequest(bindingResult);
         Page<ReplyLetterHeadersResponseDTO> result =
                 letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO, userDetails.getUserId());
@@ -81,21 +85,25 @@ public class ReplyLetterController {
     )
     @GetMapping("/detail/{replyLetterId}")
     public ApiResponse<ReplyLetterResponseDTO> getReplyLetter(
-            @PathVariable Long replyLetterId
+            @PathVariable Long replyLetterId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        letterBoxService.validateLetterInUserBox(replyLetterId, userDetails.getUserId());
         ReplyLetterResponseDTO result = letterReplyService.getReplyLetterDetail(replyLetterId);
         return ApiResponse.onSuccess(result);
     }
 
     @Operation(
             summary = "답장 편지 삭제",
-            description = "답장 편지ID, 편지타입(LETTER, REPLY_LETTER, 송수신 타입(SEND, RECEIVE)을 기반으로 답장 편지를 삭제합니다."
+            description = "답장 편지ID, 송수신 타입(SEND, RECEIVE)을 기반으로 답장 편지를 삭제합니다."
     )
     @DeleteMapping
     public ApiResponse<String> deleteReplyLetter(
-            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
+            @RequestBody @Valid ReplyLetterDeleteRequestDTO replyLetterDeleteRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetters(List.of(letterDeleteRequestDTO));
+        deleteManagerService.deleteLetter(LetterDeleteDTO.fromReplyLetter(replyLetterDeleteRequestDTO),
+                userDetails.getUserId());
         return ApiResponse.onSuccess("success");
     }
 

@@ -86,4 +86,17 @@ public class LetterBoxQueryRepository {
                 )
                 .execute();
     }
+
+    public void deleteByConditionAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+
+        queryFactory.delete(letterBox)
+                .where(
+                        letterIds != null ? letterBox.letterId.in(letterIds) : null,
+                        letterType != LetterType.UNKNOWN ? letterBox.letterType.eq(letterType) : null,
+                        boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null,
+                        letterBox.userId.eq(userId)
+                )
+                .execute();
+    }
 }

@@ -17,6 +17,7 @@ import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
+import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.reply.dto.ReplyType;
 
@@ -80,17 +81,20 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public void deleteReplyLetters(List<Long> letterIds) {
+    public void deleteReplyLetters(List<Long> letterIds, Long userId) {
+        letterIds.forEach(letterId -> {
+            if (!findReplyLetter(letterId).getSenderId().equals(userId)) {
+                throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
+            }
+        });
+        letterIds.forEach(this::deleteRecentReply);
         replyLetterRepository.deleteByIds(letterIds);
-        for (Long letterId : letterIds) {
-            deleteRecentReply(letterId);
-        }
     }
 
     @Transactional
     public Long blockLetter(Long replyLetterId) {
-        replyLetterRepository.blockReplyLetterById(replyLetterId);
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
+        replyLetterRepository.blockReplyLetterById(replyLetterId);
         return replyLetter.getSenderId();
     }
 
