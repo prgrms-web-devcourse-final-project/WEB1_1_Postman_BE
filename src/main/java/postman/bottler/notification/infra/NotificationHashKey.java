@@ -10,7 +10,8 @@ public enum NotificationHashKey {
     RECEIVER("receiver"),
     CREATED_AT("created_at"),
     LETTER_ID("letter_id"),
-    IS_READ("is_read");
+    IS_READ("is_read"),
+    LABEL("label");
 
     private final String key;
 

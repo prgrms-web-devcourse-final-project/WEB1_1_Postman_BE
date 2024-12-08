@@ -66,11 +66,12 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     }
 
     @Override
-    public void findSourceMapLetterById(Long sourceMapLetterId) {
+    public MapLetter findSourceMapLetterById(Long sourceMapLetterId) {
         MapLetterEntity activeLetter = mapLetterJpaRepository.findActiveById(sourceMapLetterId);
         if (activeLetter == null) {
             throw new SourceMapLetterNotFountException("원본 편지를 찾을 수 없습니다. 편지가 존재하지 않거나 삭제되었습니다.");
         }
+        return MapLetterEntity.toDomain(activeLetter);
     }
 
     @Override

@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.notification.domain.NotificationType;
+import postman.bottler.notification.service.NotificationService;
 import postman.bottler.slack.SlackConstant;
 import postman.bottler.slack.SlackService;
 import postman.bottler.user.auth.JwtTokenProvider;
@@ -45,6 +47,7 @@ public class UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final EmailService emailService;
     private final SlackService slackService;
+    private final NotificationService notificationService;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -242,6 +245,7 @@ public class UserService {
         if (user.checkBan()) {
             banService.banUser(user);
             slackService.sendSlackMessage(SlackConstant.BAN, userId);
+            notificationService.sendNotification(NotificationType.BAN, userId, null, null);
         }
         userRepository.updateWarningCount(user);
     }

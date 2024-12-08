@@ -25,7 +25,7 @@ public interface MapLetterRepository {
 
     List<MapLetterAndDistance> findLettersByUserLocation(BigDecimal latitude, BigDecimal longitude, Long userId);
 
-    void findSourceMapLetterById(Long sourceMapLetterId);
+    MapLetter findSourceMapLetterById(Long sourceMapLetterId);
 
     void letterBlock(Long letterId);
 
