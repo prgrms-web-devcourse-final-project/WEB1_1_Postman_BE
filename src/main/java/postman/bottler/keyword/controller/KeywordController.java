@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.keyword.dto.request.UserKeywordRequestDTO;
+import postman.bottler.keyword.dto.response.FrequentKeywordsDTO;
 import postman.bottler.keyword.dto.response.KeywordResponseDTO;
 import postman.bottler.keyword.dto.response.UserKeywordResponseDTO;
 import postman.bottler.keyword.service.KeywordService;
+import postman.bottler.keyword.service.LetterKeywordService;
 import postman.bottler.keyword.service.UserKeywordService;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -23,6 +25,7 @@ public class KeywordController {
 
     private final UserKeywordService userKeywordService;
     private final KeywordService keywordService;
+    private final LetterKeywordService letterKeywordService;
 
     @Operation(
             summary = "유저 키워드 목록 조회",
@@ -56,6 +59,18 @@ public class KeywordController {
     @GetMapping("/list")
     public ApiResponse<KeywordResponseDTO> getKeywordList() {
         KeywordResponseDTO result = keywordService.getKeywords();
+        return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(
+            summary = "사용자의 자주 쓰는 키워드 조회",
+            description = "현재 사용자의 자주 쓰는 키워드를 조회합니다"
+    )
+    @GetMapping("/frequent")
+    public ApiResponse<FrequentKeywordsDTO> getTopFrequentKeywords(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        FrequentKeywordsDTO result = letterKeywordService.getTopFrequentKeywords(userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 }

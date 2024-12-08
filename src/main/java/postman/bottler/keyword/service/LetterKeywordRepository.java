@@ -11,4 +11,6 @@ public interface LetterKeywordRepository {
     List<Long> getMatchedLetters(List<String> userKeywords, List<Long> letterIds, int limit);
 
     void markKeywordsAsDeleted(List<Long> letterIds);
+
+    List<LetterKeyword> getFrequentKeywords(List<Long> letterIds);
 }
