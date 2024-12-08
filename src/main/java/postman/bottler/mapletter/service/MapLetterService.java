@@ -39,7 +39,9 @@ import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
+import postman.bottler.notification.service.NotificationService;
 import postman.bottler.reply.dto.ReplyType;
 import postman.bottler.user.service.UserService;
 
@@ -50,6 +52,7 @@ public class MapLetterService {
     private final ReplyMapLetterRepository replyMapLetterRepository;
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final double VIEW_DISTANCE = 15;
@@ -67,7 +70,9 @@ public class MapLetterService {
                                            Long userId) {
         Long targetUserId = userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
-        return mapLetterRepository.save(mapLetter);
+        MapLetter save = mapLetterRepository.save(mapLetter);
+        notificationService.sendNotification(NotificationType.TARGET_LETTER, targetUserId, save.getId());
+        return save;
     }
 
     @Transactional(readOnly = true)
