@@ -10,7 +10,9 @@ public record NotificationRequestDTO(
         @NotNull(message = "알림 대상은 필수입니다.")
         Long receiver,
 
-        Long letterId
+        Long letterId,
+
+        String label
 ) {
 
 }

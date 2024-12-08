@@ -3,6 +3,7 @@ package postman.bottler.notification.infra;
 import static postman.bottler.notification.infra.NotificationHashKey.CREATED_AT;
 import static postman.bottler.notification.infra.NotificationHashKey.ID;
 import static postman.bottler.notification.infra.NotificationHashKey.IS_READ;
+import static postman.bottler.notification.infra.NotificationHashKey.LABEL;
 import static postman.bottler.notification.infra.NotificationHashKey.LETTER_ID;
 import static postman.bottler.notification.infra.NotificationHashKey.RECEIVER;
 import static postman.bottler.notification.infra.NotificationHashKey.TYPE;
@@ -37,6 +38,8 @@ public class RedisNotification {
 
     private Boolean isRead;
 
+    private String label;
+
     public static RedisNotification from(Notification notification) {
         return RedisNotification.builder()
                 .id(notification.getId())
@@ -46,11 +49,12 @@ public class RedisNotification {
                         ((LetterNotification) notification).getLetterId() : null)
                 .createdAt(notification.getCreatedAt())
                 .isRead(notification.getIsRead())
+                .label(notification.isLetterNotification() ? ((LetterNotification) notification).getLabel() : null)
                 .build();
     }
 
     public Notification toDomain() {
-        return Notification.of(id, type, receiver, letterId, createdAt, isRead);
+        return Notification.of(id, type, receiver, letterId, createdAt, isRead, label);
     }
 
     public Map<String, Object> toMap() {
@@ -61,6 +65,7 @@ public class RedisNotification {
         map.put(LETTER_ID.getKey(), letterId);
         map.put(CREATED_AT.getKey(), createdAt);
         map.put(IS_READ.getKey(), isRead);
+        map.put(LABEL.getKey(), label);
         return map;
     }
 
@@ -72,6 +77,7 @@ public class RedisNotification {
                 .createdAt((LocalDateTime) redisTemplate.opsForHash().get(key, CREATED_AT.getKey()))
                 .letterId((Long) redisTemplate.opsForHash().get(key, LETTER_ID.getKey()))
                 .isRead((Boolean) redisTemplate.opsForHash().get(key, IS_READ.getKey()))
+                .label((String) redisTemplate.opsForHash().get(key, LABEL.getKey()))
                 .build();
     }
 

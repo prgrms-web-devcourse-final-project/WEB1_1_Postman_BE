@@ -14,7 +14,7 @@ public class Notification {
 
     private final LocalDateTime createdAt;
 
-    private Boolean isRead;
+    private final Boolean isRead;
 
     protected Notification(NotificationType type, Long receiver, Boolean isRead) {
         this.id = UUID.randomUUID();
@@ -32,17 +32,17 @@ public class Notification {
         this.isRead = isRead;
     }
 
-    public static Notification create(NotificationType type, Long receiver, Long letterId) {
+    public static Notification create(NotificationType type, Long receiver, Long letterId, String label) {
         if (type.isLetterNotification()) {
-            return new LetterNotification(type, receiver, letterId, false);
+            return new LetterNotification(type, receiver, letterId, false, label);
         }
         return new Notification(type, receiver, false);
     }
 
     public static Notification of(UUID id, NotificationType type, Long receiver,
-                                  Long letterId, LocalDateTime createdAt, Boolean isRead) {
+                                  Long letterId, LocalDateTime createdAt, Boolean isRead, String label) {
         if (type.isLetterNotification()) {
-            return new LetterNotification(id, type, receiver, letterId, createdAt, isRead);
+            return new LetterNotification(id, type, receiver, letterId, createdAt, isRead, label);
         }
         return new Notification(id, type, receiver, createdAt, isRead);
     }
@@ -61,6 +61,7 @@ public class Notification {
 
     public Notification read() {
         return Notification.of(id, type, receiver,
-                isLetterNotification() ? ((LetterNotification) this).getLetterId() : null, createdAt, true);
+                isLetterNotification() ? ((LetterNotification) this).getLetterId() : null, createdAt, true,
+                isLetterNotification() ? ((LetterNotification) this).getLabel() : null);
     }
 }

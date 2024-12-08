@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +33,8 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final SubscriptionService subscriptionService;
 
-    @Operation(summary = "알림 생성", description = "알림 유형, 알림 대상은 필수, 편지 관련 알림은 편지 ID를 등록합니다.")
+    @Operation(summary = "알림 생성",
+            description = "알림 유형, 알림 대상은 필수, 편지 관련 알림은 편지 ID와 라벨 이미지를 등록합니다.")
     @PostMapping
     public ApiResponse<NotificationResponseDTO> create(
             @Valid @RequestBody NotificationRequestDTO notificationRequestDTO, BindingResult bindingResult) {
@@ -44,7 +44,7 @@ public class NotificationController {
         NotificationResponseDTO response = notificationService.sendNotification(
                 NotificationType.from(notificationRequestDTO.notificationType()),
                 notificationRequestDTO.receiver(),
-                notificationRequestDTO.letterId());
+                notificationRequestDTO.letterId(), notificationRequestDTO.label());
         return ApiResponse.onCreateSuccess(response);
     }
 
