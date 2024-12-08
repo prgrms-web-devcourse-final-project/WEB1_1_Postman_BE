@@ -41,7 +41,7 @@ public class RedisLetterService {
         Long recommendId = findFirstValidLetter(tempRecommendations);
         updateActiveRecommendations(recommendId, activeRecommendations, activeKey);
         saveLetterToBox(userId, recommendId);
-
+        
         redisTemplate.delete(tempKey);
 
         return RecommendNotificationRequestDTO.of(userId, recommendId);

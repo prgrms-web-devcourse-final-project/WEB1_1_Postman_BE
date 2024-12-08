@@ -18,12 +18,14 @@ import postman.bottler.global.response.ApiResponse;
 import postman.bottler.keyword.service.LetterKeywordService;
 import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.letter.domain.Letter;
+import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
+import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.LetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -39,6 +41,7 @@ public class LetterController {
     private final LetterKeywordService letterKeywordService;
     private final ValidationUtil validationUtil;
     private final RedisLetterService redisLetterService;
+    private final LetterBoxService letterBoxService;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -57,13 +60,14 @@ public class LetterController {
 
     @Operation(
             summary = "키워드 편지 삭제",
-            description = "키워드 편지ID, 편지타입(LETTER, REPLY_LETTER), 송수신 타입(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
+            description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
     )
     @DeleteMapping
     public ApiResponse<String> deleteLetter(
-            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO
+            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetters(List.of(letterDeleteRequestDTO));
+        deleteManagerService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 
@@ -75,6 +79,7 @@ public class LetterController {
     public ApiResponse<LetterDetailResponseDTO> getLetter(
             @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         List<String> keywords = letterKeywordService.getKeywords(letterId);
         LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, keywords, userDetails.getUserId());
         return ApiResponse.onSuccess(result);

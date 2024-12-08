@@ -42,4 +42,11 @@ public class LetterBoxJdbcRepository {
 
         jdbcTemplate.batchUpdate(sql, params);
     }
+
+    public boolean existsByUserIdAndLetterId(Long letterId, Long userId) {
+        String sql = "SELECT COUNT(*) FROM letter_box WHERE user_id = ? AND letter_id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, letterId);
+        return count > 0;
+    }
 }
