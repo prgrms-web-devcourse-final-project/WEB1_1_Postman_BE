@@ -13,4 +13,6 @@ public interface SubscriptionRepository {
     void deleteAllByUserId(Long userId);
 
     void deleteByToken(String token);
+
+    Boolean isDuplicate(Subscription subscription);
 }

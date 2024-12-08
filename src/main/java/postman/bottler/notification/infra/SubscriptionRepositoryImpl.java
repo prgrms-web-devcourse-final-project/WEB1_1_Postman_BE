@@ -43,4 +43,9 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     public void deleteByToken(String token) {
         repository.deleteByToken(token);
     }
+
+    @Override
+    public Boolean isDuplicate(Subscription subscription) {
+        return repository.existsByUserIdAndToken(subscription.getUserId(), subscription.getToken());
+    }
 }
