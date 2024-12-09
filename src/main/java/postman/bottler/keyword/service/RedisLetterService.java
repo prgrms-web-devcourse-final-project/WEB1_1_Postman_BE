@@ -35,6 +35,12 @@ public class RedisLetterService {
     }
 
     @Transactional
+    public void saveDeveloperLetter(Long userId, List<Long> recommendations) {
+        String key = RedisLetterKeyUtil.getActiveRecommendationKey(userId);
+        redisTemplate.opsForValue().set(key, recommendations);
+    }
+
+    @Transactional
     public RecommendNotificationRequestDTO updateRecommendationsFromTemp(Long userId) {
         String tempKey = RedisLetterKeyUtil.getTempRecommendationKey(userId);
         String activeKey = RedisLetterKeyUtil.getActiveRecommendationKey(userId);

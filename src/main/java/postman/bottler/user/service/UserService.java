@@ -2,7 +2,11 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -64,7 +68,15 @@ public class UserService {
     }
 
     private List<Long> findRandomDevelopLetter() {
-        return null;
+        Random random = new Random();
+        Set<Long> randomNumbers = new LinkedHashSet<>();
+
+        while (randomNumbers.size() < 3) {
+            long number = 1L + random.nextInt(8);
+            randomNumbers.add(number);
+        }
+
+        return new ArrayList<>(randomNumbers);
     }
 
     @Transactional
