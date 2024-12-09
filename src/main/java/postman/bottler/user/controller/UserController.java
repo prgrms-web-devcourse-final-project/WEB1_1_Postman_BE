@@ -142,6 +142,7 @@ public class UserController {
     @PostMapping("/email/verify")
     public ApiResponse<String> verifyEmail(@Valid @RequestBody AuthEmailRequestDTO authEmailRequestDTO) {
         userService.verifyCode(authEmailRequestDTO.email(), authEmailRequestDTO.code());
+        userService.deleteEmailCode(authEmailRequestDTO.email());
         return ApiResponse.onSuccess("이메일 인증을 성공했습니다.");
     }
 
