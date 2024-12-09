@@ -285,8 +285,14 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Long getUserIdByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname);
         return user.getUserId();
+    }
+
+    @Transactional
+    public void deleteEmailCode(String email) {
+        emailCodeRepository.deleteByEmail(email);
     }
 }

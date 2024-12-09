@@ -7,4 +7,5 @@ import postman.bottler.user.infra.entity.EmailCodeEntity;
 public interface EmailCodeJpaRepository extends JpaRepository<EmailCodeEntity, Long> {
     EmailCodeEntity findByEmail(String email);
     Optional<EmailCodeEntity> findByEmailAndCode(String email, String code);
+    void deleteByEmail(String email);
 }

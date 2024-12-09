@@ -36,7 +36,8 @@ public class EmailCode {
     }
 
     public void checkExpiration() {
-        if (LocalDateTime.now().isBefore(this.expiresAt)) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(this.expiresAt)) {
             throw new EmailCodeException("유효시간이 지난 인증코드입니다.");
         }
     }
