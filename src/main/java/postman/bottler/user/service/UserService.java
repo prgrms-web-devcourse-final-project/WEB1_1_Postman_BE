@@ -2,6 +2,7 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -18,6 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.service.RedisLetterService;
+import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.dto.LetterBoxDTO;
+import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
 import postman.bottler.slack.SlackConstant;
@@ -54,6 +59,7 @@ public class UserService {
     private final SlackService slackService;
     private final NotificationService notificationService;
     private final RedisLetterService redisLetterService;
+    private final LetterBoxService letterBoxService;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -64,7 +70,16 @@ public class UserService {
         String profileImageUrl = profileImageRepository.findProfileImage();
         User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         User storedUser = userRepository.save(user);
-        redisLetterService.saveDeveloperLetter(storedUser.getUserId(), findRandomDevelopLetter());
+        List<Long> randomDevelopLetter = findRandomDevelopLetter();
+        redisLetterService.saveDeveloperLetter(storedUser.getUserId(), randomDevelopLetter);
+        randomDevelopLetter.forEach(
+                letterId -> letterBoxService.saveLetter(
+                        LetterBoxDTO.of(
+                                storedUser.getUserId(), letterId, LetterType.LETTER,
+                                BoxType.RECEIVE, LocalDateTime.now()
+                        )
+                )
+        );
     }
 
     private List<Long> findRandomDevelopLetter() {
