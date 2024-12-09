@@ -61,6 +61,19 @@ public class User {
         this.warningCount = 0;
     }
 
+    private User(String email, String nickname, String imageUrl, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.role = role;
+        this.provider = Provider.LOCAL;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.isDeleted = false;
+        this.warningCount = 0;
+    }
+
     public static User createUser(Long userId, String email, String password, String nickname, String imageUrl,
                                   Role role, Provider provider, LocalDateTime createdAt, LocalDateTime updatedAt,
                                   boolean isDeleted, int warningCount) {
@@ -74,6 +87,10 @@ public class User {
 
     public static User createKakaoUser(String email, String nickname, String imageUrl, String password) { //카카오 로그인
         return new User(email, nickname, imageUrl, password, Provider.KAKAO);
+    }
+
+    public static User createDeveloper(String email, String password, String nickname, String imageUrl) { //개발자 계정
+        return new User(email, password, nickname, imageUrl, Role.DEVELOPER);
     }
 
     public void updateWarningCount() {

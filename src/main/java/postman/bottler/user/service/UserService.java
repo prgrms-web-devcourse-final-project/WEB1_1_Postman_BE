@@ -59,8 +59,19 @@ public class UserService {
     public void createUser(String email, String password, String nickname) {
         String profileImageUrl = profileImageRepository.findProfileImage();
         User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
+        User storedUser = userRepository.save(user);
+        redisLetterService.saveDeveloperLetter(storedUser.getUserId(), findRandomDevelopLetter());
+    }
+
+    private List<Long> findRandomDevelopLetter() {
+        return null;
+    }
+
+    @Transactional
+    public void createDeveloper(String email, String password, String nickname) {
+        String profileImageUrl = profileImageRepository.findProfileImage();
+        User user = User.createDeveloper(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         userRepository.save(user);
-//        redisLetterService.saveDeveloperLetter();
     }
 
     @Transactional

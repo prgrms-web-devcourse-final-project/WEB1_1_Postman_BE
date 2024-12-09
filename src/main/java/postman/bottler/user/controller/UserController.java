@@ -145,6 +145,14 @@ public class UserController {
         return ApiResponse.onSuccess("이메일 인증을 성공했습니다.");
     }
 
+    @Operation(summary = "개발자 계정 생성", description = "개발자 계정 생성")
+    @PostMapping("/developer")
+    public ApiResponse<String> createDeveloper(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO, BindingResult bindingResult) {
+        validateRequestDTO(bindingResult);
+        userService.createDeveloper(signUpRequestDTO.email(), signUpRequestDTO.password(), signUpRequestDTO.nickname());
+        return ApiResponse.onCreateSuccess("개발자 회원가입 성공");
+    }
+
     private void validateRequestDTO(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             bindingResult.getFieldErrors().forEach(error -> {
