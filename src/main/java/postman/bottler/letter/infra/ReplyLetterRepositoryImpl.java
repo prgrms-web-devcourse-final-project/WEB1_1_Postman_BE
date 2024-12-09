@@ -50,4 +50,9 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     public boolean existsByLetterIdAndSenderId(Long letterId, Long senderId) {
         return replyLetterJpaRepository.existsByLetterIdAndSenderId(letterId, senderId);
     }
+
+    @Override
+    public boolean existsByIdAndSenderId(Long replyLetterId, Long userId) {
+        return replyLetterJpaRepository.existsByIdAndSenderId(replyLetterId, userId);
+    }
 }

@@ -26,4 +26,6 @@ public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntit
     void blockById(Long id);
 
     boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
+
+    boolean existsByIdAndSenderId(Long id, Long senderId);
 }

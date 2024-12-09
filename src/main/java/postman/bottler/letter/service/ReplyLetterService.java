@@ -16,6 +16,7 @@ import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
+import postman.bottler.letter.dto.response.ReplyLetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
@@ -81,9 +82,10 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public ReplyLetterResponseDTO getReplyLetterDetail(Long replyLetterId) {
+    public ReplyLetterDetailResponseDTO getReplyLetterDetail(Long replyLetterId, Long userId) {
+        boolean isReplied = replyLetterRepository.existsByIdAndSenderId(replyLetterId, userId);
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
-        return ReplyLetterResponseDTO.from(replyLetter);
+        return ReplyLetterDetailResponseDTO.from(replyLetter, isReplied);
     }
 
     @Transactional
