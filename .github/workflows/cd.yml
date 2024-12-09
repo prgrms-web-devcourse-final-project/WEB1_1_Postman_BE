@@ -54,8 +54,6 @@ jobs:
       # Slack 환경변수
       SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
 
-      # 개발자 이메일
-      DEVELOPER_EMAIL: ${{ secrets.DEVELOPER_EMAIL }}
 
     steps:
       - name: 코드 가져오기

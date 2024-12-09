@@ -44,8 +44,6 @@ public class LetterController {
     private final RedisLetterService redisLetterService;
     private final LetterBoxService letterBoxService;
 
-    @Value("${developer.email}")
-    private String DEVELOPER_EMAIL;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -57,13 +55,8 @@ public class LetterController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateLetterRequest(bindingResult);
-
-        if (DEVELOPER_EMAIL.equals(userDetails.getEmail())) {
-            letterService.createDeveloperLetter(letterRequestDTO, userDetails.getUserId());
-        } else {
-            Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
-            letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
-        }
+        Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
+        letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
         return ApiResponse.onCreateSuccess("키워드 편지 생성");
     }
 

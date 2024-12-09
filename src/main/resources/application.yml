@@ -63,6 +63,3 @@ kakao:
 
 slack:
   token: ${SLACK_TOKEN}
-
-developer:
-  email: ${DEVELOPER_EMAIL}
