@@ -364,9 +364,14 @@ public class MapLetterService {
         List<ReplyProjectDTO> reversedList = new ArrayList<>(recentMapKeywordReplyByUserId);
         Collections.reverse(reversedList);
 
+        List<Object> existingValues = redisTemplate.opsForList().range(key, 0, -1);
+
         for (ReplyProjectDTO replyLetter : reversedList) {
             String tempValue = replyLetter.getType() + ":" + replyLetter.getId() + ":" + replyLetter.getLabel();
-            redisTemplate.opsForList().leftPush(key, tempValue);
+
+            if (existingValues == null || !existingValues.contains(tempValue)) { //레디스에 없을 때만 저장
+                redisTemplate.opsForList().leftPush(key, tempValue);
+            }
         }
     }
 
