@@ -1,5 +1,6 @@
 package postman.bottler.notification.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class NotificationService {
         Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);
         NotificationResponseDTO result = NotificationResponseDTO.from(notificationRepository.save(notification));
         if (subscriptions.isPushEnabled()) {
-            PushMessages pushMessages = subscriptions.makeMessages(type);
+            PushMessages pushMessages = subscriptions.makeMessages(notification);
             pushNotificationProvider.pushAll(pushMessages);
         }
         return result;
@@ -44,13 +45,16 @@ public class NotificationService {
 
     @Transactional
     public void sendKeywordNotifications(List<RecommendNotificationRequestDTO> requests) {
-        requests.forEach(request -> {
-            notificationRepository.save(Notification.create(NotificationType.NEW_LETTER, request.userId(),
-                    request.letterId(), request.label()));
-        });
+        PushMessages pushMessages = PushMessages.from(new ArrayList<>());
         Subscriptions allSubscriptions = subscriptionRepository.findAll();
+        requests.forEach(request -> {
+            Notification notification = Notification.create(NotificationType.NEW_LETTER, request.userId(),
+                    request.letterId(), request.label());
+            Subscriptions userSubscriptions = allSubscriptions.getSubscriptionsByUserId(request.userId());
+            pushMessages.add(userSubscriptions.makeMessages(notification));
+            notificationRepository.save(notification);
+        });
         if (allSubscriptions.isPushEnabled()) {
-            PushMessages pushMessages = allSubscriptions.makeMessages(NotificationType.NEW_LETTER);
             pushNotificationProvider.pushAll(pushMessages);
         }
     }

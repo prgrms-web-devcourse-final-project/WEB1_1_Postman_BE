@@ -26,6 +26,7 @@ public class FirebaseMessageMapper {
                 .setNotification(Notification.builder()
                         .setTitle(message.getTitle())
                         .setBody(message.getContent())
+                        .setImage(message.getImage())
                         .build())
                 .build();
     }

@@ -64,4 +64,11 @@ public class Notification {
                 isLetterNotification() ? ((LetterNotification) this).getLetterId() : null, createdAt, true,
                 isLetterNotification() ? ((LetterNotification) this).getLabel() : null);
     }
+
+    public String getImage() {
+        if (type.isLetterNotification()) {
+            return ((LetterNotification) this).getLabel();
+        }
+        return NotificationImage.getImage(type);
+    }
 }

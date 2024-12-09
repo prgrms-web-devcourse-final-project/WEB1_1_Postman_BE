@@ -7,11 +7,15 @@ import lombok.Getter;
 @Builder
 @Getter
 public class PushMessages {
-    List<PushMessage> messages;
+    private List<PushMessage> messages;
 
     public static PushMessages from(List<PushMessage> messages) {
         return PushMessages.builder()
                 .messages(messages)
                 .build();
+    }
+
+    public void add(PushMessages messages) {
+        this.messages.addAll(messages.getMessages());
     }
 }

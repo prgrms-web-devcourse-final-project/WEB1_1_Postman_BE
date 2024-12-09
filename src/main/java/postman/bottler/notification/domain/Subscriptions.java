@@ -14,15 +14,25 @@ public class Subscriptions {
                 .build();
     }
 
-    public PushMessages makeMessages(NotificationType type) {
+    public PushMessages makeMessages(Notification notification) {
         List<PushMessage> messages = new ArrayList<>();
         for (Subscription subscription : subscriptions) {
-            messages.add(subscription.makeMessage(type));
+            messages.add(subscription.makeMessage(notification));
         }
         return PushMessages.from(messages);
     }
 
     public Boolean isPushEnabled() {
         return subscriptions != null && !subscriptions.isEmpty();
+    }
+
+    public Subscriptions getSubscriptionsByUserId(Long userId) {
+        List<Subscription> userSubscriptions = new ArrayList<>();
+        for (Subscription subscription : subscriptions) {
+            if (subscription.getUserId().equals(userId)) {
+                userSubscriptions.add(subscription);
+            }
+        }
+        return Subscriptions.from(userSubscriptions);
     }
 }
