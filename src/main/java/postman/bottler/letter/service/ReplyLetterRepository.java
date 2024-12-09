@@ -18,4 +18,6 @@ public interface ReplyLetterRepository {
     void blockReplyLetterById(Long replyLetterId);
 
     boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
+
+    boolean existsByIdAndSenderId(Long replyLetterId, Long userId);
 }
