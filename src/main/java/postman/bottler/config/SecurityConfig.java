@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/oauth/**").permitAll()
                         .requestMatchers("/user/signup").permitAll()
+                        .requestMatchers("/user/developer").permitAll()
                         .requestMatchers("/user/duplicate-check/**").permitAll()
                         .requestMatchers("/user/email/**").permitAll()
                         .requestMatchers("/map/guest/**").permitAll()
