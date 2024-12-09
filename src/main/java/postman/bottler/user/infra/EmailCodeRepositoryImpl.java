@@ -29,4 +29,9 @@ public class EmailCodeRepositoryImpl implements EmailCodeRepository {
                 .orElseThrow(() -> new EmailCodeException("유효하지 않은 인증코드입니다."));
         return EmailCodeEntity.toEmailCode(emailCodeEntity);
     }
+
+    @Override
+    public void deleteByEmail(String email) {
+        emailCodeJpaRepository.deleteByEmail(email);
+    }
 }
