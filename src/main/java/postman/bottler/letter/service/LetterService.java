@@ -13,6 +13,7 @@ import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
+import postman.bottler.letter.exception.DeveloperLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
@@ -34,6 +35,15 @@ public class LetterService {
                 LetterBoxDTO.of(userId, letter.getId(), LetterType.LETTER, BoxType.SEND, letter.getCreatedAt())
         );
         return letter;
+    }
+
+    @Transactional
+    public void createDeveloperLetter(LetterRequestDTO letterRequestDTO, Long userId) {
+        List<String> keywords = letterRequestDTO.keywords();
+        if (keywords.size() == 1 && "개발자편지".equals(keywords.get(0))) {
+            throw new DeveloperLetterException("개발자 편지에는 개발자편지 키워드만 추가할 수 있습니다.");
+        }
+        letterRepository.save(letterRequestDTO.toDomain(userId));
     }
 
     @Transactional

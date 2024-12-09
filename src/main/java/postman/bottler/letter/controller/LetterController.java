@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,6 +43,7 @@ public class LetterController {
     private final ValidationUtil validationUtil;
     private final RedisLetterService redisLetterService;
     private final LetterBoxService letterBoxService;
+
 
     @Operation(
             summary = "키워드 편지 생성",
