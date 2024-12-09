@@ -56,7 +56,7 @@ public class EmailCodeEntity {
 
     public void changeCode(String code) {
         this.createdAt = LocalDateTime.now();
-        this.expiresAt = LocalDateTime.now();
+        this.expiresAt = createdAt.plusMinutes(5);
         this.code = code;
     }
 }
