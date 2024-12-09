@@ -74,4 +74,10 @@ public class UserExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.EMPTY_USER_BAN.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(SingUpException.class)
+    public ApiResponse<?> handleSingUpException(SingUpException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.DUPLICATE_EMAIL_OR_NICKNAME.getCode(), e.getMessage(), null);
+    }
 }

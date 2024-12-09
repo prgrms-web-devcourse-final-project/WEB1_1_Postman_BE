@@ -3,11 +3,13 @@ package postman.bottler.user.infra;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.Ban;
 import postman.bottler.user.domain.Provider;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.EmailException;
+import postman.bottler.user.exception.SingUpException;
 import postman.bottler.user.exception.TokenException;
 import postman.bottler.user.infra.entity.UserEntity;
 import postman.bottler.user.service.UserRepository;
@@ -19,8 +21,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        UserEntity userEntity = userJpaRepository.save(UserEntity.from(user));
-        return UserEntity.toUser(userEntity);
+        try {
+            UserEntity userEntity = userJpaRepository.save(UserEntity.from(user));
+            return UserEntity.toUser(userEntity);
+        } catch (DataIntegrityViolationException e) {
+            throw new SingUpException("이메일 또는 닉네임이 중복되었습니다.");
+        }
     }
 
     @Override
