@@ -2,7 +2,11 @@ package postman.bottler.user.service;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
 import postman.bottler.slack.SlackConstant;
@@ -48,6 +53,7 @@ public class UserService {
     private final EmailService emailService;
     private final SlackService slackService;
     private final NotificationService notificationService;
+    private final RedisLetterService redisLetterService;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -57,6 +63,26 @@ public class UserService {
     public void createUser(String email, String password, String nickname) {
         String profileImageUrl = profileImageRepository.findProfileImage();
         User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
+        User storedUser = userRepository.save(user);
+        redisLetterService.saveDeveloperLetter(storedUser.getUserId(), findRandomDevelopLetter());
+    }
+
+    private List<Long> findRandomDevelopLetter() {
+        Random random = new Random();
+        Set<Long> randomNumbers = new LinkedHashSet<>();
+
+        while (randomNumbers.size() < 3) {
+            long number = 1L + random.nextInt(8);
+            randomNumbers.add(number);
+        }
+
+        return new ArrayList<>(randomNumbers);
+    }
+
+    @Transactional
+    public void createDeveloper(String email, String password, String nickname) {
+        String profileImageUrl = profileImageRepository.findProfileImage();
+        User user = User.createDeveloper(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         userRepository.save(user);
     }
 

@@ -131,4 +131,10 @@ public class LetterExceptionHandler {
                 .status(UNAUTHORIZED_LETTER_ACCESS.getHttpStatus())
                 .body(ApiResponse.onFailure(UNAUTHORIZED_LETTER_ACCESS.getCode(), e.getMessage(), null));
     }
+
+    @ExceptionHandler(DeveloperLetterException.class)
+    public ApiResponse<?> handleDeveloperLetterException(DeveloperLetterException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.DEVELOPER_LETTER.getCode(), e.getMessage(), null);
+    }
 }
