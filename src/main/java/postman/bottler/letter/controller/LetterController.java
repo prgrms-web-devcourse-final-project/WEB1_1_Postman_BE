@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +44,9 @@ public class LetterController {
     private final RedisLetterService redisLetterService;
     private final LetterBoxService letterBoxService;
 
+    @Value("${developer.email}")
+    private String DEVELOPER_EMAIL;
+
     @Operation(
             summary = "키워드 편지 생성",
             description = "새로운 키워드 편지를 생성합니다."
@@ -53,8 +57,13 @@ public class LetterController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateLetterRequest(bindingResult);
-        Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
-        letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
+
+        if (DEVELOPER_EMAIL.equals(userDetails.getEmail())) {
+            letterService.createDeveloperLetter(letterRequestDTO, userDetails.getUserId());
+        } else {
+            Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
+            letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
+        }
         return ApiResponse.onCreateSuccess("키워드 편지 생성");
     }
 
