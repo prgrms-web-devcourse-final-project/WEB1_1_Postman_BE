@@ -21,6 +21,7 @@ import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
+import postman.bottler.letter.dto.response.ReplyLetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
@@ -84,12 +85,13 @@ public class ReplyLetterController {
             description = "지정된 답장 편지의 ID에 대한 상세 정보를 반환합니다."
     )
     @GetMapping("/detail/{replyLetterId}")
-    public ApiResponse<ReplyLetterResponseDTO> getReplyLetter(
+    public ApiResponse<ReplyLetterDetailResponseDTO> getReplyLetter(
             @PathVariable Long replyLetterId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         letterBoxService.validateLetterInUserBox(replyLetterId, userDetails.getUserId());
-        ReplyLetterResponseDTO result = letterReplyService.getReplyLetterDetail(replyLetterId);
+        ReplyLetterDetailResponseDTO result = letterReplyService.getReplyLetterDetail(replyLetterId,
+                userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 
