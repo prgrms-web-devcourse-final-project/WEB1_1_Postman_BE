@@ -29,6 +29,7 @@ public class MapLetterEntity {
     @NotNull
     private String title;
     @NotNull
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @NotNull
