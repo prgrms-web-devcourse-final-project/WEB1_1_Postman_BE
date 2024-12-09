@@ -73,7 +73,7 @@ public class MapLetterService {
         Long targetUserId = userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
         MapLetter save = mapLetterRepository.save(mapLetter);
-        notificationService.sendNotification(TARGET_LETTER, targetUserId, mapLetter.getId(), mapLetter.getLabel());
+        notificationService.sendNotification(TARGET_LETTER, targetUserId, save.getId(), save.getLabel());
         return save;
     }
 
