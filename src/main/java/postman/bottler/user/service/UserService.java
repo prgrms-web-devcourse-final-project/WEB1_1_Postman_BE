@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
 import postman.bottler.slack.SlackConstant;
@@ -48,6 +49,7 @@ public class UserService {
     private final EmailService emailService;
     private final SlackService slackService;
     private final NotificationService notificationService;
+    private final RedisLetterService redisLetterService;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -58,6 +60,7 @@ public class UserService {
         String profileImageUrl = profileImageRepository.findProfileImage();
         User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         userRepository.save(user);
+//        redisLetterService.saveDeveloperLetter();
     }
 
     @Transactional

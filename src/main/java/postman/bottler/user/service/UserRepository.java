@@ -5,7 +5,7 @@ import postman.bottler.user.domain.Ban;
 import postman.bottler.user.domain.User;
 
 public interface UserRepository {
-    void save(User user);
+    User save(User user);
     boolean existsByEmail(String email);
     boolean existsByNickname(String nickname);
     User findByEmail(String email);
