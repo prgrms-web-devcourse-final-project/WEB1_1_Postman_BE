@@ -61,7 +61,7 @@ public class User {
         this.warningCount = 0;
     }
 
-    private User(String email, String nickname, String imageUrl, String password, Role role) {
+    private User(String email, String password, String nickname, String imageUrl, Role role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
