@@ -5,6 +5,7 @@ import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -60,6 +61,11 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/healthcheck").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/letters").hasAnyRole("USER", "DEVELOPER")
+                        .requestMatchers(HttpMethod.POST, "/map/public").hasAnyRole("USER", "DEVELOPER")
+                        .requestMatchers(HttpMethod.POST, "/map/target").hasAnyRole("USER", "DEVELOPER")
+                        .requestMatchers(HttpMethod.POST, "/letters/replies/{letterId}").hasAnyRole("USER", "DEVELOPER")
+                        .requestMatchers(HttpMethod.POST, "/map/reply").hasAnyRole("USER", "DEVELOPER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
