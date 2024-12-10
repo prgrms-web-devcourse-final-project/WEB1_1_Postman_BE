@@ -1,31 +1,22 @@
 package postman.bottler.label.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.label.domain.Label;
 import postman.bottler.label.domain.UserLabel;
-import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.label.exception.DuplicateLabelException;
 import postman.bottler.label.exception.FirstComeFirstServedLabelException;
 import postman.bottler.user.domain.User;
-import postman.bottler.user.infra.UserJpaRepository;
-import postman.bottler.user.infra.entity.UserEntity;
+import postman.bottler.user.service.UserService;
 
 @Service
+@RequiredArgsConstructor
 public class LabelService {
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final LabelRepository labelRepository;
-    private final UserJpaRepository userJpaRepository;
-
-    public LabelService(LabelRepository labelRepository, UserJpaRepository userJpaRepository) {
-        this.labelRepository = labelRepository;
-        this.userJpaRepository = userJpaRepository;
-    }
+    private final UserService userService;
 
     @Transactional
     public void createLabel(String imageUrl, int limitCount) {
@@ -48,11 +39,7 @@ public class LabelService {
     public void createFirstComeFirstServedLabel(Long labelId, Long userId) {
         //1. labelId에 해당하는 LabelEntity를 가져오면서 해당 라벨 Lock
         Label label = labelRepository.findLabelByLabelId(labelId);
-
-        // TODO: 유저 로직 구현 후 바꿀 예정
-        UserEntity userEntity = userJpaRepository.findById(userId).orElseThrow();
-        entityManager.persist(userEntity);
-        User user = UserEntity.toUser(userEntity);
+        User user = userService.findById(userId);
 
         //2. 유저가 해당 라벨을 이미 가지고 있다면 예외 처리
         List<UserLabel> userLabel = labelRepository.findUserLabelByUserAndLabel(user, label);

@@ -1,5 +1,6 @@
 package postman.bottler.letter.infra.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,26 +21,24 @@ public class LetterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String content;
-    //TODO 키워드 파트 개발 후 속성 추가
     private String font;
     private String paper;
     private String label;
-    private String profile;
     private Long userId;
     private boolean isDeleted;
     private boolean isBlocked;
     private LocalDateTime createdAt;
 
     @Builder
-    private LetterEntity(String title, String content, String font, String paper, String label, String profile,
+    private LetterEntity(String title, String content, String font, String paper, String label,
                          Long userId, boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
         this.font = font;
         this.paper = paper;
         this.label = label;
-        this.profile = profile;
         this.userId = userId;
         this.isDeleted = isDeleted;
         this.isBlocked = isBlocked;
@@ -53,7 +52,6 @@ public class LetterEntity {
                 .font(letter.getFont())
                 .paper(letter.getPaper())
                 .label(letter.getLabel())
-                .profile(letter.getProfile())
                 .userId(letter.getUserId())
                 .isDeleted(letter.isDeleted())
                 .isBlocked(letter.isBlocked())
@@ -69,7 +67,6 @@ public class LetterEntity {
                 .font(this.font)
                 .paper(this.paper)
                 .label(this.label)
-                .profile(this.profile)
                 .userId(this.userId)
                 .isDeleted(this.isDeleted)
                 .isBlocked(this.isBlocked)

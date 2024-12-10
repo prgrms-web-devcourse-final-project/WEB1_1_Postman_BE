@@ -9,4 +9,6 @@ public interface JpaSubscriptionRepository extends JpaRepository<SubscriptionEnt
     void deleteAllByUserId(Long userId);
 
     void deleteByToken(String token);
+
+    Boolean existsByUserIdAndToken(Long userId, String token);
 }

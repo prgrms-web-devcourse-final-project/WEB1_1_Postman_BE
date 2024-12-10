@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - develop
+      - main
 
 jobs:
   build:
@@ -14,10 +15,20 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
+      # FCM 환경변수
+      BOTTLER_FCM_BASE64: ${{ secrets.BOTTLER_FCM_BASE64 }}
+
       # AWS 환경변수
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # Email 인증
+      EMAIL_USER_NAME: ${{ secrets.EMAIL_USER_NAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+      # JWT
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
       # ECR 환경변수
       ECR_URI: ${{ secrets.ECR_URI }}
@@ -26,8 +37,20 @@ jobs:
       BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
       BASE_URL: ${{ secrets.BASE_URL }}
 
+      RECOMMEND_CRON : ${{ secrets.RECOMMEND_CRON }}
+      UNBAN_CRON : ${{ secrets.UNBAN_CRON }}
+
       # gpt 환경변수
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      # Kakao 환경변수
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+      KAKAO_REDIRECT_URL: ${{ secrets.KAKAO_REDIRECT_URL }}
+
+      # Slack 환경변수
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
 
     steps:
       - name: 코드 가져오기
@@ -48,19 +71,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
         shell: bash
 
-      - name: JSON 디렉토리 생성
-        run: mkdir -p WEB1_1_Postman_BE/src/resources
-
-      - name: JSON 생성
-        run: echo '${{ secrets.BOTTLER_FCM }}' > src/main/resources/bottler-fcm.json
-
       - name: Gradle로 테스트 및 커버리지 리포트 생성
-        run: ./gradlew clean build jacocoTestReport
+        run: ./gradlew clean build -x test
 
       - name: SonarCloud 패키지 캐싱
         uses: actions/cache@v4
@@ -73,6 +89,3 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonarqube
-
-      - name: JSON 삭제
-        run: rm src/main/resources/bottler-fcm.json

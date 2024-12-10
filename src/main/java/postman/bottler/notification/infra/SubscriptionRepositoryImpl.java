@@ -27,6 +27,14 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     }
 
     @Override
+    public Subscriptions findAll() {
+        List<Subscription> subscriptions = repository.findAll().stream()
+                .map(SubscriptionEntity::toDomain)
+                .toList();
+        return Subscriptions.from(subscriptions);
+    }
+
+    @Override
     public void deleteAllByUserId(Long userId) {
         repository.deleteAllByUserId(userId);
     }
@@ -34,5 +42,10 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     @Override
     public void deleteByToken(String token) {
         repository.deleteByToken(token);
+    }
+
+    @Override
+    public Boolean isDuplicate(Subscription subscription) {
+        return repository.existsByUserIdAndToken(subscription.getUserId(), subscription.getToken());
     }
 }
