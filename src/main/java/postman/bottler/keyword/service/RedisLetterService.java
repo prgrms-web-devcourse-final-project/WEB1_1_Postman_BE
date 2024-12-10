@@ -14,7 +14,6 @@ import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
-import postman.bottler.letter.exception.TempRecommendationsNotFoundException;
 import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.LetterServiceRedis;
 import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
@@ -46,6 +45,9 @@ public class RedisLetterService {
         String activeKey = RedisLetterKeyUtil.getActiveRecommendationKey(userId);
 
         List<Long> tempRecommendations = getTempRecommendations(tempKey);
+        if (tempRecommendations == null) {
+            return null;
+        }
         List<Long> activeRecommendations = getActiveRecommendations(activeKey);
 
         Long recommendId = findFirstValidLetter(tempRecommendations);
@@ -92,11 +94,10 @@ public class RedisLetterService {
         return activeRecommendations;
     }
 
-    @NotNull
     private List<Long> getTempRecommendations(String tempKey) {
         List<Long> tempRecommendations = redisTemplate.opsForValue().get(tempKey);
         if (tempRecommendations == null || tempRecommendations.isEmpty()) {
-            throw new TempRecommendationsNotFoundException("추천된 키워드 편지가 존재하지 않습니다.");
+            return null;
         }
         return tempRecommendations;
     }

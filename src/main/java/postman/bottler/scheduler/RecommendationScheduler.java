@@ -29,7 +29,13 @@ public class RecommendationScheduler {
         // 알림전송
         List<RecommendNotificationRequestDTO> recommendNotificationRequestDTOS = new ArrayList<>();
         userIds.forEach(userId ->
-                recommendNotificationRequestDTOS.add(redisLetterService.updateRecommendationsFromTemp(userId))
+                {
+                    RecommendNotificationRequestDTO recommendNotificationRequestDTO = redisLetterService.updateRecommendationsFromTemp(
+                            userId);
+                    if (recommendNotificationRequestDTO != null) {
+                        recommendNotificationRequestDTOS.add(recommendNotificationRequestDTO);
+                    }
+                }
         );
         notificationService.sendKeywordNotifications(recommendNotificationRequestDTOS);
     }

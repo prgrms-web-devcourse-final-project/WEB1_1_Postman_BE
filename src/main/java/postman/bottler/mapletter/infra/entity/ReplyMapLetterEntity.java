@@ -1,6 +1,7 @@
 package postman.bottler.mapletter.infra.entity;
 
 import com.google.firebase.database.annotations.NotNull;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +31,7 @@ public class ReplyMapLetterEntity {
     @NotNull
     private String label;
     @NotNull
+    @Column(columnDefinition = "TEXT")
     private String content;
     private boolean isBlocked;
     private boolean isDeleted;
