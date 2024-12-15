@@ -10,7 +10,7 @@ import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.exception.UnauthorizedLetterAccessException;
 
 @Slf4j
@@ -26,17 +26,17 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 

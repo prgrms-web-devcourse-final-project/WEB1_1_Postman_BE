@@ -10,7 +10,7 @@ import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterRecommendSummaryResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.user.service.UserService;
 
@@ -44,11 +44,11 @@ public class LetterFacadeService {
     }
 
     @Transactional(readOnly = true)
-    public List<LetterRecommendHeadersResponseDTO> findRecommendHeaders(Long userId) {
+    public List<LetterRecommendSummaryResponseDTO> findRecommendHeaders(Long userId) {
         List<Long> letterIds = redisLetterService.getRecommendations(userId);
         List<Letter> letters = letterService.getRecommendHeaders(letterIds);
         return letters.stream()
-                .map(LetterRecommendHeadersResponseDTO::from)
+                .map(LetterRecommendSummaryResponseDTO::from)
                 .toList();
     }
 }

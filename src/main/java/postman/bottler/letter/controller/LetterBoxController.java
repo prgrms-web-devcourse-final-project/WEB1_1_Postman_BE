@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.service.LetterBoxService;
@@ -42,13 +42,13 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getAllLetters(
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getAllLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getAllLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.getAllLetterHeaders(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -59,13 +59,13 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/sent")
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getSentLetters(
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getSentLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getSentLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.getSentLetterHeaders(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -76,13 +76,13 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/received")
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getReceivedLetters(
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getReceivedLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getReceivedLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.getReceivedLetterHeaders(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }

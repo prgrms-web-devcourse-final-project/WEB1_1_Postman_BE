@@ -17,8 +17,8 @@ import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.ReplyLetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
+import postman.bottler.letter.dto.response.ReplyLetterSummaryResponseDTO;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
@@ -74,11 +74,11 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReplyLetterHeadersResponseDTO> getReplyLetterHeadersById(
+    public Page<ReplyLetterSummaryResponseDTO> getReplyLetterHeadersById(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
         return replyLetterRepository.findAllByLetterId(letterId, receiverId, pageRequestDTO.toPageable())
-                .map(ReplyLetterHeadersResponseDTO::from);
+                .map(ReplyLetterSummaryResponseDTO::from);
     }
 
     @Transactional(readOnly = true)

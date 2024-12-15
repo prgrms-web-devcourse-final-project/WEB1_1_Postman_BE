@@ -6,16 +6,16 @@ import org.springframework.data.domain.Pageable;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
 
 public interface LetterBoxRepository {
     void save(LetterBox letterBox);
 
-    Page<LetterHeadersResponseDTO> findAllLetters(Long userId, Pageable pageable);
+    Page<LetterSummaryResponseDTO> findAllLetters(Long userId, Pageable pageable);
 
-    Page<LetterHeadersResponseDTO> findSentLetters(Long userId, Pageable pageable);
+    Page<LetterSummaryResponseDTO> findSentLetters(Long userId, Pageable pageable);
 
-    Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
+    Page<LetterSummaryResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
 
     void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType);
 

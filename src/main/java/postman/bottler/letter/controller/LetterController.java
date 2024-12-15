@@ -19,7 +19,7 @@ import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterRecommendSummaryResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.LetterDeletionService;
@@ -82,10 +82,10 @@ public class LetterController {
             description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다."
     )
     @GetMapping("/recommend")
-    public ApiResponse<List<LetterRecommendHeadersResponseDTO>> getRecommendLetters(
+    public ApiResponse<List<LetterRecommendSummaryResponseDTO>> getRecommendLetters(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        List<LetterRecommendHeadersResponseDTO> result = letterFacadeService.findRecommendHeaders(
+        List<LetterRecommendSummaryResponseDTO> result = letterFacadeService.findRecommendHeaders(
                 userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }

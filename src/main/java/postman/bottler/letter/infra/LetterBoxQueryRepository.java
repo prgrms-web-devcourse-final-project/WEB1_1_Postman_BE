@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.infra.entity.QLetterBoxEntity;
 import postman.bottler.letter.infra.entity.QLetterEntity;
 import postman.bottler.letter.infra.entity.QReplyLetterEntity;
@@ -20,14 +20,14 @@ public class LetterBoxQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
+    public List<LetterSummaryResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         QLetterEntity letter = QLetterEntity.letterEntity;
         QReplyLetterEntity replyLetter = QReplyLetterEntity.replyLetterEntity;
 
         return queryFactory
                 .select(Projections.constructor(
-                        LetterHeadersResponseDTO.class,
+                        LetterSummaryResponseDTO.class,
                         letterBox.letterId,
                         new CaseBuilder()
                                 .when(letterBox.letterType.eq(LetterType.LETTER)).then(letter.title)

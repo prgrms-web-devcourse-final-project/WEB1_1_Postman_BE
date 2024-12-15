@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 
-public record LetterHeadersResponseDTO(
+public record LetterSummaryResponseDTO(
         Long letterId,
         String title,
         String label,

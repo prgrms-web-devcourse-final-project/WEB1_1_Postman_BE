@@ -22,8 +22,8 @@ import postman.bottler.letter.dto.request.ReplyLetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterDetailResponseDTO;
-import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
+import postman.bottler.letter.dto.response.ReplyLetterSummaryResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.service.LetterBoxService;
@@ -67,7 +67,7 @@ public class ReplyLetterController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/{letterId}")
-    public ApiResponse<PageResponseDTO<ReplyLetterHeadersResponseDTO>> getReplyForLetter(
+    public ApiResponse<PageResponseDTO<ReplyLetterSummaryResponseDTO>> getReplyForLetter(
             @PathVariable Long letterId,
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
@@ -75,7 +75,7 @@ public class ReplyLetterController {
     ) {
         letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         validatePageRequest(bindingResult);
-        Page<ReplyLetterHeadersResponseDTO> result =
+        Page<ReplyLetterSummaryResponseDTO> result =
                 letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
