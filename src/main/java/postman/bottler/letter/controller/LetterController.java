@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,15 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.keyword.service.LetterKeywordService;
 import postman.bottler.keyword.service.RedisLetterService;
-import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterBoxService;
+import postman.bottler.letter.service.LetterFacadeService;
 import postman.bottler.letter.service.LetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -43,21 +43,20 @@ public class LetterController {
     private final ValidationUtil validationUtil;
     private final RedisLetterService redisLetterService;
     private final LetterBoxService letterBoxService;
-
+    private final LetterFacadeService letterFacadeService;
 
     @Operation(
             summary = "키워드 편지 생성",
             description = "새로운 키워드 편지를 생성합니다."
     )
     @PostMapping
-    public ApiResponse<String> createLetter(
+    public ApiResponse<LetterResponseDTO> createLetter(
             @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateLetterRequest(bindingResult);
-        Letter letter = letterService.createLetter(letterRequestDTO, userDetails.getUserId());
-        letterKeywordService.createLetterKeywords(letter.getId(), letterRequestDTO.keywords());
-        return ApiResponse.onCreateSuccess("키워드 편지 생성");
+        LetterResponseDTO result = letterFacadeService.createLetter(letterRequestDTO, userDetails.getUserId());
+        return ApiResponse.onCreateSuccess(result);
     }
 
     @Operation(

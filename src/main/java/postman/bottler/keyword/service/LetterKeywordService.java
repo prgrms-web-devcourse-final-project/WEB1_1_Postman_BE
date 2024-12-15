@@ -18,12 +18,12 @@ public class LetterKeywordService {
     private final LetterService letterService;
 
     @Transactional
-    public void createLetterKeywords(Long letterId, List<String> keywords) {
+    public List<LetterKeyword> createLetterKeywords(Long letterId, List<String> keywords) {
         List<LetterKeyword> letterKeywords = keywords.stream()
                 .map(keyword -> LetterKeyword.from(letterId, keyword))
                 .toList();
 
-        letterKeywordRepository.saveAll(letterKeywords);
+        return letterKeywordRepository.saveAll(letterKeywords);
     }
 
     @Transactional(readOnly = true)

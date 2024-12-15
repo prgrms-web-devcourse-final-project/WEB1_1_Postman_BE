@@ -14,7 +14,7 @@ public class LetterKeywordJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public void batchInsertKeywords(List<LetterKeyword> keywords) {
+    public List<LetterKeyword> batchInsertKeywords(List<LetterKeyword> keywords) {
         String sql = "INSERT INTO letter_keyword (letter_id, keyword, is_deleted) VALUES (?, ?, ?)";
 
         List<Object[]> params = keywords.stream()
@@ -22,6 +22,7 @@ public class LetterKeywordJdbcRepository {
                 .toList();
 
         jdbcTemplate.batchUpdate(sql, params);
+        return keywords;
     }
 
     public void batchUpdateIsDeleted(List<Long> letterIds) {
