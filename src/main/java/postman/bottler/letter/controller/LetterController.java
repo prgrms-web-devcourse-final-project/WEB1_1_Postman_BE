@@ -22,7 +22,7 @@ import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
-import postman.bottler.letter.service.DeleteManagerService;
+import postman.bottler.letter.service.LetterDeletionService;
 import postman.bottler.letter.service.LetterFacadeService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -33,7 +33,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 @Tag(name = "키워드 편지", description = "키워드 편지 API")
 public class LetterController {
 
-    private final DeleteManagerService deleteManagerService;
+    private final LetterDeletionService letterDeletionService;
     private final LetterFacadeService letterFacadeService;
     private final ValidationUtil validationUtil;
 
@@ -60,7 +60,7 @@ public class LetterController {
             @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
+        letterDeletionService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 

@@ -15,7 +15,7 @@ import postman.bottler.letter.dto.LetterDeleteDTO;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DeleteManagerService {
+public class LetterDeletionService {
     private final LetterService letterService;
     private final ReplyLetterService replyLetterService;
     private final LetterBoxService letterBoxService;

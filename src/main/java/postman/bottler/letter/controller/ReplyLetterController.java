@@ -26,8 +26,8 @@ import postman.bottler.letter.dto.response.ReplyLetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
-import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterBoxService;
+import postman.bottler.letter.service.LetterDeletionService;
 import postman.bottler.letter.service.ReplyLetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -40,7 +40,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 public class ReplyLetterController {
 
     private final ReplyLetterService letterReplyService;
-    private final DeleteManagerService deleteManagerService;
+    private final LetterDeletionService letterDeletionService;
     private final ValidationUtil validationUtil;
     private final LetterBoxService letterBoxService;
 
@@ -104,7 +104,7 @@ public class ReplyLetterController {
             @RequestBody @Valid ReplyLetterDeleteRequestDTO replyLetterDeleteRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetter(LetterDeleteDTO.fromReplyLetter(replyLetterDeleteRequestDTO),
+        letterDeletionService.deleteLetter(LetterDeleteDTO.fromReplyLetter(replyLetterDeleteRequestDTO),
                 userDetails.getUserId());
         return ApiResponse.onSuccess("success");
     }

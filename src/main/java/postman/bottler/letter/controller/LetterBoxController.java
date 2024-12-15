@@ -20,8 +20,8 @@ import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
-import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterBoxService;
+import postman.bottler.letter.service.LetterDeletionService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -33,7 +33,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 public class LetterBoxController {
 
     private final LetterBoxService letterBoxService;
-    private final DeleteManagerService deleteManagerService;
+    private final LetterDeletionService letterDeletionService;
     private final ValidationUtil validationUtil;
 
     @Operation(
@@ -96,7 +96,7 @@ public class LetterBoxController {
             @RequestBody @Valid List<LetterDeleteDTO> letterDeleteDTOS,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
+        letterDeletionService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
         return ApiResponse.onSuccess("편지 보관을 취소했습니다.");
     }
 
