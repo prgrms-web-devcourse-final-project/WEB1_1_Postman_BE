@@ -34,7 +34,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 @RestController
 @RequestMapping("/letters")
 @RequiredArgsConstructor
-@Tag(name = "Letters", description = "키워드 편지 API")
+@Tag(name = "키워드 편지", description = "키워드 편지 API")
 public class LetterController {
 
     private final LetterService letterService;
@@ -77,12 +77,10 @@ public class LetterController {
             description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다."
     )
     @GetMapping("/detail/{letterId}")
-    public ApiResponse<LetterDetailResponseDTO> getLetter(
+    public ApiResponse<LetterDetailResponseDTO> getLetterDetail(
             @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
-        List<String> keywords = letterKeywordService.getKeywords(letterId);
-        LetterDetailResponseDTO result = letterService.getLetterDetail(letterId, keywords, userDetails.getUserId());
+        LetterDetailResponseDTO result = letterFacadeService.findLetterDetail(letterId, userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 

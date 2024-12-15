@@ -11,7 +11,6 @@ import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
-import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.DeveloperLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
@@ -56,18 +55,10 @@ public class LetterService {
         letterRepository.deleteByIds(letterIds);
     }
 
-    @Transactional(readOnly = true)
-    public LetterDetailResponseDTO getLetterDetail(Long letterId, List<String> keywords, Long currentUserId) {
-        Letter letter = findLetter(letterId);
-        String profile = userService.getProfileImageUrlById(letter.getUserId());
-        return LetterDetailResponseDTO.from(letter, keywords, currentUserId, profile);
-    }
-
     @Transactional
     public Long blockLetter(Long letterId) {
         Letter letter = findLetter(letterId);
         letterRepository.blockLetterById(letterId);
-        log.info("Letter blocked: {}", letterId);
         return letter.getUserId();
     }
 

@@ -27,11 +27,8 @@ public class LetterKeywordService {
     }
 
     @Transactional(readOnly = true)
-    public List<String> getKeywords(Long letterId) {
-        List<LetterKeyword> letterKeywords = letterKeywordRepository.getKeywordsByLetterId(letterId);
-
-        return letterKeywords.stream()
-                .map(LetterKeyword::getKeyword).toList();
+    public List<LetterKeyword> getKeywords(Long letterId) {
+        return letterKeywordRepository.getKeywordsByLetterId(letterId);
     }
 
     @Transactional
