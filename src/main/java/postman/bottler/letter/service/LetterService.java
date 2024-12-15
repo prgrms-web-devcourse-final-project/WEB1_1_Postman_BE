@@ -11,12 +11,10 @@ import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
-import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.exception.DeveloperLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
-import postman.bottler.user.service.UserService;
 
 @Slf4j
 @Service
@@ -25,7 +23,6 @@ public class LetterService {
 
     private final LetterRepository letterRepository;
     private final LetterBoxService letterBoxService;
-    private final UserService userService;
 
     @Transactional
     public Letter createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
@@ -75,15 +72,8 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<LetterRecommendHeadersResponseDTO> getRecommendHeaders(List<Long> letterIds) {
-        List<Letter> letters = letterRepository.findAllByIds(letterIds);
-        return letters.stream()
-                .map(LetterRecommendHeadersResponseDTO::from)
-                .toList();
-    }
-
-    public boolean checkLetterExists(Long letterId) {
-        return letterRepository.checkLetterExists(letterId);
+    public List<Letter> getRecommendHeaders(List<Long> letterIds) {
+        return letterRepository.findAllByIds(letterIds);
     }
 
     public List<NotificationLabelRequestDTO> getLabels(List<Long> ids) {

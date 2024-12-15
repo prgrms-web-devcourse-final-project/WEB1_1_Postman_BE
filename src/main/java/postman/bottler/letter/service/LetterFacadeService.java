@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.keyword.service.LetterKeywordService;
+import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;
+import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.user.service.UserService;
 
@@ -19,6 +21,7 @@ public class LetterFacadeService {
     private final LetterBoxService letterBoxService;
     private final LetterService letterService;
     private final LetterKeywordService letterKeywordService;
+    private final RedisLetterService redisLetterService;
     private final UserService userService;
 
     @Transactional
@@ -38,5 +41,14 @@ public class LetterFacadeService {
         String profile = userService.getProfileImageUrlById(currentUserId);
         Letter letter = letterService.findLetter(letterId);
         return LetterDetailResponseDTO.from(letter, keywords, currentUserId, profile);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LetterRecommendHeadersResponseDTO> findRecommendHeaders(Long userId) {
+        List<Long> letterIds = redisLetterService.getRecommendations(userId);
+        List<Letter> letters = letterService.getRecommendHeaders(letterIds);
+        return letters.stream()
+                .map(LetterRecommendHeadersResponseDTO::from)
+                .toList();
     }
 }

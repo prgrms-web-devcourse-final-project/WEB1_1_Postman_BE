@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.keyword.service.LetterKeywordService;
-import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.LetterDeleteRequestDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
@@ -25,9 +23,7 @@ import postman.bottler.letter.dto.response.LetterRecommendHeadersResponseDTO;
 import postman.bottler.letter.dto.response.LetterResponseDTO;
 import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.service.DeleteManagerService;
-import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.letter.service.LetterFacadeService;
-import postman.bottler.letter.service.LetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -37,13 +33,9 @@ import postman.bottler.user.auth.CustomUserDetails;
 @Tag(name = "키워드 편지", description = "키워드 편지 API")
 public class LetterController {
 
-    private final LetterService letterService;
     private final DeleteManagerService deleteManagerService;
-    private final LetterKeywordService letterKeywordService;
-    private final ValidationUtil validationUtil;
-    private final RedisLetterService redisLetterService;
-    private final LetterBoxService letterBoxService;
     private final LetterFacadeService letterFacadeService;
+    private final ValidationUtil validationUtil;
 
     @Operation(
             summary = "키워드 편지 생성",
@@ -93,8 +85,8 @@ public class LetterController {
     public ApiResponse<List<LetterRecommendHeadersResponseDTO>> getRecommendLetters(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        List<Long> letterIds = redisLetterService.getRecommendations(userDetails.getUserId());
-        List<LetterRecommendHeadersResponseDTO> result = letterService.getRecommendHeaders(letterIds);
+        List<LetterRecommendHeadersResponseDTO> result = letterFacadeService.findRecommendHeaders(
+                userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 
