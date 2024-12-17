@@ -56,23 +56,6 @@ public class ReplyLetterService {
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
-    private void validateNotExistingReply(Long letterId, Long senderId) {
-        if (replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId)) {
-            throw new DuplicateReplyLetterException("이미 이 편지에 답장한 기록이 있습니다");
-        }
-    }
-
-    private void saveLetterToBox(Long senderId, ReplyLetter replyLetter, Long receiverId) {
-        saveLetterToBox(senderId, replyLetter, BoxType.SEND);
-        saveLetterToBox(receiverId, replyLetter, BoxType.RECEIVE);
-    }
-
-    private void saveLetterToBox(Long senderId, ReplyLetter replyLetter, BoxType send) {
-        letterBoxService.saveLetter(
-                LetterBoxDTO.of(senderId, replyLetter.getId(), LetterType.REPLY_LETTER, send,
-                        replyLetter.getCreatedAt()));
-    }
-
     @Transactional(readOnly = true)
     public Page<ReplyLetterSummaryResponseDTO> getReplyLetterHeadersById(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
@@ -106,13 +89,25 @@ public class ReplyLetterService {
         return replyLetter.getSenderId();
     }
 
-    private ReplyLetter findReplyLetter(Long replyLetterId) {
-        return replyLetterRepository.findById(replyLetterId)
-                .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
+    private void validateNotExistingReply(Long letterId, Long senderId) {
+        if (replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId)) {
+            throw new DuplicateReplyLetterException("이미 이 편지에 답장한 기록이 있습니다");
+        }
     }
 
     private String generateReplyTitle(String title) {
         return "RE: [" + title + "]";
+    }
+
+    private void saveLetterToBox(Long senderId, ReplyLetter replyLetter, Long receiverId) {
+        saveLetterToBox(senderId, replyLetter, BoxType.SEND);
+        saveLetterToBox(receiverId, replyLetter, BoxType.RECEIVE);
+    }
+
+    private void saveLetterToBox(Long senderId, ReplyLetter replyLetter, BoxType send) {
+        letterBoxService.saveLetter(
+                LetterBoxDTO.of(senderId, replyLetter.getId(), LetterType.REPLY_LETTER, send,
+                        replyLetter.getCreatedAt()));
     }
 
     private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterCreateUserId) {
@@ -138,5 +133,10 @@ public class ReplyLetterService {
         String value = ReplyType.KEYWORD + ":" + letterId + ":" + replyLetter.getLabel();
 
         redisTemplate.opsForList().remove(key, 1, value);
+    }
+
+    private ReplyLetter findReplyLetter(Long replyLetterId) {
+        return replyLetterRepository.findById(replyLetterId)
+                .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
     }
 }
