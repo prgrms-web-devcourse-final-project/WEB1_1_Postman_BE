@@ -17,11 +17,11 @@ public interface LetterBoxRepository {
 
     Page<LetterSummaryResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
 
+    List<Long> findReceivedLettersById(Long userId);
+
     void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType);
 
     void deleteByConditionAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId);
-
-    List<Long> getReceivedLettersById(Long userId);
 
     boolean existsByLetterIdAndUserId(Long letterId, Long userId);
 }

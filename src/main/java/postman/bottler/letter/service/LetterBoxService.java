@@ -42,7 +42,7 @@ public class LetterBoxService {
 
     @Transactional(readOnly = true)
     public List<Long> getLettersByUserId(Long userId) {
-        return letterBoxRepository.getReceivedLettersById(userId);
+        return letterBoxRepository.findReceivedLettersById(userId);
     }
 
     @Transactional
