@@ -52,19 +52,6 @@ public class LetterController {
     }
 
     @Operation(
-            summary = "키워드 편지 삭제",
-            description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
-    )
-    @DeleteMapping
-    public ApiResponse<String> deleteLetter(
-            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        letterDeletionService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
-        return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
-    }
-
-    @Operation(
             summary = "키워드 편지 상세 조회",
             description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다."
     )
@@ -88,6 +75,19 @@ public class LetterController {
         List<LetterRecommendSummaryResponseDTO> result = letterFacadeService.findRecommendHeaders(
                 userDetails.getUserId());
         return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(
+            summary = "키워드 편지 삭제",
+            description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
+    )
+    @DeleteMapping
+    public ApiResponse<String> deleteLetter(
+            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        letterDeletionService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
+        return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 
     private void validateLetterRequest(BindingResult bindingResult) {

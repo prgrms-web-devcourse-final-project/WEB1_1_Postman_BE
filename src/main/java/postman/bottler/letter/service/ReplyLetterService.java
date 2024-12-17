@@ -41,7 +41,7 @@ public class ReplyLetterService {
     ) {
         // 해당 레터아이디에 대해 보낸사람의 아이디가 있으면 예외 던짐
         validateNotExistingReply(letterId, senderId);
-        ReceiverDTO receiverInfo = letterService.getReceiverInfoById(letterId);
+        ReceiverDTO receiverInfo = letterService.findReceiverInfoById(letterId);
         String title = generateReplyTitle(receiverInfo.title());
         Long receiverId = receiverInfo.receiverId();
 
