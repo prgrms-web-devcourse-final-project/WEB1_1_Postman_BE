@@ -40,6 +40,11 @@ public class LetterBoxService {
         return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 
+    @Transactional(readOnly = true)
+    public List<Long> getLettersByUserId(Long userId) {
+        return letterBoxRepository.getReceivedLettersById(userId);
+    }
+
     @Transactional
     public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
@@ -48,11 +53,6 @@ public class LetterBoxService {
     @Transactional
     public void deleteByIdsAndTypeAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId) {
         letterBoxRepository.deleteByConditionAndUserId(letterIds, letterType, boxType, userId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Long> getLettersByUserId(Long userId) {
-        return letterBoxRepository.getReceivedLettersById(userId);
     }
 
     @Transactional(readOnly = true)
