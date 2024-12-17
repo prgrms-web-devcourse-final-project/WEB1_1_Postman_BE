@@ -2,20 +2,21 @@ package postman.bottler.letter.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.service.LetterKeywordService;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterDeleteDTO;
+import postman.bottler.letter.dto.LetterDeleteRequests;
+import postman.bottler.letter.processor.LetterDeletionContext;
+import postman.bottler.letter.processor.LetterTypeProcessor;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LetterDeletionService {
+
     private final LetterService letterService;
     private final ReplyLetterService replyLetterService;
     private final LetterBoxService letterBoxService;
@@ -23,57 +24,28 @@ public class LetterDeletionService {
 
     @Transactional
     public void deleteLetter(LetterDeleteDTO letterDeleteDTO, Long userId) {
-        Map<LetterType, Map<BoxType, List<Long>>> groupedByTypeAndBox = Map.of(
-                letterDeleteDTO.letterType(),
-                Map.of(
-                        letterDeleteDTO.boxType(),
-                        List.of(letterDeleteDTO.letterId())
-                )
-        );
-        processGroupedLetters(groupedByTypeAndBox, userId);
+        deleteLetters(List.of(letterDeleteDTO), userId);
     }
 
     @Transactional
     public void deleteLetters(List<LetterDeleteDTO> letterDeleteDTOS, Long userId) {
-        Map<LetterType, Map<BoxType, List<Long>>> groupedByTypeAndBox = letterDeleteDTOS.stream()
-                .collect(Collectors.groupingBy(
-                        LetterDeleteDTO::letterType,
-                        Collectors.groupingBy(
-                                LetterDeleteDTO::boxType,
-                                Collectors.mapping(LetterDeleteDTO::letterId, Collectors.toList())
-                        )
-                ));
-        processGroupedLetters(groupedByTypeAndBox, userId);
+        LetterDeleteRequests requests = new LetterDeleteRequests(letterDeleteDTOS);
+        Map<LetterType, Map<BoxType, List<Long>>> groupByTypeAndBox = requests.groupByTypeAndBox();
+
+        LetterDeletionContext context = new LetterDeletionContext(
+                letterService, replyLetterService, letterBoxService, letterKeywordService
+        );
+
+        groupByTypeAndBox.forEach(
+                (letterType, boxTypeMap) ->
+                        processLetterType(userId, letterType, boxTypeMap, context)
+        );
     }
 
-    private void processGroupedLetters(Map<LetterType, Map<BoxType, List<Long>>> groupedByTypeAndBox, Long userId) {
-        if (groupedByTypeAndBox.containsKey(LetterType.LETTER)) {
-            Map<BoxType, List<Long>> letterBoxMap = groupedByTypeAndBox.get(LetterType.LETTER);
-            if (letterBoxMap.containsKey(BoxType.SEND)) {
-                List<Long> letterIds = letterBoxMap.get(BoxType.SEND);
-                letterService.deleteLetters(letterIds, userId);
-                letterKeywordService.markKeywordsAsDeleted(letterIds);
-                letterBoxService.deleteByIdsAndType(letterIds, LetterType.LETTER, BoxType.UNKNOWN);
-            }
-            if (letterBoxMap.containsKey(BoxType.RECEIVE)) {
-                List<Long> letterIds = letterBoxMap.get(BoxType.RECEIVE);
-                letterBoxService.deleteByIdsAndTypeAndUserId(letterIds, LetterType.LETTER, BoxType.RECEIVE, userId);
-            }
-        }
-
-        if (groupedByTypeAndBox.containsKey(LetterType.REPLY_LETTER)) {
-            Map<BoxType, List<Long>> replyLetterBoxMap = groupedByTypeAndBox.get(LetterType.REPLY_LETTER);
-            if (replyLetterBoxMap.containsKey(BoxType.SEND)) {
-                List<Long> replyLetterIds = replyLetterBoxMap.get(BoxType.SEND);
-                replyLetterService.deleteReplyLetters(replyLetterIds, userId);
-                letterBoxService.deleteByIdsAndType(replyLetterIds, LetterType.REPLY_LETTER, BoxType.UNKNOWN);
-            }
-            if (replyLetterBoxMap.containsKey(BoxType.RECEIVE)) {
-                List<Long> replyLetterIds = replyLetterBoxMap.get(BoxType.RECEIVE);
-                letterBoxService.deleteByIdsAndTypeAndUserId(replyLetterIds, LetterType.REPLY_LETTER, BoxType.RECEIVE,
-                        userId);
-            }
-        }
+    private void processLetterType(
+            Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap, LetterDeletionContext context
+    ) {
+        LetterTypeProcessor processor = LetterTypeProcessor.valueOf(letterType.name());
+        boxTypeMap.forEach((boxType, ids) -> processor.process(boxType, ids, userId, context));
     }
-
 }
