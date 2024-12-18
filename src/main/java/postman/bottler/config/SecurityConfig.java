@@ -17,16 +17,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import postman.bottler.user.auth.JwtAccessDeniedHandler;
 import postman.bottler.user.auth.JwtAuthenticationEntryPoint;
 import postman.bottler.user.auth.JwtFilter;
 import postman.bottler.user.auth.JwtTokenProvider;
 
-
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
+
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -77,18 +78,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:5173",
-                "https://bottler.online"
-        ));
+        configuration.addAllowedOriginPattern("*"); // 모든 도메인 허용
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
+        configuration.setAllowCredentials(true); // 인증 정보를 포함한 요청 허용
+        configuration.setMaxAge(3600L); // 캐싱 시간 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }
