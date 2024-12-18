@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import postman.bottler.label.dto.response.LabelResponseDTO;
+import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.label.exception.InvalidLabelException;
 
 @SpringBootTest

@@ -1,5 +1,6 @@
 package postman.bottler.letter.infra;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +25,6 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    public Page<ReplyLetter> findAll(Long receiverId, Pageable pageable) {
-        return replyLetterJpaRepository.findAllByReceiverId(receiverId, pageable)
-                .map(ReplyLetterEntity::toDomain);
-    }
-
-    @Override
     public Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable) {
         return replyLetterJpaRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageable)
                 .map(ReplyLetterEntity::toDomain);
@@ -37,12 +32,27 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public Optional<ReplyLetter> findById(Long replyLetterId) {
-        return replyLetterJpaRepository.findById(replyLetterId)
+        return replyLetterJpaRepository.findActiveById(replyLetterId)
                 .map(ReplyLetterEntity::toDomain);
     }
 
     @Override
-    public void remove(Long replyLetterId) {
-        replyLetterJpaRepository.deleteById(replyLetterId);
+    public void deleteByIds(List<Long> letterIds) {
+        replyLetterJpaRepository.deleteByIds(letterIds);
+    }
+
+    @Override
+    public void blockReplyLetterById(Long replyLetterId) {
+        replyLetterJpaRepository.blockById(replyLetterId);
+    }
+
+    @Override
+    public boolean existsByLetterIdAndSenderId(Long letterId, Long senderId) {
+        return replyLetterJpaRepository.existsByLetterIdAndSenderId(letterId, senderId);
+    }
+
+    @Override
+    public boolean existsByIdAndSenderId(Long replyLetterId, Long userId) {
+        return replyLetterJpaRepository.existsByIdAndSenderId(replyLetterId, userId);
     }
 }

@@ -11,8 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import postman.bottler.complaint.domain.KeywordReplyComplaint;
+import postman.bottler.complaint.domain.Complaint;
 
 @Entity
 @Table(name = "keyword_reply_complaint")
@@ -31,19 +30,19 @@ public class KeywordReplyComplaintEntity {
 
     private String description;
 
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static KeywordReplyComplaintEntity from(KeywordReplyComplaint complaint) {
+    public static KeywordReplyComplaintEntity from(Complaint complaint) {
         return KeywordReplyComplaintEntity.builder()
                 .id(complaint.getId())
                 .letterId(complaint.getLetterId())
                 .reporterId(complaint.getReporterId())
                 .description(complaint.getDescription())
+                .createdAt(complaint.getCreatedAt())
                 .build();
     }
 
-    public KeywordReplyComplaint toDomain() {
-        return KeywordReplyComplaint.of(id, letterId, reporterId, description);
+    public Complaint toDomain() {
+        return Complaint.of(id, letterId, reporterId, description, createdAt);
     }
 }

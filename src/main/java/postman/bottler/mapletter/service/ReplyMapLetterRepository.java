@@ -1,17 +1,20 @@
 package postman.bottler.mapletter.service;
 
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
-
-import java.util.List;
+import postman.bottler.mapletter.dto.ReplyProjectDTO;
 
 @Repository
 public interface ReplyMapLetterRepository {
     ReplyMapLetter save(ReplyMapLetter replyMapLetter);
 
-    List<ReplyMapLetter> findActiveReplyMapLettersBySourceUserId(Long userId);
+    Page<ReplyMapLetter> findActiveReplyMapLettersBySourceUserId(Long userId, Pageable pageable);
 
-    List<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId);
+    Page<ReplyMapLetter> findReplyMapLettersBySourceLetterId(Long letterId, Pageable pageable);
 
     ReplyMapLetter findById(Long letterId);
 
@@ -20,4 +23,8 @@ public interface ReplyMapLetterRepository {
     void letterBlock(Long letterId);
 
     void softDelete(Long letterId);
+
+    Page<ReplyMapLetter> findAllSentReplyByUserId(Long userId, PageRequest pageRequest);
+
+    List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
 }

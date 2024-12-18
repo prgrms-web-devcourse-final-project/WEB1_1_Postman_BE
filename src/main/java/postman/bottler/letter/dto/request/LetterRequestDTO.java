@@ -14,17 +14,15 @@ public record LetterRequestDTO(
         @NotBlank(message = "편지지는 필수입니다.") String paper,
         @NotBlank(message = "라벨은 필수입니다.") String label
 ) {
-    public Letter toDomain(Long userId, String profile) {
+    public Letter toDomain(Long userId) {
         String validatedTitle = (title == null || title.trim().isEmpty()) ? "무제" : title;
 
         return Letter.builder()
                 .title(validatedTitle)
                 .content(this.content)
-                .keywords(this.keywords)
                 .font(this.font)
                 .paper(this.paper)
                 .label(this.label)
-                .profile(profile)
                 .userId(userId)
                 .isDeleted(false)
                 .isBlocked(false)
