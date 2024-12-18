@@ -48,7 +48,7 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public List<Long> findReceivedLettersById(Long userId) {
+    public List<Long> findReceivedLettersByUserId(Long userId) {
         return letterBoxQueryRepository.findReceivedLettersById(userId);
     }
 

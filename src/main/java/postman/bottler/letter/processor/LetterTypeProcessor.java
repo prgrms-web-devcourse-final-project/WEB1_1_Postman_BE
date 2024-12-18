@@ -19,11 +19,12 @@ public enum LetterTypeProcessor {
         private void processSendLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
             context.letterService().deleteLetters(ids, userId);
             context.letterKeywordService().markKeywordsAsDeleted(ids);
-            context.letterBoxService().deleteByIdsAndType(ids, LetterType.LETTER, BoxType.UNKNOWN);
+            context.letterBoxService().deleteByLetterIdsAndType(ids, LetterType.LETTER, BoxType.UNKNOWN);
         }
 
         private void processReceiveLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
-            context.letterBoxService().deleteByIdsAndTypeAndUserId(ids, LetterType.LETTER, BoxType.RECEIVE, userId);
+            context.letterBoxService()
+                    .deleteByLetterIdsAndTypeForUser(ids, LetterType.LETTER, BoxType.RECEIVE, userId);
         }
     },
     REPLY_LETTER {
@@ -37,12 +38,12 @@ public enum LetterTypeProcessor {
 
         private void processSendReplyLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
             context.replyLetterService().deleteReplyLetters(ids, userId);
-            context.letterBoxService().deleteByIdsAndType(ids, LetterType.REPLY_LETTER, BoxType.UNKNOWN);
+            context.letterBoxService().deleteByLetterIdsAndType(ids, LetterType.REPLY_LETTER, BoxType.UNKNOWN);
         }
 
         private void processReceiveReplyLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
             context.letterBoxService()
-                    .deleteByIdsAndTypeAndUserId(ids, LetterType.REPLY_LETTER, BoxType.RECEIVE, userId);
+                    .deleteByLetterIdsAndTypeForUser(ids, LetterType.REPLY_LETTER, BoxType.RECEIVE, userId);
         }
     };
 

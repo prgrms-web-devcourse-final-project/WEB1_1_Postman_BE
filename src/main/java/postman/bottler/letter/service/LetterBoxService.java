@@ -26,32 +26,33 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterSummaryResponseDTO> findAllLetters(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findAllLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterSummaryResponseDTO> findSentLetters(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findSentLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterSummaryResponseDTO> findReceivedLetters(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findReceivedLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public List<Long> getLettersByUserId(Long userId) {
-        return letterBoxRepository.findReceivedLettersById(userId);
+    public List<Long> findReceivedLettersByUserId(Long userId) {
+        return letterBoxRepository.findReceivedLettersByUserId(userId);
     }
 
     @Transactional
-    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+    public void deleteByLetterIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
     }
 
     @Transactional
-    public void deleteByIdsAndTypeAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId) {
+    public void deleteByLetterIdsAndTypeForUser(List<Long> letterIds, LetterType letterType, BoxType boxType,
+                                                Long userId) {
         letterBoxRepository.deleteByConditionAndUserId(letterIds, letterType, boxType, userId);
     }
 
