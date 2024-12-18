@@ -37,22 +37,11 @@ public class ReplyLetterService {
 
     @Transactional
     public ReplyLetterResponseDTO createReplyLetter(
-            Long letterId, ReplyLetterRequestDTO letterReplyRequestDTO, Long senderId
+            Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId
     ) {
-        // 해당 레터아이디에 대해 보낸사람의 아이디가 있으면 예외 던짐
         validateNotExistingReply(letterId, senderId);
-        ReceiverDTO receiverInfo = letterService.findReceiverInfoById(letterId);
-        String title = generateReplyTitle(receiverInfo.title());
-        Long receiverId = receiverInfo.receiverId();
-
-        ReplyLetter replyLetter = replyLetterRepository.save(
-                letterReplyRequestDTO.toDomain(title, letterId, receiverId, senderId)
-        );
-
-        saveLetterToBox(senderId, replyLetter, receiverId);
-        saveRecentReply(letterId, letterReplyRequestDTO.label(), receiverId);
-        notificationService.sendNotification(KEYWORD_REPLY, receiverInfo.receiverId(), replyLetter.getLetterId(),
-                replyLetter.getLabel());
+        ReplyLetter replyLetter = saveReplyLetter(letterId, requestDTO, senderId);
+        updateLetterBoxAndSendNotification(replyLetter, requestDTO.label());
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
@@ -60,7 +49,8 @@ public class ReplyLetterService {
     public Page<ReplyLetterSummaryResponseDTO> findReplyLettersById(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
-        return replyLetterRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageRequestDTO.toPageable())
+        return replyLetterRepository
+                .findAllByLetterIdAndReceiverId(letterId, receiverId, pageRequestDTO.toPageable())
                 .map(ReplyLetterSummaryResponseDTO::from);
     }
 
@@ -95,23 +85,37 @@ public class ReplyLetterService {
         }
     }
 
-    private String generateReplyTitle(String title) {
+    private ReplyLetter saveReplyLetter(Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId) {
+        ReceiverDTO receiverInfo = letterService.findReceiverInfoById(letterId);
+        String title = formatReplyTitle(receiverInfo.title());
+        return replyLetterRepository.save(requestDTO.toDomain(title, letterId, receiverInfo.receiverId(), senderId));
+    }
+
+    private String formatReplyTitle(String title) {
         return "RE: [" + title + "]";
     }
 
-    private void saveLetterToBox(Long senderId, ReplyLetter replyLetter, Long receiverId) {
-        saveLetterToBox(senderId, replyLetter, BoxType.SEND);
-        saveLetterToBox(receiverId, replyLetter, BoxType.RECEIVE);
+    private void updateLetterBoxAndSendNotification(ReplyLetter replyLetter, String labelUrl) {
+        saveReplyLetterToBox(replyLetter);
+        saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
+        sendReplyNotification(replyLetter);
     }
 
-    private void saveLetterToBox(Long senderId, ReplyLetter replyLetter, BoxType send) {
+    private void saveReplyLetterToBox(ReplyLetter replyLetter) {
+        saveLetterToBox(replyLetter.getSenderId(), replyLetter, BoxType.SEND);
+        saveLetterToBox(replyLetter.getReceiverId(), replyLetter, BoxType.RECEIVE);
+    }
+
+    private void saveLetterToBox(Long userId, ReplyLetter replyLetter, BoxType boxType) {
         letterBoxService.saveLetter(
-                LetterBoxDTO.of(senderId, replyLetter.getId(), LetterType.REPLY_LETTER, send,
-                        replyLetter.getCreatedAt()));
+                LetterBoxDTO.of(
+                        userId, replyLetter.getId(), LetterType.REPLY_LETTER, boxType, replyLetter.getCreatedAt()
+                )
+        );
     }
 
-    private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterCreateUserId) {
-        String key = "REPLY:" + sourceLetterCreateUserId;
+    private void saveReplyToRedis(Long letterId, String labelUrl, Long receiverId) {
+        String key = "REPLY:" + receiverId;
         String value = ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
 
         Long size = redisTemplate.opsForList().size(key);
@@ -123,6 +127,15 @@ public class ReplyLetterService {
         if (!Objects.requireNonNull(redisTemplate.opsForList().range(key, 0, -1)).contains(value)) {
             redisTemplate.opsForList().leftPush(key, value);
         }
+    }
+
+    private void sendReplyNotification(ReplyLetter replyLetter) {
+        notificationService.sendNotification(
+                KEYWORD_REPLY,
+                replyLetter.getReceiverId(),
+                replyLetter.getLetterId(),
+                replyLetter.getLabel()
+        );
     }
 
     private void deleteRecentReply(Long letterId) {
