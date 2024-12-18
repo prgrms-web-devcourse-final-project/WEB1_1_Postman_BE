@@ -29,16 +29,26 @@ public class LetterDeletionService {
 
     @Transactional
     public void deleteLetters(List<LetterDeleteDTO> letterDeleteDTOS, Long userId) {
-        LetterDeleteRequests requests = new LetterDeleteRequests(letterDeleteDTOS);
-        Map<LetterType, Map<BoxType, List<Long>>> groupByTypeAndBox = requests.groupByTypeAndBox();
+        Map<LetterType, Map<BoxType, List<Long>>> groupedRequests = groupRequestsByTypeAndBox(letterDeleteDTOS);
+        processGroupedRequests(groupedRequests, userId);
+    }
 
-        LetterDeletionContext context = new LetterDeletionContext(
-                letterService, replyLetterService, letterBoxService, letterKeywordService
-        );
+    private Map<LetterType, Map<BoxType, List<Long>>> groupRequestsByTypeAndBox(
+            List<LetterDeleteDTO> letterDeleteDTOS) {
+        return new LetterDeleteRequests(letterDeleteDTOS).groupByTypeAndBox();
+    }
 
-        groupByTypeAndBox.forEach(
+    private void processGroupedRequests(Map<LetterType, Map<BoxType, List<Long>>> groupedRequests, Long userId) {
+        LetterDeletionContext context = createLetterDeletionContext();
+        groupedRequests.forEach(
                 (letterType, boxTypeMap) ->
                         processLetterType(userId, letterType, boxTypeMap, context)
+        );
+    }
+
+    private LetterDeletionContext createLetterDeletionContext() {
+        return new LetterDeletionContext(
+                letterService, replyLetterService, letterBoxService, letterKeywordService
         );
     }
 
