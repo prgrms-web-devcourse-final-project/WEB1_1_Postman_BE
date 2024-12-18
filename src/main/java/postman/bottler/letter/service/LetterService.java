@@ -70,4 +70,9 @@ public class LetterService {
         letterRepository.softBlockById(letterId);
         return letter.getUserId();
     }
+
+    @Transactional(readOnly = true)
+    public boolean checkLetterExists(Long letterId) {
+        return letterRepository.existsById(letterId);
+    }
 }
