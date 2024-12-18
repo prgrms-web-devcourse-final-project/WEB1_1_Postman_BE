@@ -9,13 +9,13 @@ public interface LetterRepository {
 
     Optional<Letter> findById(Long letterId);
 
-    List<Letter> findAllByIds(List<Long> letterIds);
+    List<Letter> findAllActiveByIds(List<Long> letterIds);
 
     List<Letter> findAllByUserId(Long userId);
 
-    void deleteByIds(List<Long> letterIds);
+    void softDeleteByIds(List<Long> letterIds);
 
-    void blockLetterById(Long letterId);
+    void softBlockById(Long letterId);
 
-    boolean checkLetterExists(Long letterId);
+    boolean existsById(Long letterId);
 }

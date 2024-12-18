@@ -39,7 +39,7 @@ public class LetterService {
 
     @Transactional(readOnly = true)
     public List<Letter> findRecommendHeaders(List<Long> letterIds) {
-        return letterRepository.findAllByIds(letterIds);
+        return letterRepository.findAllActiveByIds(letterIds);
     }
 
     @Transactional(readOnly = true)
@@ -61,13 +61,13 @@ public class LetterService {
                 throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
             }
         });
-        letterRepository.deleteByIds(letterIds);
+        letterRepository.softDeleteByIds(letterIds);
     }
 
     @Transactional
     public Long blockLetter(Long letterId) {
         Letter letter = findLetter(letterId);
-        letterRepository.blockLetterById(letterId);
+        letterRepository.softBlockById(letterId);
         return letter.getUserId();
     }
 }

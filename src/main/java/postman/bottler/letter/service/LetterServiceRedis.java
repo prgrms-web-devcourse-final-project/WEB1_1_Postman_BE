@@ -21,6 +21,6 @@ public class LetterServiceRedis {
     }
 
     public boolean checkLetterExists(Long letterId) {
-        return letterRepository.checkLetterExists(letterId);
+        return letterRepository.existsById(letterId);
     }
 }

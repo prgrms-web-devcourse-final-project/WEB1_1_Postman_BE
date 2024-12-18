@@ -54,6 +54,16 @@ public class LetterBoxQueryRepository {
                 .fetch();
     }
 
+    public List<Long> findReceivedLettersById(Long userId) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+        return queryFactory
+                .select(letterBox.letterId)
+                .from(letterBox)
+                .where(letterBox.userId.eq(userId)
+                        .and(letterBox.boxType.eq(BoxType.RECEIVE)))
+                .fetch();
+    }
+
     public long countLetters(Long userId, BoxType boxType) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         return queryFactory
@@ -63,16 +73,6 @@ public class LetterBoxQueryRepository {
                         .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
                 .fetch()
                 .size();
-    }
-
-    public List<Long> getReceivedLettersById(Long userId) {
-        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
-        return queryFactory
-                .select(letterBox.letterId)
-                .from(letterBox)
-                .where(letterBox.userId.eq(userId)
-                        .and(letterBox.boxType.eq(BoxType.RECEIVE)))
-                .fetch();
     }
 
     public void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType) {

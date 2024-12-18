@@ -22,12 +22,12 @@ public class LetterRepositoryImpl implements LetterRepository {
 
     @Override
     public Optional<Letter> findById(Long letterId) {
-        return letterJpaRepository.findActiveById(letterId)
+        return letterJpaRepository.findById(letterId)
                 .map(LetterEntity::toDomain);
     }
 
     @Override
-    public List<Letter> findAllByIds(List<Long> letterIds) {
+    public List<Letter> findAllActiveByIds(List<Long> letterIds) {
         return letterJpaRepository.findAllByIds(letterIds).stream()
                 .map(LetterEntity::toDomain)
                 .toList();
@@ -41,17 +41,17 @@ public class LetterRepositoryImpl implements LetterRepository {
     }
 
     @Override
-    public void deleteByIds(List<Long> letterIds) {
-        letterJpaRepository.deleteByIds(letterIds);
+    public void softDeleteByIds(List<Long> letterIds) {
+        letterJpaRepository.softDeleteByIds(letterIds);
     }
 
     @Override
-    public void blockLetterById(Long letterId) {
-        letterJpaRepository.blockById(letterId);
+    public void softBlockById(Long letterId) {
+        letterJpaRepository.softBlockById(letterId);
     }
 
     @Override
-    public boolean checkLetterExists(Long letterId) {
+    public boolean existsById(Long letterId) {
         return letterJpaRepository.existsById(letterId);
     }
 }

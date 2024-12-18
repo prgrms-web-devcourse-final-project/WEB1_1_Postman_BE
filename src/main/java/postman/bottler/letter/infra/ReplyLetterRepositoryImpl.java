@@ -32,7 +32,7 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public Optional<ReplyLetter> findById(Long replyLetterId) {
-        return replyLetterJpaRepository.findActiveById(replyLetterId)
+        return replyLetterJpaRepository.findById(replyLetterId)
                 .map(ReplyLetterEntity::toDomain);
     }
 
