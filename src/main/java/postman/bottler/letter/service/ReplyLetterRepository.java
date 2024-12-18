@@ -9,7 +9,7 @@ import postman.bottler.letter.domain.ReplyLetter;
 public interface ReplyLetterRepository {
     ReplyLetter save(ReplyLetter replyLetter);
 
-    Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable);
+    Page<ReplyLetter> findAllByLetterIdAndReceiverId(Long letterId, Long receiverId, Pageable pageable);
 
     Optional<ReplyLetter> findById(Long replyLetterId);
 

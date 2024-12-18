@@ -57,15 +57,15 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReplyLetterSummaryResponseDTO> getReplyLetterHeadersById(
+    public Page<ReplyLetterSummaryResponseDTO> findReplyLettersById(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
-        return replyLetterRepository.findAllByLetterId(letterId, receiverId, pageRequestDTO.toPageable())
+        return replyLetterRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageRequestDTO.toPageable())
                 .map(ReplyLetterSummaryResponseDTO::from);
     }
 
     @Transactional(readOnly = true)
-    public ReplyLetterDetailResponseDTO getReplyLetterDetail(Long replyLetterId, Long userId) {
+    public ReplyLetterDetailResponseDTO findReplyLetterDetail(Long replyLetterId, Long userId) {
         boolean isReplied = replyLetterRepository.existsByIdAndSenderId(replyLetterId, userId);
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
         return ReplyLetterDetailResponseDTO.from(replyLetter, isReplied);

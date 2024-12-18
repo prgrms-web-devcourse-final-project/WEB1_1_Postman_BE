@@ -49,11 +49,11 @@ public class ReplyLetterController {
             description = "지정된 편지 ID에 대한 답장을 생성합니다."
     )
     @PostMapping("/{letterId}")
-    public ApiResponse<ReplyLetterResponseDTO> createReply(
+    public ApiResponse<ReplyLetterResponseDTO> createReplyLetter(
+            @PathVariable Long letterId,
             @RequestBody @Valid ReplyLetterRequestDTO letterReplyRequestDTO,
             BindingResult bindingResult,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long letterId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validateReplyLetterRequest(bindingResult);
         ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO,
@@ -67,7 +67,7 @@ public class ReplyLetterController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/{letterId}")
-    public ApiResponse<PageResponseDTO<ReplyLetterSummaryResponseDTO>> getReplyForLetter(
+    public ApiResponse<PageResponseDTO<ReplyLetterSummaryResponseDTO>> getRepliesForLetter(
             @PathVariable Long letterId,
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
@@ -76,7 +76,7 @@ public class ReplyLetterController {
         letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         validatePageRequest(bindingResult);
         Page<ReplyLetterSummaryResponseDTO> result =
-                letterReplyService.getReplyLetterHeadersById(letterId, pageRequestDTO, userDetails.getUserId());
+                letterReplyService.findReplyLettersById(letterId, pageRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 
@@ -90,8 +90,8 @@ public class ReplyLetterController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         letterBoxService.validateLetterInUserBox(replyLetterId, userDetails.getUserId());
-        ReplyLetterDetailResponseDTO result = letterReplyService.getReplyLetterDetail(replyLetterId,
-                userDetails.getUserId());
+        ReplyLetterDetailResponseDTO result =
+                letterReplyService.findReplyLetterDetail(replyLetterId, userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 
@@ -104,8 +104,9 @@ public class ReplyLetterController {
             @RequestBody @Valid ReplyLetterDeleteRequestDTO replyLetterDeleteRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        letterDeletionService.deleteLetter(LetterDeleteDTO.fromReplyLetter(replyLetterDeleteRequestDTO),
-                userDetails.getUserId());
+        letterDeletionService.deleteLetter(
+                LetterDeleteDTO.fromReplyLetter(replyLetterDeleteRequestDTO), userDetails.getUserId()
+        );
         return ApiResponse.onSuccess("success");
     }
 
