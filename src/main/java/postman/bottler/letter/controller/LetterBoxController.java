@@ -29,7 +29,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 @RestController
 @RequestMapping("/letters/saved")
 @RequiredArgsConstructor
-@Tag(name = "Letter Box", description = "보관된 편지 관리 API")
+@Tag(name = "Letter Box", description = "보관된(saved) 편지 관리 API")
 public class LetterBoxController {
 
     private final LetterBoxService letterBoxService;
