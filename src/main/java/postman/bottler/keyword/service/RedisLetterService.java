@@ -82,7 +82,7 @@ public class RedisLetterService {
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.checkLetterExists(letterId);
+        return letterService.existsLetter(letterId);
     }
 
     @NotNull

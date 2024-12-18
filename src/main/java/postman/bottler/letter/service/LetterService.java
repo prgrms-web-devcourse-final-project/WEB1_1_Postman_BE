@@ -72,7 +72,7 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkLetterExists(Long letterId) {
+    public boolean existsLetter(Long letterId) {
         return letterRepository.existsById(letterId);
     }
 }
