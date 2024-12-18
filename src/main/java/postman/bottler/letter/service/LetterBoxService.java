@@ -26,17 +26,17 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterSummaryResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findAllLetters(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterSummaryResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findSentLetters(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterSummaryResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findReceivedLetters(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 

@@ -48,7 +48,7 @@ public class LetterBoxController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterSummaryResponseDTO> result = letterBoxService.getAllLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.findAllLetters(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -65,7 +65,7 @@ public class LetterBoxController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterSummaryResponseDTO> result = letterBoxService.getSentLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.findSentLetters(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -82,7 +82,7 @@ public class LetterBoxController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterSummaryResponseDTO> result = letterBoxService.getReceivedLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.findReceivedLetters(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
