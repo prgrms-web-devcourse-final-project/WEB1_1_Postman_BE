@@ -1,12 +1,12 @@
 package postman.bottler.notification.service;
 
-import java.util.List;
 import postman.bottler.notification.domain.Notification;
+import postman.bottler.notification.domain.Notifications;
 
 public interface NotificationRepository {
     Notification save(Notification notification);
 
-    List<Notification> findByReceiver(Long userId);
+    Notifications findByReceiver(Long userId);
 
-    void updateNotifications(List<Notification> notification);
+    void updateNotifications(Notifications notifications);
 }

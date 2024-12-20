@@ -1,20 +1,21 @@
 package postman.bottler.letter.service;
 
+import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import postman.bottler.letter.domain.Letter;
 
 public interface LetterRepository {
     Letter save(Letter letter);
 
-    void remove(Long letterId);
-
     Optional<Letter> findById(Long letterId);
 
+    List<Letter> findAllActiveByIds(List<Long> letterIds);
+
+    List<Letter> findAllByUserId(Long userId);
+
+    void softDeleteByIds(List<Long> letterIds);
+
+    void softBlockById(Long letterId);
+
     boolean existsById(Long letterId);
-
-    Page<Letter> findAll(Long userId, Pageable pageable);
-
-    boolean existsByUserIdAndLetterId(Long userId, Long letterId);
 }

@@ -1,79 +1,78 @@
 package postman.bottler.letter.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
+import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.ReceiverDTO;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
-import postman.bottler.letter.dto.response.LetterResponseDTO;
-import postman.bottler.letter.exception.LetterAccessDeniedException;
+import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LetterService {
 
     private final LetterRepository letterRepository;
+    private final LetterBoxService letterBoxService;
 
     @Transactional
-    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO) {
-        Long userId = getCurrentUserId();
-        String userProfile = "profile url";
-
-        Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId, userProfile));
-        return LetterResponseDTO.from(letter);
+    public Letter createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
+        Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId));
+        letterBoxService.saveLetter(
+                LetterBoxDTO.of(userId, letter.getId(), LetterType.LETTER, BoxType.SEND, letter.getCreatedAt())
+        );
+        return letter;
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getLetterHeaders(int page, int size, String sort) {
-        Long userId = getCurrentUserId();
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort).descending());
-        return letterRepository.findAll(userId, pageable)
-                .map(LetterHeadersResponseDTO::from);
-    }
-
-    @Transactional
-    public void deleteLetter(Long letterId) {
-        Long userId = getCurrentUserId();
-        validateLetterOwnership(userId, letterId);
-        letterRepository.remove(letterId);
-    }
-
-    @Transactional(readOnly = true)
-    public LetterResponseDTO getLetterDetail(Long letterId) {
-        Letter letter = findLetter(letterId);
-        return LetterResponseDTO.from(letter);
-    }
-
-    public void blockLetter(Long letterId) {
-
-    }
-
-    @Transactional(readOnly = true)
-    public ReceiverDTO getReceiverInfoById(Long letterId) {
-        Letter letter = findLetter(letterId);
-        return ReceiverDTO.from(letter);
-    }
-
-    private void validateLetterOwnership(Long userId, Long letterId) {
-        if (!letterRepository.existsByUserIdAndLetterId(userId, letterId)) {
-            throw new LetterAccessDeniedException("해당 편지의 작성자가 아닙니다.");
-        }
-    }
-
-    private Letter findLetter(Long letterId) {
+    public Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
     }
 
-    private Long getCurrentUserId() {
-        return 1L; // TODO: 실제 인증 로직으로 대체
+    @Transactional(readOnly = true)
+    public List<Letter> findRecommendHeaders(List<Long> letterIds) {
+        return letterRepository.findAllActiveByIds(letterIds);
+    }
+
+    @Transactional(readOnly = true)
+    public ReceiverDTO findReceiverInfoById(Long letterId) {
+        return ReceiverDTO.from(findLetter(letterId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findAllByUserId(Long userId) {
+        return letterRepository.findAllByUserId(userId).stream()
+                .map(Letter::getId)
+                .toList();
+    }
+
+    @Transactional
+    public void deleteLetters(List<Long> letterIds, Long userId) {
+        letterIds.forEach(letterId -> {
+            if (!findLetter(letterId).getUserId().equals(userId)) {
+                throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
+            }
+        });
+        letterRepository.softDeleteByIds(letterIds);
+    }
+
+    @Transactional
+    public Long blockLetter(Long letterId) {
+        Letter letter = findLetter(letterId);
+        letterRepository.softBlockById(letterId);
+        return letter.getUserId();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsLetter(Long letterId) {
+        return letterRepository.existsById(letterId);
     }
 }

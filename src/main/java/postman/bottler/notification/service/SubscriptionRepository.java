@@ -8,7 +8,11 @@ public interface SubscriptionRepository {
 
     Subscriptions findByUserId(Long userId);
 
+    Subscriptions findAll();
+
     void deleteAllByUserId(Long userId);
 
     void deleteByToken(String token);
+
+    Boolean isDuplicate(Subscription subscription);
 }

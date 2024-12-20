@@ -1,10 +1,15 @@
 package postman.bottler.mapletter.domain;
 
-import lombok.*;
-import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.response.FindAllReplyMapLettersResponseDTO;
-
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import postman.bottler.global.exception.CommonForbiddenException;
+import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
+import postman.bottler.mapletter.exception.BlockedLetterException;
+import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,5 +46,28 @@ public class ReplyMapLetter {
 
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
+    }
+
+    public void validFindOneReplyMapLetter(Long userId, MapLetter sourceLetter) {
+        if (!this.getCreateUserId().equals(userId) && !sourceLetter.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 볼 수 있는 권한이 없습니다.");
+        }
+        validDeleteAndBlocked();
+    }
+
+    public void validDeleteReplyMapLetter(Long userId) {
+        if (!this.getCreateUserId().equals(userId)) {
+            throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+        }
+        validDeleteAndBlocked();
+    }
+
+    private void validDeleteAndBlocked() {
+        if (this.isDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 삭제되었습니다.");
+        }
+        if (this.isBlocked()) {
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
     }
 }

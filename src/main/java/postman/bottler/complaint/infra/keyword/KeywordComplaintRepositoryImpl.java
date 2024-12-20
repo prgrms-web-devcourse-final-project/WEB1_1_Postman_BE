@@ -3,8 +3,8 @@ package postman.bottler.complaint.infra.keyword;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.domain.KeywordComplaint;
 import postman.bottler.complaint.service.KeywordComplaintRepository;
 
 @Repository
@@ -13,9 +13,8 @@ public class KeywordComplaintRepositoryImpl implements KeywordComplaintRepositor
     private final JpaKeywordComplaintRepository repository;
 
     @Override
-    public KeywordComplaint save(KeywordComplaint complaint) {
-        KeywordComplaintEntity save = repository.save(KeywordComplaintEntity.from(complaint));
-        return save.toDomain();
+    public Complaint save(Complaint complaint) {
+        return repository.save(KeywordComplaintEntity.from(complaint)).toDomain();
     }
 
     @Override
