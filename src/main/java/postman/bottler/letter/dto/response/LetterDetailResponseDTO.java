@@ -2,6 +2,7 @@ package postman.bottler.letter.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.letter.domain.Letter;
 
 public record LetterDetailResponseDTO(
@@ -16,17 +17,18 @@ public record LetterDetailResponseDTO(
         boolean isOwner,
         LocalDateTime createdAt
 ) {
-    public static LetterDetailResponseDTO from(Letter letter, List<String> keywords, Long userId, String profile) {
+    public static LetterDetailResponseDTO from(Letter letter, List<LetterKeyword> letterKeywords, Long currentUserId,
+                                               String profile) {
         return new LetterDetailResponseDTO(
                 letter.getId(),
                 letter.getTitle(),
                 letter.getContent(),
-                keywords,
+                letterKeywords.stream().map(LetterKeyword::getKeyword).toList(),
                 letter.getFont(),
                 letter.getPaper(),
                 profile,
                 letter.getLabel(),
-                letter.getUserId().equals(userId),
+                letter.getUserId().equals(currentUserId),
                 letter.getCreatedAt()
         );
     }

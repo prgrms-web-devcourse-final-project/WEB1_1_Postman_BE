@@ -15,7 +15,7 @@ import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.letter.service.LetterBoxService;
-import postman.bottler.letter.service.LetterServiceRedis;
+import postman.bottler.letter.service.LetterService;
 import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
 
 @Service
@@ -25,7 +25,7 @@ public class RedisLetterService {
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final LetterBoxService letterBoxService;
     private static final int MAX_RECOMMENDATIONS = 3;
-    private final LetterServiceRedis letterService;
+    private final LetterService letterService;
 
     @Transactional
     public void saveRecommendationsTemp(Long userId, List<Long> recommendations) {
@@ -82,7 +82,7 @@ public class RedisLetterService {
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.checkLetterExists(letterId);
+        return letterService.existsLetter(letterId);
     }
 
     @NotNull

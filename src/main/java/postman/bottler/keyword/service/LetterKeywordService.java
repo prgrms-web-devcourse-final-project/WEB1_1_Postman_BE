@@ -18,20 +18,17 @@ public class LetterKeywordService {
     private final LetterService letterService;
 
     @Transactional
-    public void createLetterKeywords(Long letterId, List<String> keywords) {
+    public List<LetterKeyword> createLetterKeywords(Long letterId, List<String> keywords) {
         List<LetterKeyword> letterKeywords = keywords.stream()
                 .map(keyword -> LetterKeyword.from(letterId, keyword))
                 .toList();
 
-        letterKeywordRepository.saveAll(letterKeywords);
+        return letterKeywordRepository.saveAll(letterKeywords);
     }
 
     @Transactional(readOnly = true)
-    public List<String> getKeywords(Long letterId) {
-        List<LetterKeyword> letterKeywords = letterKeywordRepository.getKeywordsByLetterId(letterId);
-
-        return letterKeywords.stream()
-                .map(LetterKeyword::getKeyword).toList();
+    public List<LetterKeyword> getKeywords(Long letterId) {
+        return letterKeywordRepository.getKeywordsByLetterId(letterId);
     }
 
     @Transactional

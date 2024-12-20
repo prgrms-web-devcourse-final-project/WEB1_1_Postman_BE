@@ -22,30 +22,15 @@ public class LetterRepositoryImpl implements LetterRepository {
 
     @Override
     public Optional<Letter> findById(Long letterId) {
-        return letterJpaRepository.findActiveById(letterId)
+        return letterJpaRepository.findById(letterId)
                 .map(LetterEntity::toDomain);
     }
 
     @Override
-    public void deleteByIds(List<Long> letterIds) {
-        letterJpaRepository.deleteByIds(letterIds);
-    }
-
-    @Override
-    public void blockLetterById(Long letterId) {
-        letterJpaRepository.blockById(letterId);
-    }
-
-    @Override
-    public List<Letter> findAllByIds(List<Long> letterIds) {
+    public List<Letter> findAllActiveByIds(List<Long> letterIds) {
         return letterJpaRepository.findAllByIds(letterIds).stream()
                 .map(LetterEntity::toDomain)
                 .toList();
-    }
-
-    @Override
-    public boolean checkLetterExists(Long letterId) {
-        return letterJpaRepository.existsById(letterId);
     }
 
     @Override
@@ -53,5 +38,20 @@ public class LetterRepositoryImpl implements LetterRepository {
         return letterJpaRepository.findAllByUserId(userId).stream()
                 .map(LetterEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void softDeleteByIds(List<Long> letterIds) {
+        letterJpaRepository.softDeleteByIds(letterIds);
+    }
+
+    @Override
+    public void softBlockById(Long letterId) {
+        letterJpaRepository.softBlockById(letterId);
+    }
+
+    @Override
+    public boolean existsById(Long letterId) {
+        return letterJpaRepository.existsById(letterId);
     }
 }

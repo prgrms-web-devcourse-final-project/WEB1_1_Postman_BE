@@ -10,7 +10,7 @@ import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.exception.UnauthorizedLetterAccessException;
 
 @Slf4j
@@ -26,34 +26,34 @@ public class LetterBoxService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getAllLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findAllLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getSentLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findSentLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
     }
 
     @Transactional(readOnly = true)
-    public Page<LetterHeadersResponseDTO> getReceivedLetterHeaders(PageRequestDTO pageRequestDTO, Long userId) {
+    public Page<LetterSummaryResponseDTO> findReceivedLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
         return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
     }
 
+    @Transactional(readOnly = true)
+    public List<Long> findReceivedLettersByUserId(Long userId) {
+        return letterBoxRepository.findReceivedLettersByUserId(userId);
+    }
+
     @Transactional
-    public void deleteByIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
+    public void deleteByLetterIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
     }
 
     @Transactional
-    public void deleteByIdsAndTypeAndUserId(List<Long> letterIds, LetterType letterType, BoxType boxType, Long userId) {
+    public void deleteByLetterIdsAndTypeForUser(List<Long> letterIds, LetterType letterType, BoxType boxType,
+                                                Long userId) {
         letterBoxRepository.deleteByConditionAndUserId(letterIds, letterType, boxType, userId);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<Long> getLettersByUserId(Long userId) {
-        return letterBoxRepository.getReceivedLettersById(userId);
     }
 
     @Transactional(readOnly = true)

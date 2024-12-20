@@ -15,8 +15,8 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
     private final LetterKeywordJdbcRepository jdbcRepository;
 
     @Override
-    public void saveAll(List<LetterKeyword> letterKeywords) {
-        jdbcRepository.batchInsertKeywords(letterKeywords);
+    public List<LetterKeyword> saveAll(List<LetterKeyword> letterKeywords) {
+        return jdbcRepository.batchInsertKeywords(letterKeywords);
     }
 
     @Override

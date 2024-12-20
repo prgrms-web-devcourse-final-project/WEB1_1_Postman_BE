@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
+import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.dto.response.PageResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
-import postman.bottler.letter.service.DeleteManagerService;
 import postman.bottler.letter.service.LetterBoxService;
+import postman.bottler.letter.service.LetterDeletionService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -29,11 +29,11 @@ import postman.bottler.user.auth.CustomUserDetails;
 @RestController
 @RequestMapping("/letters/saved")
 @RequiredArgsConstructor
-@Tag(name = "Letter Box", description = "보관된 편지 관리 API")
+@Tag(name = "Letter Box", description = "보관된(saved) 편지 관리 API")
 public class LetterBoxController {
 
     private final LetterBoxService letterBoxService;
-    private final DeleteManagerService deleteManagerService;
+    private final LetterDeletionService letterDeletionService;
     private final ValidationUtil validationUtil;
 
     @Operation(
@@ -42,13 +42,13 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getAllLetters(
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getAllLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getAllLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.findAllLetterSummaries(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -59,13 +59,13 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/sent")
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getSentLetters(
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getSentLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getSentLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.findSentLetterSummaries(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -76,13 +76,13 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/received")
-    public ApiResponse<PageResponseDTO<LetterHeadersResponseDTO>> getReceivedLetters(
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getReceivedLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         validatePageRequest(bindingResult);
-        Page<LetterHeadersResponseDTO> result = letterBoxService.getReceivedLetterHeaders(pageRequestDTO,
+        Page<LetterSummaryResponseDTO> result = letterBoxService.findReceivedLetterSummaries(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
@@ -96,7 +96,7 @@ public class LetterBoxController {
             @RequestBody @Valid List<LetterDeleteDTO> letterDeleteDTOS,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        deleteManagerService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
+        letterDeletionService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
         return ApiResponse.onSuccess("편지 보관을 취소했습니다.");
     }
 

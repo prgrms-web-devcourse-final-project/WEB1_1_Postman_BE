@@ -20,7 +20,7 @@ public class AsyncRecommendationService {
     @Async
     public void processRecommendationForUser(Long userId) {
         List<String> keywords = userKeywordService.getKeywordsByUserId(userId);
-        List<Long> letterIds = letterBoxService.getLettersByUserId(userId);
+        List<Long> letterIds = letterBoxService.findReceivedLettersByUserId(userId);
         List<Long> recommendedLetters = recommendService.getRecommendedLetters(keywords, letterIds,
                 RECOMMENDATION_LIMIT);
 
