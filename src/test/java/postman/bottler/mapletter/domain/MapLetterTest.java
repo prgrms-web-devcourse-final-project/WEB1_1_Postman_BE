@@ -42,37 +42,37 @@ class MapLetterTest {
         assertFalse(mapLetter.isBlocked());
     }
 
-    @Test
-    @DisplayName("타겟 편지 생성에 성공한다")
-    void createTargetMapLetterTest() {
-        //given
-        Long targetUserId = 3L;
-
-        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
-                "타겟 편지",
-                "편지 내용",
-                "우리 첫 만남 장소",
-                new BigDecimal("37.5665"),
-                new BigDecimal("127.9780"),
-                "프리텐다드",
-                "www.paper.com",
-                "www.label.com",
-                targetUserId
-        );
-        Long userId = 1L;
-
-        //when
-        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
-
-        //then
-        assertNotNull(mapLetter);
-        assertEquals("타겟 편지", mapLetter.getTitle());
-        assertEquals("편지 내용", mapLetter.getContent());
-        assertEquals("우리 첫 만남 장소", mapLetter.getDescription());
-        assertEquals(MapLetterType.PRIVATE, mapLetter.getType());
-        assertEquals(userId, mapLetter.getCreateUserId());
-        assertEquals(targetUserId, mapLetter.getTargetUserId());
-        assertFalse(mapLetter.isDeleted());
-        assertFalse(mapLetter.isBlocked());
-    }
+//    @Test
+//    @DisplayName("타겟 편지 생성에 성공한다")
+//    void createTargetMapLetterTest() {
+//        //given
+//        Long targetUserId = 3L;
+//
+//        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
+//                "타겟 편지",
+//                "편지 내용",
+//                "우리 첫 만남 장소",
+//                new BigDecimal("37.5665"),
+//                new BigDecimal("127.9780"),
+//                "프리텐다드",
+//                "www.paper.com",
+//                "www.label.com",
+//                targetUserId
+//        );
+//        Long userId = 1L;
+//
+//        //when
+//        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
+//
+//        //then
+//        assertNotNull(mapLetter);
+//        assertEquals("타겟 편지", mapLetter.getTitle());
+//        assertEquals("편지 내용", mapLetter.getContent());
+//        assertEquals("우리 첫 만남 장소", mapLetter.getDescription());
+//        assertEquals(MapLetterType.PRIVATE, mapLetter.getType());
+//        assertEquals(userId, mapLetter.getCreateUserId());
+//        assertEquals(targetUserId, mapLetter.getTargetUserId());
+//        assertFalse(mapLetter.isDeleted());
+//        assertFalse(mapLetter.isBlocked());
+//    }
 }

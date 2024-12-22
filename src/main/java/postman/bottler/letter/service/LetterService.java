@@ -17,7 +17,7 @@ import postman.bottler.letter.exception.DeveloperLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @Slf4j
 @Service

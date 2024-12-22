@@ -1,4 +1,4 @@
-package postman.bottler.user.controller;
+package postman.bottler.user.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,8 +15,8 @@ import postman.bottler.user.auth.CookieService;
 import postman.bottler.user.dto.response.SignInDTO;
 import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.KakaoAuthCodeException;
-import postman.bottler.user.service.KakaoService;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.KakaoService;
+import postman.bottler.user.applications.UserService;
 
 @RestController
 @RequiredArgsConstructor

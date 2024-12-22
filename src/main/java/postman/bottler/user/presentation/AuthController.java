@@ -1,4 +1,4 @@
-package postman.bottler.user.controller;
+package postman.bottler.user.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ import postman.bottler.user.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.PasswordException;
 import postman.bottler.user.exception.TokenException;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @RestController
 @RequiredArgsConstructor

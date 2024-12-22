@@ -1,10 +1,12 @@
-package postman.bottler.user.service;
+package postman.bottler.user.applications;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.user.applications.repository.BanRepository;
+import postman.bottler.user.applications.repository.UserRepository;
 import postman.bottler.user.domain.Ban;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.exception.UserBanException;

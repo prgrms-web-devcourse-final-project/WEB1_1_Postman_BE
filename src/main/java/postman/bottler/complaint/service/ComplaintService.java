@@ -13,7 +13,7 @@ import postman.bottler.mapletter.service.BlockMapLetterType;
 import postman.bottler.mapletter.service.MapLetterService;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @Service
 @RequiredArgsConstructor

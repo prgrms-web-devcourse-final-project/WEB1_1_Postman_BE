@@ -41,11 +41,10 @@ import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
-import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.service.NotificationService;
 import postman.bottler.reply.dto.ReplyType;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @Service
 @RequiredArgsConstructor

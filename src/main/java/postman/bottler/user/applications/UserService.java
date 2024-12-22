@@ -1,4 +1,4 @@
-package postman.bottler.user.service;
+package postman.bottler.user.applications;
 
 import jakarta.mail.MessagingException;
 import java.security.SecureRandom;
@@ -27,6 +27,10 @@ import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.service.NotificationService;
 import postman.bottler.slack.SlackConstant;
 import postman.bottler.slack.SlackService;
+import postman.bottler.user.applications.repository.EmailCodeRepository;
+import postman.bottler.user.applications.repository.ProfileImageRepository;
+import postman.bottler.user.applications.repository.RefreshTokenRepository;
+import postman.bottler.user.applications.repository.UserRepository;
 import postman.bottler.user.auth.JwtTokenProvider;
 import postman.bottler.user.domain.EmailCode;
 import postman.bottler.user.domain.EmailForm;

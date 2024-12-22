@@ -8,7 +8,7 @@ import postman.bottler.keyword.service.AsyncRecommendationService;
 import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.notification.service.NotificationService;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @Service
 @RequiredArgsConstructor

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.EmailCode;
 import postman.bottler.user.exception.EmailCodeException;
 import postman.bottler.user.infra.entity.EmailCodeEntity;
-import postman.bottler.user.service.EmailCodeRepository;
+import postman.bottler.user.applications.repository.EmailCodeRepository;
 
 @Repository
 @RequiredArgsConstructor

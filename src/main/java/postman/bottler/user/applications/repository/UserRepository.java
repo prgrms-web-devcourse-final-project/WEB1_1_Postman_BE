@@ -1,4 +1,4 @@
-package postman.bottler.user.service;
+package postman.bottler.user.applications.repository;
 
 import java.util.List;
 import postman.bottler.user.domain.Ban;

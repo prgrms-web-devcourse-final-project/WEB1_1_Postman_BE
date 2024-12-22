@@ -1,4 +1,4 @@
-package postman.bottler.user.service;
+package postman.bottler.user.applications;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

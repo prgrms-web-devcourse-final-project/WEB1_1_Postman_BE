@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.keyword.service.AsyncRecommendationService;
 import postman.bottler.keyword.service.RedisLetterService;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @RestController
 @RequiredArgsConstructor

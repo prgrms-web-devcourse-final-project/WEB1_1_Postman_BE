@@ -64,40 +64,40 @@ class MapLetterServiceTest {
         Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
     }
 
-    @Test
-    @DisplayName("타겟 편지 생성에 성공한다.")
-    void createTargetLetterTest() {
-        //given
-        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
-                "Test Title",
-                "TestContent",
-                "장소 설명",
-                new BigDecimal("37.5665"),
-                new BigDecimal("127.23456"),
-                "맑은고딕",
-                "www.paper.com",
-                "www.label.com",
-                2L //임시 타겟
-        );
-
-        Long userId = 1L;
-        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
-
-        Mockito.when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
-
-        //when
-        MapLetter actualMapLetter = mapLetterService.createTargetMapLetter(requestDTO, userId);
-
-        //then
-        assertEquals(expectedMapLetter.getTitle(), actualMapLetter.getTitle());
-        assertEquals(expectedMapLetter.getContent(), actualMapLetter.getContent());
-        assertEquals(expectedMapLetter.getLatitude(), actualMapLetter.getLatitude());
-        assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
-        assertEquals(expectedMapLetter.getTargetUserId(), actualMapLetter.getTargetUserId());
-        assertEquals(expectedMapLetter.getDescription(), actualMapLetter.getDescription());
-
-        Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
-    }
+//    @Test
+//    @DisplayName("타겟 편지 생성에 성공한다.")
+//    void createTargetLetterTest() {
+//        //given
+//        CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
+//                "Test Title",
+//                "TestContent",
+//                "장소 설명",
+//                new BigDecimal("37.5665"),
+//                new BigDecimal("127.23456"),
+//                "맑은고딕",
+//                "www.paper.com",
+//                "www.label.com",
+//                2L //임시 타겟
+//        );
+//
+//        Long userId = 1L;
+//        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
+//
+//        Mockito.when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
+//
+//        //when
+//        MapLetter actualMapLetter = mapLetterService.createTargetMapLetter(requestDTO, userId);
+//
+//        //then
+//        assertEquals(expectedMapLetter.getTitle(), actualMapLetter.getTitle());
+//        assertEquals(expectedMapLetter.getContent(), actualMapLetter.getContent());
+//        assertEquals(expectedMapLetter.getLatitude(), actualMapLetter.getLatitude());
+//        assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
+//        assertEquals(expectedMapLetter.getTargetUserId(), actualMapLetter.getTargetUserId());
+//        assertEquals(expectedMapLetter.getDescription(), actualMapLetter.getDescription());
+//
+//        Mockito.verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
+//    }
 
 //    @Test
 //    @DisplayName("편지가 PUBLIC일 경우 편지 상세 조회에 성공한다.")

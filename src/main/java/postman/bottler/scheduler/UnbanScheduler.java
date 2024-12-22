@@ -3,7 +3,7 @@ package postman.bottler.scheduler;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import postman.bottler.user.service.BanService;
+import postman.bottler.user.applications.BanService;
 
 @Component
 @RequiredArgsConstructor

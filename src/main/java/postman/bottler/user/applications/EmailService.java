@@ -1,4 +1,4 @@
-package postman.bottler.user.service;
+package postman.bottler.user.applications;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

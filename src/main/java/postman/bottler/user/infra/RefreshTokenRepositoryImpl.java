@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.exception.TokenException;
 import postman.bottler.user.infra.entity.RefreshTokenEntity;
-import postman.bottler.user.service.RefreshTokenRepository;
+import postman.bottler.user.applications.repository.RefreshTokenRepository;
 
 @Repository
 @RequiredArgsConstructor

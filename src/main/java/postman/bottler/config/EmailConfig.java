@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import postman.bottler.user.service.EmailService;
+import postman.bottler.user.applications.EmailService;
 
 @Configuration
 public class EmailConfig {

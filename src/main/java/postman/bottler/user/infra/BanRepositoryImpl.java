@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.Ban;
 import postman.bottler.user.infra.entity.BanEntity;
-import postman.bottler.user.service.BanRepository;
+import postman.bottler.user.applications.repository.BanRepository;
 
 @Repository
 @RequiredArgsConstructor

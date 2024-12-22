@@ -10,7 +10,7 @@ import postman.bottler.label.dto.LabelResponseDTO;
 import postman.bottler.label.exception.DuplicateLabelException;
 import postman.bottler.label.exception.FirstComeFirstServedLabelException;
 import postman.bottler.user.domain.User;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.applications.UserService;
 
 @Service
 @RequiredArgsConstructor
