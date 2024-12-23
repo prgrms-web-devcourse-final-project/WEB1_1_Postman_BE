@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;
-import postman.bottler.notification.service.SubscriptionRepository;
+import postman.bottler.notification.application.repository.SubscriptionRepository;
 
 @Repository
 @RequiredArgsConstructor

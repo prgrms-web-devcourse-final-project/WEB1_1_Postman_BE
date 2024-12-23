@@ -12,7 +12,7 @@ import postman.bottler.letter.service.ReplyLetterService;
 import postman.bottler.mapletter.service.BlockMapLetterType;
 import postman.bottler.mapletter.service.MapLetterService;
 import postman.bottler.notification.domain.NotificationType;
-import postman.bottler.notification.service.NotificationService;
+import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.user.service.UserService;
 
 @Service

@@ -1,4 +1,4 @@
-package postman.bottler.notification.service;
+package postman.bottler.notification.application.repository;
 
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;

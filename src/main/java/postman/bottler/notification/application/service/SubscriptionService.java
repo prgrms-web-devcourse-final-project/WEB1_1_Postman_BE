@@ -1,8 +1,9 @@
-package postman.bottler.notification.service;
+package postman.bottler.notification.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
 import postman.bottler.notification.exception.DuplicateTokenException;

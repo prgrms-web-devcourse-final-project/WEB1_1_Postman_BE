@@ -24,7 +24,7 @@ import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.service.LetterBoxService;
 import postman.bottler.notification.domain.NotificationType;
-import postman.bottler.notification.service.NotificationService;
+import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.slack.SlackConstant;
 import postman.bottler.slack.SlackService;
 import postman.bottler.user.auth.JwtTokenProvider;
