@@ -1,4 +1,4 @@
-package postman.bottler.complaint.service;
+package postman.bottler.complaint.application.repository;
 
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;

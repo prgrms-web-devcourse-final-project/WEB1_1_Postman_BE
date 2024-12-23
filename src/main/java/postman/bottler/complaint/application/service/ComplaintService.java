@@ -1,8 +1,13 @@
-package postman.bottler.complaint.service;
+package postman.bottler.complaint.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.complaint.application.repository.ComplaintRepository;
+import postman.bottler.complaint.application.repository.KeywordComplaintRepository;
+import postman.bottler.complaint.application.repository.KeywordReplyComplaintRepository;
+import postman.bottler.complaint.application.repository.MapComplaintRepository;
+import postman.bottler.complaint.application.repository.MapReplyComplaintRepository;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.ComplaintType;
 import postman.bottler.complaint.domain.Complaints;
