@@ -1,4 +1,4 @@
-package postman.bottler.complaint.service;
+package postman.bottler.complaint.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,6 +18,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import postman.bottler.complaint.application.repository.KeywordComplaintRepository;
+import postman.bottler.complaint.application.repository.KeywordReplyComplaintRepository;
+import postman.bottler.complaint.application.repository.MapComplaintRepository;
+import postman.bottler.complaint.application.repository.MapReplyComplaintRepository;
+import postman.bottler.complaint.application.service.ComplaintService;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.service.KeywordComplaintRepository;
+import postman.bottler.complaint.application.repository.KeywordComplaintRepository;
 
 @Repository
 @RequiredArgsConstructor

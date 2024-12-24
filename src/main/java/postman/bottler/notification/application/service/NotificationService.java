@@ -1,10 +1,13 @@
-package postman.bottler.notification.service;
+package postman.bottler.notification.application.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.notification.application.PushNotificationProvider;
+import postman.bottler.notification.application.repository.NotificationRepository;
+import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;

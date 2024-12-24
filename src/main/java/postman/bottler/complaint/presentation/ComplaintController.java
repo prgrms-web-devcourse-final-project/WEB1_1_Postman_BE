@@ -1,4 +1,4 @@
-package postman.bottler.complaint.controller;
+package postman.bottler.complaint.presentation;
 
 import static postman.bottler.complaint.domain.ComplaintType.KEYWORD_LETTER;
 import static postman.bottler.complaint.domain.ComplaintType.KEYWORD_REPLY_LETTER;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.complaint.dto.request.ComplaintRequestDTO;
 import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.exception.InvalidComplainException;
-import postman.bottler.complaint.service.ComplaintService;
+import postman.bottler.complaint.application.service.ComplaintService;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.auth.CustomUserDetails;
 

@@ -1,4 +1,4 @@
-package postman.bottler.notification.service;
+package postman.bottler.notification.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import postman.bottler.notification.application.repository.NotificationRepository;
+import postman.bottler.notification.application.repository.SubscriptionRepository;
+import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;

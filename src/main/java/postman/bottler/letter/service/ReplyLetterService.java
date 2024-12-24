@@ -22,7 +22,7 @@ import postman.bottler.letter.dto.response.ReplyLetterSummaryResponseDTO;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
-import postman.bottler.notification.service.NotificationService;
+import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.reply.dto.ReplyType;
 
 @Service

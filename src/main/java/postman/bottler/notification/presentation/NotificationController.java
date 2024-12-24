@@ -1,4 +1,4 @@
-package postman.bottler.notification.controller;
+package postman.bottler.notification.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,8 +21,8 @@ import postman.bottler.notification.dto.request.UnsubscriptionRequestDTO;
 import postman.bottler.notification.dto.response.NotificationResponseDTO;
 import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
 import postman.bottler.notification.exception.InvalidNotificationRequestException;
-import postman.bottler.notification.service.NotificationService;
-import postman.bottler.notification.service.SubscriptionService;
+import postman.bottler.notification.application.service.NotificationService;
+import postman.bottler.notification.application.service.SubscriptionService;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController

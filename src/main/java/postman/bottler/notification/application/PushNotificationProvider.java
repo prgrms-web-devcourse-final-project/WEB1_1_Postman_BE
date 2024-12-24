@@ -1,4 +1,4 @@
-package postman.bottler.notification.service;
+package postman.bottler.notification.application;
 
 import postman.bottler.notification.domain.PushMessages;
 
