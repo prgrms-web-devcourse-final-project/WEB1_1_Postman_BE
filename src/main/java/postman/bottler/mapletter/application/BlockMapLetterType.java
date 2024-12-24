@@ -1,4 +1,4 @@
-package postman.bottler.mapletter.service;
+package postman.bottler.mapletter.application;
 
 public enum BlockMapLetterType {
     MAP_LETTER,

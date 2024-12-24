@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.mapletter.service.MapLetterService;
+import postman.bottler.mapletter.application.service.MapLetterService;
 import postman.bottler.reply.dto.ReplyType;
 import postman.bottler.reply.dto.response.ReplyResponseDTO;
 

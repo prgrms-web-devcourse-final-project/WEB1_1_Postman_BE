@@ -1,8 +1,9 @@
-package postman.bottler.mapletter.service;
+package postman.bottler.mapletter.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.mapletter.application.repository.PaperRepository;
 import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.dto.PaperDTO;
 

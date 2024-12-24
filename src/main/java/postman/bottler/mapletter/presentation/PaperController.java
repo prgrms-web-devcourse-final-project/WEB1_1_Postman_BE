@@ -1,4 +1,4 @@
-package postman.bottler.mapletter.controller;
+package postman.bottler.mapletter.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.mapletter.dto.PaperDTO;
-import postman.bottler.mapletter.service.PaperService;
+import postman.bottler.mapletter.application.service.PaperService;
 
 @RestController
 @RequestMapping("/paper")

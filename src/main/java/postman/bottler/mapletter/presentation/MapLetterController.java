@@ -1,4 +1,4 @@
-package postman.bottler.mapletter.controller;
+package postman.bottler.mapletter.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +41,7 @@ import postman.bottler.mapletter.exception.EmptyMapLetterTargetException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTitleException;
 import postman.bottler.mapletter.exception.EmptyReplyMapLetterSourceException;
 import postman.bottler.mapletter.exception.LocationNotFoundException;
-import postman.bottler.mapletter.service.MapLetterService;
+import postman.bottler.mapletter.application.service.MapLetterService;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController
