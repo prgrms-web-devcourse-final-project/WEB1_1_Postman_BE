@@ -46,7 +46,8 @@ class MapLetterTest {
     @DisplayName("타겟 편지 생성에 성공한다")
     void createTargetMapLetterTest() {
         //given
-        Long targetUserId = 3L;
+        String targetUser = "타겟";
+        Long targetUserId=2L;
 
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "타겟 편지",
@@ -57,12 +58,12 @@ class MapLetterTest {
                 "프리텐다드",
                 "www.paper.com",
                 "www.label.com",
-                targetUserId
+                targetUser
         );
         Long userId = 1L;
 
         //when
-        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
+        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId, targetUserId);
 
         //then
         assertNotNull(mapLetter);
