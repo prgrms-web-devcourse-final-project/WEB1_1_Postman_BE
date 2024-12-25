@@ -13,8 +13,8 @@ import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.domain.Subscriptions;
-import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
-import postman.bottler.notification.dto.response.NotificationResponseDTO;
+import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
+import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 
 @Service
 @RequiredArgsConstructor

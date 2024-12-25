@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.application.repository.PaperRepository;
 import postman.bottler.mapletter.domain.Paper;
-import postman.bottler.mapletter.dto.PaperDTO;
+import postman.bottler.mapletter.application.dto.PaperDTO;
 
 import java.util.List;
 

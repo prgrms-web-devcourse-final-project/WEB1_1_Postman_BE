@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import postman.bottler.keyword.service.AsyncRecommendationService;
-import postman.bottler.keyword.service.RedisLetterService;
-import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
+import postman.bottler.keyword.application.service.AsyncRecommendationService;
+import postman.bottler.keyword.application.service.RedisLetterService;
+import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.application.service.UserService;
 
 @Service
 @RequiredArgsConstructor

@@ -15,12 +15,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.global.exception.CommonForbiddenException;
+import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.repository.MapLetterRepository;
 import postman.bottler.mapletter.application.service.MapLetterService;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
-import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class MapLetterServiceTest {
@@ -79,11 +79,11 @@ class MapLetterServiceTest {
                 "맑은고딕",
                 "www.paper.com",
                 "www.label.com",
-                2L //임시 타겟
+                "2L" //임시 타겟
         );
 
         Long userId = 1L;
-        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
+        MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId, 2L);
 
         Mockito.when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
 

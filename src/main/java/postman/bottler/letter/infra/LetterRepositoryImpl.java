@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.infra.entity.LetterEntity;
-import postman.bottler.letter.service.LetterRepository;
+import postman.bottler.letter.application.repository.LetterRepository;
 
 @Repository
 @RequiredArgsConstructor

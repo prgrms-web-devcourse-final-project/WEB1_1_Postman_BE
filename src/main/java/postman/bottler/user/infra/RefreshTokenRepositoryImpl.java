@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.exception.TokenException;
 import postman.bottler.user.infra.entity.RefreshTokenEntity;
-import postman.bottler.user.service.RefreshTokenRepository;
+import postman.bottler.user.application.repository.RefreshTokenRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,7 +15,8 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
 
     @Override
     public void createRefreshToken(RefreshToken refreshToken) {
-        Optional<RefreshTokenEntity> refreshTokenEntityOpt = refreshTokenJpaRepository.findByEmail(refreshToken.getEmail());
+        Optional<RefreshTokenEntity> refreshTokenEntityOpt = refreshTokenJpaRepository.findByEmail(
+                refreshToken.getEmail());
 
         if (refreshTokenEntityOpt.isEmpty()) {
             refreshTokenJpaRepository.save(RefreshTokenEntity.from(refreshToken));

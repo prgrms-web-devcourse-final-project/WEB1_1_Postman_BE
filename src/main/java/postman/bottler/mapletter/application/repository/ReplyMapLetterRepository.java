@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
-import postman.bottler.mapletter.dto.ReplyProjectDTO;
+import postman.bottler.mapletter.application.dto.ReplyProjectDTO;
 
 @Repository
 public interface ReplyMapLetterRepository {

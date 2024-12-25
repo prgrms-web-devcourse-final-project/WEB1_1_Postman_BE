@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.keyword.domain.UserKeyword;
 import postman.bottler.keyword.infra.entity.UserKeywordEntity;
-import postman.bottler.keyword.service.UserKeywordRepository;
+import postman.bottler.keyword.application.repository.UserKeywordRepository;
 
 @Repository
 @RequiredArgsConstructor

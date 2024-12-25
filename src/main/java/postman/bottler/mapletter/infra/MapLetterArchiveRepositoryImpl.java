@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetterArchive;
-import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
+import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.MapLetterArchiveEntity;
 import postman.bottler.mapletter.application.repository.MapLetterArchiveRepository;

@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.user.application.repository.BanRepository;
 import postman.bottler.user.domain.Ban;
 import postman.bottler.user.infra.entity.BanEntity;
-import postman.bottler.user.service.BanRepository;
 
 @Repository
 @RequiredArgsConstructor
 public class BanRepositoryImpl implements BanRepository {
-    private final JpaBanRepository banRepository;
+    private final BanJpaRepository banRepository;
 
     @Override
     public Ban save(Ban ban) {
