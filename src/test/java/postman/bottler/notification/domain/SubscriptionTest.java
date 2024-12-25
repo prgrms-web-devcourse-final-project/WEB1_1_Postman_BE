@@ -1,6 +1,7 @@
 package postman.bottler.notification.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static postman.bottler.notification.domain.NotificationType.NEW_LETTER;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,11 @@ public class SubscriptionTest {
     @DisplayName("구독 객체를 생성한다.")
     public void subscribe() {
         // GIVEN
+        Long userId = 1L;
+        String token = "token";
 
         // WHEN
-        Subscription subscription = Subscription.create(1L, "token");
+        Subscription subscription = Subscription.create(userId, token);
 
         // THEN
         assertThat(subscription.getUserId()).isEqualTo(1L);
@@ -25,14 +28,16 @@ public class SubscriptionTest {
     @DisplayName("푸시 알림 메시지 객체를 생성한다.")
     public void makeMessage() {
         // GIVEN
-        Subscription subscription = Subscription.create(1L, "token");
+        long userId = 1L;
+        String token = "token";
+        Subscription subscription = Subscription.create(userId, token);
 
         // WHEN
-        PushMessage pushMessage = subscription.makeMessage(NotificationType.NEW_LETTER);
+        PushMessage pushMessage = subscription.makeMessage(NEW_LETTER);
 
         // THEN
         assertThat(pushMessage.getToken()).isEqualTo("token");
-        assertThat(pushMessage.getTitle()).isEqualTo(NotificationType.NEW_LETTER.getTitle());
-        assertThat(pushMessage.getContent()).isEqualTo(NotificationType.NEW_LETTER.getContent());
+        assertThat(pushMessage.getTitle()).isEqualTo(NEW_LETTER.getTitle());
+        assertThat(pushMessage.getContent()).isEqualTo(NEW_LETTER.getContent());
     }
 }
