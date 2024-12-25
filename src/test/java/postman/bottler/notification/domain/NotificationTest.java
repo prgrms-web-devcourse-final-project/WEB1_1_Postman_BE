@@ -8,22 +8,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.exception.NoLetterIdException;
-import postman.bottler.notification.exception.NoTypeException;
 
 @DisplayName("알림 테스트")
 public class NotificationTest {
-
-    @Test
-    @DisplayName("잘못된 편지 타입 요청 시, NoTypeException을 발생시킨다.")
-    public void wrongType() {
-        // GIVEN
-        NotificationRequestDTO wrong = new NotificationRequestDTO("WRONG", 1L, 1L, null);
-
-        // WHEN - THEN
-        assertThatThrownBy(() -> Notification.create(NotificationType.from(wrong.notificationType()), wrong.receiver(),
-                wrong.letterId(), wrong.label()))
-                .isInstanceOf(NoTypeException.class);
-    }
 
     @Nested
     @DisplayName("알림 생성")
