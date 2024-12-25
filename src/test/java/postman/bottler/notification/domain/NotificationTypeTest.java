@@ -5,35 +5,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import postman.bottler.notification.exception.NoTypeException;
 
 @DisplayName("알림 타입 테스트")
 public class NotificationTypeTest {
-    @Test
-    @DisplayName("편지 관련 알림인지 확인한다.")
-    public void isLetterNotification() {
-        // GIVEN
-        NotificationType newLetter = NotificationType.NEW_LETTER;
-        NotificationType targetLetter = NotificationType.TARGET_LETTER;
-        NotificationType mapReply = NotificationType.MAP_REPLY;
-        NotificationType keywordReply = NotificationType.KEYWORD_REPLY;
-        NotificationType warning = NotificationType.WARNING;
-        NotificationType ban = NotificationType.BAN;
 
+    @ParameterizedTest(name = "{0}의 편지 관련 알림 체크의 결과는 {1}이다.")
+    @CsvSource({"NEW_LETTER, true", "TARGET_LETTER, true", "MAP_REPLY, true", "KEYWORD_REPLY, true",
+            "WARNING, false", "BAN, false"})
+    @DisplayName("편지 관련 알림인지 확인한다.")
+    public void isLetterNotification(NotificationType notificationType, boolean expected) {
         // WHEN
-        Boolean letter1 = newLetter.isLetterNotification();
-        Boolean letter2 = targetLetter.isLetterNotification();
-        Boolean letter3 = mapReply.isLetterNotification();
-        Boolean letter4 = keywordReply.isLetterNotification();
-        Boolean nonLetter1 = warning.isLetterNotification();
-        Boolean nonLetter2 = ban.isLetterNotification();
+        boolean result = notificationType.isLetterNotification();
 
         // THEN
-        assertThat(letter1).isTrue();
-        assertThat(letter2).isTrue();
-        assertThat(letter3).isTrue();
-        assertThat(nonLetter1).isFalse();
-        assertThat(nonLetter2).isFalse();
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
