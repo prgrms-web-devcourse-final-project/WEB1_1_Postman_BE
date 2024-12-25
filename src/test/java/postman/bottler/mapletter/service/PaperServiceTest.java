@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.mapletter.application.repository.PaperRepository;
 import postman.bottler.mapletter.application.service.PaperService;
 import postman.bottler.mapletter.domain.Paper;
-import postman.bottler.mapletter.dto.PaperDTO;
+import postman.bottler.mapletter.application.dto.PaperDTO;
 
 @ExtendWith(MockitoExtension.class)
 class PaperServiceTest {

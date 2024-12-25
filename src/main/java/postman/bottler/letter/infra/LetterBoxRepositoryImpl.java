@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
-import postman.bottler.letter.service.LetterBoxRepository;
+import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
+import postman.bottler.letter.application.repository.LetterBoxRepository;
 
 @Repository
 @RequiredArgsConstructor

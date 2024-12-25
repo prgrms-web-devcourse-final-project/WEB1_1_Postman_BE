@@ -23,8 +23,8 @@ import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;
-import postman.bottler.notification.dto.request.NotificationRequestDTO;
-import postman.bottler.notification.dto.response.NotificationResponseDTO;
+import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
+import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 
 @DisplayName("알림 서비스 테스트")
 @ExtendWith(MockitoExtension.class)

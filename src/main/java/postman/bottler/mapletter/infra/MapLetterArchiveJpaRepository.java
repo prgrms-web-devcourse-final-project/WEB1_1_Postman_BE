@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
+import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.infra.entity.MapLetterArchiveEntity;
 
 @Repository
 public interface MapLetterArchiveJpaRepository extends JpaRepository<MapLetterArchiveEntity, Long> {
 
-    @Query("SELECT new postman.bottler.mapletter.dto.response.FindAllArchiveLetters("
+    @Query("SELECT new postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters("
             + "a.mapLetterArchiveId, m.mapLetterId, m.title, m.description, m.latitude, m.longitude, m.label, "
             + "a.createdAt, m.createdAt) "
             + "FROM MapLetterArchiveEntity a, MapLetterEntity m "

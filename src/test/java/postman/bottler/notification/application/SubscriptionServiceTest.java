@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.application.service.SubscriptionService;
 import postman.bottler.notification.domain.Subscription;
-import postman.bottler.notification.dto.response.SubscriptionResponseDTO;
+import postman.bottler.notification.application.dto.response.SubscriptionResponseDTO;
 
 @DisplayName("알림 구독 서비스 테스트")
 @ExtendWith(MockitoExtension.class)

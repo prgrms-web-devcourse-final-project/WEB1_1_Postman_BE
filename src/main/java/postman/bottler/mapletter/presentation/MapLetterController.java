@@ -17,24 +17,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
-import postman.bottler.mapletter.dto.request.DeleteMapLettersRequestDTO;
-import postman.bottler.mapletter.dto.response.CheckReplyMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
-import postman.bottler.mapletter.dto.response.FindAllReceivedLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindAllReceivedReplyLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindAllReplyMapLettersResponseDTO;
-import postman.bottler.mapletter.dto.response.FindAllSentMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindAllSentReplyMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
-import postman.bottler.mapletter.dto.response.FindReceivedMapLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.MapLetterPageResponseDTO;
-import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
-import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
+import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindAllReceivedReplyLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindAllReplyMapLettersResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindAllSentMapLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindAllSentReplyMapLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindMapLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindNearbyLettersResponseDTO;
+import postman.bottler.mapletter.application.dto.response.FindReceivedMapLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.MapLetterPageResponseDTO;
+import postman.bottler.mapletter.application.dto.response.OneLetterResponseDTO;
+import postman.bottler.mapletter.application.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.EmptyMapLetterContentException;
 import postman.bottler.mapletter.exception.EmptyMapLetterDescriptionException;
 import postman.bottler.mapletter.exception.EmptyMapLetterTargetException;
@@ -291,7 +291,7 @@ public class MapLetterController {
     @GetMapping("/guest")
     @Operation(summary = "로그인 하지 않은 유저 주변 편지 조회", description = "로그인 하지 않은 유저의 반경 500m 내 퍼블릭 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> guestFindNearbyMapLetters(@RequestParam String latitude,
-                                                                                @RequestParam String longitude) {
+                                                                                     @RequestParam String longitude) {
         BigDecimal lat = BigDecimal.ZERO;
         BigDecimal lon = BigDecimal.ZERO;
         try {
@@ -307,8 +307,8 @@ public class MapLetterController {
     @GetMapping("/guest/{letterId}")
     @Operation(summary = "비로그인 유저 편지 상세 조회", description = "위경도 필수. 반경 15m 내 편지만 상세조회 가능. 내가 타겟인 편지와 퍼블릭 편지만 조회 가능. 나머지는 오류")
     public ApiResponse<OneLetterResponseDTO> guestFindOneMapLetter(@RequestParam String latitude,
-                                                              @RequestParam String longitude,
-                                                              @PathVariable Long letterId) {
+                                                                   @RequestParam String longitude,
+                                                                   @PathVariable Long letterId) {
         BigDecimal lat = BigDecimal.ZERO;
         BigDecimal lon = BigDecimal.ZERO;
         try {

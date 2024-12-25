@@ -12,7 +12,7 @@ import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.SingUpException;
 import postman.bottler.user.exception.TokenException;
 import postman.bottler.user.infra.entity.UserEntity;
-import postman.bottler.user.service.UserRepository;
+import postman.bottler.user.application.repository.UserRepository;
 
 @Repository
 @RequiredArgsConstructor

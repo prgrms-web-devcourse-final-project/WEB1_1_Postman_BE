@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
-import postman.bottler.mapletter.dto.PaperDTO;
+import postman.bottler.mapletter.application.dto.PaperDTO;
 import postman.bottler.mapletter.application.service.PaperService;
 
 @RestController

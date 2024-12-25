@@ -11,14 +11,14 @@ import postman.bottler.complaint.application.repository.MapReplyComplaintReposit
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.ComplaintType;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
-import postman.bottler.letter.service.LetterService;
-import postman.bottler.letter.service.ReplyLetterService;
+import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
+import postman.bottler.letter.application.service.LetterService;
+import postman.bottler.letter.application.service.ReplyLetterService;
 import postman.bottler.mapletter.application.BlockMapLetterType;
 import postman.bottler.mapletter.application.service.MapLetterService;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.application.service.NotificationService;
-import postman.bottler.user.service.UserService;
+import postman.bottler.user.application.service.UserService;
 
 @Service
 @RequiredArgsConstructor

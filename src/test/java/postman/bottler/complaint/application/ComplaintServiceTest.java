@@ -25,7 +25,7 @@ import postman.bottler.complaint.application.repository.MapReplyComplaintReposit
 import postman.bottler.complaint.application.service.ComplaintService;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.dto.response.ComplaintResponseDTO;
+import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.exception.DuplicateComplainException;
 
 @ExtendWith(MockitoExtension.class)
