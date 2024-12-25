@@ -24,32 +24,16 @@ public class NotificationTypeTest {
         assertThat(result).isEqualTo(expected);
     }
 
-    @Test
+    @ParameterizedTest(name = "{0}은 {1} 타입으로 변환된다.")
+    @CsvSource({"NEW_LETTER, NEW_LETTER", "TARGET_LETTER, TARGET_LETTER", "MAP_REPLY, MAP_REPLY",
+            "KEYWORD_REPLY, KEYWORD_REPLY", "WARNING, WARNING", "BAN, BAN"})
     @DisplayName("해당하는 타입의 NotificationType을 반환한다.")
-    public void from() {
-        // GIVEN
-        String newLetter = "NEW_LETTER";
-        String targetLetter = "TARGET_LETTER";
-        String mapReply = "MAP_REPLY";
-        String keywordReply = "KEYWORD_REPLY";
-        String warning = "WARNING";
-        String ban = "BAN";
-
+    public void from(String input, NotificationType expected) {
         // WHEN
-        NotificationType newLetterType = NotificationType.from(newLetter);
-        NotificationType targetLetterType = NotificationType.from(targetLetter);
-        NotificationType mapReplyType = NotificationType.from(mapReply);
-        NotificationType keywordReplyType = NotificationType.from(keywordReply);
-        NotificationType warningType = NotificationType.from(warning);
-        NotificationType banType = NotificationType.from(ban);
+        NotificationType result = NotificationType.from(input);
 
         // THEN
-        assertThat(newLetterType).isEqualTo(NotificationType.NEW_LETTER);
-        assertThat(targetLetterType).isEqualTo(NotificationType.TARGET_LETTER);
-        assertThat(mapReplyType).isEqualTo(NotificationType.MAP_REPLY);
-        assertThat(keywordReplyType).isEqualTo(NotificationType.KEYWORD_REPLY);
-        assertThat(warningType).isEqualTo(NotificationType.WARNING);
-        assertThat(banType).isEqualTo(NotificationType.BAN);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
