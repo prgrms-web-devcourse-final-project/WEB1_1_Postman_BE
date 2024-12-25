@@ -1,9 +1,10 @@
-package postman.bottler.keyword.service;
+package postman.bottler.keyword.applications.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.applications.repository.UserKeywordRepository;
 import postman.bottler.keyword.domain.UserKeyword;
 import postman.bottler.keyword.dto.request.UserKeywordRequestDTO;
 import postman.bottler.keyword.dto.response.UserKeywordResponseDTO;

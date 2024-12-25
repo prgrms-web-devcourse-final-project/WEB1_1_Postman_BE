@@ -1,4 +1,4 @@
-package postman.bottler.keyword.service;
+package postman.bottler.keyword.applications.repository;
 
 import java.util.List;
 import postman.bottler.keyword.domain.LetterKeyword;

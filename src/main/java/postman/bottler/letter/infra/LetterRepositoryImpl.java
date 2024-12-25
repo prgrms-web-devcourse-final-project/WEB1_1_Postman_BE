@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.letter.applications.repository.LetterRepository;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.infra.entity.LetterEntity;
-import postman.bottler.letter.service.LetterRepository;
 
 @Repository
 @RequiredArgsConstructor

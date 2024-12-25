@@ -1,4 +1,4 @@
-package postman.bottler.letter.service;
+package postman.bottler.letter.applications.service;
 
 import static postman.bottler.notification.domain.NotificationType.KEYWORD_REPLY;
 
@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.applications.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.domain.ReplyLetter;

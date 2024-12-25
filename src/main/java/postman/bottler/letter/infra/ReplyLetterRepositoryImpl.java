@@ -7,9 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import postman.bottler.letter.applications.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
-import postman.bottler.letter.service.ReplyLetterRepository;
 
 @Repository
 @RequiredArgsConstructor

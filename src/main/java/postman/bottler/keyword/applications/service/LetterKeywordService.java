@@ -1,13 +1,14 @@
-package postman.bottler.keyword.service;
+package postman.bottler.keyword.applications.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.applications.repository.LetterKeywordRepository;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.keyword.dto.response.FrequentKeywordsDTO;
-import postman.bottler.letter.service.LetterService;
+import postman.bottler.letter.applications.service.LetterService;
 
 @Slf4j
 @Service

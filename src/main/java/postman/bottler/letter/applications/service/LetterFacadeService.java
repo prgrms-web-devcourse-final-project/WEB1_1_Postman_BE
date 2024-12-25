@@ -1,12 +1,12 @@
-package postman.bottler.letter.service;
+package postman.bottler.letter.applications.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.applications.service.LetterKeywordService;
+import postman.bottler.keyword.applications.service.RedisLetterService;
 import postman.bottler.keyword.domain.LetterKeyword;
-import postman.bottler.keyword.service.LetterKeywordService;
-import postman.bottler.keyword.service.RedisLetterService;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.dto.request.LetterRequestDTO;
 import postman.bottler.letter.dto.response.LetterDetailResponseDTO;

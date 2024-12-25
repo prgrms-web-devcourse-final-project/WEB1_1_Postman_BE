@@ -1,4 +1,4 @@
-package postman.bottler.keyword.service;
+package postman.bottler.keyword.applications.service;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -9,13 +9,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.util.RedisLetterKeyUtil;
+import postman.bottler.letter.applications.service.LetterBoxService;
+import postman.bottler.letter.applications.service.LetterService;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
-import postman.bottler.letter.service.LetterBoxService;
-import postman.bottler.letter.service.LetterService;
 import postman.bottler.notification.dto.request.RecommendNotificationRequestDTO;
 
 @Service

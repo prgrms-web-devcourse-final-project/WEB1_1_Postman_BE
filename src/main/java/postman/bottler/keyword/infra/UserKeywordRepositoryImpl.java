@@ -3,9 +3,9 @@ package postman.bottler.keyword.infra;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.keyword.applications.repository.UserKeywordRepository;
 import postman.bottler.keyword.domain.UserKeyword;
 import postman.bottler.keyword.infra.entity.UserKeywordEntity;
-import postman.bottler.keyword.service.UserKeywordRepository;
 
 @Repository
 @RequiredArgsConstructor

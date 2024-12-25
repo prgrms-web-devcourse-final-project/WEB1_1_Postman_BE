@@ -1,8 +1,9 @@
-package postman.bottler.keyword.service;
+package postman.bottler.keyword.applications.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import postman.bottler.keyword.applications.repository.LetterKeywordRepository;
 
 @Service
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package postman.bottler.keyword.controller;
+package postman.bottler.keyword.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.keyword.applications.service.KeywordService;
+import postman.bottler.keyword.applications.service.LetterKeywordService;
+import postman.bottler.keyword.applications.service.UserKeywordService;
 import postman.bottler.keyword.dto.request.UserKeywordRequestDTO;
 import postman.bottler.keyword.dto.response.FrequentKeywordsDTO;
 import postman.bottler.keyword.dto.response.KeywordResponseDTO;
 import postman.bottler.keyword.dto.response.UserKeywordResponseDTO;
-import postman.bottler.keyword.service.KeywordService;
-import postman.bottler.keyword.service.LetterKeywordService;
-import postman.bottler.keyword.service.UserKeywordService;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController

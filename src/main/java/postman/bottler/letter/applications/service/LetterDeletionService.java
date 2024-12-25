@@ -1,11 +1,11 @@
-package postman.bottler.letter.service;
+package postman.bottler.letter.applications.service;
 
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.keyword.service.LetterKeywordService;
+import postman.bottler.keyword.applications.service.LetterKeywordService;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterDeleteDTO;

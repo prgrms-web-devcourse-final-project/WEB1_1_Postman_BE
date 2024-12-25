@@ -1,4 +1,4 @@
-package postman.bottler.letter.controller;
+package postman.bottler.letter.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.letter.applications.service.LetterBoxService;
+import postman.bottler.letter.applications.service.LetterDeletionService;
+import postman.bottler.letter.applications.service.ReplyLetterService;
 import postman.bottler.letter.dto.LetterDeleteDTO;
 import postman.bottler.letter.dto.request.PageRequestDTO;
 import postman.bottler.letter.dto.request.ReplyLetterDeleteRequestDTO;
@@ -26,9 +29,6 @@ import postman.bottler.letter.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.dto.response.ReplyLetterSummaryResponseDTO;
 import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
-import postman.bottler.letter.service.LetterBoxService;
-import postman.bottler.letter.service.LetterDeletionService;
-import postman.bottler.letter.service.ReplyLetterService;
 import postman.bottler.letter.utiil.ValidationUtil;
 import postman.bottler.user.auth.CustomUserDetails;
 

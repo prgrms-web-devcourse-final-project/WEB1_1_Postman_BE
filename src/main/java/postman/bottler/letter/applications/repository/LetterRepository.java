@@ -1,4 +1,4 @@
-package postman.bottler.letter.service;
+package postman.bottler.letter.applications.repository;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,11 +1,11 @@
-package postman.bottler.keyword.service;
+package postman.bottler.keyword.applications.service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import postman.bottler.letter.service.LetterBoxService;
+import postman.bottler.letter.applications.service.LetterBoxService;
 
 @Service
 @RequiredArgsConstructor

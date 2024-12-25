@@ -1,4 +1,4 @@
-package postman.bottler.letter.service;
+package postman.bottler.letter.applications.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.applications.repository.LetterBoxRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.LetterBoxDTO;

@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import postman.bottler.letter.applications.repository.LetterBoxRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.dto.response.LetterSummaryResponseDTO;
-import postman.bottler.letter.service.LetterBoxRepository;
 
 @Repository
 @RequiredArgsConstructor
