@@ -15,7 +15,7 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.SourceMapLetterNotFountException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
-import postman.bottler.mapletter.service.MapLetterRepository;
+import postman.bottler.mapletter.application.repository.MapLetterRepository;
 
 @Repository
 @RequiredArgsConstructor

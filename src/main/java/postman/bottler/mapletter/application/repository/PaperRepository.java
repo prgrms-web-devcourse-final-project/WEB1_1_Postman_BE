@@ -1,4 +1,4 @@
-package postman.bottler.mapletter.service;
+package postman.bottler.mapletter.application.repository;
 
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.Paper;

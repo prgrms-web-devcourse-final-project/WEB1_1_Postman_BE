@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import postman.bottler.mapletter.application.repository.PaperRepository;
+import postman.bottler.mapletter.application.service.PaperService;
 import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.dto.PaperDTO;
 

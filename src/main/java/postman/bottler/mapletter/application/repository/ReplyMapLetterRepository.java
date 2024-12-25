@@ -1,4 +1,4 @@
-package postman.bottler.mapletter.service;
+package postman.bottler.mapletter.application.repository;
 
 import java.util.List;
 import org.springframework.data.domain.Page;

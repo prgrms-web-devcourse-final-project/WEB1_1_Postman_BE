@@ -1,4 +1,4 @@
-package postman.bottler.mapletter.service;
+package postman.bottler.mapletter.application.service;
 
 import static postman.bottler.notification.domain.NotificationType.*;
 
@@ -14,6 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.mapletter.application.BlockMapLetterType;
+import postman.bottler.mapletter.application.repository.MapLetterArchiveRepository;
+import postman.bottler.mapletter.application.repository.MapLetterRepository;
+import postman.bottler.mapletter.application.repository.ReplyMapLetterRepository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;

@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.global.exception.CommonForbiddenException;
+import postman.bottler.mapletter.application.repository.MapLetterRepository;
+import postman.bottler.mapletter.application.service.MapLetterService;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;

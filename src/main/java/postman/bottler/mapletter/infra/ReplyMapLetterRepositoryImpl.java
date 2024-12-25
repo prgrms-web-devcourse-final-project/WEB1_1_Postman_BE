@@ -11,7 +11,7 @@ import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.dto.ReplyProjectDTO;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
-import postman.bottler.mapletter.service.ReplyMapLetterRepository;
+import postman.bottler.mapletter.application.repository.ReplyMapLetterRepository;
 
 @Repository
 @RequiredArgsConstructor
