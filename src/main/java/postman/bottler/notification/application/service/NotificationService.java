@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.notification.application.PushNotificationProvider;
+import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
+import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 import postman.bottler.notification.application.repository.NotificationRepository;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.domain.Notification;
@@ -13,8 +15,6 @@ import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.domain.Notifications;
 import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.domain.Subscriptions;
-import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
-import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class NotificationService {
     public List<NotificationResponseDTO> getUserNotifications(Long userId) {
         Notifications notifications = notificationRepository.findByReceiver(userId);
         notifications.orderByCreatedAt();
-        List<NotificationResponseDTO> result = notifications.createDTO();
+        List<NotificationResponseDTO> result = NotificationResponseDTO.from(notifications);
         notificationRepository.updateNotifications(notifications.markAsRead());
         return result;
     }

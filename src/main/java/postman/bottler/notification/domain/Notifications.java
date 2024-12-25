@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 
 @Builder
 @Getter
@@ -30,11 +29,5 @@ public class Notifications {
             }
         }
         return new Notifications(changed);
-    }
-
-    public List<NotificationResponseDTO> createDTO() {
-        return notifications.stream()
-                .map(NotificationResponseDTO::from)
-                .toList();
     }
 }
