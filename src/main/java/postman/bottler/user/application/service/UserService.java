@@ -19,14 +19,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.service.RedisLetterService;
-import postman.bottler.letter.domain.BoxType;
-import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.service.LetterBoxService;
-import postman.bottler.notification.domain.NotificationType;
+import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.LetterType;
 import postman.bottler.notification.application.service.NotificationService;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.slack.SlackConstant;
 import postman.bottler.slack.SlackService;
+import postman.bottler.user.application.dto.response.AccessTokenResponseDTO;
+import postman.bottler.user.application.dto.response.ExistingUserResponseDTO;
+import postman.bottler.user.application.dto.response.SignInDTO;
+import postman.bottler.user.application.dto.response.UserResponseDTO;
 import postman.bottler.user.application.repository.EmailCodeRepository;
 import postman.bottler.user.application.repository.ProfileImageRepository;
 import postman.bottler.user.application.repository.RefreshTokenRepository;
@@ -37,10 +41,6 @@ import postman.bottler.user.domain.EmailForm;
 import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.domain.RefreshToken;
 import postman.bottler.user.domain.User;
-import postman.bottler.user.application.dto.response.AccessTokenResponseDTO;
-import postman.bottler.user.application.dto.response.ExistingUserResponseDTO;
-import postman.bottler.user.application.dto.response.SignInDTO;
-import postman.bottler.user.application.dto.response.UserResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.NicknameException;
 import postman.bottler.user.exception.PasswordException;
@@ -87,7 +87,7 @@ public class UserService {
     }
 
     private List<Long> findRandomDevelopLetter() {
-        Random random = new Random();
+        Random random = new SecureRandom();
         Set<Long> randomNumbers = new LinkedHashSet<>();
 
         while (randomNumbers.size() < 3) {
