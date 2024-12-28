@@ -309,6 +309,9 @@ public class MapLetterService {
     public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
         validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(userId, PageRequest.of(page - 1, size));
+        if(letters.isEmpty()){
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        }
         validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(mapLetter -> {
