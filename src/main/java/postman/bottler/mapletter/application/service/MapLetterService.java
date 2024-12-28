@@ -94,7 +94,8 @@ public class MapLetterService {
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, userId == mapLetter.getCreateUserId(), );
+        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId,
+                checkReplyMapLetter(letterId, userId).isReplied(), isArchived(letterId, userId));
     }
 
     @Transactional
