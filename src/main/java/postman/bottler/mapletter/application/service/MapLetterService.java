@@ -94,7 +94,7 @@ public class MapLetterService {
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, userId == mapLetter.getCreateUserId());
+        return OneLetterResponseDTO.from(mapLetter, profileImg, userId == mapLetter.getCreateUserId(), );
     }
 
     @Transactional
@@ -225,8 +225,7 @@ public class MapLetterService {
         MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId)
                 .createdAt(LocalDateTime.now()).build();
 
-        boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
-        if (isArchived) {
+        if (isArchived(letterId, userId)) {
             throw new MapLetterAlreadyArchivedException("편지가 이미 저장되어 있습니다.");
         }
 
@@ -284,12 +283,14 @@ public class MapLetterService {
         }
     }
 
+    @Transactional(readOnly = true)
     public OneLetterResponseDTO findArchiveOneLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId,
+                checkReplyMapLetter(letterId, userId).isReplied(), isArchived(letterId, userId));
     }
 
     public Page<FindAllSentReplyMapLetterResponseDTO> findAllSentReplyMapLetter(int page, int size, Long userId) {
@@ -437,7 +438,7 @@ public class MapLetterService {
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, false);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, false, false, false);
     }
 
     @Transactional(readOnly = true)
@@ -446,5 +447,10 @@ public class MapLetterService {
         return finds.stream()
                 .map(find -> new NotificationLabelRequestDTO(find.getId(), find.getLabel()))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isArchived(Long letterId, Long userId) {
+        return mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
     }
 }
