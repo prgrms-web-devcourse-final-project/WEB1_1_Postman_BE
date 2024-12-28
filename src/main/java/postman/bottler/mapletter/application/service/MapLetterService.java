@@ -197,6 +197,10 @@ public class MapLetterService {
         Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
                 PageRequest.of(page - 1, size));
 
+        if(findReply.isEmpty()){
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        }
+
         validMaxPage(findReply.getTotalPages(), page);
 
         return findReply.map(FindAllReplyMapLettersResponseDTO::from);
