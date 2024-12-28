@@ -112,8 +112,8 @@ public class MapLetterService {
         Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
 
-        if(sentMapLetters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (sentMapLetters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
 
         validMaxPage(sentMapLetters.getTotalPages(), page);
@@ -136,8 +136,8 @@ public class MapLetterService {
         Page<FindReceivedMapLetterDTO> letters = mapLetterRepository.findActiveReceivedMapLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
 
-        if(letters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
 
         validMaxPage(letters.getTotalPages(), page);
@@ -197,8 +197,8 @@ public class MapLetterService {
         Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
                 PageRequest.of(page - 1, size));
 
-        if(findReply.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (findReply.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
 
         validMaxPage(findReply.getTotalPages(), page);
@@ -239,8 +239,8 @@ public class MapLetterService {
         Page<FindAllArchiveLetters> letters = mapLetterArchiveRepository.findAllById(userId,
                 PageRequest.of(page - 1, size));
 
-        if(letters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
 
         validMaxPage(letters.getTotalPages(), page);
@@ -296,8 +296,8 @@ public class MapLetterService {
         validMinPage(page);
         Page<ReplyMapLetter> letters = replyMapLetterRepository.findAllSentReplyByUserId(userId,
                 PageRequest.of(page - 1, size));
-        if(letters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
         validMaxPage(letters.getTotalPages(), page);
 
@@ -312,8 +312,8 @@ public class MapLetterService {
     public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
         validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(userId, PageRequest.of(page - 1, size));
-        if(letters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
         validMaxPage(letters.getTotalPages(), page);
 
@@ -331,8 +331,8 @@ public class MapLetterService {
         Page<ReplyMapLetter> letters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId,
                 PageRequest.of(page - 1, size));
 
-        if(letters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
 
         validMaxPage(letters.getTotalPages(), page);
@@ -347,8 +347,8 @@ public class MapLetterService {
     public Page<FindAllReceivedLetterResponseDTO> findAllReceivedLetter(int page, int size, Long userId) {
         validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
-        if(letters.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
         }
         validMaxPage(letters.getTotalPages(), page);
         return letters.map(letter -> {
