@@ -238,6 +238,11 @@ public class MapLetterService {
         validMinPage(page);
         Page<FindAllArchiveLetters> letters = mapLetterArchiveRepository.findAllById(userId,
                 PageRequest.of(page - 1, size));
+
+        if(letters.isEmpty()){
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        }
+
         validMaxPage(letters.getTotalPages(), page);
         return letters;
     }
