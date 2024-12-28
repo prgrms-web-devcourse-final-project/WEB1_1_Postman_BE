@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -110,6 +111,11 @@ public class MapLetterService {
         validMinPage(page);
         Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
+
+        if(sentMapLetters.isEmpty()){
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page-1, size), 0);
+        }
+
         validMaxPage(sentMapLetters.getTotalPages(), page);
 
         return sentMapLetters.map(this::toFindSentMapLetter);
