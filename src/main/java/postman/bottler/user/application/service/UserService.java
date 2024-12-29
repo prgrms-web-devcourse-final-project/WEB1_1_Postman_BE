@@ -74,16 +74,16 @@ public class UserService {
         String profileImageUrl = profileImageRepository.findProfileImage();
         User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         User storedUser = userRepository.save(user);
-//        List<Long> randomDevelopLetter = findRandomDevelopLetter();
-//        redisLetterService.saveDeveloperLetter(storedUser.getUserId(), randomDevelopLetter);
-//        randomDevelopLetter.forEach(
-//                letterId -> letterBoxService.saveLetter(
-//                        LetterBoxDTO.of(
-//                                storedUser.getUserId(), letterId, LetterType.LETTER,
-//                                BoxType.RECEIVE, LocalDateTime.now()
-//                        )
-//                )
-//        );
+        List<Long> randomDevelopLetter = findRandomDevelopLetter();
+        redisLetterService.saveDeveloperLetter(storedUser.getUserId(), randomDevelopLetter);
+        randomDevelopLetter.forEach(
+                letterId -> letterBoxService.saveLetter(
+                        LetterBoxDTO.of(
+                                storedUser.getUserId(), letterId, LetterType.LETTER,
+                                BoxType.RECEIVE, LocalDateTime.now()
+                        )
+                )
+        );
     }
 
     private List<Long> findRandomDevelopLetter() {
