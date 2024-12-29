@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.keyword.infra.entity.LetterKeywordEntity;
-import postman.bottler.keyword.service.LetterKeywordRepository;
+import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,8 +15,8 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
     private final LetterKeywordJdbcRepository jdbcRepository;
 
     @Override
-    public void saveAll(List<LetterKeyword> letterKeywords) {
-        jdbcRepository.batchInsertKeywords(letterKeywords);
+    public List<LetterKeyword> saveAll(List<LetterKeyword> letterKeywords) {
+        return jdbcRepository.batchInsertKeywords(letterKeywords);
     }
 
     @Override

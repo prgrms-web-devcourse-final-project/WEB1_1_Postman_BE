@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import postman.bottler.notification.domain.PushMessages;
-import postman.bottler.notification.service.PushNotificationProvider;
+import postman.bottler.notification.application.PushNotificationProvider;
 
 @Slf4j
 @Component

@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import postman.bottler.notification.dto.request.NotificationRequestDTO;
+import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.exception.NoLetterIdException;
 import postman.bottler.notification.exception.NoTypeException;
 

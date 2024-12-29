@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import postman.bottler.user.domain.User;
-import postman.bottler.user.applications.repository.UserRepository;
+import postman.bottler.user.application.repository.UserRepository;
 
 @Component
 @RequiredArgsConstructor

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.Paper;
 import postman.bottler.mapletter.infra.entity.PaperEntity;
-import postman.bottler.mapletter.service.PaperRepository;
+import postman.bottler.mapletter.application.repository.PaperRepository;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.user.domain.ProfileImage;
 import postman.bottler.user.exception.ProfileImageException;
 import postman.bottler.user.infra.entity.ProfileImageEntity;
-import postman.bottler.user.applications.repository.ProfileImageRepository;
+import postman.bottler.user.application.repository.ProfileImageRepository;
 
 @Repository
 @RequiredArgsConstructor

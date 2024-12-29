@@ -1,7 +1,7 @@
 package postman.bottler.mapletter.domain;
 
 import lombok.*;
-import postman.bottler.mapletter.dto.PaperDTO;
+import postman.bottler.mapletter.application.dto.PaperDTO;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

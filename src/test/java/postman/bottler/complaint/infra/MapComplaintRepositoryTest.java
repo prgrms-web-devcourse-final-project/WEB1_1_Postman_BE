@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.service.MapComplaintRepository;
+import postman.bottler.complaint.application.repository.MapComplaintRepository;
 
 @DisplayName("지도 편지 리포지토리 테스트")
 @SpringBootTest

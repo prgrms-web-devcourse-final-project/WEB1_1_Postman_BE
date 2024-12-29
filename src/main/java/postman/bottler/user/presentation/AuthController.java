@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.auth.CookieService;
-import postman.bottler.user.dto.request.SignInRequestDTO;
-import postman.bottler.user.dto.response.AccessTokenResponseDTO;
-import postman.bottler.user.dto.response.SignInDTO;
-import postman.bottler.user.dto.response.SignInResponseDTO;
+import postman.bottler.user.application.dto.request.SignInRequestDTO;
+import postman.bottler.user.application.dto.response.AccessTokenResponseDTO;
+import postman.bottler.user.application.dto.response.SignInDTO;
+import postman.bottler.user.application.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.EmailException;
 import postman.bottler.user.exception.PasswordException;
 import postman.bottler.user.exception.TokenException;
-import postman.bottler.user.applications.UserService;
+import postman.bottler.user.application.service.UserService;
 
 @RestController
 @RequiredArgsConstructor

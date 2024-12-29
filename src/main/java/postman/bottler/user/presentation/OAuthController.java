@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import postman.bottler.global.response.ApiResponse;
 import postman.bottler.user.auth.CookieService;
-import postman.bottler.user.dto.response.SignInDTO;
-import postman.bottler.user.dto.response.SignInResponseDTO;
+import postman.bottler.user.application.dto.response.SignInDTO;
+import postman.bottler.user.application.dto.response.SignInResponseDTO;
 import postman.bottler.user.exception.KakaoAuthCodeException;
-import postman.bottler.user.applications.KakaoService;
-import postman.bottler.user.applications.UserService;
+import postman.bottler.user.application.service.KakaoService;
+import postman.bottler.user.application.service.UserService;
 
 @RestController
 @RequiredArgsConstructor

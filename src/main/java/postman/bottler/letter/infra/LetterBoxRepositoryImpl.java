@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.dto.response.LetterHeadersResponseDTO;
-import postman.bottler.letter.service.LetterBoxRepository;
+import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
+import postman.bottler.letter.application.repository.LetterBoxRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,24 +27,29 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public Page<LetterHeadersResponseDTO> findAllLetters(Long userId, Pageable pageable) {
-        List<LetterHeadersResponseDTO> results = fetchLetters(userId, null, pageable);
+    public Page<LetterSummaryResponseDTO> findAllLetters(Long userId, Pageable pageable) {
+        List<LetterSummaryResponseDTO> results = fetchLetters(userId, null, pageable);
         long total = countLetters(userId, null);
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
-    public Page<LetterHeadersResponseDTO> findSentLetters(Long userId, Pageable pageable) {
-        List<LetterHeadersResponseDTO> results = fetchLetters(userId, BoxType.SEND, pageable);
+    public Page<LetterSummaryResponseDTO> findSentLetters(Long userId, Pageable pageable) {
+        List<LetterSummaryResponseDTO> results = fetchLetters(userId, BoxType.SEND, pageable);
         long total = countLetters(userId, BoxType.SEND);
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
-    public Page<LetterHeadersResponseDTO> findReceivedLetters(Long userId, Pageable pageable) {
-        List<LetterHeadersResponseDTO> results = fetchLetters(userId, BoxType.RECEIVE, pageable);
+    public Page<LetterSummaryResponseDTO> findReceivedLetters(Long userId, Pageable pageable) {
+        List<LetterSummaryResponseDTO> results = fetchLetters(userId, BoxType.RECEIVE, pageable);
         long total = countLetters(userId, BoxType.RECEIVE);
         return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public List<Long> findReceivedLettersByUserId(Long userId) {
+        return letterBoxQueryRepository.findReceivedLettersById(userId);
     }
 
     @Override
@@ -58,16 +63,11 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public List<Long> getReceivedLettersById(Long userId) {
-        return letterBoxQueryRepository.getReceivedLettersById(userId);
-    }
-
-    @Override
     public boolean existsByLetterIdAndUserId(Long letterId, Long userId) {
         return letterBoxJdbcRepository.existsByUserIdAndLetterId(letterId, userId);
     }
 
-    private List<LetterHeadersResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
+    private List<LetterSummaryResponseDTO> fetchLetters(Long userId, BoxType boxType, Pageable pageable) {
         return letterBoxQueryRepository.fetchLetters(userId, boxType, pageable);
     }
 
