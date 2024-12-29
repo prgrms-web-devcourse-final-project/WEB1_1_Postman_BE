@@ -1,4 +1,4 @@
-package postman.bottler.user.applications;
+package postman.bottler.user.application;
 
 import org.junit.jupiter.api.DisplayName;
 
