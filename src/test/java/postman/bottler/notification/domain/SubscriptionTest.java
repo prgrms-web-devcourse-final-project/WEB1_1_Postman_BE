@@ -9,35 +9,39 @@ import org.junit.jupiter.api.Test;
 @DisplayName("알림 구독 테스트")
 public class SubscriptionTest {
 
-    @Test
     @DisplayName("구독 객체를 생성한다.")
-    public void subscribe() {
-        // GIVEN
+    @Test
+    void subscribe() {
+        // given
         Long userId = 1L;
         String token = "token";
 
-        // WHEN
+        // when
         Subscription subscription = Subscription.create(userId, token);
 
-        // THEN
+        // then
         assertThat(subscription.getUserId()).isEqualTo(1L);
         assertThat(subscription.getToken()).isEqualTo("token");
     }
 
+    @DisplayName("알림을 보낼 메시지를 생성한다.")
     @Test
-    @DisplayName("푸시 알림 메시지 객체를 생성한다.")
-    public void makeMessage() {
-        // GIVEN
-        long userId = 1L;
+    void makeMessage() {
+        // given
+        Long userId = 1L;
         String token = "token";
         Subscription subscription = Subscription.create(userId, token);
 
-        // WHEN
+        // when
         PushMessage pushMessage = subscription.makeMessage(NEW_LETTER);
 
-        // THEN
-        assertThat(pushMessage.getToken()).isEqualTo("token");
+        // then
+        assertThat(pushMessage.getToken()).isEqualTo(token);
         assertThat(pushMessage.getTitle()).isEqualTo(NEW_LETTER.getTitle());
         assertThat(pushMessage.getContent()).isEqualTo(NEW_LETTER.getContent());
     }
+
+
 }
+
+
