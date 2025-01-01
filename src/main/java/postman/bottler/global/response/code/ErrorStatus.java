@@ -76,7 +76,10 @@ public enum ErrorStatus {
     LETTER_ALREADY_ARCHIVED(HttpStatus.BAD_REQUEST, "MAP4009"),
     LETTER_ALREADY_REPLY(HttpStatus.BAD_REQUEST, "MAP40010"),
     DISTANCE_TOO_FAR(HttpStatus.BAD_REQUEST, "MAP40011"),
-    LETTER_BLOCKED(HttpStatus.BAD_REQUEST, "MAP40012");
+    LETTER_BLOCKED(HttpStatus.BAD_REQUEST, "MAP40012"),
+    TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MAP40013"),
+
+    ;
 
 
     private final HttpStatus httpStatus;
