@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -80,5 +82,31 @@ class BanServiceTest {
         assertThatThrownBy(() -> banService.banUser(user))
                 .isInstanceOf(UserBanException.class)
                 .hasMessage("정지된 유저가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("정지 기간이 지난 유저를 일반 유저 상태로 변경한다.")
+    public void unban() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        Ban expiredBan1 = mock(Ban.class);
+        Ban expiredBan2 = mock(Ban.class);
+        List<Ban> expiredBanList = List.of(expiredBan1, expiredBan2);
+
+        User user1 = mock(User.class);
+        User user2 = mock(User.class);
+        List<User> userList = List.of(user1, user2);
+
+        when(banRepository.findExpiredBans(now)).thenReturn(expiredBanList);
+        when(userRepository.findWillBeUnbannedUsers(expiredBanList)).thenReturn(userList);
+
+        //when
+        banService.unbans(now);
+
+        //then
+        verify(user1).unban();
+        verify(user2).unban();
+        verify(userRepository).updateUsers(userList);
+        verify(banRepository).deleteBans(expiredBanList);
     }
 }
