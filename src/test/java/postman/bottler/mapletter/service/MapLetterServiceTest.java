@@ -5,13 +5,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static postman.bottler.notification.domain.NotificationType.MAP_REPLY;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,22 +30,31 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
+import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.dto.FindSentMapLetter;
 import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
 import postman.bottler.mapletter.dto.response.FindReceivedMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
+import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.user.service.UserService;
 
@@ -48,10 +68,13 @@ class MapLetterServiceTest {
     private UserService userService;
     @Mock
     private NotificationService notificationService;
-
+    @Mock
+    private ReplyMapLetterRepository replyMapLetterRepository;
+    @Mock
+    private RedisTemplate<String, String> redisTemplate;
 
     @BeforeEach
-    void resetMocks() {
+    void setup() {
         Mockito.reset(mapLetterRepository); // Mock 상태 초기화
     }
 
@@ -65,7 +88,7 @@ class MapLetterServiceTest {
         Long userId = 1L;
         MapLetter expectedMapLetter = MapLetter.createPublicMapLetter(requestDTO, userId);
 
-        when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
+        when(mapLetterRepository.save(any(MapLetter.class))).thenReturn(expectedMapLetter);
 
         //when
         MapLetter actualMapLetter = mapLetterService.createPublicMapLetter(requestDTO, userId);
@@ -77,7 +100,7 @@ class MapLetterServiceTest {
         assertEquals(expectedMapLetter.getLongitude(), actualMapLetter.getLongitude());
         assertEquals(expectedMapLetter.getDescription(), actualMapLetter.getDescription());
 
-        verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
+        verify(mapLetterRepository, Mockito.times(1)).save(any(MapLetter.class));
     }
 
     @Test
@@ -95,7 +118,7 @@ class MapLetterServiceTest {
         Long userId = 1L;
         MapLetter expectedMapLetter = MapLetter.createTargetMapLetter(requestDTO, userId, targetUserId);
 
-        when(mapLetterRepository.save(Mockito.any(MapLetter.class))).thenReturn(expectedMapLetter);
+        when(mapLetterRepository.save(any(MapLetter.class))).thenReturn(expectedMapLetter);
         when(userService.getUserIdByNickname(targetUser)).thenReturn(targetUserId);
 
         //when
@@ -109,7 +132,7 @@ class MapLetterServiceTest {
         assertEquals(expectedMapLetter.getTargetUserId(), actualMapLetter.getTargetUserId());
         assertEquals(expectedMapLetter.getDescription(), actualMapLetter.getDescription());
 
-        verify(mapLetterRepository, Mockito.times(1)).save(Mockito.any(MapLetter.class));
+        verify(mapLetterRepository, Mockito.times(1)).save(any(MapLetter.class));
     }
 
     @Test
@@ -588,7 +611,7 @@ class MapLetterServiceTest {
                 mockReceivedLetters.size());
 
         when(mapLetterRepository.findActiveReceivedMapLettersByUserId(Mockito.eq(userId),
-                Mockito.any(PageRequest.class)))
+                any(PageRequest.class)))
                 .thenReturn(mockPage);
 
         when(userService.getNicknameById(3L)).thenReturn("SenderUser2");
@@ -617,7 +640,7 @@ class MapLetterServiceTest {
         assertEquals("www.profile2.com", secondLetter.senderProfileImg());
 
         verify(mapLetterRepository, Mockito.times(1))
-                .findActiveReceivedMapLettersByUserId(Mockito.eq(userId), Mockito.any(PageRequest.class));
+                .findActiveReceivedMapLettersByUserId(Mockito.eq(userId), any(PageRequest.class));
     }
 
     @Test
@@ -671,5 +694,68 @@ class MapLetterServiceTest {
         verify(mapLetterRepository).findLettersByUserLocation(latitude, longitude, userId);
         verify(userService).getNicknameById(2L);
         verify(userService).getNicknameById(3L);
+    }
+
+    @Test
+    @DisplayName("답장 편지 생성에 성공한다.")
+    void createReplyLetter() {
+        ListOperations<String, String> listOperations = mock(ListOperations.class);
+        when(redisTemplate.opsForList()).thenReturn(listOperations);
+        when(listOperations.size(anyString())).thenReturn(0L);
+
+        // given
+        Long userId = 1L;
+        Long sourceLetterId = 1L;
+        Long replyLetterId = 2L;
+
+        CreateReplyMapLetterRequestDTO createReplyMapLetter = new CreateReplyMapLetterRequestDTO(
+                sourceLetterId, "content", "font1", "paper1", "label1");
+
+        MapLetter mockSourceLetter = mock(MapLetter.class);
+        when(mockSourceLetter.getCreateUserId()).thenReturn(2L);
+
+        ReplyMapLetter mockReplyLetter = mock(ReplyMapLetter.class);
+        when(mockReplyLetter.getReplyLetterId()).thenReturn(replyLetterId);
+        when(mockReplyLetter.getSourceLetterId()).thenReturn(sourceLetterId);
+        when(mockReplyLetter.getLabel()).thenReturn("label1");
+
+        when(replyMapLetterRepository.findByLetterIdAndUserId(sourceLetterId, userId)).thenReturn(false); //답장을 하지 않은 상태
+        when(mapLetterRepository.findSourceMapLetterById(sourceLetterId)).thenReturn(mockSourceLetter);
+        when(replyMapLetterRepository.save(any(ReplyMapLetter.class))).thenReturn(mockReplyLetter);
+        when(mapLetterRepository.findById(sourceLetterId)).thenReturn(mockSourceLetter);
+
+        // when
+        ReplyMapLetter result = mapLetterService.createReplyMapLetter(createReplyMapLetter, userId);
+
+        // then
+        assertNotNull(result);
+        assertEquals(replyLetterId, result.getReplyLetterId());
+        assertEquals("label1", result.getLabel());
+        assertEquals(sourceLetterId, result.getSourceLetterId());
+
+        verify(replyMapLetterRepository).findByLetterIdAndUserId(sourceLetterId, userId);
+        verify(mapLetterRepository).findSourceMapLetterById(sourceLetterId);
+        verify(replyMapLetterRepository).save(any(ReplyMapLetter.class));
+        verify(mapLetterRepository).findById(sourceLetterId);
+    }
+
+    @Test
+    @DisplayName("이미 답장을 한 편지에는 답장 편지 생성에 실패한다.")
+    void alreadyRepliedLetter() {
+        // given
+        Long userId = 1L;
+        Long sourceLetterId = 1L;
+
+        CreateReplyMapLetterRequestDTO createReplyMapLetter = new CreateReplyMapLetterRequestDTO(
+                sourceLetterId, "content", "font1", "paper1", "label1");
+
+        when(replyMapLetterRepository.findByLetterIdAndUserId(sourceLetterId, userId)).thenReturn(true); // 답장을 한 상태
+
+        // when && then
+        Exception exception = assertThrows(LetterAlreadyReplyException.class,
+                () -> mapLetterService.createReplyMapLetter(createReplyMapLetter, userId));
+        assertEquals("해당 편지에 이미 답장을 했습니다.", exception.getMessage());
+
+        verify(replyMapLetterRepository).findByLetterIdAndUserId(sourceLetterId, userId);
     }
 }
