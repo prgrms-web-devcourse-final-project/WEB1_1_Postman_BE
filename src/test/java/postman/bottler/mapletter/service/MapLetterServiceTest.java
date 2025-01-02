@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,10 +30,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
-import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.mapletter.domain.MapLetter;
+import postman.bottler.mapletter.domain.MapLetterArchive;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
@@ -47,6 +48,7 @@ import postman.bottler.mapletter.dto.response.FindReceivedMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
+import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.PageRequestException;
 import postman.bottler.notification.application.service.NotificationService;
@@ -66,6 +68,8 @@ class MapLetterServiceTest {
     private ReplyMapLetterRepository replyMapLetterRepository;
     @Mock
     private RedisTemplate<String, String> redisTemplate;
+    @Mock
+    private MapLetterArchiveRepository mapLetterArchiveRepository;
 
     @BeforeEach
     void setup() {
@@ -867,5 +871,89 @@ class MapLetterServiceTest {
         Exception exception = assertThrows(MapLetterNotFoundException.class,
                 () -> mapLetterService.findOneReplyMapLetter(letterId, userId));
         assertEquals("해당 편지를 찾을 수 없습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("지도 편지 보관 저장에 성공한다.")
+    void createMapLetterArchiveTest() {
+        //given
+        Long letterId = 1L;
+        Long userId = 1L;
+
+        MapLetter mapLetter = mock(MapLetter.class);
+        when(mapLetterRepository.findById(letterId)).thenReturn(mapLetter);
+        when(mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId)).thenReturn(false); //저장 X
+
+        doNothing().when(mapLetter).validMapLetterArchive();
+
+        MapLetterArchive mockArchive = MapLetterArchive.builder()
+                .mapLetterId(letterId)
+                .userId(userId)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(mapLetterArchiveRepository.save(any(MapLetterArchive.class))).thenReturn(mockArchive);
+
+        //when
+        MapLetterArchive result = mapLetterService.mapLetterArchive(letterId, userId);
+
+        //then
+        assertNotNull(result);
+        assertEquals(letterId, result.getMapLetterId());
+        assertEquals(userId, result.getUserId());
+
+        verify(mapLetterRepository).findById(letterId);
+        verify(mapLetterArchiveRepository).findByLetterIdAndUserId(letterId, userId);
+        verify(mapLetter).validMapLetterArchive();
+        verify(mapLetterArchiveRepository).save(any(MapLetterArchive.class));
+    }
+
+    @Test
+    @DisplayName("이미 저장된 편지일경우 예외가 발생한다.")
+    void mapLetterArchiveAlreadyArchivedTest() {
+        //given
+        Long letterId = 1L;
+        Long userId = 1L;
+
+        MapLetter mapLetter = mock(MapLetter.class);
+        when(mapLetterRepository.findById(letterId)).thenReturn(mapLetter);
+        when(mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId)).thenReturn(true); //저장 O
+
+        doNothing().when(mapLetter).validMapLetterArchive();
+
+        MapLetterArchive mockArchive = MapLetterArchive.builder()
+                .mapLetterId(letterId)
+                .userId(userId)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        //when && then
+        Exception exception = assertThrows(MapLetterAlreadyArchivedException.class,
+                () -> mapLetterService.mapLetterArchive(letterId, userId));
+        assertEquals("편지가 이미 저장되어 있습니다.", exception.getMessage());
+
+        verify(mapLetterRepository).findById(letterId);
+        verify(mapLetterArchiveRepository).findByLetterIdAndUserId(letterId, userId);
+        verify(mapLetter).validMapLetterArchive();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 편지의 경우, 저장에 실패한다.")
+    void mapLetterArchiveLetterNotFoundTest() {
+        //given
+        Long letterId = 1L;
+        Long userId = 1L;
+
+        when(mapLetterRepository.findById(letterId)).thenThrow(
+                new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+
+        //when && then
+        Exception exception = assertThrows(MapLetterNotFoundException.class,
+                () -> mapLetterService.mapLetterArchive(letterId, userId));
+        assertEquals("해당 편지를 찾을 수 없습니다.", exception.getMessage());
+
+        verify(mapLetterRepository).findById(letterId);
+        verify(mapLetterArchiveRepository, never()).findByLetterIdAndUserId(anyLong(), anyLong());
+        verify(mapLetterArchiveRepository, never()).save(any(MapLetterArchive.class));
     }
 }
