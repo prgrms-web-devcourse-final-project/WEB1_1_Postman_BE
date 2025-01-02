@@ -9,8 +9,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +43,7 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.dto.response.FindAllReplyMapLettersResponseDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
@@ -986,5 +989,59 @@ class MapLetterServiceTest {
         assertEquals("장소 설명 3", result.getContent().get(1).description());
 
         verify(mapLetterArchiveRepository).findAllById(userId, PageRequest.of(page-1, size));
+    }
+
+    @Test
+    @DisplayName("보관된 편지 삭제에 성공한다.")
+    void deleteArchiveLettersTest() {
+        //given
+        Long userId = 1L;
+        DeleteArchivedLettersRequestDTO deleteLettersDTO = new DeleteArchivedLettersRequestDTO(List.of(1L, 3L));
+
+        MapLetterArchive mockArchive1 = mock(MapLetterArchive.class);
+        MapLetterArchive mockArchive3 = mock(MapLetterArchive.class);
+
+        when(mapLetterArchiveRepository.findById(1L)).thenReturn(mockArchive1);
+        when(mapLetterArchiveRepository.findById(3L)).thenReturn(mockArchive3);
+
+        doNothing().when(mockArchive1).validDeleteArchivedLetter(userId);
+        doNothing().when(mockArchive3).validDeleteArchivedLetter(userId);
+
+        //when
+        mapLetterService.deleteArchivedLetter(deleteLettersDTO, userId);
+
+        //then
+        verify(mapLetterArchiveRepository).findById(1L);
+        verify(mapLetterArchiveRepository).findById(3L);
+        verify(mapLetterArchiveRepository).deleteById(1L);
+        verify(mapLetterArchiveRepository).deleteById(3L);
+    }
+
+    @Test
+    @DisplayName("저장된 편지 삭제 권한이 없는 경우 예외가 발생한다.")
+    void deleteArchivedLetterForbiddenTest(){
+        //given
+        Long userId=1L;
+        Long archivedId=1L;
+        Long createUserId=2L;
+        DeleteArchivedLettersRequestDTO deleteLettersDTO = new DeleteArchivedLettersRequestDTO(List.of(archivedId));
+
+        MapLetterArchive mockArchive=MapLetterArchive.builder()
+                .mapLetterId(archivedId)
+                .userId(createUserId)
+                .mapLetterId(1L)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(mapLetterArchiveRepository.findById(archivedId)).thenReturn(mockArchive);
+
+        //when && then
+        Exception exception=assertThrows(CommonForbiddenException.class, ()->
+                mapLetterService.deleteArchivedLetter(deleteLettersDTO, userId));
+
+        assertEquals("편지 보관 취소를 할 권한이 없습니다. 편지 보관 취소에 실패했습니다.", exception.getMessage());
+
+        verify(mapLetterArchiveRepository, times(1)).findById(archivedId);
+        verify(mapLetterArchiveRepository, never()).deleteById(anyLong()); //삭제는 호출되지 않아야 함
     }
 }
