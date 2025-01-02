@@ -645,7 +645,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("반경 500m 이내 편지 조회에 성공한다")
-    void findNearByMapLetters() {
+    void findNearByMapLettersTest() {
         //given
         BigDecimal latitude = new BigDecimal("37.5665");
         BigDecimal longitude = new BigDecimal("126.9780");
@@ -698,7 +698,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("답장 편지 생성에 성공한다.")
-    void createReplyLetter() {
+    void createReplyLetterTest() {
         ListOperations<String, String> listOperations = mock(ListOperations.class);
         when(redisTemplate.opsForList()).thenReturn(listOperations);
         when(listOperations.size(anyString())).thenReturn(0L);
@@ -741,7 +741,7 @@ class MapLetterServiceTest {
 
     @Test
     @DisplayName("이미 답장을 한 편지에는 답장 편지 생성에 실패한다.")
-    void alreadyRepliedLetter() {
+    void alreadyRepliedLetterTest() {
         // given
         Long userId = 1L;
         Long sourceLetterId = 1L;
