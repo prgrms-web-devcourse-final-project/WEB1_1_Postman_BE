@@ -30,6 +30,7 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.global.exception.CommonForbiddenException;
+import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
@@ -44,6 +45,7 @@ import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
 import postman.bottler.mapletter.dto.response.FindReceivedMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.OneLetterResponseDTO;
+import postman.bottler.mapletter.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.PageRequestException;
@@ -815,5 +817,55 @@ class MapLetterServiceTest {
                 mapLetterService.findAllReplyMapLetter(page, size, letterId, userId));
         assertEquals("해당 편지를 찾을 수 없습니다.", exception.getMessage());
         verify(mapLetterRepository).findById(letterId);
+    }
+
+    @Test
+    @DisplayName("답장 편지 상세 보기에 성공한다.")
+    void findOneReplyMapLetterTest() {
+        //given
+        Long letterId = 1L;
+        Long userId = 1L;
+
+        ReplyMapLetter mockReplyLetter = mock(ReplyMapLetter.class);
+        MapLetter mockSourceLetter = mock(MapLetter.class);
+
+        when(replyMapLetterRepository.findById(letterId)).thenReturn(mockReplyLetter);
+        when(mapLetterRepository.findById(mockReplyLetter.getSourceLetterId())).thenReturn(mockSourceLetter);
+
+        doNothing().when(mockReplyLetter).validFindOneReplyMapLetter(userId, mockSourceLetter);
+        doNothing().when(mockSourceLetter).validDeleteAndBlocked();
+
+        when(mockReplyLetter.getCreateUserId()).thenReturn(userId);
+
+        //when
+        OneReplyLetterResponseDTO result = mapLetterService.findOneReplyMapLetter(letterId, userId);
+
+        //then
+        assertNotNull(result);
+
+        verify(replyMapLetterRepository).findById(letterId);
+        verify(mapLetterRepository).findById(mockReplyLetter.getSourceLetterId());
+        verify(mockReplyLetter).validFindOneReplyMapLetter(userId, mockSourceLetter);
+        verify(mockSourceLetter).validDeleteAndBlocked();
+    }
+
+    @Test
+    @DisplayName("답장 편지가 존재하지 않을 경우, 답장 편지 상세보기에 실패한다.")
+    void findOneReplyMapLetterNotFoundTest() {
+        //given
+        Long letterId = 1L;
+        Long userId = 1L;
+
+        ReplyMapLetter mockReplyLetter = mock(ReplyMapLetter.class);
+
+        when(replyMapLetterRepository.findById(letterId)).thenReturn(mockReplyLetter);
+
+        //when && then
+        when(replyMapLetterRepository.findById(letterId)).thenThrow(
+                new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+
+        Exception exception = assertThrows(MapLetterNotFoundException.class,
+                () -> mapLetterService.findOneReplyMapLetter(letterId, userId));
+        assertEquals("해당 편지를 찾을 수 없습니다.", exception.getMessage());
     }
 }
