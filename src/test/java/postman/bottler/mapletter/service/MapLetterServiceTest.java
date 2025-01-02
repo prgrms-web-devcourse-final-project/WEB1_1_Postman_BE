@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -44,6 +43,7 @@ import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.dto.response.FindAllReplyMapLettersResponseDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
@@ -1043,5 +1043,24 @@ class MapLetterServiceTest {
 
         verify(mapLetterArchiveRepository, times(1)).findById(archivedId);
         verify(mapLetterArchiveRepository, never()).deleteById(anyLong()); //삭제는 호출되지 않아야 함
+    }
+
+    @Test
+    @DisplayName("사용자가 특정 편지에 답장을 보냈는지 확인에 성공한다.")
+    void checkReplyMapLetterTest(){
+        //given
+        Long letterId=1L;
+        Long userId=1L;
+        boolean replied=true; //답장 보냄
+
+        when(replyMapLetterRepository.findByLetterIdAndUserId(letterId, userId)).thenReturn(replied);
+
+        //when
+        CheckReplyMapLetterResponseDTO result=mapLetterService.checkReplyMapLetter(letterId, userId);
+
+        //then
+        assertNotNull(result);
+        assertEquals(replied, result.isReplied());
+        verify(replyMapLetterRepository).findByLetterIdAndUserId(letterId, userId);
     }
 }
