@@ -41,6 +41,7 @@ import postman.bottler.mapletter.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.dto.response.FindAllReplyMapLettersResponseDTO;
 import postman.bottler.mapletter.dto.response.FindMapLetterResponseDTO;
 import postman.bottler.mapletter.dto.response.FindNearbyLettersResponseDTO;
@@ -955,5 +956,35 @@ class MapLetterServiceTest {
         verify(mapLetterRepository).findById(letterId);
         verify(mapLetterArchiveRepository, never()).findByLetterIdAndUserId(anyLong(), anyLong());
         verify(mapLetterArchiveRepository, never()).save(any(MapLetterArchive.class));
+    }
+
+    @Test
+    @DisplayName("보관된 편지 조회에 성공한다.")
+    void findArchiveLettersTest(){
+        //given
+        int page=1;
+        int size=9;
+        Long userId = 1L;
+        BigDecimal latitude = new BigDecimal("37.5665");
+        BigDecimal longitude = new BigDecimal("127.23456");
+
+        List<FindAllArchiveLetters> mockArchiveLetters=List.of(
+                new FindAllArchiveLetters(1L, 1L, "제목 1", "장소 설명 1", latitude, longitude, "label1", LocalDateTime.now(), LocalDateTime.now()),
+                new FindAllArchiveLetters(2L, 3L, "제목 3", "장소 설명 3", latitude, longitude, "label3", LocalDateTime.now(), LocalDateTime.now())
+        );
+
+        Page<FindAllArchiveLetters> mockPage=new PageImpl<>(mockArchiveLetters, PageRequest.of(page-1, size),2);
+        when(mapLetterArchiveRepository.findAllById(userId, PageRequest.of(page-1, size))).thenReturn(mockPage);
+
+        //when
+        Page<FindAllArchiveLetters> result=mapLetterService.findArchiveLetters(page, size, userId);
+
+        //then
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals("제목 1", result.getContent().get(0).title());
+        assertEquals("장소 설명 3", result.getContent().get(1).description());
+
+        verify(mapLetterArchiveRepository).findAllById(userId, PageRequest.of(page-1, size));
     }
 }
