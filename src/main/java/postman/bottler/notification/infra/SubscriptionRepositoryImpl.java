@@ -3,14 +3,15 @@ package postman.bottler.notification.infra;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;
-import postman.bottler.notification.service.SubscriptionRepository;
+import postman.bottler.notification.infra.entity.SubscriptionEntity;
 
 @Repository
 @RequiredArgsConstructor
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
-    private final JpaSubscriptionRepository repository;
+    private final SubscriptionJpaRepository repository;
 
     @Override
     public Subscription save(Subscription subscription) {

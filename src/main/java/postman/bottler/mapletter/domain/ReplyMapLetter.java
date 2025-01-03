@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import postman.bottler.global.exception.CommonForbiddenException;
-import postman.bottler.mapletter.dto.request.CreateReplyMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.exception.BlockedLetterException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
 

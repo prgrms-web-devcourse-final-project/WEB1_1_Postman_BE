@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import postman.bottler.notification.domain.Notification;
 import postman.bottler.notification.domain.Notifications;
-import postman.bottler.notification.service.NotificationRepository;
+import postman.bottler.notification.application.repository.NotificationRepository;
 
 @Repository
 @RequiredArgsConstructor

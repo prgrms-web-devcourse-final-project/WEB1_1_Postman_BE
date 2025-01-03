@@ -10,7 +10,7 @@ import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.exception.UserLabelNotFoundException;
 import postman.bottler.label.infra.entity.LabelEntity;
 import postman.bottler.label.infra.entity.UserLabelEntity;
-import postman.bottler.label.service.LabelRepository;
+import postman.bottler.label.application.repository.LabelRepository;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.infra.UserJpaRepository;
 import postman.bottler.user.infra.entity.UserEntity;
@@ -76,7 +76,8 @@ public class LabelRepositoryImpl implements LabelRepository {
 
     @Override
     public List<UserLabel> findUserLabelByUserAndLabel(User user, Label label) {
-        List<UserLabelEntity> userLabelEntities = userLabelJpaRepository.findLabelsByUserAndLabel(user.getUserId(), label.getLabelId());
+        List<UserLabelEntity> userLabelEntities = userLabelJpaRepository.findLabelsByUserAndLabel(user.getUserId(),
+                label.getLabelId());
         return UserLabelEntity.toUserLabels(userLabelEntities);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
-import postman.bottler.letter.service.ReplyLetterRepository;
+import postman.bottler.letter.application.repository.ReplyLetterRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,14 +25,14 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    public Page<ReplyLetter> findAllByLetterId(Long letterId, Long receiverId, Pageable pageable) {
+    public Page<ReplyLetter> findAllByLetterIdAndReceiverId(Long letterId, Long receiverId, Pageable pageable) {
         return replyLetterJpaRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageable)
                 .map(ReplyLetterEntity::toDomain);
     }
 
     @Override
     public Optional<ReplyLetter> findById(Long replyLetterId) {
-        return replyLetterJpaRepository.findActiveById(replyLetterId)
+        return replyLetterJpaRepository.findById(replyLetterId)
                 .map(ReplyLetterEntity::toDomain);
     }
 

@@ -9,13 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.domain.MapLetter;
-import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
-import postman.bottler.mapletter.dto.FindSentMapLetter;
-import postman.bottler.mapletter.dto.MapLetterAndDistance;
+import postman.bottler.mapletter.application.dto.FindReceivedMapLetterDTO;
+import postman.bottler.mapletter.application.dto.FindSentMapLetter;
+import postman.bottler.mapletter.application.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.SourceMapLetterNotFountException;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
-import postman.bottler.mapletter.service.MapLetterRepository;
+import postman.bottler.mapletter.application.repository.MapLetterRepository;
 
 @Repository
 @RequiredArgsConstructor

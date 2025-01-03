@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 
 class MapLetterTest {
 
@@ -46,7 +46,7 @@ class MapLetterTest {
     @DisplayName("타겟 편지 생성에 성공한다")
     void createTargetMapLetterTest() {
         //given
-        Long targetUserId = 3L;
+        String targetUserId = "3L";
 
         CreateTargetMapLetterRequestDTO requestDTO = new CreateTargetMapLetterRequestDTO(
                 "타겟 편지",
@@ -62,7 +62,7 @@ class MapLetterTest {
         Long userId = 1L;
 
         //when
-        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId);
+        MapLetter mapLetter = MapLetter.createTargetMapLetter(requestDTO, userId, 2L);
 
         //then
         assertNotNull(mapLetter);

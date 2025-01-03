@@ -8,8 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import postman.bottler.global.exception.CommonForbiddenException;
-import postman.bottler.mapletter.dto.request.CreatePublicMapLetterRequestDTO;
-import postman.bottler.mapletter.dto.request.CreateTargetMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRequestDTO;
+import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.exception.BlockedLetterException;
 import postman.bottler.mapletter.exception.DistanceToFarException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyDeletedException;
@@ -128,8 +128,8 @@ public class MapLetter {
         }
     }
 
-    public void isPrivate(){
-        if (this.getType()==MapLetterType.PRIVATE){
+    public void isPrivate() {
+        if (this.getType() == MapLetterType.PRIVATE) {
             throw new CommonForbiddenException("해당 편지에 접근할 수 없습니다.");
         }
     }

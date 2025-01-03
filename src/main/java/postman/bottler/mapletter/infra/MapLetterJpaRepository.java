@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import postman.bottler.mapletter.dto.FindReceivedMapLetterDTO;
-import postman.bottler.mapletter.dto.FindSentMapLetter;
-import postman.bottler.mapletter.dto.MapLetterAndDistance;
+import postman.bottler.mapletter.application.dto.FindReceivedMapLetterDTO;
+import postman.bottler.mapletter.application.dto.FindSentMapLetter;
+import postman.bottler.mapletter.application.dto.MapLetterAndDistance;
 import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 
 @Repository
@@ -91,14 +91,16 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
 
     @Query(value = "SELECT m.map_letter_id AS letterId, m.title AS title, m.description AS description, "
             + "m.latitude as latitude, m.longitude as longitude, " +
-            "m.label AS label, NULL AS sourceLetterId, 'TARGET' AS type, m.created_at AS createdAt, m.create_user_id as senderId  " +
+            "m.label AS label, NULL AS sourceLetterId, 'TARGET' AS type, m.created_at AS createdAt, m.create_user_id as senderId  "
+            +
             "FROM map_letter m " +
             "WHERE m.target_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false " +
             "UNION ALL " +
             "SELECT r.reply_letter_id AS letterId, "
             + "CONCAT('Re: ', (SELECT ml.title FROM map_letter ml WHERE ml.map_letter_id = r.source_letter_id)) AS title, "
             + "NULL AS description, NULL AS latitude, NULL AS longitude, "
-            + "r.label AS label, r.source_letter_id AS sourceLetterId, 'REPLY' AS type, r.created_at AS createdAt, r.create_user_id as senderId " +
+            + "r.label AS label, r.source_letter_id AS sourceLetterId, 'REPLY' AS type, r.created_at AS createdAt, r.create_user_id as senderId "
+            +
             "FROM reply_map_letter r " +
             "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false " +
             "ORDER BY createdAt DESC",
@@ -112,14 +114,14 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest);
 
     @Query(value = """
-            SELECT m.map_letter_id as letterId, m.latitude, m.longitude, m.title, m.description, 
-            m.created_at as createdAt, m.target_user_id as targetUserId, m.create_user_id as createUserId, m.label, 
-            st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance 
-            FROM map_letter m 
-            WHERE m.type = 'PUBLIC' 
-            AND st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) <= 500 
-            AND m.is_deleted =false AND m.is_blocked=false 
-            AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30
-   """, nativeQuery = true)
+                     SELECT m.map_letter_id as letterId, m.latitude, m.longitude, m.title, m.description, 
+                     m.created_at as createdAt, m.target_user_id as targetUserId, m.create_user_id as createUserId, m.label, 
+                     st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) AS distance 
+                     FROM map_letter m 
+                     WHERE m.type = 'PUBLIC' 
+                     AND st_distance_sphere(point(m.longitude, m.latitude), point( :longitude, :latitude)) <= 500 
+                     AND m.is_deleted =false AND m.is_blocked=false 
+                     AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30
+            """, nativeQuery = true)
     List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
 }
