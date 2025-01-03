@@ -29,7 +29,7 @@
  <img width="1132" alt="KakaoTalk_Photo_2025-01-03-15-16-29" src="https://github.com/user-attachments/assets/b11e3397-65d8-48d2-bbd9-9385e038571e" />
 
 
-## 🧑🏻‍ 팀원 소개 및 역할
+## 📌‍ 팀원 소개 및 역할
 |                                       김가현                                        |                                     김연수                                     |                                       류정원                                       |                                       황건하                                       |
 |:--------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
 | <img src="https://avatars.githubusercontent.com/u/118621852?v=4" width="200px"/> | <img src="https://avatars.githubusercontent.com/u/91796400?v=4" width="200px"/> | <img src="https://avatars.githubusercontent.com/u/49338509?v=4" width="200px"/> | <img src="https://avatars.githubusercontent.com/u/124065095?v=4" width="200px"/> |
