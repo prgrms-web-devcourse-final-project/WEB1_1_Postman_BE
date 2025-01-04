@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import postman.bottler.complaint.exception.DuplicateComplainException;
 
-@DisplayName("신고 테스트")
+@DisplayName("신고 일급 컬렉션 테스트")
 public class ComplaintsTest {
     @DisplayName("기존 신고에 새로운 신고를 추가한다.")
     @Test
