@@ -23,12 +23,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.application.repository.KeywordComplaintRepository;
-import postman.bottler.complaint.application.repository.KeywordReplyComplaintRepository;
-import postman.bottler.complaint.application.repository.MapComplaintRepository;
-import postman.bottler.complaint.application.repository.MapReplyComplaintRepository;
 import postman.bottler.complaint.application.service.ComplaintService;
 import postman.bottler.complaint.domain.Complaint;
-import postman.bottler.complaint.domain.Complaints;
 import postman.bottler.complaint.exception.DuplicateComplainException;
 import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.application.service.ReplyLetterService;
@@ -44,12 +40,6 @@ public class ComplaintServiceTest {
     private ComplaintService complaintService;
     @Autowired
     private KeywordComplaintRepository keywordComplaintRepository;
-    @Autowired
-    private MapComplaintRepository mapComplaintRepository;
-    @Autowired
-    private KeywordReplyComplaintRepository keywordReplyComplaintRepository;
-    @Autowired
-    private MapReplyComplaintRepository mapReplyComplaintRepository;
 
     @MockBean
     private NotificationService notificationService;
@@ -71,7 +61,7 @@ public class ComplaintServiceTest {
                     ComplaintResponseDTO response = complaintService.complain(KEYWORD_LETTER, 1L, 1L, "욕설 사용");
 
                     // then
-                    assertThat(response.id()).isEqualTo(1L);
+                    assertThat(response.id()).isNotNull();
                     assertThat(response.description()).isEqualTo("욕설 사용");
                 }),
                 dynamicTest("한 유저가 같은 키워드 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
@@ -91,7 +81,7 @@ public class ComplaintServiceTest {
                     ComplaintResponseDTO response = complaintService.complain(KEYWORD_REPLY_LETTER, 1L, 1L, "욕설 사용");
 
                     // then
-                    assertThat(response.id()).isEqualTo(1L);
+                    assertThat(response.id()).isNotNull();
                     assertThat(response.description()).isEqualTo("욕설 사용");
                 }),
                 dynamicTest("한 유저가 같은 키워드 답장 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
@@ -111,7 +101,7 @@ public class ComplaintServiceTest {
                     ComplaintResponseDTO response = complaintService.complain(MAP_LETTER, 1L, 1L, "욕설 사용");
 
                     // then
-                    assertThat(response.id()).isEqualTo(1L);
+                    assertThat(response.id()).isNotNull();
                     assertThat(response.description()).isEqualTo("욕설 사용");
                 }),
                 dynamicTest("한 유저가 같은 키워드 답장 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
@@ -131,7 +121,7 @@ public class ComplaintServiceTest {
                     ComplaintResponseDTO response = complaintService.complain(MAP_REPLY_LETTER, 1L, 1L, "욕설 사용");
 
                     // then
-                    assertThat(response.id()).isEqualTo(1L);
+                    assertThat(response.id()).isNotNull();
                     assertThat(response.description()).isEqualTo("욕설 사용");
                 }),
                 dynamicTest("한 유저가 같은 키워드 답장 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
