@@ -1,7 +1,9 @@
 package postman.bottler.complaint.domain;
 
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class Complaints {
     private static final int WARNING_CONDITION_COUNT = 3;
 
