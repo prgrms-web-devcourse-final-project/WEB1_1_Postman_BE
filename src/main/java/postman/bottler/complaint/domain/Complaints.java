@@ -22,7 +22,7 @@ public class Complaints {
         complaints.add(complaint);
     }
 
-    public Boolean needsWarningNotification() {
+    public Boolean needWarning() {
         return complaints.size() == WARNING_CONDITION_COUNT;
     }
 }
