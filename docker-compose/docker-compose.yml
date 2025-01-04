@@ -18,4 +18,9 @@ services:
     container_name: redis-server
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
     restart: always  # 재시작 정책 추가
+
+volumes:
+  redis_data:
