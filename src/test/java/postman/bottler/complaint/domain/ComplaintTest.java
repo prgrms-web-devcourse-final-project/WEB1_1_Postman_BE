@@ -2,7 +2,6 @@ package postman.bottler.complaint.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;

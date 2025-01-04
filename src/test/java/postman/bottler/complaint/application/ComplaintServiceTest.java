@@ -27,8 +27,6 @@ import postman.bottler.complaint.application.service.ComplaintService;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.exception.DuplicateComplainException;
 import postman.bottler.letter.application.service.LetterService;
-import postman.bottler.letter.application.service.ReplyLetterService;
-import postman.bottler.mapletter.application.service.MapLetterService;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.user.application.service.UserService;
 
@@ -45,10 +43,6 @@ public class ComplaintServiceTest {
     private NotificationService notificationService;
     @MockBean
     private LetterService letterService;
-    @MockBean
-    private ReplyLetterService replyLetterService;
-    @MockBean
-    private MapLetterService mapLetterService;
     @MockBean
     private UserService userService;
 
