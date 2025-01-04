@@ -5,63 +5,35 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import postman.bottler.notification.exception.NoTypeException;
 
 @DisplayName("알림 타입 테스트")
 public class NotificationTypeTest {
-    @Test
-    @DisplayName("편지 관련 알림인지 확인한다.")
-    public void isLetterNotification() {
-        // GIVEN
-        NotificationType newLetter = NotificationType.NEW_LETTER;
-        NotificationType targetLetter = NotificationType.TARGET_LETTER;
-        NotificationType mapReply = NotificationType.MAP_REPLY;
-        NotificationType keywordReply = NotificationType.KEYWORD_REPLY;
-        NotificationType warning = NotificationType.WARNING;
-        NotificationType ban = NotificationType.BAN;
 
+    @ParameterizedTest(name = "{0}의 편지 관련 알림 체크의 결과는 {1}이다.")
+    @CsvSource({"NEW_LETTER, true", "TARGET_LETTER, true", "MAP_REPLY, true", "KEYWORD_REPLY, true",
+            "WARNING, false", "BAN, false"})
+    @DisplayName("편지 관련 알림인지 확인한다.")
+    public void isLetterNotification(NotificationType notificationType, boolean expected) {
         // WHEN
-        Boolean letter1 = newLetter.isLetterNotification();
-        Boolean letter2 = targetLetter.isLetterNotification();
-        Boolean letter3 = mapReply.isLetterNotification();
-        Boolean letter4 = keywordReply.isLetterNotification();
-        Boolean nonLetter1 = warning.isLetterNotification();
-        Boolean nonLetter2 = ban.isLetterNotification();
+        boolean result = notificationType.isLetterNotification();
 
         // THEN
-        assertThat(letter1).isTrue();
-        assertThat(letter2).isTrue();
-        assertThat(letter3).isTrue();
-        assertThat(nonLetter1).isFalse();
-        assertThat(nonLetter2).isFalse();
+        assertThat(result).isEqualTo(expected);
     }
 
-    @Test
+    @ParameterizedTest(name = "{0}은 {1} 타입으로 변환된다.")
+    @CsvSource({"NEW_LETTER, NEW_LETTER", "TARGET_LETTER, TARGET_LETTER", "MAP_REPLY, MAP_REPLY",
+            "KEYWORD_REPLY, KEYWORD_REPLY", "WARNING, WARNING", "BAN, BAN"})
     @DisplayName("해당하는 타입의 NotificationType을 반환한다.")
-    public void from() {
-        // GIVEN
-        String newLetter = "NEW_LETTER";
-        String targetLetter = "TARGET_LETTER";
-        String mapReply = "MAP_REPLY";
-        String keywordReply = "KEYWORD_REPLY";
-        String warning = "WARNING";
-        String ban = "BAN";
-
+    public void from(String input, NotificationType expected) {
         // WHEN
-        NotificationType newLetterType = NotificationType.from(newLetter);
-        NotificationType targetLetterType = NotificationType.from(targetLetter);
-        NotificationType mapReplyType = NotificationType.from(mapReply);
-        NotificationType keywordReplyType = NotificationType.from(keywordReply);
-        NotificationType warningType = NotificationType.from(warning);
-        NotificationType banType = NotificationType.from(ban);
+        NotificationType result = NotificationType.from(input);
 
         // THEN
-        assertThat(newLetterType).isEqualTo(NotificationType.NEW_LETTER);
-        assertThat(targetLetterType).isEqualTo(NotificationType.TARGET_LETTER);
-        assertThat(mapReplyType).isEqualTo(NotificationType.MAP_REPLY);
-        assertThat(keywordReplyType).isEqualTo(NotificationType.KEYWORD_REPLY);
-        assertThat(warningType).isEqualTo(NotificationType.WARNING);
-        assertThat(banType).isEqualTo(NotificationType.BAN);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test

@@ -3,8 +3,10 @@ package postman.bottler.notification.domain;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class Subscriptions {
     private List<Subscription> subscriptions;
 
