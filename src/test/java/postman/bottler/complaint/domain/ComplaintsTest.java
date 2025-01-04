@@ -28,25 +28,28 @@ public class ComplaintsTest {
 
     @Test
     @DisplayName("한 편지의 신고자가 2명일 경우, DuplicateComplainException 예외를 발생시킨다.")
-    public void duplicateException() {
+    public void addWithDuplicateComplaint() {
         // GIVEN
-        Complaint complaint = Complaint.create(1L, 1L, "욕설 사용");
+        List<Complaint> complaintList = new ArrayList<>();
+        complaintList.add(Complaint.create(1L, 1L, "욕설 사용"));
+        Complaints complaints = Complaints.from(complaintList);
+
         Complaint duplicate = Complaint.create(1L, 1L, "욕설 사용");
-        Complaints complaints = Complaints.from(List.of(complaint));
 
         // WHEN -  THEN
-        assertThatThrownBy(() -> complaints.add(duplicate)).isInstanceOf(DuplicateComplainException.class);
+        assertThatThrownBy(() -> complaints.add(duplicate))
+                .isInstanceOf(DuplicateComplainException.class);
     }
 
     @DisplayName("신고 개수가 경고 조건 미만일 경우, 경고가 불필요함을 알린다.")
     @Test
-    void test() {
+    void needWarning() {
         // given
         Complaint complaint = Complaint.create(1L, 1L, "욕설 사용");
         Complaints complaints = Complaints.from(List.of(complaint));
 
         // when
-        Boolean result = complaints.needsWarningNotification();
+        Boolean result = complaints.needWarning();
 
         // then
         assertThat(result).isFalse();
@@ -54,7 +57,7 @@ public class ComplaintsTest {
 
     @DisplayName("신고의 개수가 경고 조건에 해당하는 경우, 경고가 필요함을 알린다.")
     @Test
-    void needsWarningNotification() {
+    void needWarningWithWarningCondition() {
         // given
         Complaint complaint1 = Complaint.create(1L, 1L, "욕설 사용");
         Complaint complaint2 = Complaint.create(1L, 2L, "욕설 사용");
@@ -62,7 +65,7 @@ public class ComplaintsTest {
         Complaints complaints = Complaints.from(List.of(complaint1, complaint2, complaint3));
 
         // when
-        Boolean result = complaints.needsWarningNotification();
+        Boolean result = complaints.needWarning();
 
         // then
         assertThat(result).isTrue();
