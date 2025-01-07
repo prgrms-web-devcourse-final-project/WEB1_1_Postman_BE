@@ -12,6 +12,8 @@ import postman.bottler.user.exception.EmailCodeException;
 class EmailCodeTest {
     private String testEmail;
     private String testCode;
+    private static final long EXPIRATION_MINUTES = 5;
+
 
     @BeforeEach
     void setUp() {
@@ -20,7 +22,7 @@ class EmailCodeTest {
     }
 
     @Test
-    @DisplayName("인증코드 객체 생성 - email, code")
+    @DisplayName("인증코드 객체 생성 - createdAt과 expiresAt이 주어지지 않았을 경우 createdAt에서 5분을 더한 값이 expiresAt과 일치해야 한다.")
     public void createEmailCodeWithEmailAndCode() {
         EmailCode emailCode = EmailCode.createEmailCode(testEmail, testCode);
 
@@ -29,20 +31,21 @@ class EmailCodeTest {
         assertEquals(testCode, emailCode.getCode());
         assertNotNull(emailCode.getCreatedAt());
         assertNotNull(emailCode.getExpiresAt());
+        assertEquals(emailCode.getCreatedAt().plusMinutes(EXPIRATION_MINUTES), emailCode.getExpiresAt());
     }
 
     @Test
-    @DisplayName("인증코드 객체 생성 - email, code, createdAt, expiresAt")
+    @DisplayName("인증코드 객체 생성 - createdAt과 expiresAt이 주어진 경우 주어진 값이 저장되어야 한다.")
     public void createEmailCode() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiresAt = now.plusMinutes(5);
+        LocalDateTime createdAt = LocalDateTime.of(2025, 1, 6, 10, 0, 0);
+        LocalDateTime expiresAt = LocalDateTime.of(2025, 1, 6, 10, 30, 0);
 
-        EmailCode emailCode = EmailCode.createEmailCode(testEmail, testCode, now, expiresAt);
+        EmailCode emailCode = EmailCode.createEmailCode(testEmail, testCode, createdAt, expiresAt);
 
         assertNotNull(emailCode);
         assertEquals(testEmail, emailCode.getEmail());
         assertEquals(testCode, emailCode.getCode());
-        assertEquals(now, emailCode.getCreatedAt());
+        assertEquals(createdAt, emailCode.getCreatedAt());
         assertEquals(expiresAt, emailCode.getExpiresAt());
     }
 
