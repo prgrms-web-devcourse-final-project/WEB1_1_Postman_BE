@@ -2,162 +2,165 @@ package postman.bottler.complaint.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import static org.mockito.BDDMockito.given;
 import static postman.bottler.complaint.domain.ComplaintType.KEYWORD_LETTER;
 import static postman.bottler.complaint.domain.ComplaintType.KEYWORD_REPLY_LETTER;
 import static postman.bottler.complaint.domain.ComplaintType.MAP_LETTER;
 import static postman.bottler.complaint.domain.ComplaintType.MAP_REPLY_LETTER;
+import static postman.bottler.notification.domain.NotificationType.WARNING;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.TestFactory;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.application.repository.KeywordComplaintRepository;
-import postman.bottler.complaint.application.repository.KeywordReplyComplaintRepository;
-import postman.bottler.complaint.application.repository.MapComplaintRepository;
-import postman.bottler.complaint.application.repository.MapReplyComplaintRepository;
 import postman.bottler.complaint.application.service.ComplaintService;
 import postman.bottler.complaint.domain.Complaint;
-import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.exception.DuplicateComplainException;
+import postman.bottler.letter.application.service.LetterService;
+import postman.bottler.notification.application.service.NotificationService;
+import postman.bottler.user.application.service.UserService;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 @DisplayName("신고 서비스 테스트")
+@Transactional
 public class ComplaintServiceTest {
-    @InjectMocks
+    @Autowired
     private ComplaintService complaintService;
-    @Mock
+    @Autowired
     private KeywordComplaintRepository keywordComplaintRepository;
-    @Mock
-    private MapComplaintRepository mapComplaintRepository;
-    @Mock
-    private KeywordReplyComplaintRepository keywordReplyComplaintRepository;
-    @Mock
-    private MapReplyComplaintRepository mapReplyComplaintRepository;
 
-    @Test
-    @DisplayName("키워드 편지를 신고한다.")
-    public void complainKeywordLetter() {
-        // GIVEN
-        when(keywordComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()));
-        when(keywordComplaintRepository.save(any())).thenReturn(
-                Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now()));
+    @MockBean
+    private NotificationService notificationService;
+    @MockBean
+    private LetterService letterService;
+    @MockBean
+    private UserService userService;
 
-        // WHEN
-        ComplaintResponseDTO response = complaintService.complain(KEYWORD_LETTER, 1L, 1L, "욕설 사용");
+    @DisplayName("키워드 편지 시나리오")
+    @TestFactory
+    Collection<DynamicTest> complainKeywordLetter() {
+        return List.of(
+                dynamicTest("키워드 편지를 신고한다.", () -> {
+                    // when
+                    ComplaintResponseDTO response = complaintService.complain(KEYWORD_LETTER, 1L, 1L, "욕설 사용");
 
-        // THEN
-        assertThat(response.id()).isEqualTo(1L);
+                    // then
+                    assertThat(response.id()).isNotNull();
+                    assertThat(response.description()).isEqualTo("욕설 사용");
+                }),
+                dynamicTest("한 유저가 같은 키워드 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
+                    // when then
+                    assertThatThrownBy(() -> complaintService.complain(KEYWORD_LETTER, 1L, 1L, "욕설 사용"))
+                            .isInstanceOf(DuplicateComplainException.class);
+                })
+        );
     }
 
-    @Test
-    @DisplayName("같은 키워드 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
-    public void duplicateKeywordComplain() {
-        // GIVEN
-        Complaint complaint = Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now());
-        when(keywordComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()))
-                .thenReturn(Complaints.from(List.of(complaint)));
-        when(keywordComplaintRepository.save(any())).thenReturn(complaint);
-        complaintService.complain(KEYWORD_LETTER, 1L, 1L, "욕설 사용");
+    @DisplayName("키워드 답장 편지 시나리오")
+    @TestFactory
+    Collection<DynamicTest> complainKeywordReplyLetter() {
+        return List.of(
+                dynamicTest("키워드 답장 편지를 신고한다.", () -> {
+                    // when
+                    ComplaintResponseDTO response = complaintService.complain(KEYWORD_REPLY_LETTER, 1L, 1L, "욕설 사용");
 
-        // WHEN - THEN
-        assertThatThrownBy(() -> complaintService.complain(KEYWORD_LETTER, 1L, 1L, "욕설 사용"))
-                .isInstanceOf(DuplicateComplainException.class);
+                    // then
+                    assertThat(response.id()).isNotNull();
+                    assertThat(response.description()).isEqualTo("욕설 사용");
+                }),
+                dynamicTest("한 유저가 같은 키워드 답장 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
+                    // when then
+                    assertThatThrownBy(() -> complaintService.complain(KEYWORD_REPLY_LETTER, 1L, 1L, "욕설 사용"))
+                            .isInstanceOf(DuplicateComplainException.class);
+                })
+        );
     }
 
-    @Test
-    @DisplayName("지도 편지를 신고한다.")
-    public void complainMapLetter() {
-        // GIVEN
-        when(mapComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()));
-        when(mapComplaintRepository.save(any())).thenReturn(Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now()));
+    @DisplayName("지도 편지 시나리오")
+    @TestFactory
+    Collection<DynamicTest> complainMapLetter() {
+        return List.of(
+                dynamicTest("지도 편지를 신고한다.", () -> {
+                    // when
+                    ComplaintResponseDTO response = complaintService.complain(MAP_LETTER, 1L, 1L, "욕설 사용");
 
-        // WHEN
-        ComplaintResponseDTO response = complaintService.complain(MAP_LETTER, 1L, 1L, "욕설 사용");
-
-        // THEN
-        assertThat(response.id()).isEqualTo(1L);
+                    // then
+                    assertThat(response.id()).isNotNull();
+                    assertThat(response.description()).isEqualTo("욕설 사용");
+                }),
+                dynamicTest("한 유저가 같은 키워드 답장 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
+                    // when then
+                    assertThatThrownBy(() -> complaintService.complain(MAP_LETTER, 1L, 1L, "욕설 사용"))
+                            .isInstanceOf(DuplicateComplainException.class);
+                })
+        );
     }
 
-    @Test
-    @DisplayName("같은 지도 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
-    public void duplicateMapComplain() {
-        // GIVEN
-        Complaint complaint = Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now());
-        when(mapComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()))
-                .thenReturn(Complaints.from(List.of(complaint)));
-        when(mapComplaintRepository.save(any())).thenReturn(complaint);
-        complaintService.complain(MAP_LETTER, 1L, 1L, "욕설 사용");
+    @DisplayName("지도 편지 시나리오")
+    @TestFactory
+    Collection<DynamicTest> complainMapReplyLetter() {
+        return List.of(
+                dynamicTest("지도 편지를 신고한다.", () -> {
+                    // when
+                    ComplaintResponseDTO response = complaintService.complain(MAP_REPLY_LETTER, 1L, 1L, "욕설 사용");
 
-        // WHEN - THEN
-        assertThatThrownBy(() -> complaintService.complain(MAP_LETTER, 1L, 1L, "욕설 사용"))
-                .isInstanceOf(DuplicateComplainException.class);
+                    // then
+                    assertThat(response.id()).isNotNull();
+                    assertThat(response.description()).isEqualTo("욕설 사용");
+                }),
+                dynamicTest("한 유저가 같은 키워드 답장 편지를 2회 이상 신고 시도할 경우, 예외가 발생한다.", () -> {
+                    // when then
+                    assertThatThrownBy(() -> complaintService.complain(MAP_REPLY_LETTER, 1L, 1L, "욕설 사용"))
+                            .isInstanceOf(DuplicateComplainException.class);
+                })
+        );
     }
 
+    @DisplayName("경고 알림이 필요한 경우, 작성자의 경고 횟수를 증가시킨다.")
     @Test
-    @DisplayName("키워드 답장 편지를 신고한다.")
-    public void complainKeywordReplyLetter() {
-        // GIVEN
-        when(keywordReplyComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()));
-        when(keywordReplyComplaintRepository.save(any())).thenReturn(
-                Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now()));
+    void needWarningWithUserService() {
+        // given
+        keywordComplaintRepository.save(Complaint.create(1L, 1L, "욕설 사용"));
+        keywordComplaintRepository.save(Complaint.create(1L, 2L, "욕설 사용"));
+        Long writerId = 5L;
 
-        // WHEN
-        ComplaintResponseDTO response = complaintService.complain(KEYWORD_REPLY_LETTER, 1L, 1L, "욕설 사용");
+        given(letterService.blockLetter(1L))
+                .willReturn(writerId);
 
-        // THEN
-        assertThat(response.id()).isEqualTo(1L);
+        // when
+        complaintService.complain(KEYWORD_LETTER, 1L, 3L, "욕설 사용");
+
+        // then
+        Mockito.verify(userService, Mockito.times(1))
+                .updateWarningCount(writerId);
     }
 
+    @DisplayName("경고 알림이 필요한 경우, 작성자에게 알림을 전송한다.")
     @Test
-    @DisplayName("같은 답장 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
-    public void duplicateKeywordReplyComplain() {
-        // GIVEN
-        Complaint complaint = Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now());
-        when(keywordReplyComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()))
-                .thenReturn(Complaints.from(List.of(complaint)));
-        when(keywordReplyComplaintRepository.save(any())).thenReturn(complaint);
-        complaintService.complain(KEYWORD_REPLY_LETTER, 1L, 1L, "욕설 사용");
+    void needWarningWithNotificationService() {
+        // given
+        keywordComplaintRepository.save(Complaint.create(1L, 1L, "욕설 사용"));
+        keywordComplaintRepository.save(Complaint.create(1L, 2L, "욕설 사용"));
+        Long writerId = 5L;
 
-        // WHEN - THEN
-        assertThatThrownBy(() -> complaintService.complain(KEYWORD_REPLY_LETTER, 1L, 1L, "욕설 사용"))
-                .isInstanceOf(DuplicateComplainException.class);
-    }
+        given(letterService.blockLetter(1L))
+                .willReturn(writerId);
 
-    @Test
-    @DisplayName("지도 답장 편지를 신고한다.")
-    public void complainMapReplyLetter() {
-        // GIVEN
-        when(mapReplyComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()));
-        when(mapReplyComplaintRepository.save(any())).thenReturn(
-                Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now()));
+        // when
+        complaintService.complain(KEYWORD_LETTER, 1L, 3L, "욕설 사용");
 
-        // WHEN
-        ComplaintResponseDTO response = complaintService.complain(MAP_REPLY_LETTER, 1L, 1L, "욕설 사용");
-
-        // THEN
-        assertThat(response.id()).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("같은 답장 편지를 2회 이상 신고 시도할 경우, DuplicateComplainException을 발생시킨다.")
-    public void duplicateMapReplyComplain() {
-        // GIVEN
-        Complaint complaint = Complaint.of(1L, 1L, 1L, "욕설사용", LocalDateTime.now());
-        when(mapReplyComplaintRepository.findByLetterId(1L)).thenReturn(Complaints.from(new ArrayList<>()))
-                .thenReturn(Complaints.from(List.of(complaint)));
-        when(mapReplyComplaintRepository.save(any())).thenReturn(complaint);
-        complaintService.complain(MAP_REPLY_LETTER, 1L, 1L, "욕설 사용");
-
-        // WHEN - THEN
-        assertThatThrownBy(() -> complaintService.complain(MAP_REPLY_LETTER, 1L, 1L, "욕설 사용"))
-                .isInstanceOf(DuplicateComplainException.class);
+        // then
+        Mockito.verify(notificationService, Mockito.times(1))
+                .sendNotification(WARNING, writerId, 1L, null);
     }
 }

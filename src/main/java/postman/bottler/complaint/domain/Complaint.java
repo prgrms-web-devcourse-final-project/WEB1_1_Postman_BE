@@ -16,14 +16,14 @@ public class Complaint {
 
     private final LocalDateTime createdAt;
 
-    protected Complaint(Long letterId, Long reporterId, String description) {
+    private Complaint(Long letterId, Long reporterId, String description) {
         this.letterId = letterId;
         this.reporterId = reporterId;
         this.description = description;
         this.createdAt = LocalDateTime.now();
     }
 
-    protected Complaint(Long id, Long letterId, Long reporterId, String description, LocalDateTime createdAt) {
+    private Complaint(Long id, Long letterId, Long reporterId, String description, LocalDateTime createdAt) {
         this.id = id;
         this.letterId = letterId;
         this.reporterId = reporterId;
@@ -37,11 +37,6 @@ public class Complaint {
 
     public static Complaint of(Long id, Long letterId, Long reporterId, String description, LocalDateTime createdAt) {
         return new Complaint(id, letterId, reporterId, description, createdAt);
-    }
-
-
-    public Boolean isReporter(Long reporterId) {
-        return this.reporterId.equals(reporterId);
     }
 
     public void validateDuplicateComplaint(Long letterId, Long reporterId) {

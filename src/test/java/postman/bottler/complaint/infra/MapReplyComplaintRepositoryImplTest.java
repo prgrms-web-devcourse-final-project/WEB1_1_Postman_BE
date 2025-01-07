@@ -10,16 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.complaint.application.repository.MapComplaintRepository;
+import postman.bottler.complaint.application.repository.MapReplyComplaintRepository;
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.Complaints;
 
-@DisplayName("지도 편지 리포지토리 테스트")
+
+@DisplayName("지도 답장 편지 리포지토리 테스트")
 @SpringBootTest
 @Transactional
-public class MapComplaintRepositoryTest {
+class MapReplyComplaintRepositoryImplTest {
+
     @Autowired
-    private MapComplaintRepository mapComplaintRepository;
+    private MapReplyComplaintRepository mapReplyComplaintRepository;
 
     @DisplayName("새로운 신고를 저장한다.")
     @Test
@@ -28,10 +30,10 @@ public class MapComplaintRepositoryTest {
         Complaint complaint = Complaint.create(1L, 1L, "욕설 사용");
 
         // when
-        mapComplaintRepository.save(complaint);
+        mapReplyComplaintRepository.save(complaint);
 
         // then
-        Complaints complaints = mapComplaintRepository.findByLetterId(complaint.getLetterId());
+        Complaints complaints = mapReplyComplaintRepository.findByLetterId(complaint.getLetterId());
         assertThat(complaints.getComplaints()).hasSize(1);
     }
 
@@ -39,10 +41,10 @@ public class MapComplaintRepositoryTest {
     @Test
     void findByLetterId() {
         // given
-        mapComplaintRepository.save(Complaint.create(1L, 1L, "설명"));
+        mapReplyComplaintRepository.save(Complaint.create(1L, 1L, "설명"));
 
         // when
-        Complaints find = mapComplaintRepository.findByLetterId(1L);
+        Complaints find = mapReplyComplaintRepository.findByLetterId(1L);
 
         // then
         assertThat(find.getComplaints()).hasSize(1)
@@ -53,13 +55,13 @@ public class MapComplaintRepositoryTest {
     @Test
     @DisplayName("편지 ID로 조회한 신고 리스트는 MutableList이어야 한다.")
     public void findByLetterIdWithMutable() {
-        // GIVEN
-        mapComplaintRepository.save(Complaint.create(1L, 1L, "설명"));
+        // given
+        mapReplyComplaintRepository.save(Complaint.create(1L, 1L, "설명"));
 
-        // WHEN
-        Complaints find = mapComplaintRepository.findByLetterId(1L);
+        // when
+        Complaints find = mapReplyComplaintRepository.findByLetterId(1L);
 
-        // THEN
+        // then
         List<Complaint> complaints = find.getComplaints();
         assertDoesNotThrow((() -> complaints.add(Complaint.create(2L, 1L, "설명"))));
     }
