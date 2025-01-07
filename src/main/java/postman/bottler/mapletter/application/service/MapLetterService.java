@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -93,7 +94,8 @@ public class MapLetterService {
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, userId == mapLetter.getCreateUserId());
+        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId,
+                checkReplyMapLetter(letterId, userId).isReplied(), isArchived(letterId, userId));
     }
 
     @Transactional
@@ -110,6 +112,11 @@ public class MapLetterService {
         validMinPage(page);
         Page<FindSentMapLetter> sentMapLetters = mapLetterRepository.findSentLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
+
+        if (sentMapLetters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
+
         validMaxPage(sentMapLetters.getTotalPages(), page);
 
         return sentMapLetters.map(this::toFindSentMapLetter);
@@ -129,6 +136,11 @@ public class MapLetterService {
         validMinPage(page);
         Page<FindReceivedMapLetterDTO> letters = mapLetterRepository.findActiveReceivedMapLettersByUserId(userId,
                 PageRequest.of(page - 1, size));
+
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
+
         validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(letter -> {
@@ -186,6 +198,10 @@ public class MapLetterService {
         Page<ReplyMapLetter> findReply = replyMapLetterRepository.findReplyMapLettersBySourceLetterId(letterId,
                 PageRequest.of(page - 1, size));
 
+        if (findReply.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
+
         validMaxPage(findReply.getTotalPages(), page);
 
         return findReply.map(FindAllReplyMapLettersResponseDTO::from);
@@ -210,8 +226,7 @@ public class MapLetterService {
         MapLetterArchive archive = MapLetterArchive.builder().mapLetterId(letterId).userId(userId)
                 .createdAt(LocalDateTime.now()).build();
 
-        boolean isArchived = mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
-        if (isArchived) {
+        if (isArchived(letterId, userId)) {
             throw new MapLetterAlreadyArchivedException("편지가 이미 저장되어 있습니다.");
         }
 
@@ -223,6 +238,11 @@ public class MapLetterService {
         validMinPage(page);
         Page<FindAllArchiveLetters> letters = mapLetterArchiveRepository.findAllById(userId,
                 PageRequest.of(page - 1, size));
+
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
+
         validMaxPage(letters.getTotalPages(), page);
         return letters;
     }
@@ -264,18 +284,23 @@ public class MapLetterService {
         }
     }
 
+    @Transactional(readOnly = true)
     public OneLetterResponseDTO findArchiveOneLetter(Long letterId, Long userId) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
         mapLetter.validateAccess(userId);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId,
+                checkReplyMapLetter(letterId, userId).isReplied(), isArchived(letterId, userId));
     }
 
     public Page<FindAllSentReplyMapLetterResponseDTO> findAllSentReplyMapLetter(int page, int size, Long userId) {
         validMinPage(page);
         Page<ReplyMapLetter> letters = replyMapLetterRepository.findAllSentReplyByUserId(userId,
                 PageRequest.of(page - 1, size));
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
         validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(replyMapLetter -> {
@@ -289,6 +314,9 @@ public class MapLetterService {
     public Page<FindAllSentMapLetterResponseDTO> findAllSentMapLetter(int page, int size, Long userId) {
         validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByCreateUserId(userId, PageRequest.of(page - 1, size));
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
         validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(mapLetter -> {
@@ -304,6 +332,11 @@ public class MapLetterService {
         validMinPage(page);
         Page<ReplyMapLetter> letters = replyMapLetterRepository.findActiveReplyMapLettersBySourceUserId(userId,
                 PageRequest.of(page - 1, size));
+
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
+
         validMaxPage(letters.getTotalPages(), page);
 
         return letters.map(replyMapLetter -> {
@@ -316,6 +349,9 @@ public class MapLetterService {
     public Page<FindAllReceivedLetterResponseDTO> findAllReceivedLetter(int page, int size, Long userId) {
         validMinPage(page);
         Page<MapLetter> letters = mapLetterRepository.findActiveByTargetUserId(userId, PageRequest.of(page - 1, size));
+        if (letters.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(page - 1, size), 0);
+        }
         validMaxPage(letters.getTotalPages(), page);
         return letters.map(letter -> {
             String sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
@@ -403,7 +439,7 @@ public class MapLetterService {
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
-        return OneLetterResponseDTO.from(mapLetter, profileImg, false);
+        return OneLetterResponseDTO.from(mapLetter, profileImg, false, false, false);
     }
 
     @Transactional(readOnly = true)
@@ -412,5 +448,10 @@ public class MapLetterService {
         return finds.stream()
                 .map(find -> new NotificationLabelRequestDTO(find.getId(), find.getLabel()))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isArchived(Long letterId, Long userId) {
+        return mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
     }
 }

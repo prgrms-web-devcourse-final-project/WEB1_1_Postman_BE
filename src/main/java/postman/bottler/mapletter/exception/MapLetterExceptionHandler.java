@@ -109,4 +109,10 @@ public class MapLetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.PAGINATION_VALIDATION_ERROR.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(TypeNotFoundException.class)
+    public ApiResponse<?> handleTypeNotFoundException(TypeNotFoundException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.TYPE_NOT_FOUND.getCode(), e.getMessage(), null);
+    }
 }
