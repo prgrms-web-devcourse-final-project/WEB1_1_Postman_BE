@@ -4,6 +4,7 @@
 ## 📌 보틀러
 - 보틀러는 유리병에 담긴 익명 편지를 주고받으며 자신의 이야기를 공유할 수 있는 서비스입니다.
 - 아날로그 편지의 설렘을 온라인으로 재해석해서 사용자가 자신의 감정을 담아 특별한 순간을 공유할 수 있는 경험을 제공하는 서비스입니다.
+<br>
 
 ## 📌 주요 기능 소개
 ### ✉️ 키워드 편지
@@ -24,9 +25,12 @@
 - 📮 편지 받기
   - 현재 위치에서 근처에 남겨진 편지를 탐색하고 읽을 수 있습니다.
   - 받는 사람으로 지정된 편지를 읽을 수 있습니다.
- 
+ <br>
+
 ## 📌 인프라
  <img width="1132" alt="KakaoTalk_Photo_2025-01-03-15-16-29" src="https://github.com/user-attachments/assets/b11e3397-65d8-48d2-bbd9-9385e038571e" />
+ 
+<br>
 
 
 ## 📌‍ 팀원 소개 및 역할
@@ -35,5 +39,12 @@
 | <img src="https://avatars.githubusercontent.com/u/118621852?v=4" width="200px"/> | <img src="https://avatars.githubusercontent.com/u/91796400?v=4" width="200px"/> | <img src="https://avatars.githubusercontent.com/u/49338509?v=4" width="200px"/> | <img src="https://avatars.githubusercontent.com/u/124065095?v=4" width="200px"/> |
 |                   [@kahyun0255](https://github.com/kahyun0255)                   |                     [@yeonsu00](https://github.com/yeonsu00)                    |                    [@l2yujw](https://github.com/l2yujw)                    |                     [@hgh1472](https://github.com/hgh1472)                     |
 |                       지도편지, 답장편지 조회, AWS                        |                  유저, 라벨뽑기, 슬랙봇                  |                  키워드편지, 인프라                  |                  신고, 알림                  |
+<br>
 
-
+## 📌 패키지 구조
+![image](https://github.com/user-attachments/assets/74c13d89-1161-4db1-8c38-2faf8f034e1f)
+- **도메인 계층**을 우선적으로 개발
+    - 도메인 계층은 순수 자바 코드로 구성
+- 도메인과 인프라의 분리
+- Infrastructure Layer가 달라져도 Application Layer에 영향을 주지 않음
+- 레이어 간 의존성 역전을 통해 경계 유지

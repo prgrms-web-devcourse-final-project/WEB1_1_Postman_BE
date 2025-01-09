@@ -40,7 +40,7 @@ public class ComplaintService {
         Complaints complaints = repository.findByLetterId(letterId);
         Complaint complaint = Complaint.create(letterId, reporterId, description);
         complaints.add(complaint);
-        if (complaints.needsWarningNotification()) {
+        if (complaints.needWarning()) {
             Long writer = blockLetter(type, letterId);
             notificationService.sendNotification(NotificationType.WARNING, writer, letterId, null);
             userService.updateWarningCount(writer);
