@@ -132,7 +132,8 @@ public class MapLetterService {
             targetUserNickname = userService.getNicknameById(findSentMapLetter.getTargetUser());
         }
 
-        return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname);
+        return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname,
+                findSentMapLetter.getType().equals("REPLY") ? LetterType.REPLY : LetterType.MAP);
     }
 
     @Transactional(readOnly = true)
@@ -156,7 +157,7 @@ public class MapLetterService {
                 senderProfileImg = userService.getProfileImageUrlById(letter.getSenderId());
             }
 
-            return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg);
+            return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg, LetterType.MAP);
         });
     }
 
@@ -311,7 +312,7 @@ public class MapLetterService {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
             String title = "Re: " + sourceLetter.getTitle();
 
-            return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title);
+            return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title, LetterType.REPLY);
         });
     }
 
@@ -328,7 +329,7 @@ public class MapLetterService {
             if (mapLetter.getType() == MapLetterType.PRIVATE) {
                 targetUserNickname = userService.getNicknameById(mapLetter.getTargetUserId());
             }
-            return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
+            return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname, LetterType.MAP);
         });
     }
 
@@ -346,7 +347,7 @@ public class MapLetterService {
         return letters.map(replyMapLetter -> {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
             String title = "Re: " + sourceLetter.getTitle();
-            return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title);
+            return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title, LetterType.MAP);
         });
     }
 
@@ -360,7 +361,7 @@ public class MapLetterService {
         return letters.map(letter -> {
             String sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
             String sendUserProfileImg = userService.getProfileImageUrlById(letter.getCreateUserId());
-            return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg);
+            return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg, LetterType.MAP);
         });
     }
 
