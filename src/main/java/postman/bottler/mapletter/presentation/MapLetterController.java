@@ -125,27 +125,6 @@ public class MapLetterController {
         return ApiResponse.onDeleteSuccess(letters);
     }
 
-//    @GetMapping("/sent")
-//    @Operation(summary = "보낸 편지 전체 조회", description = "로그인 필수. 내가 보낸 편지, 답장 전체 조회. 페이징 처리(1페이지부터). ")
-//    public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
-//    }
-
-//    @GetMapping("/received")
-//    @Operation(summary = "받은 편지 전체 조회", description = "로그인 필수. 내가 타겟인 편지, 나에게 온 답장 전체 조회. 페이징 처리(1페이지부터)")
-//    public ApiResponse<MapLetterPageResponseDTO<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size,
-//            @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
-//    }
-
     @GetMapping
     @Operation(summary = "주변 편지 조회", description = "로그인 필수. 반경 500m 내 퍼블릭 편지, 나에게 타겟으로 온 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude,
