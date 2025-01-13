@@ -25,6 +25,9 @@ import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRe
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterInfo;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterType;
 import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
@@ -47,6 +50,7 @@ import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.reply.application.dto.ReplyType;
@@ -453,5 +457,22 @@ public class MapLetterService {
     @Transactional(readOnly = true)
     public boolean isArchived(Long letterId, Long userId) {
         return mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
+    }
+
+    @Transactional
+    public void deleteMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
+        for (LetterInfo letter : letters.letters()) {
+            if (letter.letterType() == LetterType.MAP) {
+                MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
+                findMapLetter.validDeleteMapLetter(userId);
+                mapLetterRepository.softDelete(letter.letterId());
+            } else if (letter.letterType() == LetterType.REPLY) {
+                ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
+                replyMapLetter.validDeleteReplyMapLetter(userId);
+                replyMapLetterRepository.softDelete(letter.letterId());
+
+                deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+            }
+        }
     }
 }

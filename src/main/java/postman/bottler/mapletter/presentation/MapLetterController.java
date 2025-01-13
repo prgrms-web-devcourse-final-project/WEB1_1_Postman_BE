@@ -22,6 +22,7 @@ import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterReq
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersV1RequestDTO;
 import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
@@ -117,8 +118,8 @@ public class MapLetterController {
     }
 
     @DeleteMapping
-    @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능")
-    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO letters,
+    @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능. 3차 스프린트 기간 삭제 예정")
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
         mapLetterService.deleteMapLetter(letters.letterIds(), userId);
@@ -219,8 +220,8 @@ public class MapLetterController {
     }
 
     @DeleteMapping("/reply")
-    @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태")
-    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersRequestDTO letters,
+    @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태. 3차 스프린트 기간 삭제 예정")
+    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
         mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
@@ -288,5 +289,14 @@ public class MapLetterController {
                             MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
             default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
         };
+    }
+
+    @DeleteMapping("/v2")
+    @Operation(summary = "편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능")
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteMapLetters(deleteLetters, userId);
+        return ApiResponse.onDeleteSuccess(deleteLetters);
     }
 }
