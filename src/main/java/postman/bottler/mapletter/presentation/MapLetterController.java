@@ -248,47 +248,6 @@ public class MapLetterController {
         return ApiResponse.onDeleteSuccess(letters);
     }
 
-//    @GetMapping("/sent/reply")
-//    @Operation(summary = "보낸 답장 편지 조회", description = "보낸 편지 조회에서 답장 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllSentReplyMapLetterResponseDTO>> findAllSentReplyMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size,
-//            @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
-//    }
-
-//    @GetMapping("/sent/letter")
-//    @Operation(summary = "보낸 지도 편지 조회", description = "보낸 편지 조회에서 지도 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllSentMapLetterResponseDTO>> findAllSentMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
-//    }
-
-//    @GetMapping("/received/reply")
-//    @Operation(summary = "받은 답장 편지 조회", description = "받은 편지 조회에서 답장 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedReplyLetterResponseDTO>> findAllReceivedReplyMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
-//    }
-
-//    @GetMapping("/received/letter")
-//    @Operation(summary = "받은 타겟 편지 조회", description = "받은 편지 조회에서 타겟 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedLetterResponseDTO>> findAllReceivedMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
-//    }
-
     @GetMapping("/guest")
     @Operation(summary = "로그인 하지 않은 유저 주변 편지 조회", description = "로그인 하지 않은 유저의 반경 500m 내 퍼블릭 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> guestFindNearbyMapLetters(@RequestParam String latitude,
