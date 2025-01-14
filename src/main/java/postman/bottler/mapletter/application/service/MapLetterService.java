@@ -86,7 +86,7 @@ public class MapLetterService {
         return save;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId, BigDecimal latitude,
                                                  BigDecimal longitude) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
@@ -96,6 +96,10 @@ public class MapLetterService {
 
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
         mapLetter.validateAccess(userId);
+
+        if (mapLetter.getTargetUserId()!=null && mapLetter.getTargetUserId().equals(userId)) {
+            mapLetterRepository.updateRead(mapLetter);
+        }
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId,

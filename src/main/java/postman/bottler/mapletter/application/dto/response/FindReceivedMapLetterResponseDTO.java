@@ -19,7 +19,8 @@ public record FindReceivedMapLetterResponseDTO(
         Long sourceLetterId,
         String senderNickname, //타겟편지에서 누가 나한테 보냈는지
         String senderProfileImg, //타겟편지에서 보낸 사람의 프로필 이미지
-        DeleteMapLettersRequestDTO.LetterType deleteType //삭제 타입
+        DeleteMapLettersRequestDTO.LetterType deleteType, //삭제 타입
+        boolean isRead //한 번이라도 읽었는지
 ) {
     public static FindReceivedMapLetterResponseDTO from(FindReceivedMapLetterDTO letterDTO, String senderNickname,
                                                         String senderProfileImg,
@@ -37,6 +38,7 @@ public record FindReceivedMapLetterResponseDTO(
                 .senderNickname(senderNickname)
                 .senderProfileImg(senderProfileImg)
                 .deleteType(deleteType)
+                .isRead(letterDTO.getIsRead() == 1)
                 .build();
     }
 }

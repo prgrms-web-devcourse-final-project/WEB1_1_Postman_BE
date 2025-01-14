@@ -17,7 +17,8 @@ public record FindAllReceivedLetterResponseDTO(
         String sendUserNickname,
         String sendUserProfileImg,
         LocalDateTime createdAt,
-        DeleteMapLettersRequestDTO.LetterType deleteType //삭제 타입
+        DeleteMapLettersRequestDTO.LetterType deleteType, //삭제 타입
+        boolean isRead //한 번이라도 읽었는지
 ) {
     public static FindAllReceivedLetterResponseDTO from(MapLetter mapLetter, String sendUserNickname,
                                                         String sendUserProfileImg,
@@ -33,6 +34,7 @@ public record FindAllReceivedLetterResponseDTO(
                 .sendUserProfileImg(sendUserProfileImg)
                 .createdAt(mapLetter.getCreatedAt())
                 .deleteType(deleteType)
+                .isRead(mapLetter.isRead())
                 .build();
     }
 }

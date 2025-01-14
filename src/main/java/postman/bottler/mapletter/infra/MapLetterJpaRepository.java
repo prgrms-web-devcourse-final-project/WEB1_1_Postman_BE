@@ -91,7 +91,7 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
 
     @Query(value = "SELECT m.map_letter_id AS letterId, m.title AS title, m.description AS description, "
             + "m.latitude as latitude, m.longitude as longitude, " +
-            "m.label AS label, NULL AS sourceLetterId, 'TARGET' AS type, m.created_at AS createdAt, m.create_user_id as senderId  "
+            "m.label AS label, NULL AS sourceLetterId, 'TARGET' AS type, m.created_at AS createdAt, m.create_user_id as senderId, m.is_read as isRead  "
             +
             "FROM map_letter m " +
             "WHERE m.target_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false " +
@@ -99,7 +99,7 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
             "SELECT r.reply_letter_id AS letterId, "
             + "CONCAT('Re: ', (SELECT ml.title FROM map_letter ml WHERE ml.map_letter_id = r.source_letter_id)) AS title, "
             + "NULL AS description, NULL AS latitude, NULL AS longitude, "
-            + "r.label AS label, r.source_letter_id AS sourceLetterId, 'REPLY' AS type, r.created_at AS createdAt, r.create_user_id as senderId "
+            + "r.label AS label, r.source_letter_id AS sourceLetterId, 'REPLY' AS type, r.created_at AS createdAt, r.create_user_id as senderId, false as isRead "
             +
             "FROM reply_map_letter r " +
             "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false " +

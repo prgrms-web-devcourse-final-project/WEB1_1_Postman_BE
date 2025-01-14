@@ -117,15 +117,6 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findOneMapLetter(letterId, userId, lat, lon));
     }
 
-    @DeleteMapping
-    @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능. 3차 스프린트 기간 삭제 예정")
-    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
-                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
-        mapLetterService.deleteMapLetter(letters.letterIds(), userId);
-        return ApiResponse.onDeleteSuccess(letters);
-    }
-
     @GetMapping
     @Operation(summary = "주변 편지 조회", description = "로그인 필수. 반경 500m 내 퍼블릭 편지, 나에게 타겟으로 온 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude,
@@ -219,15 +210,6 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findArchiveOneLetter(letterId, userId));
     }
 
-    @DeleteMapping("/reply")
-    @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태. 3차 스프린트 기간 삭제 예정")
-    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
-                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
-        mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
-        return ApiResponse.onDeleteSuccess(letters);
-    }
-
     @GetMapping("/guest")
     @Operation(summary = "로그인 하지 않은 유저 주변 편지 조회", description = "로그인 하지 않은 유저의 반경 500m 내 퍼블릭 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> guestFindNearbyMapLetters(@RequestParam String latitude,
@@ -289,6 +271,24 @@ public class MapLetterController {
                             MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
             default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
         };
+    }
+
+    @DeleteMapping
+    @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능. 3차 스프린트 기간 삭제 예정")
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteMapLetter(letters.letterIds(), userId);
+        return ApiResponse.onDeleteSuccess(letters);
+    }
+
+    @DeleteMapping("/reply")
+    @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태. 3차 스프린트 기간 삭제 예정")
+    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
+        return ApiResponse.onDeleteSuccess(letters);
     }
 
     @DeleteMapping("/v2")
