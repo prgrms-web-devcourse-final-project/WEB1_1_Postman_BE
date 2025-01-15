@@ -70,14 +70,14 @@ public class LabelController {
     }
 
     @Operation(summary = "선착순 라벨 뽑기 대상 라벨 조회", description = "선착순 뽑기 대상 라벨을 조회합니다.")
-    @PostMapping("/first-come")
+    @GetMapping("/first-come")
     public ApiResponse<List<LabelResponseDTO>> findFirstComeLabels() {
         List<LabelResponseDTO> labelResponseDTO = labelService.findFirstComeLabels();
         return ApiResponse.onSuccess(labelResponseDTO);
     }
 
     @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 입력된 라벨 ID에 해당하는 라벨을 선착순으로 가져갑니다.")
-    @PostMapping("/{labelId}")
+    @PostMapping("/first-come")
     public ApiResponse<String> createFirstComeFirstServedLabel(@PathVariable Long labelId,
                                                                @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         labelService.createFirstComeFirstServedLabel(labelId, customUserDetails.getUserId());
