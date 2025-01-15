@@ -57,4 +57,10 @@ public class LabelService {
             throw new FirstComeFirstServedLabelException("선착순 뽑기 마감됐습니다.");
         }
     }
+
+    @Transactional
+    public List<LabelResponseDTO> findFirstComeLabels() {
+        List<Label> labels = labelRepository.findFirstComeLabels();
+        return labels.stream().map(Label::toLabelResponseDTO).toList();
+    }
 }

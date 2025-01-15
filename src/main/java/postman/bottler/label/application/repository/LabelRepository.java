@@ -19,4 +19,6 @@ public interface LabelRepository {
     void createUserLabel(User user, Label label);
 
     List<UserLabel> findUserLabelByUserAndLabel(User user, Label label);
+
+    List<Label> findFirstComeLabels();
 }

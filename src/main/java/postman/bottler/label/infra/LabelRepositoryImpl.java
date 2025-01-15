@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import postman.bottler.label.domain.Label;
+import postman.bottler.label.domain.LabelType;
 import postman.bottler.label.domain.UserLabel;
 import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.exception.UserLabelNotFoundException;
@@ -79,5 +80,11 @@ public class LabelRepositoryImpl implements LabelRepository {
         List<UserLabelEntity> userLabelEntities = userLabelJpaRepository.findLabelsByUserAndLabel(user.getUserId(),
                 label.getLabelId());
         return UserLabelEntity.toUserLabels(userLabelEntities);
+    }
+
+    @Override
+    public List<Label> findFirstComeLabels() {
+        List<LabelEntity> labelEntities = userLabelJpaRepository.findFirstComeLabels(LabelType.FIRST_COME);
+        return LabelEntity.toLabels(labelEntities);
     }
 }
