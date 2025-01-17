@@ -97,7 +97,7 @@ public class MapLetterService {
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
         mapLetter.validateAccess(userId);
 
-        if (mapLetter.getTargetUserId()!=null && mapLetter.getTargetUserId().equals(userId)) {
+        if (mapLetter.isTargetUser(userId)) {
             mapLetterRepository.updateRead(mapLetter);
         }
 

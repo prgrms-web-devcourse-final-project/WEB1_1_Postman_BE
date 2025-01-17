@@ -136,4 +136,8 @@ public class MapLetter {
             throw new CommonForbiddenException("해당 편지에 접근할 수 없습니다.");
         }
     }
+
+    public boolean isTargetUser(Long userId) {
+        return this.targetUserId != null && this.targetUserId.equals(userId);
+    }
 }
