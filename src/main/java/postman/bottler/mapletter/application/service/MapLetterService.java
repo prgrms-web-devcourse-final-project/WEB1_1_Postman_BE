@@ -467,16 +467,19 @@ public class MapLetterService {
     @Transactional
     public void deleteMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
         for (LetterInfo letter : letters.letters()) {
-            if (letter.letterType() == LetterType.MAP) {
-                MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
-                findMapLetter.validDeleteMapLetter(userId);
-                mapLetterRepository.softDelete(letter.letterId());
-            } else if (letter.letterType() == LetterType.REPLY) {
-                ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
-                replyMapLetter.validDeleteReplyMapLetter(userId);
-                replyMapLetterRepository.softDelete(letter.letterId());
+            switch (letter.letterType()){
+                case MAP:
+                    MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
+                    findMapLetter.validDeleteMapLetter(userId);
+                    mapLetterRepository.softDelete(letter.letterId());
+                    break;
+                case REPLY:
+                    ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
+                    replyMapLetter.validDeleteReplyMapLetter(userId);
+                    replyMapLetterRepository.softDelete(letter.letterId());
 
-                deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+                    deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+                    break;
             }
         }
     }
