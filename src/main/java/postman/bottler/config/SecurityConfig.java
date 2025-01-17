@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/healthcheck").permitAll()
-                        .requestMatchers("/actuator/**").hasAuthority("DEVELOPER")
+                        .requestMatchers("/monitor/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/letters").hasAnyAuthority("USER", "DEVELOPER")
                         .requestMatchers(HttpMethod.POST, "/map/public").hasAnyAuthority("USER", "DEVELOPER")
                         .requestMatchers(HttpMethod.POST, "/map/target").hasAnyAuthority("USER", "DEVELOPER")
