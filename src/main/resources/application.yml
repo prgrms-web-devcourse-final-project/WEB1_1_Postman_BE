@@ -61,3 +61,12 @@ kakao:
 
 slack:
   token: ${SLACK_TOKEN}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true
