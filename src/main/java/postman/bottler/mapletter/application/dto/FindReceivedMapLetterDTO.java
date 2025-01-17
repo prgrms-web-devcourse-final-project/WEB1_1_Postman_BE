@@ -23,4 +23,6 @@ public interface FindReceivedMapLetterDTO {
     LocalDateTime getCreatedAt();
 
     Long getSenderId();
+
+    Integer getIsRead();
 }

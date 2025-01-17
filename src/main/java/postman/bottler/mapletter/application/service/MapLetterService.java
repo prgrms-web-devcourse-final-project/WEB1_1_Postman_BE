@@ -25,6 +25,9 @@ import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRe
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterInfo;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterType;
 import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
@@ -47,6 +50,7 @@ import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.reply.application.dto.ReplyType;
@@ -82,7 +86,7 @@ public class MapLetterService {
         return save;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public OneLetterResponseDTO findOneMapLetter(Long letterId, Long userId, BigDecimal latitude,
                                                  BigDecimal longitude) {
         MapLetter mapLetter = mapLetterRepository.findById(letterId);
@@ -92,6 +96,10 @@ public class MapLetterService {
 
         mapLetter.validateFindOneMapLetter(VIEW_DISTANCE, distance);
         mapLetter.validateAccess(userId);
+
+        if (mapLetter.isTargetUser(userId)) {
+            mapLetterRepository.updateRead(mapLetter);
+        }
 
         String profileImg = userService.getProfileImageUrlById(mapLetter.getCreateUserId());
         return OneLetterResponseDTO.from(mapLetter, profileImg, mapLetter.getCreateUserId() == userId,
@@ -128,7 +136,8 @@ public class MapLetterService {
             targetUserNickname = userService.getNicknameById(findSentMapLetter.getTargetUser());
         }
 
-        return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname);
+        return FindMapLetterResponseDTO.from(findSentMapLetter, targetUserNickname,
+                findSentMapLetter.getType().equals("REPLY") ? LetterType.REPLY : LetterType.MAP);
     }
 
     @Transactional(readOnly = true)
@@ -152,7 +161,7 @@ public class MapLetterService {
                 senderProfileImg = userService.getProfileImageUrlById(letter.getSenderId());
             }
 
-            return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg);
+            return FindReceivedMapLetterResponseDTO.from(letter, senderNickname, senderProfileImg, LetterType.MAP);
         });
     }
 
@@ -307,7 +316,7 @@ public class MapLetterService {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
             String title = "Re: " + sourceLetter.getTitle();
 
-            return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title);
+            return FindAllSentReplyMapLetterResponseDTO.from(replyMapLetter, title, LetterType.REPLY);
         });
     }
 
@@ -324,7 +333,7 @@ public class MapLetterService {
             if (mapLetter.getType() == MapLetterType.PRIVATE) {
                 targetUserNickname = userService.getNicknameById(mapLetter.getTargetUserId());
             }
-            return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname);
+            return FindAllSentMapLetterResponseDTO.from(mapLetter, targetUserNickname, LetterType.MAP);
         });
     }
 
@@ -342,7 +351,7 @@ public class MapLetterService {
         return letters.map(replyMapLetter -> {
             MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
             String title = "Re: " + sourceLetter.getTitle();
-            return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title);
+            return FindAllReceivedReplyLetterResponseDTO.from(replyMapLetter, title, LetterType.MAP);
         });
     }
 
@@ -356,7 +365,7 @@ public class MapLetterService {
         return letters.map(letter -> {
             String sendUserNickname = userService.getNicknameById(letter.getCreateUserId());
             String sendUserProfileImg = userService.getProfileImageUrlById(letter.getCreateUserId());
-            return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg);
+            return FindAllReceivedLetterResponseDTO.from(letter, sendUserNickname, sendUserProfileImg, LetterType.MAP);
         });
     }
 
@@ -453,5 +462,25 @@ public class MapLetterService {
     @Transactional(readOnly = true)
     public boolean isArchived(Long letterId, Long userId) {
         return mapLetterArchiveRepository.findByLetterIdAndUserId(letterId, userId);
+    }
+
+    @Transactional
+    public void deleteMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
+        for (LetterInfo letter : letters.letters()) {
+            switch (letter.letterType()){
+                case MAP:
+                    MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
+                    findMapLetter.validDeleteMapLetter(userId);
+                    mapLetterRepository.softDelete(letter.letterId());
+                    break;
+                case REPLY:
+                    ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
+                    replyMapLetter.validDeleteReplyMapLetter(userId);
+                    replyMapLetterRepository.softDelete(letter.letterId());
+
+                    deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+                    break;
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ package postman.bottler.mapletter.application.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterType;
 
@@ -16,9 +17,11 @@ public record FindAllSentMapLetterResponseDTO(
         String label,
         String targetUserNickname,
         LocalDateTime createdAt,
-        String type //TARGET(타겟 편지), PUBLIC(퍼블릭 편지)
+        String type, //TARGET(타겟 편지), PUBLIC(퍼블릭 편지)
+        DeleteMapLettersRequestDTO.LetterType deleteType //삭제 타입
 ) {
-    public static FindAllSentMapLetterResponseDTO from(MapLetter mapLetter, String targetUserNickname) {
+    public static FindAllSentMapLetterResponseDTO from(MapLetter mapLetter, String targetUserNickname,
+                                                       DeleteMapLettersRequestDTO.LetterType deleteType) {
         return FindAllSentMapLetterResponseDTO.builder()
                 .letterId(mapLetter.getId())
                 .title(mapLetter.getTitle())
@@ -29,6 +32,7 @@ public record FindAllSentMapLetterResponseDTO(
                 .targetUserNickname(targetUserNickname)
                 .createdAt(mapLetter.getCreatedAt())
                 .type(mapLetter.getType() == MapLetterType.PRIVATE ? "TARGET" : "PUBLIC")
+                .deleteType(deleteType)
                 .build();
     }
 }

@@ -38,4 +38,6 @@ public interface MapLetterRepository {
     List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
 
     List<MapLetter> findAllByIds(List<Long> ids);
+
+    void updateRead(MapLetter mapLetter);
 }

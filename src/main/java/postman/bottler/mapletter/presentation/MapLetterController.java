@@ -22,6 +22,7 @@ import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterReq
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteMapLettersV1RequestDTO;
 import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
 import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
@@ -116,36 +117,6 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findOneMapLetter(letterId, userId, lat, lon));
     }
 
-    @DeleteMapping
-    @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능")
-    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO letters,
-                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
-        mapLetterService.deleteMapLetter(letters.letterIds(), userId);
-        return ApiResponse.onDeleteSuccess(letters);
-    }
-
-//    @GetMapping("/sent")
-//    @Operation(summary = "보낸 편지 전체 조회", description = "로그인 필수. 내가 보낸 편지, 답장 전체 조회. 페이징 처리(1페이지부터). ")
-//    public ApiResponse<MapLetterPageResponseDTO<FindMapLetterResponseDTO>> findSentMapLetters(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
-//    }
-
-//    @GetMapping("/received")
-//    @Operation(summary = "받은 편지 전체 조회", description = "로그인 필수. 내가 타겟인 편지, 나에게 온 답장 전체 조회. 페이징 처리(1페이지부터)")
-//    public ApiResponse<MapLetterPageResponseDTO<FindReceivedMapLetterResponseDTO>> findReceivedMapLetters(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size,
-//            @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
-//    }
-
     @GetMapping
     @Operation(summary = "주변 편지 조회", description = "로그인 필수. 반경 500m 내 퍼블릭 편지, 나에게 타겟으로 온 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> findNearbyMapLetters(@RequestParam String latitude,
@@ -239,56 +210,6 @@ public class MapLetterController {
         return ApiResponse.onSuccess(mapLetterService.findArchiveOneLetter(letterId, userId));
     }
 
-    @DeleteMapping("/reply")
-    @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태")
-    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersRequestDTO letters,
-                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getUserId();
-        mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
-        return ApiResponse.onDeleteSuccess(letters);
-    }
-
-//    @GetMapping("/sent/reply")
-//    @Operation(summary = "보낸 답장 편지 조회", description = "보낸 편지 조회에서 답장 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllSentReplyMapLetterResponseDTO>> findAllSentReplyMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size,
-//            @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
-//    }
-
-//    @GetMapping("/sent/letter")
-//    @Operation(summary = "보낸 지도 편지 조회", description = "보낸 편지 조회에서 지도 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllSentMapLetterResponseDTO>> findAllSentMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
-//    }
-
-//    @GetMapping("/received/reply")
-//    @Operation(summary = "받은 답장 편지 조회", description = "받은 편지 조회에서 답장 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedReplyLetterResponseDTO>> findAllReceivedReplyMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
-//    }
-
-//    @GetMapping("/received/letter")
-//    @Operation(summary = "받은 타겟 편지 조회", description = "받은 편지 조회에서 타겟 편지만 보고싶을 경우 사용하는 api. 페이징 처리 때문에 따르 api 생성")
-//    public ApiResponse<MapLetterPageResponseDTO<FindAllReceivedLetterResponseDTO>> findAllReceivedMapLetter(
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "9") int size, @AuthenticationPrincipal CustomUserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-//        return ApiResponse.onSuccess(
-//                MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
-//    }
-
     @GetMapping("/guest")
     @Operation(summary = "로그인 하지 않은 유저 주변 편지 조회", description = "로그인 하지 않은 유저의 반경 500m 내 퍼블릭 편지 조회")
     public ApiResponse<List<FindNearbyLettersResponseDTO>> guestFindNearbyMapLetters(@RequestParam String latitude,
@@ -350,5 +271,32 @@ public class MapLetterController {
                             MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
             default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
         };
+    }
+
+    @DeleteMapping
+    @Operation(summary = "편지 삭제", description = "로그인 필수. 리스트 형태로 1개 ~ n개까지 삭제 가능. 3차 스프린트 기간 삭제 예정")
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteMapLetter(letters.letterIds(), userId);
+        return ApiResponse.onDeleteSuccess(letters);
+    }
+
+    @DeleteMapping("/reply")
+    @Operation(summary = "답장 편지 삭제", description = "로그인 필수. 답장 편지 삭제. 리스트 형태. 3차 스프린트 기간 삭제 예정")
+    public ApiResponse<?> deleteReplyMapLetter(@RequestBody DeleteMapLettersV1RequestDTO letters,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteReplyMapLetter(letters.letterIds(), userId);
+        return ApiResponse.onDeleteSuccess(letters);
+    }
+
+    @DeleteMapping("/v2")
+    @Operation(summary = "편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능")
+    public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteMapLetters(deleteLetters, userId);
+        return ApiResponse.onDeleteSuccess(deleteLetters);
     }
 }
