@@ -137,4 +137,14 @@ public class LetterExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.DEVELOPER_LETTER.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidInputException(
+            InvalidInputException e
+    ) {
+        log.error("Invalid input: {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorStatus.INVALID_INPUT.getHttpStatus()) // 400 Bad Request로 매핑
+                .body(ApiResponse.onFailure(ErrorStatus.INVALID_INPUT.getCode(), e.getMessage(), null));
+    }
 }

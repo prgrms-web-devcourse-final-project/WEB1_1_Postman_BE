@@ -68,6 +68,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: application-test.yml 생성
+        run: |
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > src/test/resources/application-test.yml
+
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
         shell: bash
