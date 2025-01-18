@@ -106,4 +106,11 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
                 .map(MapLetterEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public void updateRead(MapLetter mapLetter) {
+        MapLetterEntity mapLetterEntity = mapLetterJpaRepository.findById(mapLetter.getId())
+                        .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+        mapLetterEntity.updateRead();
+    }
 }

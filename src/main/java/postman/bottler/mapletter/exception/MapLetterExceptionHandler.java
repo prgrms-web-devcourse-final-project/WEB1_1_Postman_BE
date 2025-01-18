@@ -111,6 +111,7 @@ public class MapLetterExceptionHandler {
     }
 
     @ExceptionHandler(TypeNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<?> handleTypeNotFoundException(TypeNotFoundException e) {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.TYPE_NOT_FOUND.getCode(), e.getMessage(), null);

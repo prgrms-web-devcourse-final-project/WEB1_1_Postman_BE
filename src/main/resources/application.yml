@@ -61,3 +61,15 @@ kakao:
 
 slack:
   token: ${SLACK_TOKEN}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+      base-path: /monitor
+  endpoint:
+    prometheus:
+      enabled: true
+  server:
+    port: 9092
