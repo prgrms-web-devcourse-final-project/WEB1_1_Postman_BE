@@ -15,8 +15,12 @@ import static postman.bottler.notification.domain.NotificationType.TARGET_LETTER
 import static postman.bottler.notification.domain.NotificationType.WARNING;
 import static postman.bottler.notification.domain.NotificationType.from;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
+import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 import postman.bottler.notification.application.repository.NotificationRepository;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
@@ -268,5 +273,21 @@ public class NotificationServiceTest {
             verify(notificationRepository, times(2)).save(any());
             verify(pushNotificationProvider, times(1)).pushAll(any());
         }
+    }
+
+    @DisplayName("사용자의 읽지 않은 알림의 개수를 반환한다.")
+    @Test
+    void getUnreadNotificationCount() {
+        // given
+        given(notificationRepository.findByReceiver(any()))
+                .willReturn(Notifications.from(Arrays.asList(
+                        Notification.of(UUID.randomUUID(), WARNING, 1L, null, LocalDateTime.now(), true, null),
+                        Notification.of(UUID.randomUUID(), BAN, 1L, null, LocalDateTime.now(), false, null))));
+
+        // when
+        UnreadNotificationResponseDTO result = notificationService.getUnreadNotificationCount(1L);
+
+        // then
+        assertThat(result.count()).isEqualTo(1L);
     }
 }
