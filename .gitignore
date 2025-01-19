@@ -46,7 +46,10 @@ out/
 .env
 
 application-test.yml
-src/main/resources/application-test.yml
+src/test/resources/application-test.yml
+
+application.yml
+src/main/resources/application.yml
 
 src/main/resources/bottler-fcm.json
 **/bottler-fcm.json
