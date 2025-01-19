@@ -69,8 +69,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: application-test.yml 생성
+      - name: application.yml 및 application-test.yml 생성
         run: |
+          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_TEST_YML }}" > src/test/resources/application-test.yml
 
       - name: Gradle 권한 부여
