@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
 import postman.bottler.notification.application.dto.request.SubscriptionRequestDTO;
@@ -55,6 +57,15 @@ public class NotificationController {
         List<NotificationResponseDTO> userNotifications = notificationService.getUserNotifications(
                 customUserDetails.getUserId());
         return ApiResponse.onSuccess(userNotifications);
+    }
+
+    @Operation(summary = "읽지 않은 알림 개수 조회", description = "사용자의 안읽은 알림 개수를 조회합니다.")
+    @GetMapping("/unread")
+    public ApiResponse<UnreadNotificationResponseDTO> getUnreadCount(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UnreadNotificationResponseDTO unreadNotificationCount = notificationService.getUnreadNotificationCount(
+                customUserDetails.getUserId());
+        return ApiResponse.onSuccess(unreadNotificationCount);
     }
 
     @Operation(summary = "알림 허용", description = "사용자의 기기 토큰을 등록합니다.")
