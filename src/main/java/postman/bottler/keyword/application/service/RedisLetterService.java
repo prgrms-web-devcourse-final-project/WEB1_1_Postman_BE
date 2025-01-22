@@ -1,30 +1,36 @@
 package postman.bottler.keyword.application.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.util.RedisLetterKeyUtil;
+import postman.bottler.letter.application.dto.LetterBoxDTO;
+import postman.bottler.letter.application.service.LetterBoxService;
+import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.exception.LetterNotFoundException;
-import postman.bottler.letter.application.service.LetterBoxService;
-import postman.bottler.letter.application.service.LetterService;
+import postman.bottler.letter.exception.TempRecommendationsNotFoundException;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RedisLetterService {
 
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final LetterBoxService letterBoxService;
-    private static final int MAX_RECOMMENDATIONS = 3;
+
+    @Value("${recommendation.limit.active-recommendations}")
+    private int maxRecommendations;
     private final LetterService letterService;
 
     @Transactional
@@ -45,8 +51,9 @@ public class RedisLetterService {
         String activeKey = RedisLetterKeyUtil.getActiveRecommendationKey(userId);
 
         List<Long> tempRecommendations = getTempRecommendations(tempKey);
-        if (tempRecommendations == null) {
-            return null;
+        if (tempRecommendations.isEmpty()) {
+            log.warn("사용자 [{}]에 대한 임시 추천 데이터가 없습니다.", userId);
+            throw new TempRecommendationsNotFoundException("임시 추천 데이터가 없습니다. userId: " + userId);
         }
         List<Long> activeRecommendations = getActiveRecommendations(activeKey);
 
@@ -74,7 +81,7 @@ public class RedisLetterService {
     }
 
     private void updateActiveRecommendations(Long letterId, List<Long> activeRecommendations, String activeKey) {
-        if (activeRecommendations.size() >= MAX_RECOMMENDATIONS) {
+        if (activeRecommendations.size() >= maxRecommendations) {
             activeRecommendations.remove(0);
         }
         activeRecommendations.add(letterId);
@@ -85,10 +92,9 @@ public class RedisLetterService {
         return letterService.existsLetter(letterId);
     }
 
-    @NotNull
     private List<Long> getActiveRecommendations(String activeKey) {
         List<Long> activeRecommendations = redisTemplate.opsForValue().get(activeKey);
-        if (activeRecommendations == null) {
+        if (activeRecommendations == null || activeRecommendations.isEmpty()) {
             activeRecommendations = new LinkedList<>();
         }
         return activeRecommendations;
@@ -97,7 +103,8 @@ public class RedisLetterService {
     private List<Long> getTempRecommendations(String tempKey) {
         List<Long> tempRecommendations = redisTemplate.opsForValue().get(tempKey);
         if (tempRecommendations == null || tempRecommendations.isEmpty()) {
-            return null;
+            log.warn("Redis 키 [{}]에 대한 추천 데이터가 없습니다.", tempKey);
+            return new ArrayList<>(); // 빈 리스트 반환
         }
         return tempRecommendations;
     }

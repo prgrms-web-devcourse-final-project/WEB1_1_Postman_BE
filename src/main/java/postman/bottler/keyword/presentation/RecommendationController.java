@@ -77,7 +77,7 @@ public class RecommendationController {
     public ResponseEntity<Map<Long, List<Long>>> getRecommendTemp() {
         List<Long> userIds = userService.getAllUserIds();
         Map<Long, List<Long>> result = new HashMap<>();
-        userIds.forEach(userId -> result.put(userId, redisLetterService.getRecommendations(userId))
+        userIds.forEach(userId -> result.put(userId, redisLetterService.getRecommendedTemp(userId))
         );
         return ResponseEntity.ok(result);
     }
