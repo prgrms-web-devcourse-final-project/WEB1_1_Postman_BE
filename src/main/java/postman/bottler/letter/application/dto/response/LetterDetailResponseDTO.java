@@ -15,10 +15,11 @@ public record LetterDetailResponseDTO(
         String profile,
         String label,
         boolean isOwner,
+        boolean isReplied,
         LocalDateTime createdAt
 ) {
     public static LetterDetailResponseDTO from(Letter letter, List<LetterKeyword> letterKeywords, Long currentUserId,
-                                               String profile) {
+                                               String profile, boolean isReplied) {
         return new LetterDetailResponseDTO(
                 letter.getId(),
                 letter.getTitle(),
@@ -29,6 +30,7 @@ public record LetterDetailResponseDTO(
                 profile,
                 letter.getLabel(),
                 letter.getUserId().equals(currentUserId),
+                isReplied,
                 letter.getCreatedAt()
         );
     }
