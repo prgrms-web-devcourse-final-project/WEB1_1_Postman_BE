@@ -80,6 +80,11 @@ public class ReplyLetterService {
         return replyLetter.getSenderId();
     }
 
+    @Transactional
+    public boolean checkIsReplied(Long letterId, Long currentUserId) {
+        return replyLetterRepository.existsByLetterIdAndSenderId(letterId, currentUserId);
+    }
+
     private void validateNotExistingReply(Long letterId, Long senderId) {
         if (replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId)) {
             throw new DuplicateReplyLetterException("이미 이 편지에 답장한 기록이 있습니다");
