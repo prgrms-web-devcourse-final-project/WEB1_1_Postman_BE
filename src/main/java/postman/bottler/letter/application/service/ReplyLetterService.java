@@ -139,7 +139,7 @@ public class ReplyLetterService {
         notificationService.sendNotification(
                 KEYWORD_REPLY,
                 replyLetter.getReceiverId(),
-                replyLetter.getLetterId(),
+                replyLetter.getId(),
                 replyLetter.getLabel()
         );
     }
