@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.notification.application.PushNotificationProvider;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
+import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
 import postman.bottler.notification.application.repository.NotificationRepository;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
@@ -34,6 +35,12 @@ public class NotificationService {
             pushNotificationProvider.pushAll(pushMessages);
         }
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public UnreadNotificationResponseDTO getUnreadNotificationCount(Long userId) {
+        Notifications notifications = notificationRepository.findByReceiver(userId);
+        return new UnreadNotificationResponseDTO(notifications.getUnreadCount());
     }
 
     @Transactional

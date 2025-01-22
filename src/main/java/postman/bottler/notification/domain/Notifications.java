@@ -30,4 +30,10 @@ public class Notifications {
         }
         return new Notifications(changed);
     }
+
+    public long getUnreadCount() {
+        return notifications.stream()
+                .filter(n -> !n.getIsRead())
+                .count();
+    }
 }
