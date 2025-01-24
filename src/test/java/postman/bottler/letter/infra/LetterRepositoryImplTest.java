@@ -109,7 +109,7 @@ class LetterRepositoryImplTest {
             when(letterJpaRepository.findAllByIds(List.of(1L, 2L))).thenReturn(List.of(letterEntity));
 
             // when
-            List<Letter> result = repository.findAllActiveByIds(List.of(1L, 2L));
+            List<Letter> result = repository.findAllByIds(List.of(1L, 2L));
 
             // then
             assertThat(result).hasSize(1);

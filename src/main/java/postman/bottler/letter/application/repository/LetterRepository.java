@@ -9,7 +9,7 @@ public interface LetterRepository {
 
     Optional<Letter> findById(Long letterId);
 
-    List<Letter> findAllActiveByIds(List<Long> letterIds);
+    List<Letter> findAllByIds(List<Long> letterIds);
 
     List<Letter> findAllByUserId(Long userId);
 
