@@ -92,7 +92,7 @@ public class ReplyLetterService {
     }
 
     private ReplyLetter saveReplyLetter(Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId) {
-        ReceiverDTO receiverInfo = letterService.findReceiverInfoById(letterId);
+        ReceiverDTO receiverInfo = letterService.findReceiverInfo(letterId);
         String title = formatReplyTitle(receiverInfo.title());
         return replyLetterRepository.save(requestDTO.toDomain(title, letterId, receiverInfo.receiverId(), senderId));
     }

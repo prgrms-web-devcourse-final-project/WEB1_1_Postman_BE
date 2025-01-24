@@ -89,7 +89,7 @@ public class RedisLetterService {
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.existsLetter(letterId);
+        return letterService.letterExists(letterId);
     }
 
     private List<Long> getActiveRecommendations(String activeKey) {

@@ -106,22 +106,22 @@ class LetterServiceTest extends TestBase {
 
     @Test
     @DisplayName("추천 편지 목록 조회")
-    void findRecommendHeaders() {
+    void findRecommendedLetters() {
         // given
         List<Long> letterIds = List.of(1L, 2L);
         List<Letter> mockLetters = List.of(
                 Letter.builder().id(1L).title("추천 제목1").content("내용1").build(),
                 Letter.builder().id(2L).title("추천 제목2").content("내용2").build()
         );
-        when(letterRepository.findAllActiveByIds(letterIds)).thenReturn(mockLetters);
+        when(letterRepository.findAllByIds(letterIds)).thenReturn(mockLetters);
 
         // when
-        List<Letter> result = letterService.findRecommendHeaders(letterIds);
+        List<Letter> result = letterService.findRecommendedLetters(letterIds);
 
         // then
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo(1L);
-        verify(letterRepository, times(1)).findAllActiveByIds(letterIds);
+        verify(letterRepository, times(1)).findAllByIds(letterIds);
     }
 
     @Nested
@@ -136,7 +136,7 @@ class LetterServiceTest extends TestBase {
             when(letterRepository.findById(1L)).thenReturn(Optional.of(mockLetter));
 
             // when & then
-            assertThrows(LetterAuthorMismatchException.class, () -> letterService.deleteLetters(letterIds, 200L));
+            assertThrows(LetterAuthorMismatchException.class, () -> letterService.softDeleteLetters(letterIds, 200L));
             verify(letterRepository, times(1)).findById(1L);
         }
 
@@ -149,7 +149,7 @@ class LetterServiceTest extends TestBase {
             doNothing().when(letterRepository).softDeleteByIds(anyList());
 
             // when
-            letterService.deleteLetters(letterIds, 100L);
+            letterService.softDeleteLetters(letterIds, 100L);
 
             // then
             verify(letterRepository, times(1)).softDeleteByIds(letterIds);
@@ -173,12 +173,12 @@ class LetterServiceTest extends TestBase {
 
     @Test
     @DisplayName("편지 존재 여부 확인")
-    void existsLetter() {
+    void letterExists() {
         // given
         when(letterRepository.existsById(1L)).thenReturn(true);
 
         // when
-        boolean result = letterService.existsLetter(1L);
+        boolean result = letterService.letterExists(1L);
 
         // then
         assertThat(result).isTrue();
