@@ -45,7 +45,7 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReplyLetterSummaryResponseDTO> findReplyLetters(
+    public Page<ReplyLetterSummaryResponseDTO> findReplyLetterSummaries(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
         return replyLetterRepository
