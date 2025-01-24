@@ -3,12 +3,11 @@ package postman.bottler.letter.application.service;
 import static postman.bottler.notification.domain.NotificationType.KEYWORD_REPLY;
 
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.PageRequestDTO;
@@ -24,7 +23,6 @@ import postman.bottler.letter.exception.DuplicateReplyLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.application.service.NotificationService;
-import postman.bottler.reply.application.dto.ReplyType;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class ReplyLetterService {
     private final LetterService letterService;
     private final LetterBoxService letterBoxService;
     private final NotificationService notificationService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisLetterService redisLetterService;
 
     @Transactional
     public ReplyLetterResponseDTO createReplyLetter(
@@ -69,7 +67,11 @@ public class ReplyLetterService {
                 throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
             }
         });
-        letterIds.forEach(this::deleteRecentReply);
+        letterIds.forEach(letterId -> {
+            ReplyLetter replyLetter = replyLetterRepository.findById(letterId)
+                    .orElseThrow(() -> new LetterNotFoundException("편지가 존재하지 않습니다."));
+            redisLetterService.deleteRecentReply(replyLetter.getReceiverId(), letterId, replyLetter.getLabel());
+        });
         replyLetterRepository.deleteByIds(letterIds);
     }
 
@@ -103,7 +105,7 @@ public class ReplyLetterService {
 
     private void updateLetterBoxAndSendNotification(ReplyLetter replyLetter, String labelUrl) {
         saveReplyLetterToBox(replyLetter);
-        saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
+        redisLetterService.saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
         sendReplyNotification(replyLetter);
     }
 
@@ -120,21 +122,6 @@ public class ReplyLetterService {
         );
     }
 
-    private void saveReplyToRedis(Long letterId, String labelUrl, Long receiverId) {
-        String key = "REPLY:" + receiverId;
-        String value = ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
-
-        Long size = redisTemplate.opsForList().size(key);
-        int REDIS_SAVED_REPLY = 6;
-        if (size != null && size >= REDIS_SAVED_REPLY) {
-            redisTemplate.opsForList().rightPop(key);
-        }
-
-        if (!Objects.requireNonNull(redisTemplate.opsForList().range(key, 0, -1)).contains(value)) {
-            redisTemplate.opsForList().leftPush(key, value);
-        }
-    }
-
     private void sendReplyNotification(ReplyLetter replyLetter) {
         notificationService.sendNotification(
                 KEYWORD_REPLY,
@@ -142,16 +129,6 @@ public class ReplyLetterService {
                 replyLetter.getId(),
                 replyLetter.getLabel()
         );
-    }
-
-    private void deleteRecentReply(Long letterId) {
-        ReplyLetter replyLetter = replyLetterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException("편지가 존재하지 않습니다."));
-
-        String key = "REPLY:" + replyLetter.getReceiverId();
-        String value = ReplyType.KEYWORD + ":" + letterId + ":" + replyLetter.getLabel();
-
-        redisTemplate.opsForList().remove(key, 1, value);
     }
 
     private ReplyLetter findReplyLetter(Long replyLetterId) {

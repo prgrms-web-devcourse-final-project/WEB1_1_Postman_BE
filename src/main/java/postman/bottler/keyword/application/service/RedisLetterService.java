@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.letter.exception.TempRecommendationsNotFoundException;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
+import postman.bottler.reply.application.dto.ReplyType;
 
 @Slf4j
 @Service
@@ -27,6 +29,7 @@ import postman.bottler.notification.application.dto.request.RecommendNotificatio
 public class RedisLetterService {
 
     private final RedisTemplate<String, List<Long>> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplateForReply;
     private final LetterBoxService letterBoxService;
 
     @Value("${recommendation.limit.active-recommendations}")
@@ -117,5 +120,27 @@ public class RedisLetterService {
     public List<Long> getRecommendedTemp(Long userId) {
         String tempKey = RedisLetterKeyUtil.getTempRecommendationKey(userId);
         return redisTemplate.opsForValue().get(tempKey);
+    }
+
+    public void saveReplyToRedis(Long letterId, String labelUrl, Long receiverId) {
+        String key = "REPLY:" + receiverId;
+        String value = ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
+
+        Long size = redisTemplateForReply.opsForList().size(key);
+        int REDIS_SAVED_REPLY = 6;
+        if (size != null && size >= REDIS_SAVED_REPLY) {
+            redisTemplateForReply.opsForList().rightPop(key);
+        }
+
+        if (!Objects.requireNonNull(redisTemplateForReply.opsForList().range(key, 0, -1)).contains(value)) {
+            redisTemplateForReply.opsForList().leftPush(key, value);
+        }
+    }
+
+    public void deleteRecentReply(Long receiverId, Long letterId, String label) {
+        String key = "REPLY:" + receiverId;
+        String value = ReplyType.KEYWORD + ":" + letterId + ":" + label;
+
+        redisTemplate.opsForList().remove(key, 1, value);
     }
 }
