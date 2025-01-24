@@ -137,9 +137,9 @@ public class RedisLetterService {
         }
     }
 
-    public void deleteRecentReply(Long receiverId, Long letterId, String label) {
+    public void deleteRecentReply(Long receiverId, Long replyLetterId, String label) {
         String key = "REPLY:" + receiverId;
-        String value = ReplyType.KEYWORD + ":" + letterId + ":" + label;
+        String value = ReplyType.KEYWORD + ":" + replyLetterId + ":" + label;
 
         redisTemplate.opsForList().remove(key, 1, value);
     }

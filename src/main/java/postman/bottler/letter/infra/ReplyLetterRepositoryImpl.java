@@ -7,9 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import postman.bottler.letter.application.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
-import postman.bottler.letter.application.repository.ReplyLetterRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -54,5 +54,10 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     @Override
     public boolean existsByIdAndSenderId(Long replyLetterId, Long userId) {
         return replyLetterJpaRepository.existsByIdAndSenderId(replyLetterId, userId);
+    }
+
+    @Override
+    public List<ReplyLetter> findAllByIds(List<Long> letterIds) {
+        return replyLetterJpaRepository.findAllByIds(letterIds);
     }
 }

@@ -45,7 +45,7 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReplyLetterSummaryResponseDTO> findReplyLettersById(
+    public Page<ReplyLetterSummaryResponseDTO> findReplyLettersByLetterId(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
         return replyLetterRepository
@@ -61,18 +61,15 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public void deleteReplyLetters(List<Long> letterIds, Long userId) {
-        letterIds.forEach(letterId -> {
-            if (!findReplyLetter(letterId).getSenderId().equals(userId)) {
-                throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
-            }
-        });
-        letterIds.forEach(letterId -> {
-            ReplyLetter replyLetter = replyLetterRepository.findById(letterId)
-                    .orElseThrow(() -> new LetterNotFoundException("편지가 존재하지 않습니다."));
-            redisLetterService.deleteRecentReply(replyLetter.getReceiverId(), letterId, replyLetter.getLabel());
-        });
-        replyLetterRepository.deleteByIds(letterIds);
+    public void deleteReplyLetters(List<Long> replyLetterIds, Long userId) {
+        List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
+        if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
+            throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
+        }
+        replyLetters.forEach(
+                replyLetter -> redisLetterService.deleteRecentReply(replyLetter.getReceiverId(), replyLetter.getId(),
+                        replyLetter.getLabel()));
+        replyLetterRepository.deleteByIds(replyLetterIds);
     }
 
     @Transactional

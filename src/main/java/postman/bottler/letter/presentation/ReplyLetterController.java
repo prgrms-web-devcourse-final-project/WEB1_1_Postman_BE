@@ -76,7 +76,7 @@ public class ReplyLetterController {
     ) {
         letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
         Page<ReplyLetterSummaryResponseDTO> result =
-                letterReplyService.findReplyLettersById(letterId, pageRequestDTO, userDetails.getUserId());
+                letterReplyService.findReplyLettersByLetterId(letterId, pageRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
     }
 

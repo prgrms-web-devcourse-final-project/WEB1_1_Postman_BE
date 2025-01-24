@@ -20,4 +20,6 @@ public interface ReplyLetterRepository {
     boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
 
     boolean existsByIdAndSenderId(Long replyLetterId, Long userId);
+
+    List<ReplyLetter> findAllByIds(List<Long> letterIds);
 }
