@@ -56,12 +56,10 @@ public class LetterService {
 
     @Transactional
     public void softDeleteLetters(List<Long> letterIds, Long userId) {
-        letterIds.forEach(letterId -> {
-            Letter letter = findLetter(letterId);
-            if (!letter.getUserId().equals(userId)) {
-                throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
-            }
-        });
+        List<Letter> letters = letterRepository.findAllByIds(letterIds);
+        if (letters.stream().anyMatch(letter -> !letter.getUserId().equals(userId))) {
+            throw new LetterAuthorMismatchException("삭제할 편지가 요청자와 일치하지 않습니다.");
+        }
         letterRepository.softDeleteByIds(letterIds);
     }
 
