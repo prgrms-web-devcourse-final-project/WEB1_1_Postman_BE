@@ -1,5 +1,8 @@
 package postman.bottler.letter.presentation;
 
+import static postman.bottler.global.response.code.ErrorStatus.PAGINATION_VALIDATION_ERROR;
+import static postman.bottler.global.response.code.ErrorStatus.REPLY_LETTER_VALIDATION_ERROR;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,12 +27,10 @@ import postman.bottler.letter.application.dto.response.PageResponseDTO;
 import postman.bottler.letter.application.dto.response.ReplyLetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.application.dto.response.ReplyLetterSummaryResponseDTO;
-import postman.bottler.letter.exception.InvalidPageRequestException;
-import postman.bottler.letter.exception.InvalidReplyLetterRequestException;
 import postman.bottler.letter.application.service.LetterBoxService;
 import postman.bottler.letter.application.service.LetterDeletionService;
 import postman.bottler.letter.application.service.ReplyLetterService;
-import postman.bottler.letter.utiil.ValidationUtil;
+import postman.bottler.letter.presentation.annotation.LetterValidationMetaData;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @Slf4j
@@ -41,7 +42,6 @@ public class ReplyLetterController {
 
     private final ReplyLetterService letterReplyService;
     private final LetterDeletionService letterDeletionService;
-    private final ValidationUtil validationUtil;
     private final LetterBoxService letterBoxService;
 
     @Operation(
@@ -49,13 +49,13 @@ public class ReplyLetterController {
             description = "지정된 편지 ID에 대한 답장을 생성합니다."
     )
     @PostMapping("/{letterId}")
+    @LetterValidationMetaData(message = "키워드 답장 편지 유효성 검사 실패", errorStatus = REPLY_LETTER_VALIDATION_ERROR)
     public ApiResponse<ReplyLetterResponseDTO> createReplyLetter(
             @PathVariable Long letterId,
             @RequestBody @Valid ReplyLetterRequestDTO letterReplyRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        validateReplyLetterRequest(bindingResult);
         ReplyLetterResponseDTO result = letterReplyService.createReplyLetter(letterId, letterReplyRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onCreateSuccess(result);
@@ -67,6 +67,7 @@ public class ReplyLetterController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/{letterId}")
+    @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
     public ApiResponse<PageResponseDTO<ReplyLetterSummaryResponseDTO>> getRepliesForLetter(
             @PathVariable Long letterId,
             @Valid PageRequestDTO pageRequestDTO,
@@ -74,7 +75,6 @@ public class ReplyLetterController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         letterBoxService.validateLetterInUserBox(letterId, userDetails.getUserId());
-        validatePageRequest(bindingResult);
         Page<ReplyLetterSummaryResponseDTO> result =
                 letterReplyService.findReplyLettersById(letterId, pageRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -108,15 +108,5 @@ public class ReplyLetterController {
                 LetterDeleteDTO.fromReplyLetter(replyLetterDeleteRequestDTO), userDetails.getUserId()
         );
         return ApiResponse.onSuccess("success");
-    }
-
-    private void validateReplyLetterRequest(BindingResult bindingResult) {
-        validationUtil.validate(bindingResult,
-                errors -> new InvalidReplyLetterRequestException("유효성 검사 실패", errors));
-    }
-
-    private void validatePageRequest(BindingResult bindingResult) {
-        validationUtil.validate(bindingResult,
-                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
     }
 }
