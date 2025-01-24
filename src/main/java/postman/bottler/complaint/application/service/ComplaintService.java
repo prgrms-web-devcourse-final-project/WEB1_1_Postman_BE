@@ -3,6 +3,7 @@ package postman.bottler.complaint.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
 import postman.bottler.complaint.application.repository.ComplaintRepository;
 import postman.bottler.complaint.application.repository.KeywordComplaintRepository;
 import postman.bottler.complaint.application.repository.KeywordReplyComplaintRepository;
@@ -11,13 +12,12 @@ import postman.bottler.complaint.application.repository.MapReplyComplaintReposit
 import postman.bottler.complaint.domain.Complaint;
 import postman.bottler.complaint.domain.ComplaintType;
 import postman.bottler.complaint.domain.Complaints;
-import postman.bottler.complaint.application.dto.response.ComplaintResponseDTO;
 import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.application.service.ReplyLetterService;
 import postman.bottler.mapletter.application.BlockMapLetterType;
 import postman.bottler.mapletter.application.service.MapLetterService;
-import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.notification.application.service.NotificationService;
+import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.user.application.service.UserService;
 
 @Service
@@ -61,7 +61,7 @@ public class ComplaintService {
         return switch (type) {
             case MAP_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.MAP_LETTER, letterId);
             case MAP_REPLY_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.REPLY, letterId);
-            case KEYWORD_LETTER -> letterService.blockLetter(letterId);
+            case KEYWORD_LETTER -> letterService.softBlockLetter(letterId);
             case KEYWORD_REPLY_LETTER -> replyLetterService.blockLetter(letterId);
         };
     }

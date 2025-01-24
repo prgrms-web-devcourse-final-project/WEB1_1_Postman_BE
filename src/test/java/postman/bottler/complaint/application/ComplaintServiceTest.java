@@ -134,7 +134,7 @@ public class ComplaintServiceTest {
         keywordComplaintRepository.save(Complaint.create(1L, 2L, "욕설 사용"));
         Long writerId = 5L;
 
-        given(letterService.blockLetter(1L))
+        given(letterService.softBlockLetter(1L))
                 .willReturn(writerId);
 
         // when
@@ -153,7 +153,7 @@ public class ComplaintServiceTest {
         keywordComplaintRepository.save(Complaint.create(1L, 2L, "욕설 사용"));
         Long writerId = 5L;
 
-        given(letterService.blockLetter(1L))
+        given(letterService.softBlockLetter(1L))
                 .willReturn(writerId);
 
         // when

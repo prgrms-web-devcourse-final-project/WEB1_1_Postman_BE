@@ -158,13 +158,13 @@ class LetterServiceTest extends TestBase {
 
     @Test
     @DisplayName("편지 차단")
-    void blockLetter() {
+    void softBlockLetter() {
         // given
         when(letterRepository.findById(1L)).thenReturn(Optional.of(mockLetter));
         doNothing().when(letterRepository).softBlockById(1L);
 
         // when
-        Long result = letterService.blockLetter(1L);
+        Long result = letterService.softBlockLetter(1L);
 
         // then
         assertThat(result).isEqualTo(100L);

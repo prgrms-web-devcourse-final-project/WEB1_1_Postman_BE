@@ -64,7 +64,7 @@ public class LetterService {
     }
 
     @Transactional
-    public Long blockLetter(Long letterId) {
+    public Long softBlockLetter(Long letterId) {
         Letter letter = findLetter(letterId);
         letterRepository.softBlockById(letterId);
         return letter.getUserId();
