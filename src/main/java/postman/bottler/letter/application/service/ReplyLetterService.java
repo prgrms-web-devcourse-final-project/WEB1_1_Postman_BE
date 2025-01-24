@@ -45,7 +45,7 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReplyLetterSummaryResponseDTO> findReplyLettersByLetterId(
+    public Page<ReplyLetterSummaryResponseDTO> findReplyLetters(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
         return replyLetterRepository
@@ -63,12 +63,17 @@ public class ReplyLetterService {
     @Transactional
     public void deleteReplyLetters(List<Long> replyLetterIds, Long userId) {
         List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
+
         if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
             throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
         }
+
         replyLetters.forEach(
-                replyLetter -> redisLetterService.deleteRecentReply(replyLetter.getReceiverId(), replyLetter.getId(),
-                        replyLetter.getLabel()));
+                replyLetter -> redisLetterService.deleteRecentReply(
+                        replyLetter.getReceiverId(), replyLetter.getId(), replyLetter.getLabel()
+                )
+        );
+
         replyLetterRepository.deleteByIds(replyLetterIds);
     }
 
@@ -80,8 +85,8 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public boolean checkIsReplied(Long letterId, Long currentUserId) {
-        return replyLetterRepository.existsByLetterIdAndSenderId(letterId, currentUserId);
+    public boolean checkIsReplied(Long letterId, Long senderId) {
+        return replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId);
     }
 
     private void validateNotExistingReply(Long letterId, Long senderId) {
