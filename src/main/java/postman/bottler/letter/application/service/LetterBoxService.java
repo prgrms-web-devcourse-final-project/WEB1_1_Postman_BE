@@ -42,13 +42,9 @@ public class LetterBoxService {
         return findLetters(userId, pageRequestDTO.toPageable(), BoxType.RECEIVE);
     }
 
-    public Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
-        return letterBoxRepository.findLetters(userId, pageable, boxType);
-    }
-
     @Transactional(readOnly = true)
-    public List<Long> findReceivedLettersByUserId(Long userId) {
-        return letterBoxRepository.findReceivedLettersByUserId(userId);
+    public List<Long> findReceivedLetterIdsByUserId(Long userId) {
+        return letterBoxRepository.findReceivedLetterIdsByUserId(userId);
     }
 
     @Transactional
@@ -68,5 +64,9 @@ public class LetterBoxService {
         if (!isLetterInUserBox) {
             throw new UnauthorizedLetterAccessException("사용자가 해당 편지에 접근할 권한이 없습니다.");
         }
+    }
+
+    private Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
+        return letterBoxRepository.findLetters(userId, pageable, boxType);
     }
 }

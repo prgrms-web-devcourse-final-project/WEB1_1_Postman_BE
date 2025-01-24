@@ -103,7 +103,8 @@ class LetterBoxServiceTest extends TestBase {
         @DisplayName("모든 편지 요약을 성공적으로 조회한다")
         void findAllLetterSummaries() {
             // given
-            when(letterBoxRepository.findAllLetters(1L, pageRequestDTO.toPageable())).thenReturn(mockPage);
+            when(letterBoxRepository.findLetters(1L, pageRequestDTO.toPageable(), BoxType.UNKNOWN)).thenReturn(
+                    mockPage);
 
             // when
             Page<LetterSummaryResponseDTO> result = letterBoxService.findAllLetterSummaries(pageRequestDTO, 1L);
@@ -117,7 +118,8 @@ class LetterBoxServiceTest extends TestBase {
         @DisplayName("받은 편지 요약 조회 시 빈 결과 처리")
         void findReceivedLetterSummariesWithNoData() {
             // given
-            when(letterBoxRepository.findReceivedLetters(1L, pageRequestDTO.toPageable())).thenReturn(Page.empty());
+            when(letterBoxRepository.findLetters(1L, pageRequestDTO.toPageable(), BoxType.RECEIVE)).thenReturn(
+                    Page.empty());
 
             // when
             Page<LetterSummaryResponseDTO> result = letterBoxService.findReceivedLetterSummaries(pageRequestDTO, 1L);
@@ -135,10 +137,10 @@ class LetterBoxServiceTest extends TestBase {
         @DisplayName("사용자가 받은 편지 ID를 성공적으로 조회한다")
         void findReceivedLettersByUserId() {
             // given
-            when(letterBoxRepository.findReceivedLettersByUserId(1L)).thenReturn(List.of(101L, 102L));
+            when(letterBoxRepository.findReceivedLetterIdsByUserId(1L)).thenReturn(List.of(101L, 102L));
 
             // when
-            List<Long> result = letterBoxService.findReceivedLettersByUserId(1L);
+            List<Long> result = letterBoxService.findReceivedLetterIdsByUserId(1L);
 
             // then
             assertThat(result).containsExactly(101L, 102L);

@@ -13,7 +13,7 @@ public interface LetterBoxRepository {
 
     Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType);
 
-    List<Long> findReceivedLettersByUserId(Long userId);
+    List<Long> findReceivedLetterIdsByUserId(Long userId);
 
     void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType);
 
