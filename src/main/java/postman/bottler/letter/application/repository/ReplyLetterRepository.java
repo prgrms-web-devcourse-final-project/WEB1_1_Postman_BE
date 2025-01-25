@@ -13,6 +13,8 @@ public interface ReplyLetterRepository {
 
     Optional<ReplyLetter> findById(Long replyLetterId);
 
+    List<ReplyLetter> findAllByIds(List<Long> letterIds);
+
     void deleteByIds(List<Long> letterIds);
 
     void blockReplyLetterById(Long replyLetterId);
@@ -20,6 +22,4 @@ public interface ReplyLetterRepository {
     boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
 
     boolean existsByIdAndSenderId(Long replyLetterId, Long userId);
-
-    List<ReplyLetter> findAllByIds(List<Long> letterIds);
 }

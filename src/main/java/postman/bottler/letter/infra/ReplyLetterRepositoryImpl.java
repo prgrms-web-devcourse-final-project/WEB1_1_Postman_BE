@@ -37,6 +37,11 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
+    public List<ReplyLetter> findAllByIds(List<Long> letterIds) {
+        return replyLetterJpaRepository.findAllByIds(letterIds);
+    }
+
+    @Override
     public void deleteByIds(List<Long> letterIds) {
         replyLetterJpaRepository.deleteByIds(letterIds);
     }
@@ -54,10 +59,5 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     @Override
     public boolean existsByIdAndSenderId(Long replyLetterId, Long userId) {
         return replyLetterJpaRepository.existsByIdAndSenderId(replyLetterId, userId);
-    }
-
-    @Override
-    public List<ReplyLetter> findAllByIds(List<Long> letterIds) {
-        return replyLetterJpaRepository.findAllByIds(letterIds);
     }
 }
