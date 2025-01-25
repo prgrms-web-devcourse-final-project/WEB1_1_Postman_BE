@@ -13,9 +13,9 @@ import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
-@Slf4j
 public class LetterBoxRepositoryImpl implements LetterBoxRepository {
 
     private final LetterBoxQueryRepository letterBoxQueryRepository;
