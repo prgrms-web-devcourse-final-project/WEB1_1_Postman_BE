@@ -3,7 +3,6 @@ package postman.bottler.letter.infra;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,6 @@ import postman.bottler.letter.infra.entity.ReplyLetterEntity;
 
 @Repository
 @RequiredArgsConstructor
-@Slf4j
 public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     private final ReplyLetterJpaRepository replyLetterJpaRepository;
