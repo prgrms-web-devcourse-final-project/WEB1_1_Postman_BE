@@ -37,7 +37,9 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public List<ReplyLetter> findAllByIds(List<Long> letterIds) {
-        return replyLetterJpaRepository.findAllByIds(letterIds);
+        return replyLetterJpaRepository.findAllByIds(letterIds).stream()
+                .map(ReplyLetterEntity::toDomain)
+                .toList();
     }
 
     @Override

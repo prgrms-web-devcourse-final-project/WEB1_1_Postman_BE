@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
 
 public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntity, Long> {
@@ -22,7 +21,7 @@ public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntit
     Optional<ReplyLetterEntity> findById(@NotNull Long id);
 
     @Query("SELECT r FROM ReplyLetterEntity r WHERE r.id IN :replyLetterIds AND r.isDeleted = false")
-    List<ReplyLetter> findAllByIds(List<Long> replyLetterIds);
+    List<ReplyLetterEntity> findAllByIds(List<Long> replyLetterIds);
 
     @Modifying
     @Query("UPDATE ReplyLetterEntity r SET r.isDeleted = true WHERE r.id IN :ids")
