@@ -37,7 +37,7 @@ public enum LetterTypeProcessor {
         }
 
         private void processSendReplyLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
-            context.replyLetterService().deleteReplyLetters(ids, userId);
+            context.replyLetterService().softDeleteReplyLetters(ids, userId);
             context.letterBoxService().deleteByLetterIdsAndType(ids, LetterType.REPLY_LETTER, BoxType.UNKNOWN);
         }
 

@@ -62,7 +62,7 @@ public class ComplaintService {
             case MAP_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.MAP_LETTER, letterId);
             case MAP_REPLY_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.REPLY, letterId);
             case KEYWORD_LETTER -> letterService.softBlockLetter(letterId);
-            case KEYWORD_REPLY_LETTER -> replyLetterService.blockLetter(letterId);
+            case KEYWORD_REPLY_LETTER -> replyLetterService.softBlockLetter(letterId);
         };
     }
 }

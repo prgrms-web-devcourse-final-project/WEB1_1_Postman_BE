@@ -61,7 +61,7 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public void deleteReplyLetters(List<Long> replyLetterIds, Long userId) {
+    public void softDeleteReplyLetters(List<Long> replyLetterIds, Long userId) {
         List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
 
         if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
@@ -74,13 +74,13 @@ public class ReplyLetterService {
                 )
         );
 
-        replyLetterRepository.deleteByIds(replyLetterIds);
+        replyLetterRepository.softDeleteByIds(replyLetterIds);
     }
 
     @Transactional
-    public Long blockLetter(Long replyLetterId) {
+    public Long softBlockLetter(Long replyLetterId) {
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
-        replyLetterRepository.blockReplyLetterById(replyLetterId);
+        replyLetterRepository.softBlockById(replyLetterId);
         return replyLetter.getSenderId();
     }
 
