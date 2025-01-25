@@ -47,7 +47,7 @@ public class LetterBoxQueryRepository {
                 .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
                         .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
                 .where(letterBox.userId.eq(userId)
-                        .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
+                        .and(boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null))
                 .orderBy(letterBox.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -70,7 +70,7 @@ public class LetterBoxQueryRepository {
                 .select(letterBox.id)
                 .from(letterBox)
                 .where(letterBox.userId.eq(userId)
-                        .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
+                        .and(boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null))
                 .fetch()
                 .size();
     }
