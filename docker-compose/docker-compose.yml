@@ -4,6 +4,7 @@ services:
     container_name: app-server
     ports:
       - "80:8080"  # 컨테이너 포트를 8080으로 노출
+      - "9092:9092"
     env_file: # 환경 변수 파일(.env) 참조
       - .env
     depends_on:
