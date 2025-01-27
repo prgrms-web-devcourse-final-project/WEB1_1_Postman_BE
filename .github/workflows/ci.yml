@@ -48,6 +48,10 @@ jobs:
       # Slack 환경변수
       SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
 
+      # 스케쥴러 환경변수
+      BATCH_SIZE: ${{ secrets.BATCH_SIZE }}
+      BATCH_PARALLELISM: ${{ secrets.BATCH_PARALLELISM }}
+
 
     steps:
       - name: 코드 가져오기
