@@ -53,6 +53,7 @@ jobs:
 
       # 스케쥴러 환경변수
       BATCH_SIZE: ${{ secrets.BATCH_SIZE }}
+      BATCH_PARALLELISM: ${{ secrets.BATCH_PARALLELISM }}
 
 
     steps:
