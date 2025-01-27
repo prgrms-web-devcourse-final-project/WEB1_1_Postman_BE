@@ -112,6 +112,7 @@ public class LetterExceptionHandler {
     @ExceptionHandler(TempRecommendationsNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleInvalidLetterTypeException(
             TempRecommendationsNotFoundException e) {
+        log.error("Temp recommendations not found: {}", e.getMessage());
         return ResponseEntity
                 .status(TEMP_RECOMMENDATIONS_NOT_FOUND.getHttpStatus())
                 .body(ApiResponse.onFailure(TEMP_RECOMMENDATIONS_NOT_FOUND.getCode(), e.getMessage(), null));
