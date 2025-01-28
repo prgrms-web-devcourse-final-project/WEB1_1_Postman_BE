@@ -25,6 +25,7 @@ import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRe
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTOV1;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterInfo;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterType;
@@ -258,6 +259,15 @@ public class MapLetterService {
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
+        for (Long archiveId : deleteArchivedLettersRequestDTO.letterIds()) {
+            MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
+            findArchiveInfo.validDeleteArchivedLetter(userId);
+            mapLetterArchiveRepository.deleteById(archiveId);
+        }
+    }
+
+    @Transactional
+    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO, Long userId) { //삭제 예정
         for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
             findArchiveInfo.validDeleteArchivedLetter(userId);
