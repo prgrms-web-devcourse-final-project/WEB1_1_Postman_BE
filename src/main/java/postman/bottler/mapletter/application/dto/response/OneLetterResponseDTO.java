@@ -17,7 +17,8 @@ public record OneLetterResponseDTO(
         LocalDateTime createdAt,
         boolean isOwner,
         boolean isReplied,
-        boolean isArchived
+        boolean isArchived,
+        boolean isTarget
 ) {
     public static OneLetterResponseDTO from(MapLetter mapLetter, String profileImg, boolean isOwner, boolean isReplied,
                                             boolean isArchived) {
@@ -33,6 +34,7 @@ public record OneLetterResponseDTO(
                 .isOwner(isOwner)
                 .isReplied(isReplied)
                 .isArchived(isArchived)
+                .isTarget(mapLetter.getTargetUserId()!=null)
                 .build();
     }
 }
