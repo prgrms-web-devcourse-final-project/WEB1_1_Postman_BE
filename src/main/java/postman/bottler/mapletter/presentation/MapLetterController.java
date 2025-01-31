@@ -254,7 +254,7 @@ public class MapLetterController {
     }
 
     @GetMapping("/saved")
-    public ApiResponse<?> savedLetters(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
+    public ApiResponse<?> savedLettersV1(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
                                        @RequestParam(defaultValue = "1") int page,
                                        @RequestParam(defaultValue = "9") int size) {
         Long userId = user.getUserId();
@@ -277,6 +277,36 @@ public class MapLetterController {
                             MapLetterPageResponseDTO.from(
                                     mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
             case "received-target" -> //받은 타겟 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
+            default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
+        };
+    }
+
+    @GetMapping("/saved/v2")
+    public ApiResponse<?> savedLetters(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
+                                       @RequestParam(defaultValue = "1") int page,
+                                       @RequestParam(defaultValue = "9") int size) {
+        Long userId = user.getUserId();
+        return switch (type) {
+            case "sent-all" -> //보낸 편지 전체 조회(지도편지, 답장 편지)
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
+            case "sent-reply" -> //보낸 답장 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(
+                                    mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
+            case "sent-map" -> //보낸 지도 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
+            case "received-all" -> //받은 편지 전체 조회(타겟 편지, 답장 편지)
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
+            case "received-reply" -> //받은 답장 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(
+                                    mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
+            case "received-map" -> //받은 타겟 편지 전체 조회
                     ApiResponse.onSuccess(
                             MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
             default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
