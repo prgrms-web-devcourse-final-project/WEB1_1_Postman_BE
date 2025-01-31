@@ -21,18 +21,13 @@ import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRe
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTOV1;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersV1RequestDTO;
 import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
-import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindAllReceivedReplyLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllReplyMapLettersResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindAllSentMapLetterResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindAllSentReplyMapLetterResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindNearbyLettersResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindReceivedMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.MapLetterPageResponseDTO;
 import postman.bottler.mapletter.application.dto.response.OneLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.OneReplyLetterResponseDTO;
@@ -186,7 +181,16 @@ public class MapLetterController {
     }
 
     @DeleteMapping("/archived")
-    @Operation(summary = "편지 보관 취소(삭제)", description = "로그인 필수. 편지를 보관함에서 삭제한다.(리스트로 1~n개 까지의 편지를 한 번에 삭제 한다.")
+    @Operation(summary = "편지 보관 취소(삭제) 프론트 v2로 변경 후 삭제 할 코드입니다.", description = "로그인 필수. 편지를 보관함에서 삭제한다.(리스트로 1~n개 까지의 편지를 한 번에 삭제 한다.")
+    public ApiResponse<?> archiveLetterV1(@RequestBody DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO
+            , @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteArchivedLetter(deleteArchivedLettersRequestDTO, userId);
+        return ApiResponse.onDeleteSuccess(deleteArchivedLettersRequestDTO);
+    }
+
+    @DeleteMapping("/archived/v2")
+    @Operation(summary = "편지 보관 취소(삭제) 변경 한 코드입니다.", description = "로그인 필수. 편지를 보관함에서 삭제한다.(리스트로 1~n개 까지의 편지를 한 번에 삭제 한다.")
     public ApiResponse<?> archiveLetter(@RequestBody DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO
             , @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
@@ -244,7 +248,7 @@ public class MapLetterController {
     }
 
     @GetMapping("/saved")
-    public ApiResponse<?> savedLetters(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
+    public ApiResponse<?> savedLettersV1(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
                                        @RequestParam(defaultValue = "1") int page,
                                        @RequestParam(defaultValue = "9") int size) {
         Long userId = user.getUserId();
@@ -267,6 +271,36 @@ public class MapLetterController {
                             MapLetterPageResponseDTO.from(
                                     mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
             case "received-target" -> //받은 타겟 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
+            default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
+        };
+    }
+
+    @GetMapping("/saved/v2")
+    public ApiResponse<?> savedLetters(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
+                                       @RequestParam(defaultValue = "1") int page,
+                                       @RequestParam(defaultValue = "9") int size) {
+        Long userId = user.getUserId();
+        return switch (type) {
+            case "sent-all" -> //보낸 편지 전체 조회(지도편지, 답장 편지)
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findSentMapLetters(page, size, userId)));
+            case "sent-reply" -> //보낸 답장 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(
+                                    mapLetterService.findAllSentReplyMapLetter(page, size, userId)));
+            case "sent-map" -> //보낸 지도 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findAllSentMapLetter(page, size, userId)));
+            case "received-all" -> //받은 편지 전체 조회(타겟 편지, 답장 편지)
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(mapLetterService.findReceivedMapLetters(page, size, userId)));
+            case "received-reply" -> //받은 답장 편지 전체 조회
+                    ApiResponse.onSuccess(
+                            MapLetterPageResponseDTO.from(
+                                    mapLetterService.findAllReceivedReplyLetter(page, size, userId)));
+            case "received-map" -> //받은 타겟 편지 전체 조회
                     ApiResponse.onSuccess(
                             MapLetterPageResponseDTO.from(mapLetterService.findAllReceivedLetter(page, size, userId)));
             default -> throw new TypeNotFoundException("올바르지 못한 타입입니다.");
