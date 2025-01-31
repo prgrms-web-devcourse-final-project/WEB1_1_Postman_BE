@@ -26,14 +26,8 @@ import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequest
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersV1RequestDTO;
 import postman.bottler.mapletter.application.dto.response.CheckReplyMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllArchiveLetters;
-import postman.bottler.mapletter.application.dto.response.FindAllReceivedLetterResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindAllReceivedReplyLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindAllReplyMapLettersResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindAllSentMapLetterResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindAllSentReplyMapLetterResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.FindNearbyLettersResponseDTO;
-import postman.bottler.mapletter.application.dto.response.FindReceivedMapLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.MapLetterPageResponseDTO;
 import postman.bottler.mapletter.application.dto.response.OneLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.OneReplyLetterResponseDTO;
