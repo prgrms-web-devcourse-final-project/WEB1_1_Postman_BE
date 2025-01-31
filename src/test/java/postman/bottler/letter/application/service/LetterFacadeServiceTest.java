@@ -156,7 +156,7 @@ class LetterFacadeServiceTest extends TestBase {
         );
 
         when(redisLetterService.getRecommendations(eq(userId))).thenReturn(mockLetterIds);
-        when(letterService.findRecommendHeaders(eq(mockLetterIds))).thenReturn(mockLetters);
+        when(letterService.findRecommendedLetters(eq(mockLetterIds))).thenReturn(mockLetters);
 
         // when
         List<LetterRecommendSummaryResponseDTO> result = letterFacadeService.findRecommendHeaders(userId);
@@ -165,6 +165,6 @@ class LetterFacadeServiceTest extends TestBase {
         assertThat(result).hasSize(2);
         assertThat(result.get(0).letterId()).isEqualTo(10L);
         verify(redisLetterService, times(1)).getRecommendations(eq(userId));
-        verify(letterService, times(1)).findRecommendHeaders(eq(mockLetterIds));
+        verify(letterService, times(1)).findRecommendedLetters(eq(mockLetterIds));
     }
 }

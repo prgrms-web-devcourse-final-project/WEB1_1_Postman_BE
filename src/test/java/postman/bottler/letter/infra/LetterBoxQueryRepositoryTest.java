@@ -150,7 +150,7 @@ class LetterBoxQueryRepositoryTest extends TestBase {
         @DisplayName("사용자가 보유한 모든 받은 편지 조회")
         void findReceivedLettersById() {
             // when
-            List<Long> letterIds = repository.findReceivedLettersById(1L);
+            List<Long> letterIds = repository.findReceivedLetterIdsByUserId(1L);
 
             // then
             assertThat(letterIds.size()).isEqualTo(2);
@@ -160,7 +160,7 @@ class LetterBoxQueryRepositoryTest extends TestBase {
         @DisplayName("받은 편지가 없을 경우 빈 목록 반환")
         void returnEmptyWhenNoReceivedLettersExist() {
             // when
-            List<Long> letterIds = repository.findReceivedLettersById(999L);
+            List<Long> letterIds = repository.findReceivedLetterIdsByUserId(999L);
 
             // then
             assertThat(letterIds).isEmpty();

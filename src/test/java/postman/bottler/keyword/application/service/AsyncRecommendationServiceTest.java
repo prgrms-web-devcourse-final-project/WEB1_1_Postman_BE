@@ -45,7 +45,7 @@ class AsyncRecommendationServiceTest extends TestBase {
         List<Long> mockRecommendedLetters = List.of(201L, 202L);
 
         when(userKeywordService.getKeywordsByUserId(userId)).thenReturn(mockKeywords);
-        when(letterBoxService.findReceivedLettersByUserId(userId)).thenReturn(mockReceivedLetters);
+        when(letterBoxService.findReceivedLetterIdsByUserId(userId)).thenReturn(mockReceivedLetters);
         when(recommendService.getRecommendedLetters(mockKeywords, mockReceivedLetters, 10))
                 .thenReturn(mockRecommendedLetters);
 
@@ -54,7 +54,7 @@ class AsyncRecommendationServiceTest extends TestBase {
 
         // then
         verify(userKeywordService, times(1)).getKeywordsByUserId(userId);
-        verify(letterBoxService, times(1)).findReceivedLettersByUserId(userId);
+        verify(letterBoxService, times(1)).findReceivedLetterIdsByUserId(userId);
         verify(recommendService, times(1)).getRecommendedLetters(mockKeywords, mockReceivedLetters, 10);
         verify(redisLetterService, times(1)).saveRecommendationsTemp(userId, mockRecommendedLetters);
     }

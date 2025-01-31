@@ -28,7 +28,7 @@ public class AsyncRecommendationService {
 
         try {
             List<String> keywords = userKeywordService.getKeywordsByUserId(userId);
-            List<Long> letterIds = letterBoxService.findReceivedLettersByUserId(userId);
+            List<Long> letterIds = letterBoxService.findReceivedLetterIdsByUserId(userId);
 
             if (log.isDebugEnabled()) {
                 log.debug("사용자 [{}]의 키워드: {}, 받은 편지: {}", userId, keywords, letterIds);

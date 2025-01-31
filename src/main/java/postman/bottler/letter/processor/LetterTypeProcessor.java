@@ -17,7 +17,7 @@ public enum LetterTypeProcessor {
         }
 
         private void processSendLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
-            context.letterService().deleteLetters(ids, userId);
+            context.letterService().softDeleteLetters(ids, userId);
             context.letterKeywordService().markKeywordsAsDeleted(ids);
             context.letterBoxService().deleteByLetterIdsAndType(ids, LetterType.LETTER, BoxType.UNKNOWN);
         }
@@ -37,7 +37,7 @@ public enum LetterTypeProcessor {
         }
 
         private void processSendReplyLetters(List<Long> ids, Long userId, LetterDeletionContext context) {
-            context.replyLetterService().deleteReplyLetters(ids, userId);
+            context.replyLetterService().softDeleteReplyLetters(ids, userId);
             context.letterBoxService().deleteByLetterIdsAndType(ids, LetterType.REPLY_LETTER, BoxType.UNKNOWN);
         }
 

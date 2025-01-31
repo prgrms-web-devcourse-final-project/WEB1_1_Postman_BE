@@ -70,7 +70,7 @@ class ReplyLetterServiceTest extends TestBase {
             when(replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId)).thenReturn(false);
 
             ReceiverDTO receiverDTO = new ReceiverDTO(200L, "테스트 제목");
-            when(letterService.findReceiverInfoById(letterId)).thenReturn(receiverDTO);
+            when(letterService.findReceiverInfo(letterId)).thenReturn(receiverDTO);
 
             ReplyLetter replyLetter = requestDTO.toDomain("RE: [테스트 제목]", letterId, receiverDTO.receiverId(), senderId);
             when(replyLetterRepository.save(any())).thenReturn(replyLetter);
@@ -123,7 +123,7 @@ class ReplyLetterServiceTest extends TestBase {
             String value = "KEYWORD:10:label";
 
             ReceiverDTO receiverDTO = new ReceiverDTO(200L, "테스트 제목");
-            when(letterService.findReceiverInfoById(letterId)).thenReturn(receiverDTO);
+            when(letterService.findReceiverInfo(letterId)).thenReturn(receiverDTO);
 
             ReplyLetter replyLetter = requestDTO.toDomain("RE: [테스트 제목]", letterId, receiverDTO.receiverId(), senderId);
             when(replyLetterRepository.save(any())).thenReturn(replyLetter);

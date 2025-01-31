@@ -1,5 +1,7 @@
 package postman.bottler.letter.presentation;
 
+import static postman.bottler.global.response.code.ErrorStatus.LETTER_VALIDATION_ERROR;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,10 +23,9 @@ import postman.bottler.letter.application.dto.request.LetterRequestDTO;
 import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterRecommendSummaryResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterResponseDTO;
-import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.application.service.LetterDeletionService;
 import postman.bottler.letter.application.service.LetterFacadeService;
-import postman.bottler.letter.utiil.ValidationUtil;
+import postman.bottler.letter.presentation.annotation.LetterValidationMetaData;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController
@@ -35,18 +36,18 @@ public class LetterController {
 
     private final LetterDeletionService letterDeletionService;
     private final LetterFacadeService letterFacadeService;
-    private final ValidationUtil validationUtil;
 
     @Operation(
             summary = "키워드 편지 생성",
             description = "새로운 키워드 편지를 생성합니다."
     )
     @PostMapping
+    @LetterValidationMetaData(message = "키워드 편지 유효성 검사 실패", errorStatus = LETTER_VALIDATION_ERROR)
     public ApiResponse<LetterResponseDTO> createLetter(
-            @RequestBody @Valid LetterRequestDTO letterRequestDTO, BindingResult bindingResult,
+            @RequestBody @Valid LetterRequestDTO letterRequestDTO,
+            BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        validateLetterRequest(bindingResult);
         LetterResponseDTO result = letterFacadeService.createLetter(letterRequestDTO, userDetails.getUserId());
         return ApiResponse.onCreateSuccess(result);
     }
@@ -62,8 +63,7 @@ public class LetterController {
         LetterDetailResponseDTO result = letterFacadeService.findLetterDetail(letterId, userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
-
-
+    
     @Operation(
             summary = "추천 키워드 편지 조회",
             description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다."
@@ -88,10 +88,5 @@ public class LetterController {
     ) {
         letterDeletionService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
-    }
-
-    private void validateLetterRequest(BindingResult bindingResult) {
-        validationUtil.validate(bindingResult,
-                errors -> new InvalidLetterRequestException("유효성 검사 실패", errors));
     }
 }

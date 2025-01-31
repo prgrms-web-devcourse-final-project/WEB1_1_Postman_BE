@@ -3,12 +3,11 @@ package postman.bottler.letter.application.service;
 import static postman.bottler.notification.domain.NotificationType.KEYWORD_REPLY;
 
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.PageRequestDTO;
@@ -24,7 +23,6 @@ import postman.bottler.letter.exception.DuplicateReplyLetterException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.application.service.NotificationService;
-import postman.bottler.reply.application.dto.ReplyType;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class ReplyLetterService {
     private final LetterService letterService;
     private final LetterBoxService letterBoxService;
     private final NotificationService notificationService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisLetterService redisLetterService;
 
     @Transactional
     public ReplyLetterResponseDTO createReplyLetter(
@@ -47,7 +45,7 @@ public class ReplyLetterService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReplyLetterSummaryResponseDTO> findReplyLettersById(
+    public Page<ReplyLetterSummaryResponseDTO> findReplyLetterSummaries(
             Long letterId, PageRequestDTO pageRequestDTO, Long receiverId
     ) {
         return replyLetterRepository
@@ -63,26 +61,32 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public void deleteReplyLetters(List<Long> letterIds, Long userId) {
-        letterIds.forEach(letterId -> {
-            if (!findReplyLetter(letterId).getSenderId().equals(userId)) {
-                throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
-            }
-        });
-        letterIds.forEach(this::deleteRecentReply);
-        replyLetterRepository.deleteByIds(letterIds);
+    public void softDeleteReplyLetters(List<Long> replyLetterIds, Long userId) {
+        List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
+
+        if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
+            throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
+        }
+
+        replyLetters.forEach(
+                replyLetter -> redisLetterService.deleteRecentReply(
+                        replyLetter.getReceiverId(), replyLetter.getId(), replyLetter.getLabel()
+                )
+        );
+
+        replyLetterRepository.softDeleteByIds(replyLetterIds);
     }
 
     @Transactional
-    public Long blockLetter(Long replyLetterId) {
+    public Long softBlockLetter(Long replyLetterId) {
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
-        replyLetterRepository.blockReplyLetterById(replyLetterId);
+        replyLetterRepository.softBlockById(replyLetterId);
         return replyLetter.getSenderId();
     }
 
     @Transactional
-    public boolean checkIsReplied(Long letterId, Long currentUserId) {
-        return replyLetterRepository.existsByLetterIdAndSenderId(letterId, currentUserId);
+    public boolean checkIsReplied(Long letterId, Long senderId) {
+        return replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId);
     }
 
     private void validateNotExistingReply(Long letterId, Long senderId) {
@@ -92,7 +96,7 @@ public class ReplyLetterService {
     }
 
     private ReplyLetter saveReplyLetter(Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId) {
-        ReceiverDTO receiverInfo = letterService.findReceiverInfoById(letterId);
+        ReceiverDTO receiverInfo = letterService.findReceiverInfo(letterId);
         String title = formatReplyTitle(receiverInfo.title());
         return replyLetterRepository.save(requestDTO.toDomain(title, letterId, receiverInfo.receiverId(), senderId));
     }
@@ -103,7 +107,7 @@ public class ReplyLetterService {
 
     private void updateLetterBoxAndSendNotification(ReplyLetter replyLetter, String labelUrl) {
         saveReplyLetterToBox(replyLetter);
-        saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
+        redisLetterService.saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
         sendReplyNotification(replyLetter);
     }
 
@@ -120,21 +124,6 @@ public class ReplyLetterService {
         );
     }
 
-    private void saveReplyToRedis(Long letterId, String labelUrl, Long receiverId) {
-        String key = "REPLY:" + receiverId;
-        String value = ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
-
-        Long size = redisTemplate.opsForList().size(key);
-        int REDIS_SAVED_REPLY = 6;
-        if (size != null && size >= REDIS_SAVED_REPLY) {
-            redisTemplate.opsForList().rightPop(key);
-        }
-
-        if (!Objects.requireNonNull(redisTemplate.opsForList().range(key, 0, -1)).contains(value)) {
-            redisTemplate.opsForList().leftPush(key, value);
-        }
-    }
-
     private void sendReplyNotification(ReplyLetter replyLetter) {
         notificationService.sendNotification(
                 KEYWORD_REPLY,
@@ -142,16 +131,6 @@ public class ReplyLetterService {
                 replyLetter.getId(),
                 replyLetter.getLabel()
         );
-    }
-
-    private void deleteRecentReply(Long letterId) {
-        ReplyLetter replyLetter = replyLetterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException("편지가 존재하지 않습니다."));
-
-        String key = "REPLY:" + replyLetter.getReceiverId();
-        String value = ReplyType.KEYWORD + ":" + letterId + ":" + replyLetter.getLabel();
-
-        redisTemplate.opsForList().remove(key, 1, value);
     }
 
     private ReplyLetter findReplyLetter(Long replyLetterId) {

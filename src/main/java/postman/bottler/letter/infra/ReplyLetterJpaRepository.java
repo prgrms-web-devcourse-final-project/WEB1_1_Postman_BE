@@ -20,13 +20,16 @@ public interface ReplyLetterJpaRepository extends JpaRepository<ReplyLetterEntit
     @Query("SELECT r FROM ReplyLetterEntity r WHERE r.id = :id AND r.isDeleted = false")
     Optional<ReplyLetterEntity> findById(@NotNull Long id);
 
+    @Query("SELECT r FROM ReplyLetterEntity r WHERE r.id IN :replyLetterIds AND r.isDeleted = false")
+    List<ReplyLetterEntity> findAllByIds(List<Long> replyLetterIds);
+
     @Modifying
     @Query("UPDATE ReplyLetterEntity r SET r.isDeleted = true WHERE r.id IN :ids")
-    void deleteByIds(List<Long> ids);
+    void softDeleteByIds(List<Long> ids);
 
     @Modifying
     @Query("UPDATE ReplyLetterEntity l SET l.isBlocked = true, l.isDeleted = true WHERE l.id = :id")
-    void blockById(Long id);
+    void softBlockById(Long id);
 
     boolean existsByLetterIdAndSenderId(Long letterId, Long senderId);
 

@@ -37,7 +37,6 @@ class LetterBoxRepositoryImplTest extends TestBase {
     @Mock
     private LetterBoxJdbcRepository jdbcRepository;
 
-    private LetterBox letterBox;
     private LetterSummaryResponseDTO summaryResponseDTO;
     private Pageable pageable;
 
@@ -45,7 +44,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
     void setUp() {
         pageable = PageRequest.of(0, 10);
 
-        letterBox = LetterBox.builder()
+        LetterBox letterBox = LetterBox.builder()
                 .userId(1L)
                 .letterId(101L)
                 .letterType(LetterType.LETTER)
@@ -71,7 +70,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
         when(queryRepository.countLetters(1L, null)).thenReturn(1L);
 
         // when
-        Page<LetterSummaryResponseDTO> result = repository.findAllLetters(1L, pageable);
+        Page<LetterSummaryResponseDTO> result = repository.findLetters(1L, pageable, BoxType.UNKNOWN);
 
         // then
         assertThat(result).isNotEmpty();
@@ -86,7 +85,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
         when(queryRepository.countLetters(1L, BoxType.SEND)).thenReturn(1L);
 
         // when
-        Page<LetterSummaryResponseDTO> result = repository.findSentLetters(1L, pageable);
+        Page<LetterSummaryResponseDTO> result = repository.findLetters(1L, pageable, BoxType.SEND);
 
         // then
         assertThat(result).isNotEmpty();
@@ -109,7 +108,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
         when(queryRepository.countLetters(1L, BoxType.RECEIVE)).thenReturn(1L);
 
         // when
-        Page<LetterSummaryResponseDTO> result = repository.findReceivedLetters(1L, pageable);
+        Page<LetterSummaryResponseDTO> result = repository.findLetters(1L, pageable, BoxType.RECEIVE);
 
         // then
         assertThat(result).isNotEmpty();
@@ -120,10 +119,10 @@ class LetterBoxRepositoryImplTest extends TestBase {
     @DisplayName("사용자가 받은 편지 ID 목록을 반환")
     void returnReceivedLetterIdsForUser() {
         // given
-        when(queryRepository.findReceivedLettersById(1L)).thenReturn(List.of(101L));
+        when(queryRepository.findReceivedLetterIdsByUserId(1L)).thenReturn(List.of(101L));
 
         // when
-        List<Long> result = repository.findReceivedLettersByUserId(1L);
+        List<Long> result = repository.findReceivedLetterIdsByUserId(1L);
 
         // then
         assertThat(result).containsExactly(101L);
