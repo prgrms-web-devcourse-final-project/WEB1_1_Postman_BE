@@ -50,6 +50,7 @@ import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
+import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.PageRequestException;
 import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
@@ -259,11 +260,17 @@ public class MapLetterService {
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
-        for (Long archiveId : deleteArchivedLettersRequestDTO.letterIds()) {
-            MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
-            findArchiveInfo.validDeleteArchivedLetter(userId);
-            mapLetterArchiveRepository.deleteById(archiveId);
+        List<MapLetterArchive> archiveInfos = mapLetterArchiveRepository.findAllById(deleteArchivedLettersRequestDTO.letterIds());
+
+        if (archiveInfos.size() != deleteArchivedLettersRequestDTO.letterIds().size()) {
+            throw new MapLetterNotFoundException("편지를 찾을 수 없습니다.");
+        } //일부 아이디가 존재하지 않을 경우 예외 처리
+
+        for (MapLetterArchive archiveInfo : archiveInfos) {
+            archiveInfo.validDeleteArchivedLetter(userId);
         }
+
+        mapLetterArchiveRepository.deleteAllByIdInBatch(deleteArchivedLettersRequestDTO.letterIds());
     }
 
     @Transactional
