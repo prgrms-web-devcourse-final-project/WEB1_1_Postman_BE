@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class LetterBox {
     private Long id;
     private Long userId;

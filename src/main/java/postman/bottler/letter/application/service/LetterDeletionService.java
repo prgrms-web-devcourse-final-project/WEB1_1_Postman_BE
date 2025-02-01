@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.service.LetterKeywordService;
-import postman.bottler.letter.domain.BoxType;
-import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.LetterDeleteRequests;
+import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.processor.LetterDeletionContext;
 import postman.bottler.letter.processor.LetterTypeProcessor;
 
@@ -39,23 +39,22 @@ public class LetterDeletionService {
     }
 
     private void processGroupedRequests(Map<LetterType, Map<BoxType, List<Long>>> groupedRequests, Long userId) {
-        LetterDeletionContext context = createLetterDeletionContext();
         groupedRequests.forEach(
                 (letterType, boxTypeMap) ->
-                        processLetterType(userId, letterType, boxTypeMap, context)
+                        processLetterType(userId, letterType, boxTypeMap)
         );
+    }
+
+    private void processLetterType(
+            Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap
+    ) {
+        LetterTypeProcessor processor = LetterTypeProcessor.valueOf(letterType.name());
+        boxTypeMap.forEach((boxType, ids) -> processor.process(boxType, ids, userId, createLetterDeletionContext()));
     }
 
     private LetterDeletionContext createLetterDeletionContext() {
         return new LetterDeletionContext(
                 letterService, replyLetterService, letterBoxService, letterKeywordService
         );
-    }
-
-    private void processLetterType(
-            Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap, LetterDeletionContext context
-    ) {
-        LetterTypeProcessor processor = LetterTypeProcessor.valueOf(letterType.name());
-        boxTypeMap.forEach((boxType, ids) -> processor.process(boxType, ids, userId, context));
     }
 }

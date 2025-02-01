@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.application.repository.LetterRepository;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.infra.entity.LetterEntity;
-import postman.bottler.letter.application.repository.LetterRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class LetterRepositoryImpl implements LetterRepository {
     }
 
     @Override
-    public List<Letter> findAllActiveByIds(List<Long> letterIds) {
+    public List<Letter> findAllByIds(List<Long> letterIds) {
         return letterJpaRepository.findAllByIds(letterIds).stream()
                 .map(LetterEntity::toDomain)
                 .toList();
@@ -41,11 +42,13 @@ public class LetterRepositoryImpl implements LetterRepository {
     }
 
     @Override
+    @Transactional
     public void softDeleteByIds(List<Long> letterIds) {
         letterJpaRepository.softDeleteByIds(letterIds);
     }
 
     @Override
+    @Transactional
     public void softBlockById(Long letterId) {
         letterJpaRepository.softBlockById(letterId);
     }

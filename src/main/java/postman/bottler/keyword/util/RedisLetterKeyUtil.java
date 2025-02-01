@@ -13,4 +13,6 @@ public class RedisLetterKeyUtil {
     public static String getActiveRecommendationKey(Long userId) {
         return String.format("%s:%d:%s", RECOMMENDATION_PREFIX, userId, RECOMMENDATIONS_SUFFIX);
     }
+
+    
 }

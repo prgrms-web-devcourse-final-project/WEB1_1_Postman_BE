@@ -109,20 +109,20 @@ class ReplyLetterRepositoryImplTest extends TestBase {
     @DisplayName("ID 목록으로 답장 삭제 테스트")
     void deleteReplyLettersByIds() {
         // when
-        replyLetterRepository.deleteByIds(List.of(1L, 2L));
+        replyLetterRepository.softDeleteByIds(List.of(1L, 2L));
 
         // then
-        verify(replyLetterJpaRepository, times(1)).deleteByIds(List.of(1L, 2L));
+        verify(replyLetterJpaRepository, times(1)).softDeleteByIds(List.of(1L, 2L));
     }
 
     @Test
     @DisplayName("ID로 답장 차단 테스트")
-    void blockReplyLetterById() {
+    void softBlockById() {
         // when
-        replyLetterRepository.blockReplyLetterById(1L);
+        replyLetterRepository.softBlockById(1L);
 
         // then
-        verify(replyLetterJpaRepository, times(1)).blockById(1L);
+        verify(replyLetterJpaRepository, times(1)).softBlockById(1L);
     }
 
     @Test

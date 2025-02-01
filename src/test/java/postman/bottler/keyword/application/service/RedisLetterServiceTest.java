@@ -98,7 +98,7 @@ class RedisLetterServiceTest extends TestBase {
 
         when(valueOperations.get(tempKey)).thenReturn(tempRecommendations);
         when(valueOperations.get(activeKey)).thenReturn(activeRecommendations);
-        when(letterService.existsLetter(301L)).thenReturn(true);
+        when(letterService.letterExists(301L)).thenReturn(true);
 
         Letter mockLetter = Letter.builder().id(301L).label("testLabel").build();
         when(letterService.findLetter(301L)).thenReturn(mockLetter);
@@ -125,7 +125,7 @@ class RedisLetterServiceTest extends TestBase {
 
         List<Long> tempRecommendations = List.of(401L, 402L);
         when(valueOperations.get(tempKey)).thenReturn(tempRecommendations);
-        when(letterService.existsLetter(anyLong())).thenReturn(false);
+        when(letterService.letterExists(anyLong())).thenReturn(false);
 
         // when & then
         assertThrows(LetterNotFoundException.class, () -> redisLetterService.updateRecommendationsFromTemp(userId));

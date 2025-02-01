@@ -25,6 +25,7 @@ import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRe
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTO;
+import postman.bottler.mapletter.application.dto.request.DeleteArchivedLettersRequestDTOV1;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterInfo;
 import postman.bottler.mapletter.application.dto.request.DeleteMapLettersRequestDTO.LetterType;
@@ -49,6 +50,7 @@ import postman.bottler.mapletter.domain.MapLetterType;
 import postman.bottler.mapletter.domain.ReplyMapLetter;
 import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
+import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.PageRequestException;
 import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
@@ -258,6 +260,21 @@ public class MapLetterService {
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
+        List<MapLetterArchive> archiveInfos = mapLetterArchiveRepository.findAllById(deleteArchivedLettersRequestDTO.letterIds());
+
+        if (archiveInfos.size() != deleteArchivedLettersRequestDTO.letterIds().size()) {
+            throw new MapLetterNotFoundException("편지를 찾을 수 없습니다.");
+        } //일부 아이디가 존재하지 않을 경우 예외 처리
+
+        for (MapLetterArchive archiveInfo : archiveInfos) {
+            archiveInfo.validDeleteArchivedLetter(userId);
+        }
+
+        mapLetterArchiveRepository.deleteAllByIdInBatch(deleteArchivedLettersRequestDTO.letterIds());
+    }
+
+    @Transactional
+    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO, Long userId) { //삭제 예정
         for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
             findArchiveInfo.validDeleteArchivedLetter(userId);

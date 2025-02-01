@@ -1,5 +1,7 @@
 package postman.bottler.letter.presentation;
 
+import static postman.bottler.global.response.code.ErrorStatus.PAGINATION_VALIDATION_ERROR;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,10 +21,9 @@ import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.request.PageRequestDTO;
 import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.application.dto.response.PageResponseDTO;
-import postman.bottler.letter.exception.InvalidPageRequestException;
 import postman.bottler.letter.application.service.LetterBoxService;
 import postman.bottler.letter.application.service.LetterDeletionService;
-import postman.bottler.letter.utiil.ValidationUtil;
+import postman.bottler.letter.presentation.annotation.LetterValidationMetaData;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @Slf4j
@@ -34,7 +35,6 @@ public class LetterBoxController {
 
     private final LetterBoxService letterBoxService;
     private final LetterDeletionService letterDeletionService;
-    private final ValidationUtil validationUtil;
 
     @Operation(
             summary = "보관된 모든 편지 조회",
@@ -42,12 +42,12 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping
+    @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
     public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getAllLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        validatePageRequest(bindingResult);
         Page<LetterSummaryResponseDTO> result = letterBoxService.findAllLetterSummaries(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -59,12 +59,12 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/sent")
+    @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
     public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getSentLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        validatePageRequest(bindingResult);
         Page<LetterSummaryResponseDTO> result = letterBoxService.findSentLetterSummaries(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -76,12 +76,12 @@ public class LetterBoxController {
                     + "\nPage Default: page(1) size(9) sort(createAt)"
     )
     @GetMapping("/received")
+    @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
     public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getReceivedLetters(
             @Valid PageRequestDTO pageRequestDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        validatePageRequest(bindingResult);
         Page<LetterSummaryResponseDTO> result = letterBoxService.findReceivedLetterSummaries(pageRequestDTO,
                 userDetails.getUserId());
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -98,10 +98,5 @@ public class LetterBoxController {
     ) {
         letterDeletionService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
         return ApiResponse.onSuccess("편지 보관을 취소했습니다.");
-    }
-
-    private void validatePageRequest(BindingResult bindingResult) {
-        validationUtil.validate(bindingResult,
-                errors -> new InvalidPageRequestException("유효성 검사 실패", errors));
     }
 }

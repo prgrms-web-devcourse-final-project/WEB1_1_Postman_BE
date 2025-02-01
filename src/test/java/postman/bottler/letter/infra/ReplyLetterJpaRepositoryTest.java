@@ -75,9 +75,9 @@ class ReplyLetterJpaRepositoryTest extends TestBase {
 
     @Test
     @DisplayName("ID 목록으로 답장 삭제")
-    void deleteByIds() {
+    void softDeleteByIds() {
         // when
-        repository.deleteByIds(List.of(replyLetterEntity.toDomain().getId()));
+        repository.softDeleteByIds(List.of(replyLetterEntity.toDomain().getId()));
 
         // then
         Optional<ReplyLetterEntity> result = repository.findById(replyLetterEntity.toDomain().getId());
@@ -86,9 +86,9 @@ class ReplyLetterJpaRepositoryTest extends TestBase {
 
     @Test
     @DisplayName("ID로 답장 차단")
-    void blockById() {
+    void softBlockById() {
         // when
-        repository.blockById(replyLetterEntity.toDomain().getId());
+        repository.softBlockById(replyLetterEntity.toDomain().getId());
 
         // then
         Optional<ReplyLetterEntity> result = repository.findById(replyLetterEntity.toDomain().getId());

@@ -6,12 +6,7 @@ import static postman.bottler.global.response.code.ErrorStatus.INVALID_SORT_FIEL
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ACCESS_DENIED;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_ALREADY_SAVED;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_AUTHOR_MISMATCH;
-import static postman.bottler.global.response.code.ErrorStatus.LETTER_DELETE_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.LETTER_NOT_FOUND;
-import static postman.bottler.global.response.code.ErrorStatus.LETTER_UNKNOWN_VALIDATION_ERROR;
-import static postman.bottler.global.response.code.ErrorStatus.LETTER_VALIDATION_ERROR;
-import static postman.bottler.global.response.code.ErrorStatus.PAGINATION_VALIDATION_ERROR;
-import static postman.bottler.global.response.code.ErrorStatus.REPLY_LETTER_VALIDATION_ERROR;
 import static postman.bottler.global.response.code.ErrorStatus.TEMP_RECOMMENDATIONS_NOT_FOUND;
 import static postman.bottler.global.response.code.ErrorStatus.UNAUTHORIZED_LETTER_ACCESS;
 
@@ -32,6 +27,7 @@ public class LetterExceptionHandler {
         log.error("Letter not found: {}", e.getMessage());
         return ResponseEntity
                 .status(LETTER_NOT_FOUND.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(LETTER_NOT_FOUND.getCode(), e.getMessage(), null));
     }
 
@@ -40,6 +36,7 @@ public class LetterExceptionHandler {
         log.error("Letter already saved: {}", e.getMessage());
         return ResponseEntity
                 .status(LETTER_ALREADY_SAVED.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(LETTER_ALREADY_SAVED.getCode(), e.getMessage(), null));
     }
 
@@ -48,6 +45,7 @@ public class LetterExceptionHandler {
         log.error("Saved letter not found: {}", e.getMessage());
         return ResponseEntity
                 .status(LETTER_NOT_FOUND.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(LETTER_NOT_FOUND.getCode(), e.getMessage(), null));
     }
 
@@ -55,6 +53,7 @@ public class LetterExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(LetterAccessDeniedException e) {
         return ResponseEntity
                 .status(LETTER_ACCESS_DENIED.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(LETTER_ACCESS_DENIED.getCode(), e.getMessage(), null));
     }
 
@@ -62,33 +61,22 @@ public class LetterExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(DuplicateReplyLetterException e) {
         return ResponseEntity
                 .status(DUPLICATE_REPLY_LETTER.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(DUPLICATE_REPLY_LETTER.getCode(), e.getMessage(), null));
     }
 
-    @ExceptionHandler(BaseLetterValidationException.class)
+    @ExceptionHandler(LetterValidationException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(
-            BaseLetterValidationException e) {
-        ErrorStatus status;
+            LetterValidationException e) {
 
-        if (e instanceof InvalidLetterRequestException) {
-            status = LETTER_VALIDATION_ERROR;
-        } else if (e instanceof InvalidReplyLetterRequestException) {
-            status = REPLY_LETTER_VALIDATION_ERROR;
-        } else if (e instanceof InvalidPageRequestException) {
-            status = PAGINATION_VALIDATION_ERROR;
-        } else if (e instanceof InvalidDeleteRequestException) {
-            status = LETTER_DELETE_VALIDATION_ERROR;
-        } else {
-            status = LETTER_UNKNOWN_VALIDATION_ERROR; // 기본 처리
-        }
-
-        log.error("{}: {}", status, e.getErrors());
+        log.error("{}: {}", e.getErrorStatus(), e.getErrors());
 
         return ResponseEntity
-                .status(status.getHttpStatus())
+                .status(e.getErrorStatus().getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(
                         ApiResponse.onFailure(
-                                status.getCode(),
+                                e.getErrorStatus().getCode(),
                                 e.getMessage(), // ErrorStatus 메시지 사용
                                 e.getErrors()
                         )
@@ -99,6 +87,7 @@ public class LetterExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleInvalidSortFieldException(InvalidSortFieldException e) {
         return ResponseEntity
                 .status(INVALID_SORT_FIELD.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(INVALID_SORT_FIELD.getCode(), e.getMessage(), null));
     }
 
@@ -106,6 +95,7 @@ public class LetterExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleInvalidLetterTypeException(InvalidLetterTypeException e) {
         return ResponseEntity
                 .status(INVALID_LETTER_TYPE.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(INVALID_LETTER_TYPE.getCode(), e.getMessage(), null));
     }
 
@@ -115,6 +105,7 @@ public class LetterExceptionHandler {
         log.error("Temp recommendations not found: {}", e.getMessage());
         return ResponseEntity
                 .status(TEMP_RECOMMENDATIONS_NOT_FOUND.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(TEMP_RECOMMENDATIONS_NOT_FOUND.getCode(), e.getMessage(), null));
     }
 
@@ -122,6 +113,7 @@ public class LetterExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleLetterAuthorMismatchException(LetterAuthorMismatchException e) {
         return ResponseEntity
                 .status(LETTER_AUTHOR_MISMATCH.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(LETTER_AUTHOR_MISMATCH.getCode(), e.getMessage(), null));
     }
 
@@ -130,6 +122,7 @@ public class LetterExceptionHandler {
             UnauthorizedLetterAccessException e) {
         return ResponseEntity
                 .status(UNAUTHORIZED_LETTER_ACCESS.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(UNAUTHORIZED_LETTER_ACCESS.getCode(), e.getMessage(), null));
     }
 
@@ -145,7 +138,8 @@ public class LetterExceptionHandler {
     ) {
         log.error("Invalid input: {}", e.getMessage());
         return ResponseEntity
-                .status(ErrorStatus.INVALID_INPUT.getHttpStatus()) // 400 Bad Request로 매핑
+                .status(ErrorStatus.INVALID_INPUT.getHttpStatus())
+                .header("Content-Type", "application/json")
                 .body(ApiResponse.onFailure(ErrorStatus.INVALID_INPUT.getCode(), e.getMessage(), null));
     }
 }
