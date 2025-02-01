@@ -3,9 +3,9 @@ package postman.bottler.keyword.infra;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.keyword.application.repository.UserKeywordRepository;
 import postman.bottler.keyword.domain.UserKeyword;
 import postman.bottler.keyword.infra.entity.UserKeywordEntity;
-import postman.bottler.keyword.application.repository.UserKeywordRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ public class UserKeywordRepositoryImpl implements UserKeywordRepository {
     private final UserKeywordJdbcRepository jdbcRepository;
 
     @Override
-    public List<UserKeyword> findAllByUserId(Long userId) {
+    public List<UserKeyword> findUserKeywordsByUserId(Long userId) {
         List<UserKeywordEntity> userKeywordEntities = jpaRepository.findAllByUserId(userId);
         return userKeywordEntities.stream()
                 .map(UserKeywordEntity::toDomain)
@@ -23,13 +23,13 @@ public class UserKeywordRepositoryImpl implements UserKeywordRepository {
     }
 
     @Override
-    public void replaceAllByUserId(List<UserKeyword> userKeywords, Long userId) {
+    public void replaceKeywordsByUserId(List<UserKeyword> userKeywords, Long userId) {
         jdbcRepository.deleteAllByUserId(userId);
         jdbcRepository.batchInsertKeywords(userKeywords);
     }
 
     @Override
     public List<String> findKeywordsByUserId(Long userId) {
-        return jpaRepository.findUserKeywordEntitiesByUserId(userId);
+        return jpaRepository.findKeywordsByUserId(userId);
     }
 }
