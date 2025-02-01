@@ -57,14 +57,14 @@ class RedisLetterServiceTest extends TestBase {
 
     @Test
     @DisplayName("임시 추천 저장")
-    void saveRecommendationsTemp() {
+    void saveTempRecommendations() {
         // given
         Long userId = 1L;
         List<Long> recommendations = List.of(101L, 102L, 103L);
         String key = RedisLetterKeyUtil.getTempRecommendationKey(userId);
 
         // when
-        redisLetterService.saveRecommendationsTemp(userId, recommendations);
+        redisLetterService.saveTempRecommendations(userId, recommendations);
 
         // then
         verify(valueOperations, times(1)).set(eq(key), eq(recommendations));
@@ -133,7 +133,7 @@ class RedisLetterServiceTest extends TestBase {
 
     @Test
     @DisplayName("추천 목록 조회")
-    void getRecommendations() {
+    void fetchActiveRecommendations() {
         // given
         Long userId = 1L;
         String activeKey = RedisLetterKeyUtil.getActiveRecommendationKey(userId);
@@ -142,7 +142,7 @@ class RedisLetterServiceTest extends TestBase {
         when(valueOperations.get(activeKey)).thenReturn(recommendations);
 
         // when
-        List<Long> result = redisLetterService.getRecommendations(userId);
+        List<Long> result = redisLetterService.fetchActiveRecommendations(userId);
 
         // then
         assertThat(result).isNotNull();
@@ -161,7 +161,7 @@ class RedisLetterServiceTest extends TestBase {
         when(valueOperations.get(tempKey)).thenReturn(tempRecommendations);
 
         // when
-        List<Long> result = redisLetterService.getRecommendedTemp(userId);
+        List<Long> result = redisLetterService.fetchTempRecommendations(userId);
 
         // then
         assertThat(result).isNotNull();
