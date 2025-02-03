@@ -10,20 +10,24 @@ import postman.bottler.keyword.domain.UserKeyword;
 @RequiredArgsConstructor
 public class UserKeywordJdbcRepository {
 
+    private static final String INSERT_SQL = "INSERT INTO user_keyword (user_id, keyword) VALUES (?, ?)";
+    private static final String DELETE_SQL = "DELETE FROM user_keyword WHERE user_id = ?";
+
     private final JdbcTemplate jdbcTemplate;
 
     public void batchInsertKeywords(List<UserKeyword> keywords) {
-        String sql = "INSERT INTO user_keyword (user_id, keyword) VALUES (?, ?)";
+        List<Object[]> batchKeywordParams = toBatchKeywordParams(keywords);
 
-        List<Object[]> params = keywords.stream()
-                .map(entity -> new Object[]{entity.getUserId(), entity.getKeyword()})
-                .toList();
-
-        jdbcTemplate.batchUpdate(sql, params);
+        jdbcTemplate.batchUpdate(INSERT_SQL, batchKeywordParams);
     }
 
     public void deleteAllByUserId(Long userId) {
-        String sql = "DELETE FROM user_keyword WHERE user_id = ?";
-        jdbcTemplate.update(sql, userId);
+        jdbcTemplate.update(DELETE_SQL, userId);
+    }
+
+    private List<Object[]> toBatchKeywordParams(List<UserKeyword> keywords) {
+        return keywords.stream()
+                .map(entity -> new Object[]{entity.getUserId(), entity.getKeyword()})
+                .toList();
     }
 }

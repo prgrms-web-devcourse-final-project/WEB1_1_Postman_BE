@@ -35,7 +35,7 @@ public class KeywordController {
     public ApiResponse<UserKeywordResponseDTO> getKeywords(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        UserKeywordResponseDTO result = userKeywordService.getUserKeywords(userDetails.getUserId());
+        UserKeywordResponseDTO result = userKeywordService.findUserKeywords(userDetails.getUserId());
         return ApiResponse.onSuccess(result);
     }
 
