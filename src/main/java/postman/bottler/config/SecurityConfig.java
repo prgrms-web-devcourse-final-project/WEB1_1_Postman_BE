@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/labels/first-come").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/labels/first-come").permitAll()
                         .requestMatchers(HttpMethod.POST, "/labels").permitAll()
+                        .requestMatchers("/monitor/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/letters").hasAnyAuthority("USER", "DEVELOPER")
                         .requestMatchers(HttpMethod.POST, "/map/public").hasAnyAuthority("USER", "DEVELOPER")
                         .requestMatchers(HttpMethod.POST, "/map/target").hasAnyAuthority("USER", "DEVELOPER")

@@ -1,5 +1,6 @@
 package postman.bottler.mapletter.application.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,8 @@ public interface MapLetterArchiveRepository {
     void deleteById(Long letterId);
 
     boolean findByLetterIdAndUserId(Long letterId, Long userId);
+
+    List<MapLetterArchive> findAllById(List<Long> letterIds);
+
+    void deleteAllByIdInBatch(List<Long> letterIds);
 }

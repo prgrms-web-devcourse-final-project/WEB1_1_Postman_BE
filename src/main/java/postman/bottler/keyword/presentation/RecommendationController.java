@@ -31,10 +31,8 @@ public class RecommendationController {
     )
     @PostMapping("/process")
     public ResponseEntity<String> processRecommendation() {
-        // 비동기 추천 작업 시작
         List<Long> userIds = userService.getAllUserIds();
         userIds.forEach(asyncRecommendationService::processRecommendationForUser);
-
         return ResponseEntity.ok("Recommendation process started for user " + userIds);
     }
 
@@ -47,9 +45,8 @@ public class RecommendationController {
         List<Long> userIds = userService.getAllUserIds();
         Map<Long, List<Long>> result = new HashMap<>();
         userIds.forEach(userId ->
-                result.put(userId, redisLetterService.getRecommendations(userId))
+                result.put(userId, redisLetterService.fetchActiveRecommendations(userId))
         );
-
         return ResponseEntity.ok(result);
     }
 
@@ -77,7 +74,7 @@ public class RecommendationController {
     public ResponseEntity<Map<Long, List<Long>>> getRecommendTemp() {
         List<Long> userIds = userService.getAllUserIds();
         Map<Long, List<Long>> result = new HashMap<>();
-        userIds.forEach(userId -> result.put(userId, redisLetterService.getRecommendations(userId))
+        userIds.forEach(userId -> result.put(userId, redisLetterService.fetchTempRecommendations(userId))
         );
         return ResponseEntity.ok(result);
     }

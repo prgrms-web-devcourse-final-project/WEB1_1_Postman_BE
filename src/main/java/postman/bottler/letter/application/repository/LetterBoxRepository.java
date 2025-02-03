@@ -3,21 +3,17 @@ package postman.bottler.letter.application.repository;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
 
 public interface LetterBoxRepository {
     void save(LetterBox letterBox);
 
-    Page<LetterSummaryResponseDTO> findAllLetters(Long userId, Pageable pageable);
+    Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType);
 
-    Page<LetterSummaryResponseDTO> findSentLetters(Long userId, Pageable pageable);
-
-    Page<LetterSummaryResponseDTO> findReceivedLetters(Long userId, Pageable pageable);
-
-    List<Long> findReceivedLettersByUserId(Long userId);
+    List<Long> findReceivedLetterIdsByUserId(Long userId);
 
     void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType);
 

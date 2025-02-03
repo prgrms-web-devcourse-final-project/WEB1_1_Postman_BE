@@ -59,12 +59,13 @@ public class MapLetterEntity {
     private LocalDateTime updatedAt;
     private boolean isDeleted;
     private boolean isBlocked;
+    private boolean isRead;
 
     @Builder
     public MapLetterEntity(String title, String content, BigDecimal latitude, BigDecimal longitude, String font,
                            String paper, String label, MapLetterType type, Long targetUserId, Long createUserId,
                            LocalDateTime createdAt, LocalDateTime updatedAt, boolean isDeleted, boolean isBlocked,
-                           String description) {
+                           String description, boolean isRead) {
         this.title = title;
         this.content = content;
         this.latitude = latitude;
@@ -80,6 +81,7 @@ public class MapLetterEntity {
         this.isDeleted = isDeleted;
         this.isBlocked = isBlocked;
         this.description = description;
+        this.isRead = isRead;
     }
 
     public static MapLetterEntity from(MapLetter mapLetter) {
@@ -99,6 +101,7 @@ public class MapLetterEntity {
                 .isDeleted(mapLetter.isDeleted())
                 .isBlocked(mapLetter.isBlocked())
                 .description(mapLetter.getDescription())
+                .isRead(mapLetter.isRead())
                 .build();
     }
 
@@ -120,10 +123,15 @@ public class MapLetterEntity {
                 .isDeleted(mapLetterEntity.isDeleted)
                 .isBlocked(mapLetterEntity.isBlocked)
                 .description(mapLetterEntity.description)
+                .isRead(mapLetterEntity.isRead)
                 .build();
     }
 
     public void updateDelete(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void updateRead() {
+        this.isRead = true;
     }
 }

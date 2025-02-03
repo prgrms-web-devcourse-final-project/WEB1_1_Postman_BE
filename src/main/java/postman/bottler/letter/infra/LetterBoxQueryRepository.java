@@ -7,9 +7,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.infra.entity.QLetterBoxEntity;
 import postman.bottler.letter.infra.entity.QLetterEntity;
 import postman.bottler.letter.infra.entity.QReplyLetterEntity;
@@ -47,14 +47,14 @@ public class LetterBoxQueryRepository {
                 .leftJoin(replyLetter).on(letterBox.letterId.eq(replyLetter.id)
                         .and(letterBox.letterType.eq(LetterType.REPLY_LETTER)))
                 .where(letterBox.userId.eq(userId)
-                        .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
+                        .and(boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null))
                 .orderBy(letterBox.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
-    public List<Long> findReceivedLettersById(Long userId) {
+    public List<Long> findReceivedLetterIdsByUserId(Long userId) {
         QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
         return queryFactory
                 .select(letterBox.letterId)
@@ -70,7 +70,7 @@ public class LetterBoxQueryRepository {
                 .select(letterBox.id)
                 .from(letterBox)
                 .where(letterBox.userId.eq(userId)
-                        .and(boxType != null ? letterBox.boxType.eq(boxType) : null))
+                        .and(boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null))
                 .fetch()
                 .size();
     }

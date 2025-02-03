@@ -35,6 +35,7 @@ public class MapLetter {
     private LocalDateTime updatedAt;
     private boolean isDeleted;
     private boolean isBlocked;
+    private boolean isRead;
 
     public static MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
                                                   Long userId) {
@@ -52,6 +53,7 @@ public class MapLetter {
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)
                 .isBlocked(false)
+                .isRead(false)
                 .description(createPublicMapLetterRequestDTO.description())
                 .build();
     }
@@ -73,6 +75,7 @@ public class MapLetter {
                 .updatedAt(LocalDateTime.now())
                 .isDeleted(false)
                 .isBlocked(false)
+                .isRead(false)
                 .description(createTargetMapLetterRequestDTO.description())
                 .build();
     }
@@ -134,4 +137,7 @@ public class MapLetter {
         }
     }
 
+    public boolean isTargetUser(Long userId) {
+        return this.targetUserId != null && this.targetUserId.equals(userId);
+    }
 }

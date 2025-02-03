@@ -3,17 +3,16 @@ package postman.bottler.letter.infra;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.letter.application.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
-import postman.bottler.letter.application.repository.ReplyLetterRepository;
 
 @Repository
 @RequiredArgsConstructor
-@Slf4j
 public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     private final ReplyLetterJpaRepository replyLetterJpaRepository;
@@ -37,13 +36,22 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    public void deleteByIds(List<Long> letterIds) {
-        replyLetterJpaRepository.deleteByIds(letterIds);
+    public List<ReplyLetter> findAllByIds(List<Long> letterIds) {
+        return replyLetterJpaRepository.findAllByIds(letterIds).stream()
+                .map(ReplyLetterEntity::toDomain)
+                .toList();
     }
 
     @Override
-    public void blockReplyLetterById(Long replyLetterId) {
-        replyLetterJpaRepository.blockById(replyLetterId);
+    @Transactional
+    public void softDeleteByIds(List<Long> letterIds) {
+        replyLetterJpaRepository.softDeleteByIds(letterIds);
+    }
+
+    @Override
+    @Transactional
+    public void softBlockById(Long replyLetterId) {
+        replyLetterJpaRepository.softBlockById(replyLetterId);
     }
 
     @Override

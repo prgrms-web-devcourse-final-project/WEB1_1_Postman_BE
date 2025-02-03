@@ -4,14 +4,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.letter.application.repository.LetterBoxRepository;
-import postman.bottler.letter.domain.BoxType;
-import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.request.PageRequestDTO;
 import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
+import postman.bottler.letter.application.repository.LetterBoxRepository;
+import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.exception.UnauthorizedLetterAccessException;
 
 @Slf4j
@@ -28,22 +29,22 @@ public class LetterBoxService {
 
     @Transactional(readOnly = true)
     public Page<LetterSummaryResponseDTO> findAllLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
-        return letterBoxRepository.findAllLetters(userId, pageRequestDTO.toPageable());
+        return findLetters(userId, pageRequestDTO.toPageable(), BoxType.UNKNOWN);
     }
 
     @Transactional(readOnly = true)
     public Page<LetterSummaryResponseDTO> findSentLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
-        return letterBoxRepository.findSentLetters(userId, pageRequestDTO.toPageable());
+        return findLetters(userId, pageRequestDTO.toPageable(), BoxType.SEND);
     }
 
     @Transactional(readOnly = true)
     public Page<LetterSummaryResponseDTO> findReceivedLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
-        return letterBoxRepository.findReceivedLetters(userId, pageRequestDTO.toPageable());
+        return findLetters(userId, pageRequestDTO.toPageable(), BoxType.RECEIVE);
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findReceivedLettersByUserId(Long userId) {
-        return letterBoxRepository.findReceivedLettersByUserId(userId);
+    public List<Long> findReceivedLetterIdsByUserId(Long userId) {
+        return letterBoxRepository.findReceivedLetterIdsByUserId(userId);
     }
 
     @Transactional
@@ -63,5 +64,9 @@ public class LetterBoxService {
         if (!isLetterInUserBox) {
             throw new UnauthorizedLetterAccessException("사용자가 해당 편지에 접근할 권한이 없습니다.");
         }
+    }
+
+    private Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
+        return letterBoxRepository.findLetters(userId, pageable, boxType);
     }
 }

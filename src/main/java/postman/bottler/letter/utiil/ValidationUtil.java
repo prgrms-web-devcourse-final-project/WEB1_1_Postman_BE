@@ -18,7 +18,8 @@ public class ValidationUtil {
             Map<String, String> errors = bindingResult.getFieldErrors().stream()
                     .collect(Collectors.toMap(
                             FieldError::getField,
-                            fieldError -> Objects.requireNonNullElse(fieldError.getDefaultMessage(), "검증 실패")
+                            fieldError -> Objects.requireNonNullElse(fieldError.getDefaultMessage(),
+                                    "필드 검증 실패: " + fieldError.getField())
                     ));
             throw exceptionSupplier.apply(errors);
         }

@@ -1,5 +1,7 @@
 package postman.bottler.mapletter.infra;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,5 +47,18 @@ public class MapLetterArchiveRepositoryImpl implements MapLetterArchiveRepositor
     public boolean findByLetterIdAndUserId(Long letterId, Long userId) {
         return mapLetterArchiveJpaRepository.findByMapLetterIdAndUserId(letterId, userId).isPresent();
         // 값이 없으면 false
+    }
+
+    @Override
+    public List<MapLetterArchive> findAllById(List<Long> letterIds) {
+        return mapLetterArchiveJpaRepository.findAllById(letterIds)
+                .stream()
+                .map(MapLetterArchiveEntity::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(List<Long> letterIds) {
+        mapLetterArchiveJpaRepository.deleteAllByIdInBatch(letterIds);
     }
 }

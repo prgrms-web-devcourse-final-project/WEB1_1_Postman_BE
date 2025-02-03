@@ -51,6 +51,10 @@ jobs:
       # Slack 환경변수
       SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
 
+      # 스케쥴러 환경변수
+      BATCH_SIZE: ${{ secrets.BATCH_SIZE }}
+      BATCH_PARALLELISM: ${{ secrets.BATCH_PARALLELISM }}
+
 
     steps:
       - name: 코드 가져오기
@@ -71,6 +75,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: application.yml 생성
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
 
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
