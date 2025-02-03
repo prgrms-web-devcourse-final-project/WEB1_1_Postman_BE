@@ -36,25 +36,24 @@ public class ComplaintService {
 
     @Transactional
     public ComplaintResponseDTO complain(ComplaintType type, Long letterId, Long reporterId, String description) {
-        ComplaintRepository repository = getRepositoryByType(type);
-        Complaints complaints = repository.findByLetterId(letterId);
-        Complaint complaint = Complaint.create(letterId, reporterId, description);
-        complaints.add(complaint);
-        if (complaints.needWarning()) {
-            Long writer = blockLetter(type, letterId);
-            notificationService.sendNotification(NotificationType.WARNING, writer, letterId, null);
-            userService.updateWarningCount(writer);
+        Complaint newComplaint = Complaint.create(letterId, reporterId, description);
+        Complaints existingComplaints = findExistingComplaints(type, letterId);
+        existingComplaints.add(newComplaint);
+        if (existingComplaints.needWarning()) {
+            sendWarningToWriter(type, letterId);
         }
-        return ComplaintResponseDTO.from(repository.save(complaint));
+        return ComplaintResponseDTO.from(saveComplaint(newComplaint, type));
     }
 
-    private ComplaintRepository getRepositoryByType(ComplaintType type) {
-        return switch (type) {
-            case MAP_LETTER -> mapComplaintRepository;
-            case MAP_REPLY_LETTER -> mapReplyComplaintRepository;
-            case KEYWORD_LETTER -> keywordComplaintRepository;
-            case KEYWORD_REPLY_LETTER -> keywordReplyComplaintRepository;
-        };
+    private Complaints findExistingComplaints(ComplaintType type, Long letterId) {
+        ComplaintRepository repository = getRepositoryByType(type);
+        return repository.findByLetterId(letterId);
+    }
+
+    private void sendWarningToWriter(ComplaintType type, Long letterId) {
+        Long writerId = blockLetter(type, letterId);
+        notificationService.sendNotification(NotificationType.WARNING, writerId, letterId, null);
+        userService.updateWarningCount(writerId);
     }
 
     private Long blockLetter(ComplaintType type, Long letterId) {
@@ -63,6 +62,20 @@ public class ComplaintService {
             case MAP_REPLY_LETTER -> mapLetterService.letterBlock(BlockMapLetterType.REPLY, letterId);
             case KEYWORD_LETTER -> letterService.softBlockLetter(letterId);
             case KEYWORD_REPLY_LETTER -> replyLetterService.softBlockLetter(letterId);
+        };
+    }
+
+    private Complaint saveComplaint(Complaint complaint, ComplaintType type) {
+        ComplaintRepository repository = getRepositoryByType(type);
+        return repository.save(complaint);
+    }
+
+    private ComplaintRepository getRepositoryByType(ComplaintType type) {
+        return switch (type) {
+            case MAP_LETTER -> mapComplaintRepository;
+            case MAP_REPLY_LETTER -> mapReplyComplaintRepository;
+            case KEYWORD_LETTER -> keywordComplaintRepository;
+            case KEYWORD_REPLY_LETTER -> keywordReplyComplaintRepository;
         };
     }
 }
