@@ -2,19 +2,25 @@ package postman.bottler.label.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.global.response.ApiResponse;
+import postman.bottler.label.application.dto.LabelRequestDTO;
 import postman.bottler.label.application.dto.LabelResponseDTO;
 import postman.bottler.label.exception.EmptyLabelInputException;
 import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.application.service.LabelService;
+import postman.bottler.label.exception.LabelRequestException;
 import postman.bottler.user.auth.CustomUserDetails;
 
 @RestController
@@ -74,6 +80,27 @@ public class LabelController {
     public ApiResponse<List<LabelResponseDTO>> findFirstComeLabels() {
         List<LabelResponseDTO> labelResponseDTO = labelService.findFirstComeLabels();
         return ApiResponse.onSuccess(labelResponseDTO);
+    }
+
+    @Operation(summary = "선착순 라벨 뽑기 대상 라벨 변경 예약", description = "선착순 뽑기 대상 라벨로 변경 예약되었습니다.")
+    @PatchMapping("/first-come")
+    public ApiResponse<String> updateFirstComeLabel(@Valid @RequestBody LabelRequestDTO labelRequestDTO,
+                                                    BindingResult bindingResult) {
+        validateRequestDTO(bindingResult);
+        labelService.updateFirstComeLabel(labelRequestDTO);
+        return ApiResponse.onCreateSuccess("선착순 뽑기 대상 라벨로 변경 예약되었습니다.");
+    }
+
+    private void validateRequestDTO(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> {
+                switch (error.getField()) {
+                    case "labelIds", "scheduledDateTime" -> throw new LabelRequestException(error.getDefaultMessage());
+                    default -> throw new IllegalArgumentException(
+                            bindingResult.getAllErrors().get(0).getDefaultMessage());
+                }
+            });
+        }
     }
 
     @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 입력된 라벨 ID에 해당하는 라벨을 선착순으로 가져갑니다.")

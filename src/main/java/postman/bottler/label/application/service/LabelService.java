@@ -4,12 +4,14 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.label.application.dto.LabelRequestDTO;
 import postman.bottler.label.application.repository.LabelRepository;
 import postman.bottler.label.domain.Label;
 import postman.bottler.label.domain.UserLabel;
 import postman.bottler.label.application.dto.LabelResponseDTO;
 import postman.bottler.label.exception.DuplicateLabelException;
 import postman.bottler.label.exception.FirstComeFirstServedLabelException;
+import postman.bottler.scheduler.LabelScheduler;
 import postman.bottler.user.domain.User;
 import postman.bottler.user.application.service.UserService;
 
@@ -18,6 +20,7 @@ import postman.bottler.user.application.service.UserService;
 public class LabelService {
     private final LabelRepository labelRepository;
     private final UserService userService;
+    private final LabelScheduler labelScheduler;
 
     @Transactional
     public void createLabel(String imageUrl, int limitCount) {
@@ -62,5 +65,10 @@ public class LabelService {
     public List<LabelResponseDTO> findFirstComeLabels() {
         List<Label> labels = labelRepository.findFirstComeLabels();
         return labels.stream().map(Label::toLabelResponseDTO).toList();
+    }
+
+    @Transactional
+    public void updateFirstComeLabel(LabelRequestDTO labelRequestDTO) {
+        labelScheduler.scheduleUpdateFirstComeLabel(labelRequestDTO);
     }
 }

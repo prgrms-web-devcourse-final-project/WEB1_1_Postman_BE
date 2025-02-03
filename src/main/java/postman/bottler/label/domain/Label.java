@@ -10,7 +10,7 @@ public class Label {
     private final String imageUrl;
     private final int limitCount; //최대 인원수
     private int ownedCount; //소유한 인원수
-    private final LabelType labelType;
+    private LabelType labelType;
 
     private Label(Long labelId, String imageUrl, int limitCount, int ownedCount, LabelType labelType) {
         this.labelId = labelId;
@@ -53,5 +53,9 @@ public class Label {
 
     public boolean isOwnedCountValid() {
         return limitCount > ownedCount;
+    }
+
+    public void updateFirstComeLabel() {
+        this.labelType = LabelType.FIRST_COME;
     }
 }

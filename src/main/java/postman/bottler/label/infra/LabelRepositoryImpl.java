@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.label.domain.Label;
 import postman.bottler.label.domain.LabelType;
 import postman.bottler.label.domain.UserLabel;
@@ -51,6 +52,7 @@ public class LabelRepositoryImpl implements LabelRepository {
     }
 
     @Override
+    @Transactional
     public Label findLabelByLabelId(Long labelId) {
         LabelEntity labelEntity = labelJpaRepository.findByIdWithLock(labelId)
                 .orElseThrow(() -> new InvalidLabelException("라벨 ID " + labelId + " 에 해당하는 라벨이 존재하지 않습니다."));
