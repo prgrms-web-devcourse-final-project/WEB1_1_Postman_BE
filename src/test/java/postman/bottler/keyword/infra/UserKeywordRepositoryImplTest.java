@@ -49,12 +49,12 @@ class UserKeywordRepositoryImplTest extends TestBase {
 
     @Test
     @DisplayName("특정 userId로 모든 키워드 조회")
-    void findAllByUserId() {
+    void findUserKeywordsByUserId() {
         // given
         when(jpaRepository.findAllByUserId(1L)).thenReturn(mockUserKeywordEntities);
 
         // when
-        List<UserKeyword> result = repository.findAllByUserId(1L);
+        List<UserKeyword> result = repository.findUserKeywordsByUserId(1L);
 
         // then
         assertThat(result).hasSize(2);
@@ -67,24 +67,24 @@ class UserKeywordRepositoryImplTest extends TestBase {
     @DisplayName("특정 userId로 키워드 문자열 조회")
     void findKeywordsByUserId() {
         // given
-        when(jpaRepository.findUserKeywordEntitiesByUserId(1L)).thenReturn(List.of("keyword1", "keyword2"));
+        when(jpaRepository.findKeywordsByUserId(1L)).thenReturn(List.of("keyword1", "keyword2"));
 
         // when
         List<String> result = repository.findKeywordsByUserId(1L);
 
         // then
         assertThat(result).containsExactlyInAnyOrder("keyword1", "keyword2");
-        verify(jpaRepository, times(1)).findUserKeywordEntitiesByUserId(1L);
+        verify(jpaRepository, times(1)).findKeywordsByUserId(1L);
     }
 
     @Test
     @DisplayName("특정 userId로 키워드 전부 교체")
-    void replaceAllByUserId() {
+    void replaceKeywordsByUserId() {
         // given
         Long userId = 1L;
 
         // when
-        repository.replaceAllByUserId(mockUserKeywords, userId);
+        repository.replaceKeywordsByUserId(mockUserKeywords, userId);
 
         // then
         verify(jdbcRepository, times(1)).deleteAllByUserId(userId);

@@ -47,7 +47,7 @@ public class LetterFacadeService {
 
     @Transactional(readOnly = true)
     public List<LetterRecommendSummaryResponseDTO> findRecommendHeaders(Long userId) {
-        List<Long> letterIds = redisLetterService.getRecommendations(userId);
+        List<Long> letterIds = redisLetterService.fetchActiveRecommendations(userId);
         List<Letter> letters = letterService.findRecommendedLetters(letterIds);
         return letters.stream()
                 .map(LetterRecommendSummaryResponseDTO::from)

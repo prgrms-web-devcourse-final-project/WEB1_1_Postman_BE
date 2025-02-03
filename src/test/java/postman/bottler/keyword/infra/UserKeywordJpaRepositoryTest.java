@@ -46,9 +46,9 @@ class UserKeywordJpaRepositoryTest extends TestBase {
 
     @Test
     @DisplayName("특정 userId로 키워드 문자열 조회")
-    void findUserKeywordEntitiesByUserId() {
+    void findKeywordsByUserId() {
         // when
-        List<String> keywords = userKeywordJpaRepository.findUserKeywordEntitiesByUserId(USER_ID_1);
+        List<String> keywords = userKeywordJpaRepository.findKeywordsByUserId(USER_ID_1);
 
         // then
         assertThat(keywords).hasSize(2);

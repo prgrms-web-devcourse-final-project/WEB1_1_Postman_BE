@@ -33,7 +33,7 @@ class UserKeywordServiceTest extends TestBase {
 
     @Test
     @DisplayName("성공적으로 사용자 키워드를 조회한다")
-    void getUserKeywords() {
+    void findUserKeywords() {
         // given
         Long userId = 1L;
         List<UserKeyword> mockKeywords = List.of(
@@ -41,16 +41,16 @@ class UserKeywordServiceTest extends TestBase {
                 UserKeyword.builder().id(2L).userId(userId).keyword("키워드2").build()
         );
 
-        when(userKeywordRepository.findAllByUserId(userId)).thenReturn(mockKeywords);
+        when(userKeywordRepository.findUserKeywordsByUserId(userId)).thenReturn(mockKeywords);
 
         // when
-        UserKeywordResponseDTO result = userKeywordService.getUserKeywords(userId);
+        UserKeywordResponseDTO result = userKeywordService.findUserKeywords(userId);
 
         // then
         assertThat(result).isNotNull();
         assertThat(result.keywords()).hasSize(2);
         assertThat(result.keywords()).containsExactly("키워드1", "키워드2");
-        verify(userKeywordRepository, times(1)).findAllByUserId(userId);
+        verify(userKeywordRepository, times(1)).findUserKeywordsByUserId(userId);
     }
 
     @Test
@@ -64,12 +64,12 @@ class UserKeywordServiceTest extends TestBase {
         userKeywordService.createKeywords(requestDTO, userId);
 
         // then
-        verify(userKeywordRepository, times(1)).replaceAllByUserId(any(), anyLong());
+        verify(userKeywordRepository, times(1)).replaceKeywordsByUserId(any(), anyLong());
     }
 
     @Test
     @DisplayName("성공적으로 사용자 ID로 키워드를 조회한다")
-    void getKeywordsByUserId() {
+    void findKeywords() {
         // given
         Long userId = 1L;
         List<String> mockKeywords = List.of("키워드1", "키워드2");
@@ -77,7 +77,7 @@ class UserKeywordServiceTest extends TestBase {
         when(userKeywordRepository.findKeywordsByUserId(userId)).thenReturn(mockKeywords);
 
         // when
-        List<String> result = userKeywordService.getKeywordsByUserId(userId);
+        List<String> result = userKeywordService.findKeywords(userId);
 
         // then
         assertThat(result).isNotNull();

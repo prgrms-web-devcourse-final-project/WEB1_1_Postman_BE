@@ -27,7 +27,7 @@ public class AsyncRecommendationService {
         log.info("사용자 [{}]의 추천 작업을 시작합니다.", userId);
 
         try {
-            List<String> keywords = userKeywordService.getKeywordsByUserId(userId);
+            List<String> keywords = userKeywordService.findKeywords(userId);
             List<Long> letterIds = letterBoxService.findReceivedLetterIdsByUserId(userId);
 
             if (log.isDebugEnabled()) {
@@ -36,7 +36,7 @@ public class AsyncRecommendationService {
 
             List<Long> recommendedLetters = recommendService.getRecommendedLetters(keywords, letterIds,
                     recommendationCandidateLimit);
-            redisLetterService.saveRecommendationsTemp(userId, recommendedLetters);
+            redisLetterService.saveTempRecommendations(userId, recommendedLetters);
 
             log.info("사용자 [{}]의 추천 작업이 성공적으로 완료되었습니다.", userId);
             return CompletableFuture.completedFuture("Success: 사용자 [" + userId + "] 작업 완료");

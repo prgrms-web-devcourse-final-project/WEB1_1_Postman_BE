@@ -155,7 +155,7 @@ class LetterFacadeServiceTest extends TestBase {
                 Letter.builder().id(20L).title("제목2").content("내용2").build()
         );
 
-        when(redisLetterService.getRecommendations(eq(userId))).thenReturn(mockLetterIds);
+        when(redisLetterService.fetchActiveRecommendations(eq(userId))).thenReturn(mockLetterIds);
         when(letterService.findRecommendedLetters(eq(mockLetterIds))).thenReturn(mockLetters);
 
         // when
@@ -164,7 +164,7 @@ class LetterFacadeServiceTest extends TestBase {
         // then
         assertThat(result).hasSize(2);
         assertThat(result.get(0).letterId()).isEqualTo(10L);
-        verify(redisLetterService, times(1)).getRecommendations(eq(userId));
+        verify(redisLetterService, times(1)).fetchActiveRecommendations(eq(userId));
         verify(letterService, times(1)).findRecommendedLetters(eq(mockLetterIds));
     }
 }
