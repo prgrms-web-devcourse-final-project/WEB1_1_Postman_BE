@@ -42,7 +42,7 @@ public class ComplaintService {
         complaints.add(complaint);
         if (complaints.needWarning()) {
             Long writer = blockLetter(type, letterId);
-            notificationService.sendNotification(NotificationType.WARNING, writer, letterId, null);
+            notificationService.sendWarningNotification(writer);
             userService.updateWarningCount(writer);
         }
         return ComplaintResponseDTO.from(repository.save(complaint));

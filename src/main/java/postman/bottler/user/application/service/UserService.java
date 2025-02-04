@@ -290,7 +290,7 @@ public class UserService {
         if (user.checkBan()) {
             banService.banUser(user);
             slackService.sendSlackMessage(SlackConstant.BAN, userId);
-            notificationService.sendNotification(NotificationType.BAN, userId, null, null);
+            notificationService.sendBanNotification(userId);
         }
         userRepository.updateWarningCount(user);
     }

@@ -59,80 +59,23 @@ public class NotificationServiceTest {
     @Nested
     @DisplayName("알림 생성")
     class CreateNotification {
-        @Test
-        @DisplayName("새 편지 알림을 보낸다.")
-        public void sendNewLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(NEW_LETTER, 1L, 1L, "label");
 
-            given(notificationRepository.save(any())).willReturn(notification);
+        @ParameterizedTest(name = "{0} 알림을 보낼 시, {0}, 받는 유저의 ID, 편지 ID, 라벨 URL이 저장된다.")
+        @DisplayName("편지 관련 알림을 보낸다.")
+        @CsvSource({"NEW_LETTER", "TARGET_LETTER", "MAP_REPLY", "KEYWORD_REPLY"})
+        public void sendLetterNotification(NotificationType type) {
+            // given
+            given(notificationRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(subscriptionRepository.findByUserId(1L))
-                    .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
+                    .willReturn(Subscriptions.from(List.of()));
 
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(NEW_LETTER, 1L, 1L, "label");
+            // when
+            NotificationResponseDTO response = notificationService.sendLetterNotification(type, 1L, 1L, "label");
 
-            // THEN
+            // then
             assertThat(response)
                     .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(NEW_LETTER, 1L, 1L, "label");
-        }
-
-        @Test
-        @DisplayName("타겟 편지 알림을 보낸다.")
-        public void sendTargetLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(TARGET_LETTER, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
-            given(subscriptionRepository.findByUserId(1L))
-                    .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
-
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(TARGET_LETTER, 1L, 1L, "label");
-
-            // THEN
-            assertThat(response)
-                    .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(TARGET_LETTER, 1L, 1L, "label");
-        }
-
-        @Test
-        @DisplayName("지도 답장 편지 알림을 보낸다.")
-        public void sendMapReplyLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(MAP_REPLY, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
-            given(subscriptionRepository.findByUserId(1L)).willReturn(
-                    Subscriptions.from(List.of(Subscription.create(1L, "token"))));
-
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(MAP_REPLY, 1L, 1L, "label");
-
-            // THEN
-            assertThat(response)
-                    .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(MAP_REPLY, 1L, 1L, "label");
-        }
-
-        @Test
-        @DisplayName("키워드 답장 편지 알림을 보낸다.")
-        public void sendKeywordReplyLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(KEYWORD_REPLY, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
-            given(subscriptionRepository.findByUserId(1L))
-                    .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
-
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(KEYWORD_REPLY, 1L, 1L, "label");
-
-            // THEN
-            assertThat(response)
-                    .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(KEYWORD_REPLY, 1L, 1L, "label");
+                    .containsExactlyInAnyOrder(type, 1L, 1L, "label");
         }
 
         @DisplayName("편지 관련 알림에 편지 ID가 없는 경우, 예외가 발생한다.")
@@ -140,22 +83,20 @@ public class NotificationServiceTest {
         @CsvSource({"NEW_LETTER", "TARGET_LETTER", "MAP_REPLY", "KEYWORD_REPLY"})
         void sendNotificationWithoutLetterId(NotificationType notificationType) {
             // when then
-            assertThatThrownBy(() -> notificationService.sendNotification(notificationType, 1L, null, "label"))
+            assertThatThrownBy(() -> notificationService.sendLetterNotification(notificationType, 1L, null, "label"))
                     .isInstanceOf(NoLetterIdException.class);
         }
 
         @Test
-        @DisplayName("경고 알림을 보낸다.")
+        @DisplayName("경고 알림을 보낼 시, 알림 유형(WARNING)과 유저 ID 정보가 저장된다.")
         public void sendWarningNotificationTest() {
             // GIVEN
-            Notification notification = Notification.create(WARNING, 1L, null, null);
-
-            given(notificationRepository.save(any())).willReturn(notification);
+            given(notificationRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(WARNING, 1L, null, null);
+            NotificationResponseDTO response = notificationService.sendWarningNotification(1L);
 
             // THEN
             assertThat(response)
@@ -164,17 +105,15 @@ public class NotificationServiceTest {
         }
 
         @Test
-        @DisplayName("정지 알림을 보낸다.")
+        @DisplayName("정지 알림을 보낼 시, 알림 유형(BAN)과 유저 ID 정보가 저장된다.")
         public void sendBanNotificationTest() {
             // GIVEN
-            Notification notification = Notification.create(BAN, 1L, null, null);
-
-            given(notificationRepository.save(any())).willReturn(notification);
+            given(notificationRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(BAN, 1L, null, null);
+            NotificationResponseDTO response = notificationService.sendBanNotification(1L);
 
             // THEN
             assertThat(response)
@@ -194,7 +133,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // when
-            NotificationResponseDTO response = notificationService.sendNotification(BAN, 1L, 1L, "label");
+            NotificationResponseDTO response = notificationService.sendBanNotification(1L);
 
             // then
             assertThat(response)
@@ -206,17 +145,14 @@ public class NotificationServiceTest {
         @DisplayName("알림 보낼 기기가 없다면, 보내지 않는다.")
         public void notSendPushNotification() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L, "label");
-            Notification notification = Notification.create(from(request.notificationType()),
-                    request.receiver(), request.letterId(), request.label());
+            Notification notification = Notification.create(BAN, 1L, null, null);
 
             given(notificationRepository.save(any())).willReturn(notification);
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of()));
 
             // WHEN
-            notificationService.sendNotification(from(request.notificationType()), request.receiver(),
-                    request.letterId(), request.label());
+            notificationService.sendBanNotification(1L);
 
             // THEN
             verify(pushNotificationProvider, times(0)).pushAll(any());

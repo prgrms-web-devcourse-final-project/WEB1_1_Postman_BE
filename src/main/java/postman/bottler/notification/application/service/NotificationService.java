@@ -26,6 +26,22 @@ public class NotificationService {
     private final PushNotificationProvider pushNotificationProvider;
 
     @Transactional
+    public NotificationResponseDTO sendBanNotification(Long userId) {
+        return sendNotification(NotificationType.BAN, userId, null, null);
+    }
+
+    @Transactional
+    public NotificationResponseDTO sendWarningNotification(Long userId) {
+        return sendNotification(NotificationType.WARNING, userId, null, null);
+    }
+
+    @Transactional
+    public NotificationResponseDTO sendLetterNotification(NotificationType type, Long userId, Long letterId,
+                                                          String label) {
+        return sendNotification(type, userId, letterId, label);
+    }
+
+    @Transactional
     public NotificationResponseDTO sendNotification(NotificationType type, Long userId, Long letterId, String label) {
         Notification notification = Notification.create(type, userId, letterId, label);
         Subscriptions subscriptions = subscriptionRepository.findByUserId(userId);

@@ -125,7 +125,7 @@ public class ReplyLetterService {
     }
 
     private void sendReplyNotification(ReplyLetter replyLetter) {
-        notificationService.sendNotification(
+        notificationService.sendLetterNotification(
                 KEYWORD_REPLY,
                 replyLetter.getReceiverId(),
                 replyLetter.getId(),
