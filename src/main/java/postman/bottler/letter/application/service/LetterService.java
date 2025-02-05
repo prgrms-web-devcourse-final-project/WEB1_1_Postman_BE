@@ -70,7 +70,7 @@ public class LetterService {
     @Transactional
     public Long softBlockLetter(Long letterId) {
         Letter letter = findLetter(letterId);
-        letterRepository.softBlockById(letterId);
+        letterRepository.softBlockById(letter.getId());
         return letter.getUserId();
     }
 
