@@ -81,7 +81,7 @@ public class LetterBoxQueryRepository {
         queryFactory.delete(letterBox)
                 .where(
                         letterIds != null ? letterBox.letterId.in(letterIds) : null,
-                        letterType != LetterType.UNKNOWN ? letterBox.letterType.eq(letterType) : null,
+                        letterType != LetterType.NONE ? letterBox.letterType.eq(letterType) : null,
                         boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null
                 )
                 .execute();
@@ -93,7 +93,7 @@ public class LetterBoxQueryRepository {
         queryFactory.delete(letterBox)
                 .where(
                         letterIds != null ? letterBox.letterId.in(letterIds) : null,
-                        letterType != LetterType.UNKNOWN ? letterBox.letterType.eq(letterType) : null,
+                        letterType != LetterType.NONE ? letterBox.letterType.eq(letterType) : null,
                         boxType != BoxType.UNKNOWN ? letterBox.boxType.eq(boxType) : null,
                         letterBox.userId.eq(userId)
                 )

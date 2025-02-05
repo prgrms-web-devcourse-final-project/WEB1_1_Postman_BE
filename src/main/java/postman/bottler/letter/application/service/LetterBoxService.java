@@ -13,6 +13,7 @@ import postman.bottler.letter.application.dto.response.LetterSummaryResponseDTO;
 import postman.bottler.letter.application.repository.LetterBoxRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.exception.UnauthorizedLetterAccessException;
 
 @Slf4j
@@ -55,6 +56,7 @@ public class LetterBoxService {
     @Transactional
     public void deleteByLetterIdsAndTypeForUser(List<Long> letterIds, LetterType letterType, BoxType boxType,
                                                 Long userId) {
+        validateLetterIds(letterIds);
         letterBoxRepository.deleteByConditionAndUserId(letterIds, letterType, boxType, userId);
     }
 
@@ -68,5 +70,11 @@ public class LetterBoxService {
 
     private Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
         return letterBoxRepository.findLetters(userId, pageable, boxType);
+    }
+
+    private void validateLetterIds(List<Long> letterIds) {
+        if (letterIds == null || letterIds.isEmpty()) {
+            throw new InvalidLetterRequestException("삭제할 편지 ID 목록이 비어 있습니다.");
+        }
     }
 }

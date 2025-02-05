@@ -18,7 +18,7 @@ public class LetterNotFoundException extends LetterCustomException {
         return switch (letterType) {
             case LETTER -> "키워드 편지가 존재하지 않습니다.";
             case REPLY_LETTER -> "키워드 답장 편지가 존재하지 않습니다.";
-            case UNKNOWN -> "편지가 존재하지 않습니다.";
+            case NONE -> "편지가 존재하지 않습니다.";
         };
     }
 }
