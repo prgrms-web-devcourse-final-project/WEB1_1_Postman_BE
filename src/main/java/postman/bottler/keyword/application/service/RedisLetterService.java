@@ -117,7 +117,7 @@ public class RedisLetterService {
 
     private void validateRecommendations(String key, List<Long> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
-            throw new TempRecommendationsNotFoundException("추천 데이터가 없습니다. key: " + key);
+            throw new TempRecommendationsNotFoundException(key);
         }
     }
 
@@ -133,7 +133,7 @@ public class RedisLetterService {
         return recommendations.stream()
                 .filter(this::isValidLetter)
                 .findFirst()
-                .orElseThrow(() -> new LetterNotFoundException("No valid letters found in temp recommendations."));
+                .orElseThrow(LetterNotFoundException::new);
     }
 
     private boolean isValidLetter(Long letterId) {

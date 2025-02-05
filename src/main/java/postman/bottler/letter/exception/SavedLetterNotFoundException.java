@@ -1,8 +1,10 @@
 package postman.bottler.letter.exception;
 
-public class SavedLetterNotFoundException extends RuntimeException {
+import postman.bottler.global.response.code.ErrorStatus;
 
-    public SavedLetterNotFoundException(String message) {
-        super(message);
+public class SavedLetterNotFoundException extends LetterCustomException {
+
+    public SavedLetterNotFoundException() {
+        super(ErrorStatus.LETTER_NOT_FOUND, "저장된 편지를 찾을 수 없습니다.");
     }
 }

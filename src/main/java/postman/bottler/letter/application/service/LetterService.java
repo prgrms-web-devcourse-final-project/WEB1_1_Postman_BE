@@ -58,7 +58,7 @@ public class LetterService {
     public void softDeleteLetters(List<Long> letterIds, Long userId) {
         List<Letter> letters = letterRepository.findAllByIds(letterIds);
         if (letters.stream().anyMatch(letter -> !letter.getUserId().equals(userId))) {
-            throw new LetterAuthorMismatchException("삭제할 편지가 요청자와 일치하지 않습니다.");
+            throw new LetterAuthorMismatchException();
         }
         letterRepository.softDeleteByIds(letterIds);
     }
@@ -77,6 +77,6 @@ public class LetterService {
 
     private Letter findLetterOrThrow(Long letterId) {
         return letterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException("키워드 편지가 존재하지 않습니다."));
+                .orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
     }
 }

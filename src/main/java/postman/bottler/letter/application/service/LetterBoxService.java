@@ -62,7 +62,7 @@ public class LetterBoxService {
     public void validateLetterInUserBox(Long letterId, Long userId) {
         boolean isLetterInUserBox = letterBoxRepository.existsByLetterIdAndUserId(letterId, userId);
         if (!isLetterInUserBox) {
-            throw new UnauthorizedLetterAccessException("사용자가 해당 편지에 접근할 권한이 없습니다.");
+            throw new UnauthorizedLetterAccessException();
         }
     }
 

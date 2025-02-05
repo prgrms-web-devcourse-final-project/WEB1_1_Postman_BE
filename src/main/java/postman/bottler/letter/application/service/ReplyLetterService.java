@@ -65,7 +65,7 @@ public class ReplyLetterService {
         List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
 
         if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
-            throw new LetterAuthorMismatchException("요청자와 작성자가 일치하지 않습니다.");
+            throw new LetterAuthorMismatchException();
         }
 
         replyLetters.forEach(
@@ -91,7 +91,7 @@ public class ReplyLetterService {
 
     private void validateNotExistingReply(Long letterId, Long senderId) {
         if (replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId)) {
-            throw new DuplicateReplyLetterException("이미 이 편지에 답장한 기록이 있습니다");
+            throw new DuplicateReplyLetterException();
         }
     }
 
@@ -135,6 +135,6 @@ public class ReplyLetterService {
 
     private ReplyLetter findReplyLetter(Long replyLetterId) {
         return replyLetterRepository.findById(replyLetterId)
-                .orElseThrow(() -> new LetterNotFoundException("답장 편지가 존재하지 않습니다."));
+                .orElseThrow(() -> new LetterNotFoundException(LetterType.REPLY_LETTER));
     }
 }

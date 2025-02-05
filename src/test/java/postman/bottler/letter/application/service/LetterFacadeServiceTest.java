@@ -132,7 +132,7 @@ class LetterFacadeServiceTest extends TestBase {
             Long letterId = 10L;
             Long currentUserId = 1L;
 
-            doThrow(new UnauthorizedLetterAccessException("권한이 없습니다."))
+            doThrow(new UnauthorizedLetterAccessException())
                     .when(letterBoxService)
                     .validateLetterInUserBox(eq(letterId), eq(currentUserId));
 
