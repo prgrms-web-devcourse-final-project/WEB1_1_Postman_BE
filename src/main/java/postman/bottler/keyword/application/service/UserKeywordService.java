@@ -23,7 +23,8 @@ public class UserKeywordService {
 
     @Transactional
     public void createKeywords(UserKeywordRequestDTO userKeywordRequestDTO, Long userId) {
-        userKeywordRepository.replaceKeywordsByUserId(userKeywordRequestDTO.toDomain(userId), userId);
+        List<UserKeyword> userKeywords = userKeywordRequestDTO.toDomain(userId);
+        userKeywordRepository.replaceKeywordsByUserId(userKeywords, userId);
     }
 
     @Transactional(readOnly = true)
