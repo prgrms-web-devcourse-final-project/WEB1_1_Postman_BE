@@ -25,11 +25,13 @@ public class LetterService {
 
     @Transactional
     public Letter createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
-        Letter letter = letterRepository.save(letterRequestDTO.toDomain(userId));
+        Letter letter = letterRequestDTO.toDomain(userId);
+        Letter savedLetter = letterRepository.save(letter);
         letterBoxService.saveLetter(
-                LetterBoxDTO.of(userId, letter.getId(), LetterType.LETTER, BoxType.SEND, letter.getCreatedAt())
+                LetterBoxDTO.of(userId, savedLetter.getId(), LetterType.LETTER, BoxType.SEND,
+                        savedLetter.getCreatedAt())
         );
-        return letter;
+        return savedLetter;
     }
 
     @Transactional(readOnly = true)
@@ -45,7 +47,8 @@ public class LetterService {
 
     @Transactional(readOnly = true)
     public ReceiverDTO findReceiverInfo(Long letterId) {
-        return ReceiverDTO.from(findLetter(letterId));
+        Letter letter = findLetter(letterId);
+        return ReceiverDTO.from(letter);
     }
 
     @Transactional(readOnly = true)
