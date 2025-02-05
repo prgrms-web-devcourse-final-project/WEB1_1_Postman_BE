@@ -2,7 +2,6 @@ package postman.bottler.letter.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 import postman.bottler.letter.domain.Letter;
 
@@ -15,10 +14,8 @@ public record LetterRequestDTO(
         @NotBlank(message = "라벨은 필수입니다.") String label
 ) {
     public Letter toDomain(Long userId) {
-        String validatedTitle = (title == null || title.trim().isEmpty()) ? "무제" : title;
-
         return Letter.builder()
-                .title(validatedTitle)
+                .title(validateTitle(this.title))
                 .content(this.content)
                 .font(this.font)
                 .paper(this.paper)
@@ -26,7 +23,10 @@ public record LetterRequestDTO(
                 .userId(userId)
                 .isDeleted(false)
                 .isBlocked(false)
-                .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    private static String validateTitle(String title) {
+        return (title == null || title.trim().isEmpty()) ? "무제" : title;
     }
 }
