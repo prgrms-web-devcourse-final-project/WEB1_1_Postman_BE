@@ -34,7 +34,8 @@ public class LetterService {
 
     @Transactional(readOnly = true)
     public Letter findLetter(Long letterId) {
-        return findLetterOrThrow(letterId);
+        return letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
     }
 
     @Transactional(readOnly = true)
@@ -73,10 +74,5 @@ public class LetterService {
     @Transactional(readOnly = true)
     public boolean letterExists(Long letterId) {
         return letterRepository.existsById(letterId);
-    }
-
-    private Letter findLetterOrThrow(Long letterId) {
-        return letterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
     }
 }
