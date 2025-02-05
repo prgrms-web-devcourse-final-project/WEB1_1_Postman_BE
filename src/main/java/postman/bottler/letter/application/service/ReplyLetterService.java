@@ -20,6 +20,7 @@ import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
+import postman.bottler.letter.exception.InvalidLetterRequestException;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.application.service.NotificationService;
@@ -38,9 +39,13 @@ public class ReplyLetterService {
     public ReplyLetterResponseDTO createReplyLetter(
             Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId
     ) {
-        validateNotExistingReply(letterId, senderId);
+        if (checkIsReplied(letterId, senderId)) {
+            throw new DuplicateReplyLetterException();
+        }
+
         ReplyLetter replyLetter = saveReplyLetter(letterId, requestDTO, senderId);
-        updateLetterBoxAndSendNotification(replyLetter, requestDTO.label());
+
+        handleReplyPostProcessing(replyLetter, requestDTO.label());
         return ReplyLetterResponseDTO.from(replyLetter);
     }
 
@@ -55,13 +60,17 @@ public class ReplyLetterService {
 
     @Transactional(readOnly = true)
     public ReplyLetterDetailResponseDTO findReplyLetterDetail(Long replyLetterId, Long userId) {
-        boolean isReplied = replyLetterRepository.existsByIdAndSenderId(replyLetterId, userId);
+        boolean isReplied = checkIsReplied(replyLetterId, userId);
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
         return ReplyLetterDetailResponseDTO.from(replyLetter, isReplied);
     }
 
     @Transactional
     public void softDeleteReplyLetters(List<Long> replyLetterIds, Long userId) {
+        if (replyLetterIds == null || replyLetterIds.isEmpty()) {
+            throw new InvalidLetterRequestException("삭제할 답장 편지 ID 목록이 비어 있습니다.");
+        }
+
         List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
 
         if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
@@ -89,12 +98,6 @@ public class ReplyLetterService {
         return replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId);
     }
 
-    private void validateNotExistingReply(Long letterId, Long senderId) {
-        if (replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId)) {
-            throw new DuplicateReplyLetterException();
-        }
-    }
-
     private ReplyLetter saveReplyLetter(Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId) {
         ReceiverDTO receiverInfo = letterService.findReceiverInfo(letterId);
         String title = formatReplyTitle(receiverInfo.title());
@@ -105,7 +108,7 @@ public class ReplyLetterService {
         return "RE: [" + title + "]";
     }
 
-    private void updateLetterBoxAndSendNotification(ReplyLetter replyLetter, String labelUrl) {
+    private void handleReplyPostProcessing(ReplyLetter replyLetter, String labelUrl) {
         saveReplyLetterToBox(replyLetter);
         redisLetterService.saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
         sendReplyNotification(replyLetter);
