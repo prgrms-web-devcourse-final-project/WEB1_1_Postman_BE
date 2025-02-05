@@ -30,7 +30,7 @@ public class LetterBoxService {
 
     @Transactional(readOnly = true)
     public Page<LetterSummaryResponseDTO> findAllLetterSummaries(PageRequestDTO pageRequestDTO, Long userId) {
-        return findLetters(userId, pageRequestDTO.toPageable(), BoxType.UNKNOWN);
+        return findLetters(userId, pageRequestDTO.toPageable(), BoxType.NONE);
     }
 
     @Transactional(readOnly = true)
