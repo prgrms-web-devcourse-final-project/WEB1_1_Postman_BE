@@ -52,7 +52,7 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findAllByUserId(Long userId) {
+    public List<Long> findIdsByUserId(Long userId) {
         return letterRepository.findAllByUserId(userId).stream()
                 .map(Letter::getId)
                 .toList();

@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.application.dto.response.FrequentKeywordsDTO;
 import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 import postman.bottler.keyword.domain.LetterKeyword;
-import postman.bottler.keyword.application.dto.response.FrequentKeywordsDTO;
 import postman.bottler.letter.application.service.LetterService;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class LetterKeywordService {
 
     @Transactional(readOnly = true)
     public FrequentKeywordsDTO getTopFrequentKeywords(Long userId) {
-        List<Long> letterIds = letterService.findAllByUserId(userId);
+        List<Long> letterIds = letterService.findIdsByUserId(userId);
         List<LetterKeyword> frequentKeywords = letterKeywordRepository.getFrequentKeywords(letterIds);
         List<String> keywords = frequentKeywords.stream()
                 .map(LetterKeyword::getKeyword)
