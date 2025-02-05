@@ -39,22 +39,16 @@ public class LetterDeletionService {
     }
 
     private void processGroupedRequests(Map<LetterType, Map<BoxType, List<Long>>> groupedRequests, Long userId) {
-        groupedRequests.forEach(
-                (letterType, boxTypeMap) ->
-                        processLetterType(userId, letterType, boxTypeMap)
-        );
+        groupedRequests.forEach((letterType, boxTypeMap) -> processLetterType(userId, letterType, boxTypeMap));
     }
 
-    private void processLetterType(
-            Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap
-    ) {
+    private void processLetterType(Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap) {
         LetterTypeProcessor processor = LetterTypeProcessor.valueOf(letterType.name());
-        boxTypeMap.forEach((boxType, ids) -> processor.process(boxType, ids, userId, createLetterDeletionContext()));
+        LetterDeletionContext letterDeletionContext = createLetterDeletionContext();
+        boxTypeMap.forEach((boxType, ids) -> processor.process(boxType, ids, userId, letterDeletionContext));
     }
 
     private LetterDeletionContext createLetterDeletionContext() {
-        return new LetterDeletionContext(
-                letterService, replyLetterService, letterBoxService, letterKeywordService
-        );
+        return new LetterDeletionContext(letterService, replyLetterService, letterBoxService, letterKeywordService);
     }
 }
