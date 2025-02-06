@@ -37,13 +37,11 @@ public class RedisLetterService {
     @Value("${recommendation.saved-replies}")
     private int redisSavedReply;
 
-    @Transactional
     public void saveTempRecommendations(Long userId, List<Long> recommendations) {
         String key = getTempRecommendationKey(userId);
         redisTemplate.opsForValue().set(key, recommendations);
     }
 
-    @Transactional
     public void saveDeveloperLetter(Long userId, List<Long> recommendations) {
         String key = getActiveRecommendationKey(userId);
         redisTemplate.opsForValue().set(key, recommendations);
@@ -130,6 +128,10 @@ public class RedisLetterService {
     }
 
     private Long findFirstValidLetter(List<Long> recommendations) {
+        if (recommendations == null || recommendations.isEmpty()) {
+            throw new LetterNotFoundException();
+        }
+
         return recommendations.stream()
                 .filter(this::isValidLetter)
                 .findFirst()
