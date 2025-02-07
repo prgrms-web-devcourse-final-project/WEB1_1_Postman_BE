@@ -110,10 +110,6 @@ public class RedisLetterService {
     }
 
     private String getReplyValue(Long letterId, String labelUrl) {
-        return createReplyValue(letterId, labelUrl);
-    }
-
-    private String createReplyValue(Long letterId, String labelUrl) {
         return ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
     }
 
