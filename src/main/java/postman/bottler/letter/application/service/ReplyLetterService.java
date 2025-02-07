@@ -58,12 +58,12 @@ public class ReplyLetterService {
     @Transactional(readOnly = true)
     public Page<ReplyLetterSummaryResponseDTO> findReplyLetterSummaries(Long letterId, PageRequestDTO pageRequestDTO,
                                                                         Long receiverId) {
-        log.debug("답장 요약 조회 요청: letterId={}, receiverId={}", letterId, receiverId);
+        log.debug("답장 요약 정보 조회 요청: letterId={}, receiverId={}", letterId, receiverId);
 
         Page<ReplyLetterSummaryResponseDTO> summaries = replyLetterRepository.findAllByLetterIdAndReceiverId(letterId,
                 receiverId, pageRequestDTO.toPageable()).map(ReplyLetterSummaryResponseDTO::from);
 
-        log.info("답장 요약 조회 완료: letterId={}, receiverId={}, count={}", letterId, receiverId,
+        log.info("답장 요약 정보 조회 완료: letterId={}, receiverId={}, count={}", letterId, receiverId,
                 summaries.getTotalElements());
 
         return summaries;
@@ -165,14 +165,12 @@ public class ReplyLetterService {
     }
 
     private void sendReplyNotification(ReplyLetter replyLetter) {
-        log.info("답장 알림 전송 요청: receiverId={}, replyLetterId={}",
-                replyLetter.getReceiverId(), replyLetter.getId());
+        log.info("답장 알림 전송 요청: receiverId={}, replyLetterId={}", replyLetter.getReceiverId(), replyLetter.getId());
 
         notificationService.sendNotification(KEYWORD_REPLY, replyLetter.getReceiverId(), replyLetter.getId(),
                 replyLetter.getLabel());
 
-        log.info("답장 알림 전송 완료: receiverId={}, replyLetterId={}",
-                replyLetter.getReceiverId(), replyLetter.getId());
+        log.info("답장 알림 전송 완료: receiverId={}, replyLetterId={}", replyLetter.getReceiverId(), replyLetter.getId());
     }
 
     private ReplyLetter findReplyLetter(Long replyLetterId) {
