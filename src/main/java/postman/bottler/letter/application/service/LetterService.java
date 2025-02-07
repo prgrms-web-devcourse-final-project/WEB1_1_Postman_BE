@@ -93,7 +93,6 @@ public class LetterService {
 
         List<Letter> letters = letterRepository.findAllByIds(letterIds);
         if (letters.stream().anyMatch(letter -> !letter.getUserId().equals(userId))) {
-            log.warn("편지 삭제 실패 (작성자 불일치): userId={}, letterIds={}", userId, letterIds);
             throw new LetterAuthorMismatchException();
         }
 
