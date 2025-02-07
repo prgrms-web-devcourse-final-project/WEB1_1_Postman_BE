@@ -29,10 +29,8 @@ public class LetterService {
 
         Letter letter = letterRequestDTO.toDomain(userId);
         Letter savedLetter = letterRepository.save(letter);
-        letterBoxService.saveLetter(
-                LetterBoxDTO.of(userId, savedLetter.getId(), LetterType.LETTER, BoxType.SEND,
-                        savedLetter.getCreatedAt())
-        );
+        letterBoxService.saveLetter(LetterBoxDTO.of(userId, savedLetter.getId(), LetterType.LETTER, BoxType.SEND,
+                savedLetter.getCreatedAt()));
 
         log.info("편지 저장 완료: letterId={}, userId={}", savedLetter.getId(), userId);
         return savedLetter;
@@ -42,11 +40,10 @@ public class LetterService {
     public Letter findLetter(Long letterId) {
         log.debug("편지 조회 요청: letterId={}", letterId);
 
-        return letterRepository.findById(letterId)
-                .orElseThrow(() -> {
-                    log.error("편지 조회 실패 (존재하지 않음): letterId={}", letterId);
-                    return new LetterNotFoundException(LetterType.LETTER);
-                });
+        return letterRepository.findById(letterId).orElseThrow(() -> {
+            log.error("편지 조회 실패 (존재하지 않음): letterId={}", letterId);
+            return new LetterNotFoundException(LetterType.LETTER);
+        });
     }
 
     @Transactional(readOnly = true)
@@ -78,9 +75,7 @@ public class LetterService {
     public List<Long> findIdsByUserId(Long userId) {
         log.debug("사용자 편지 ID 조회 요청: userId={}", userId);
 
-        List<Long> letterIds = letterRepository.findAllByUserId(userId).stream()
-                .map(Letter::getId)
-                .toList();
+        List<Long> letterIds = letterRepository.findAllByUserId(userId).stream().map(Letter::getId).toList();
 
         log.info("사용자 편지 ID 조회 완료: userId={}, count={}", userId, letterIds.size());
 
