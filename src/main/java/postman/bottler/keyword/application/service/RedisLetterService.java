@@ -126,10 +126,16 @@ public class RedisLetterService {
     }
 
     private Long processRecommendations(Long userId, List<Long> tempRecommendations, List<Long> activeRecommendations) {
+        String activeKey = getActiveRecommendationKey(userId);
+        String tempRecommendationKey = getTempRecommendationKey(userId);
+
         Long recommendId = findFirstValidLetter(tempRecommendations);
-        updateActiveRecommendations(recommendId, activeRecommendations, getActiveRecommendationKey(userId));
+
+        updateActiveRecommendations(recommendId, activeRecommendations, activeKey);
         saveLetterToBox(userId, recommendId);
-        redisTemplate.delete(getTempRecommendationKey(userId));
+
+        redisTemplate.delete(tempRecommendationKey);
+
         return recommendId;
     }
 
@@ -138,9 +144,7 @@ public class RedisLetterService {
             throw new LetterNotFoundException();
         }
 
-        return recommendations.stream()
-                .filter(this::isValidLetter)
-                .findFirst()
+        return recommendations.stream().filter(this::isValidLetter).findFirst()
                 .orElseThrow(LetterNotFoundException::new);
     }
 
@@ -159,9 +163,11 @@ public class RedisLetterService {
     }
 
     private void saveLetterToBox(Long userId, Long letterId) {
-        letterBoxService.saveLetter(LetterBoxDTO.of(
-                userId, letterId, LetterType.LETTER, BoxType.RECEIVE, LocalDateTime.now()
-        ));
+        LetterBoxDTO letterBoxDTO = LetterBoxDTO.of(userId, letterId, LetterType.LETTER, BoxType.RECEIVE,
+                LocalDateTime.now());
+
+        letterBoxService.saveLetter(letterBoxDTO);
+        log.info("[추천 편지 보관함 저장 완료] userId={}, letterId={}", userId, letterId);
     }
 
     private RecommendNotificationRequestDTO createRecommendNotification(Long userId, Long recommendId) {
