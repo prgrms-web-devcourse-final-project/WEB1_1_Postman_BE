@@ -39,11 +39,11 @@ public class UserKeywordService {
 
     @Transactional(readOnly = true)
     public List<String> findKeywords(Long userId) {
-        log.debug("[사용자 키워드 문자열 조회 요청] userId={}", userId);
+        log.debug("[사용자 키워드 리스트 조회 요청] userId={}", userId);
 
         List<String> keywords = userKeywordRepository.findKeywordsByUserId(userId);
 
-        log.info("[사용자 키워드 문자열 조회 완료] userId={}, 키워드 개수={}", userId, keywords.size());
+        log.info("[사용자 키워드 리스트 조회 완료] userId={}, 키워드 개수={}", userId, keywords.size());
 
         return keywords;
     }
