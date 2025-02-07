@@ -23,7 +23,7 @@ public class KeywordService {
         List<Keyword> keywords = keywordRepository.getKeywords();
 
         log.info("키워드 조회 완료: 조회된 키워드 개수={}", keywords.size());
-        
+
         return KeywordResponseDTO.from(keywords);
     }
 }
