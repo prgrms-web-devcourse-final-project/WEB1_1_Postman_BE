@@ -25,8 +25,8 @@ public class LetterBoxService {
 
     @Transactional
     public void saveLetter(LetterBoxDTO letterBoxDTO) {
-        log.info("편지 저장 요청: userId={}, letterId={}, 편지 유형={}, 보관함={}",
-                letterBoxDTO.userId(), letterBoxDTO.letterId(), letterBoxDTO.letterType(), letterBoxDTO.boxType());
+        log.info("편지 저장 요청: userId={}, letterId={}, 편지 타입={}, 보관 타입={}", letterBoxDTO.userId(), letterBoxDTO.letterId(),
+                letterBoxDTO.letterType(), letterBoxDTO.boxType());
 
         letterBoxRepository.save(letterBoxDTO.toDomain());
         log.info("편지 저장 완료: userId={}, letterId={}", letterBoxDTO.userId(), letterBoxDTO.letterId());
@@ -62,11 +62,11 @@ public class LetterBoxService {
 
     @Transactional
     public void deleteByLetterIdsAndType(List<Long> letterIds, LetterType letterType, BoxType boxType) {
-        log.info("편지 삭제 요청(관리자): letterIds={}, 편지 유형={}, 보관함={}", letterIds, letterType, boxType);
+        log.info("편지 삭제 요청: letterIds={}, 편지 타입={}, 보관 타입={}", letterIds, letterType, boxType);
 
         letterBoxRepository.deleteByCondition(letterIds, letterType, boxType);
 
-        log.info("편지 삭제 완료(관리자): 삭제된 개수={}", letterIds.size());
+        log.info("편지 삭제 완료: 삭제된 개수={}", letterIds.size());
     }
 
     @Transactional
@@ -74,11 +74,11 @@ public class LetterBoxService {
                                                 Long userId) {
         validateLetterIds(letterIds);
 
-        log.info("사용자 편지 삭제 요청: userId={}, letterIds={}, 편지 유형={}, 보관함={}", userId, letterIds, letterType, boxType);
+        log.info("사용자의 편지 삭제 요청: userId={}, letterIds={}, 편지 타입={}, 보관 타입={}", userId, letterIds, letterType, boxType);
 
         letterBoxRepository.deleteByConditionAndUserId(letterIds, letterType, boxType, userId);
 
-        log.info("사용자 편지 삭제 완료: userId={}, 삭제된 개수={}", userId, letterIds.size());
+        log.info("사용자가 요청한 편지 삭제 완료: userId={}, 삭제된 개수={}", userId, letterIds.size());
     }
 
     public void validateLetterInUserBox(Long letterId, Long userId) {
