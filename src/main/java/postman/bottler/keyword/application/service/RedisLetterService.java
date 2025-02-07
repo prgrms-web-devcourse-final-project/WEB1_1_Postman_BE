@@ -39,17 +39,23 @@ public class RedisLetterService {
 
     public void saveTempRecommendations(Long userId, List<Long> recommendations) {
         String key = getTempRecommendationKey(userId);
+        log.info("임시 추천 저장: userId={}, 추천 개수={}", userId, recommendations.size());
+
         redisTemplate.opsForValue().set(key, recommendations);
     }
 
     public void saveDeveloperLetter(Long userId, List<Long> recommendations) {
         String key = getActiveRecommendationKey(userId);
+        log.info("개발자 추천 저장: userId={}, 추천 개수={}", userId, recommendations.size());
+
         redisTemplate.opsForValue().set(key, recommendations);
     }
 
     public void saveReplyToRedis(Long letterId, String labelUrl, Long receiverId) {
         String key = getReplyKey(receiverId);
         String value = getReplyValue(letterId, labelUrl);
+
+        log.debug("Redis에 답장 저장 요청: receiverId={}, letterId={}, label={}", receiverId, letterId, labelUrl);
 
         Long size = redisTemplateForReply.opsForList().size(key);
         if (size != null && size >= redisSavedReply) {
@@ -58,6 +64,7 @@ public class RedisLetterService {
 
         if (!Objects.requireNonNull(redisTemplateForReply.opsForList().range(key, 0, -1)).contains(value)) {
             redisTemplateForReply.opsForList().leftPush(key, value);
+            log.info("Redis에 답장 저장 완료: receiverId={}, letterId={}", receiverId, letterId);
         }
     }
 
@@ -77,6 +84,8 @@ public class RedisLetterService {
         List<Long> activeRecommendations = fetchActiveRecommendations(userId);
 
         Long recommendId = processRecommendations(userId, tempRecommendations, activeRecommendations);
+
+        log.info("임시 추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
         return createRecommendNotification(userId, recommendId);
     }
 
@@ -84,6 +93,7 @@ public class RedisLetterService {
         String key = getReplyKey(receiverId);
         String value = getReplyValue(replyLetterId, label);
 
+        log.info("Redis에서 답장 삭제 요청: receiverId={}, letterId={}", receiverId, replyLetterId);
         redisTemplate.opsForList().remove(key, 1, value);
     }
 
@@ -148,6 +158,8 @@ public class RedisLetterService {
         }
         activeRecommendations.add(letterId);
         redisTemplate.opsForValue().set(activeKey, activeRecommendations);
+
+        log.info("사용자 현재 추천 편지 업데이트 완료: 추천 추가된 편지 ID={}, 저장된 개수={}", letterId, activeRecommendations.size());
     }
 
     private void saveLetterToBox(Long userId, Long letterId) {
