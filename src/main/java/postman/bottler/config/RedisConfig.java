@@ -37,6 +37,7 @@ public class RedisConfig {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, DefaultTyping.NON_FINAL);
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        template.setEnableTransactionSupport(true);
         return template;
     }
 
