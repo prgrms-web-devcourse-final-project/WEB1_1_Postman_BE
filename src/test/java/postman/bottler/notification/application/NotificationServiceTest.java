@@ -3,37 +3,36 @@ package postman.bottler.notification.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static postman.bottler.notification.domain.NotificationType.BAN;
-import static postman.bottler.notification.domain.NotificationType.KEYWORD_REPLY;
 import static postman.bottler.notification.domain.NotificationType.MAP_REPLY;
 import static postman.bottler.notification.domain.NotificationType.NEW_LETTER;
 import static postman.bottler.notification.domain.NotificationType.TARGET_LETTER;
 import static postman.bottler.notification.domain.NotificationType.WARNING;
-import static postman.bottler.notification.domain.NotificationType.from;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
-import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
+import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.application.repository.NotificationRepository;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.application.service.NotificationService;
@@ -45,20 +44,75 @@ import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.exception.NoLetterIdException;
 
 @DisplayName("알림 서비스 테스트")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class NotificationServiceTest {
-    @InjectMocks
+    @Autowired
     private NotificationService notificationService;
-    @Mock
+    @MockBean
     private NotificationRepository notificationRepository;
-    @Mock
+    @MockBean
     private SubscriptionRepository subscriptionRepository;
-    @Mock
+    @MockBean
     private PushNotificationProvider pushNotificationProvider;
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Nested
     @DisplayName("알림 생성")
     class CreateNotification {
+        @DisplayName("정지 알림 저장에 실패해도 외부 기능은 유지되어야 한다.")
+        @Test
+        void sendBanNotificationWithPushException() {
+            // given
+            given(notificationRepository.save(any()))
+                    .willThrow(new RuntimeException());
+            given(subscriptionRepository.findByUserId(1L))
+                    .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
+
+            TransactionStatus outer = transactionManager.getTransaction(new DefaultTransactionAttribute());
+
+            // when
+            assertDoesNotThrow(() -> notificationService.sendBanNotification(1L));
+
+            // then
+            assertThat(outer.isRollbackOnly()).isFalse();
+        }
+
+        @DisplayName("경고 알림 저장에 실패해도 외부 기능은 유지되어야 한다.")
+        @Test
+        void sendWarningNotificationWithPushException() {
+            // given
+            given(notificationRepository.save(any()))
+                    .willThrow(new RuntimeException());
+            given(subscriptionRepository.findByUserId(1L))
+                    .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
+
+            TransactionStatus outer = transactionManager.getTransaction(new DefaultTransactionAttribute());
+
+            // when
+            assertDoesNotThrow(() -> notificationService.sendWarningNotification(1L));
+
+            // then
+            assertThat(outer.isRollbackOnly()).isFalse();
+        }
+
+        @DisplayName("편지 관련 알림 저장에 실패해도 외부 기능은 유지되어야 한다.")
+        @Test
+        void sendLetterNotificationWithPushException() {
+            // given
+            given(notificationRepository.save(any()))
+                    .willThrow(new RuntimeException());
+            given(subscriptionRepository.findByUserId(1L))
+                    .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
+
+            TransactionStatus outer = transactionManager.getTransaction(new DefaultTransactionAttribute());
+
+            // when
+            assertDoesNotThrow(() -> notificationService.sendLetterNotification(NEW_LETTER, 1L, 1L, "label"));
+
+            // then
+            assertThat(outer.isRollbackOnly()).isFalse();
+        }
 
         @ParameterizedTest(name = "{0} 알림을 보낼 시, {0}, 받는 유저의 ID, 편지 ID, 라벨 URL이 저장된다.")
         @DisplayName("편지 관련 알림을 보낸다.")
@@ -70,7 +124,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of()));
 
             // when
-            NotificationResponseDTO response = notificationService.sendLetterNotification(type, 1L, 1L, "label");
+            NotificationResponseDTO response = notificationService.sendNotification(type, 1L, 1L, "label");
 
             // then
             assertThat(response)
@@ -83,7 +137,7 @@ public class NotificationServiceTest {
         @CsvSource({"NEW_LETTER", "TARGET_LETTER", "MAP_REPLY", "KEYWORD_REPLY"})
         void sendNotificationWithoutLetterId(NotificationType notificationType) {
             // when then
-            assertThatThrownBy(() -> notificationService.sendLetterNotification(notificationType, 1L, null, "label"))
+            assertThatThrownBy(() -> notificationService.sendNotification(notificationType, 1L, null, "label"))
                     .isInstanceOf(NoLetterIdException.class);
         }
 
@@ -96,7 +150,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
-            NotificationResponseDTO response = notificationService.sendWarningNotification(1L);
+            NotificationResponseDTO response = notificationService.sendNotification(WARNING, 1L, null, null);
 
             // THEN
             assertThat(response)
@@ -113,7 +167,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // WHEN
-            NotificationResponseDTO response = notificationService.sendBanNotification(1L);
+            NotificationResponseDTO response = notificationService.sendNotification(BAN, 1L, null, null);
 
             // THEN
             assertThat(response)
@@ -133,7 +187,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // when
-            NotificationResponseDTO response = notificationService.sendBanNotification(1L);
+            NotificationResponseDTO response = notificationService.sendNotification(BAN, 1L, null, null);
 
             // then
             assertThat(response)
@@ -152,7 +206,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of()));
 
             // WHEN
-            notificationService.sendBanNotification(1L);
+            notificationService.sendNotification(BAN, 1L, null, null);
 
             // THEN
             verify(pushNotificationProvider, times(0)).pushAll(any());
