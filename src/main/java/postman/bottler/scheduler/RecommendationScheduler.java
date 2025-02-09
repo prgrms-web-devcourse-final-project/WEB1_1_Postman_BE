@@ -74,9 +74,8 @@ public class RecommendationScheduler {
         List<Long> userIds = userService.getAllUserIds();
         List<List<Long>> batches = createBatches(userIds);
 
+        List<RecommendNotificationRequestDTO> notifications = new ArrayList<>();
         for (List<Long> batch : batches) {
-            List<RecommendNotificationRequestDTO> notifications = new ArrayList<>();
-
             batch.forEach(userId -> {
                 try {
                     RecommendNotificationRequestDTO dto = redisLetterService.updateRecommendationsFromTemp(userId);
@@ -87,16 +86,13 @@ public class RecommendationScheduler {
                     log.error("사용자 [{}]의 추천 데이터 업데이트 중 알 수 없는 예외 발생: {}", userId, e.getMessage(), e);
                 }
             });
-
-            if (!notifications.isEmpty()) {
-                try {
-                    notificationService.sendKeywordNotifications(notifications);
-                    log.info("추천 알림이 성공적으로 전송되었습니다. 배치 크기: {}, 알림 수: {}", batch.size(), notifications.size());
-                } catch (Exception e) {
-                    log.error("추천 알림 전송 중 예외 발생: {}", e.getMessage(), e);
-                }
-            } else {
-                log.info("추천 알림이 없습니다. 배치 크기: {}", batch.size());
+        }
+        if (!notifications.isEmpty()) {
+            try {
+                notificationService.sendKeywordNotifications(notifications);
+                log.info("추천 알림이 성공적으로 전송되었습니다. 알림 수: {}", notifications.size());
+            } catch (Exception e) {
+                log.error("추천 알림 전송 중 예외 발생: {}", e.getMessage(), e);
             }
         }
     }
