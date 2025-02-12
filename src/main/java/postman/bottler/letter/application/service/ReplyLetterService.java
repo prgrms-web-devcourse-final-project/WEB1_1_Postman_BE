@@ -148,7 +148,7 @@ public class ReplyLetterService {
         log.debug("답장 생성 후처리 시작: replyLetterId={}", replyLetter.getId());
 
         saveReplyLetterToBox(replyLetter);
-        redisLetterService.saveReplyToRedis(replyLetter.getLetterId(), labelUrl, replyLetter.getReceiverId());
+        redisLetterService.saveReplyToRedis(replyLetter.getId(), labelUrl, replyLetter.getReceiverId());
         sendReplyNotification(replyLetter);
 
         log.info("답장 생성 후처리 완료: replyLetterId={}", replyLetter.getId());
