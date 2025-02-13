@@ -45,7 +45,7 @@ public class ComplaintService {
             notificationService.sendWarningNotification(writer);
             userService.updateWarningCount(writer);
         }
-        return ComplaintResponseDTO.from(saveComplaint(newComplaint, type));
+        return ComplaintResponseDTO.from(repository.save(complaint));
     }
 
     private Complaints findExistingComplaints(ComplaintType type, Long letterId) {
