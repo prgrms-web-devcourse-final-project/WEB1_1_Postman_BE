@@ -28,10 +28,8 @@ public class LetterFacadeService {
     @Transactional
     public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
         Letter letter = letterService.createLetter(letterRequestDTO, userId);
-        List<LetterKeyword> keywords = letterKeywordService.createLetterKeywords(
-                letter.getId(),
-                letterRequestDTO.keywords()
-        );
+        List<LetterKeyword> keywords = letterKeywordService.createLetterKeywords(letter.getId(),
+                letterRequestDTO.keywords());
         return LetterResponseDTO.from(letter, keywords);
     }
 
@@ -49,8 +47,6 @@ public class LetterFacadeService {
     public List<LetterRecommendSummaryResponseDTO> findRecommendHeaders(Long userId) {
         List<Long> letterIds = redisLetterService.fetchActiveRecommendations(userId);
         List<Letter> letters = letterService.findRecommendedLetters(letterIds);
-        return letters.stream()
-                .map(LetterRecommendSummaryResponseDTO::from)
-                .toList();
+        return letters.stream().map(LetterRecommendSummaryResponseDTO::from).toList();
     }
 }
