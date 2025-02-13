@@ -167,7 +167,7 @@ public class ReplyLetterService {
     private void sendReplyNotification(ReplyLetter replyLetter) {
         log.info("답장 알림 전송 요청: receiverId={}, replyLetterId={}", replyLetter.getReceiverId(), replyLetter.getId());
 
-        notificationService.sendNotification(KEYWORD_REPLY, replyLetter.getReceiverId(), replyLetter.getId(),
+        notificationService.sendLetterNotification(KEYWORD_REPLY, replyLetter.getReceiverId(), replyLetter.getId(),
                 replyLetter.getLabel());
 
         log.info("답장 알림 전송 완료: receiverId={}, replyLetterId={}", replyLetter.getReceiverId(), replyLetter.getId());

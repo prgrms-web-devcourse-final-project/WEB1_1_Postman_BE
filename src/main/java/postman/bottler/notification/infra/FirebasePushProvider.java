@@ -22,7 +22,7 @@ public class FirebasePushProvider implements PushNotificationProvider {
         try {
             FirebaseMessaging.getInstance().sendEach(firebaseMessages);
         } catch (FirebaseMessagingException e) {
-            log.error(e.getMessage());
+            log.error("알림 푸시 실패 : {}", e.getMessage());
         }
     }
 }

@@ -86,7 +86,7 @@ class ReplyLetterServiceTest extends TestBase {
             assertThat(result).isNotNull();
             verify(replyLetterRepository, times(1)).save(any());
             verify(listOperations, times(1)).leftPush(anyString(), anyString());
-            verify(notificationService, times(1)).sendNotification(any(), eq(200L), eq(10L), any());
+            verify(notificationService, times(1)).sendLetterNotification(any(), eq(200L), eq(10L), any());
         }
 
         @Test
