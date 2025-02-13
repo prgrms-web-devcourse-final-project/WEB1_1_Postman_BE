@@ -81,6 +81,10 @@ jobs:
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
 
+      - name: logback-spring.xml 생성
+        run: |
+          echo "${{ secrets.LOGBACK_SPRING_XML }}" | base64 --decode > src/main/resources/logback-spring.xml
+
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
         shell: bash
