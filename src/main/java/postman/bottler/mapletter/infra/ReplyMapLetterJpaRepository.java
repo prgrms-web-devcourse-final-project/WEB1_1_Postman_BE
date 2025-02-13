@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.application.dto.ReplyProjectDTO;
+import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 
 @Repository
@@ -49,4 +50,6 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
                 LIMIT :fetchItemSize
             """, nativeQuery = true)
     List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
+
+    List<ReplyMapLetterEntity> findAllByCreateUserId(Long createUserId);
 }

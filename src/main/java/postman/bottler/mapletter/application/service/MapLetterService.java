@@ -260,7 +260,8 @@ public class MapLetterService {
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
-        List<MapLetterArchive> archiveInfos = mapLetterArchiveRepository.findAllById(deleteArchivedLettersRequestDTO.letterIds());
+        List<MapLetterArchive> archiveInfos = mapLetterArchiveRepository.findAllById(
+                deleteArchivedLettersRequestDTO.letterIds());
 
         if (archiveInfos.size() != deleteArchivedLettersRequestDTO.letterIds().size()) {
             throw new MapLetterNotFoundException("편지를 찾을 수 없습니다.");
@@ -274,7 +275,8 @@ public class MapLetterService {
     }
 
     @Transactional
-    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO, Long userId) { //삭제 예정
+    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO,
+                                     Long userId) { //삭제 예정
         for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
             findArchiveInfo.validDeleteArchivedLetter(userId);
@@ -484,7 +486,7 @@ public class MapLetterService {
     @Transactional
     public void deleteMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
         for (LetterInfo letter : letters.letters()) {
-            switch (letter.letterType()){
+            switch (letter.letterType()) {
                 case MAP:
                     MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
                     findMapLetter.validDeleteMapLetter(userId);
@@ -498,6 +500,15 @@ public class MapLetterService {
                     deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
                     break;
             }
+        }
+    }
+
+    @Transactional
+    public void deleteAllMapLetters(String type, Long userId) {
+        switch (type) {
+            case "SENT":
+                mapLetterRepository.softDeleteAllByCreateUserId(userId);
+                replyMapLetterRepository.softDeleteAllByCreateUserId(userId);
         }
     }
 }

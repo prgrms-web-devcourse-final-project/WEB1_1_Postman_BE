@@ -3,6 +3,7 @@ package postman.bottler.mapletter.infra;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -112,5 +113,16 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
         MapLetterEntity mapLetterEntity = mapLetterJpaRepository.findById(mapLetter.getId())
                         .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
         mapLetterEntity.updateRead();
+    }
+
+    @Override
+    public void softDeleteAllByCreateUserId(Long userId) {
+        List<MapLetterEntity> mapLetterEntities = mapLetterJpaRepository.findAllByCreateUserId(userId);
+
+        if (mapLetterEntities.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제할 편지가 없습니다.");
+        }
+
+        mapLetterEntities.forEach(mapLetterEntity -> mapLetterEntity.updateDelete(true));
     }
 }

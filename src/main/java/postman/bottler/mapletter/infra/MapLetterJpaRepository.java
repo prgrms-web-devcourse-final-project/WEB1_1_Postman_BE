@@ -124,4 +124,6 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
                      AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30
             """, nativeQuery = true)
     List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
+
+    List<MapLetterEntity> findAllByCreateUserId(Long createUserId);
 }
