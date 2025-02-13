@@ -103,10 +103,10 @@ class LetterKeywordServiceTest extends TestBase {
         // given
         Long userId = 1L;
         List<Long> letterIds = List.of(1L, 2L, 3L);
-        List<LetterKeyword> mockFrequentKeywords = List.of(
-                LetterKeyword.from(1L, "사랑"),
-                LetterKeyword.from(2L, "행복"),
-                LetterKeyword.from(3L, "우정")
+        List<String> mockFrequentKeywords = List.of(
+                "사랑",
+                "행복",
+                "우정"
         );
 
         when(letterService.findIdsByUserId(userId)).thenReturn(letterIds);

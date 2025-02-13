@@ -1,9 +1,11 @@
 package postman.bottler.keyword.application.service;
 
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.dto.response.FrequentKeywordsDTO;
 import postman.bottler.keyword.application.repository.LetterKeywordRepository;
@@ -54,18 +56,20 @@ public class LetterKeywordService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public FrequentKeywordsDTO getTopFrequentKeywords(Long userId) {
         log.debug("자주 사용된 키워드 조회 요청: userId={}", userId);
 
         List<Long> letterIds = letterService.findIdsByUserId(userId);
-        List<LetterKeyword> frequentKeywords = letterKeywordRepository.getFrequentKeywords(letterIds);
+        if (letterIds.isEmpty()) {
+            log.warn("사용자의 편지 ID가 없음: userId={}", userId);
+            return FrequentKeywordsDTO.from(Collections.emptyList());
+        }
+        
+        List<String> frequentKeywords = letterKeywordRepository.getFrequentKeywords(letterIds);
 
         log.info("자주 사용된 키워드 조회 완료: userId={}, 키워드 개수={}", userId, frequentKeywords.size());
 
-        List<String> keywords = frequentKeywords.stream()
-                .map(LetterKeyword::getKeyword)
-                .toList();
-        return FrequentKeywordsDTO.from(keywords);
+        return FrequentKeywordsDTO.from(frequentKeywords);
     }
 }
