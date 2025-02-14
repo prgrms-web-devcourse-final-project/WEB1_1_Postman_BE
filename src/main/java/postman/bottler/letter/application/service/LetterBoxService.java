@@ -81,6 +81,11 @@ public class LetterBoxService {
         log.info("사용자가 요청한 편지 삭제 완료: userId={}, 삭제된 개수={}", userId, letterIds.size());
     }
 
+    @Transactional
+    public void deleteAllByBoxTypeForUser(Long userId, BoxType boxType) {
+        letterBoxRepository.deleteAllByBoxTypeForUser(userId, boxType);
+    }
+
     public void validateLetterInUserBox(Long letterId, Long userId) {
         log.debug("편지 보관함 권한 검증 요청: userId={}, letterId={}", userId, letterId);
 
