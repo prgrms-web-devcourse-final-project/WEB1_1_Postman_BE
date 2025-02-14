@@ -99,4 +99,15 @@ public class LetterBoxQueryRepository {
                 )
                 .execute();
     }
+
+    public void deleteAllByUserIdAndBoxType(Long userId, BoxType boxType) {
+        QLetterBoxEntity letterBox = QLetterBoxEntity.letterBoxEntity;
+
+        queryFactory.delete(letterBox)
+                .where(
+                        boxType != BoxType.NONE ? letterBox.boxType.eq(boxType) : null,
+                        letterBox.userId.eq(userId)
+                )
+                .execute();
+    }
 }
