@@ -89,4 +89,10 @@ public class LabelRepositoryImpl implements LabelRepository {
         List<LabelEntity> labelEntities = userLabelJpaRepository.findFirstComeLabels(LabelType.FIRST_COME);
         return LabelEntity.toLabels(labelEntities);
     }
+
+    @Override
+    public List<Label> findByLabelType(LabelType labelType) {
+        List<LabelEntity> labelEntities = labelJpaRepository.findByLabelType(labelType);
+        return LabelEntity.toLabels(labelEntities);
+    }
 }

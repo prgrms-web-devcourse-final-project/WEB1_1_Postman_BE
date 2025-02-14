@@ -58,4 +58,8 @@ public class Label {
     public void updateFirstComeLabel() {
         this.labelType = LabelType.FIRST_COME;
     }
+
+    public void updateGeneralLabel() {
+        this.labelType = LabelType.GENERAL;
+    }
 }
