@@ -8,7 +8,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,11 +102,10 @@ public class LabelController {
         }
     }
 
-    @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 입력된 라벨 ID에 해당하는 라벨을 선착순으로 가져갑니다.")
+    @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 뽑기 대상 라벨들 중 하나를 선착순으로 가져갑니다.")
     @PostMapping("/first-come")
-    public ApiResponse<String> createFirstComeFirstServedLabel(@PathVariable Long labelId,
-                                                               @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        labelService.createFirstComeFirstServedLabel(labelId, customUserDetails.getUserId());
+    public ApiResponse<String> createFirstComeFirstServedLabel(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        labelService.createFirstComeFirstServedLabel(customUserDetails.getUserId());
         return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
     }
 }

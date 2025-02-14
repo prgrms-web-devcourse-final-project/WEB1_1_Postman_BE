@@ -19,9 +19,9 @@ public interface LabelRepository {
 
     void createUserLabel(User user, Label label);
 
-    List<UserLabel> findUserLabelByUserAndLabel(User user, Label label);
-
     List<Label> findFirstComeLabels();
 
     List<Label> findByLabelType(LabelType labelType);
+
+    boolean existsUserLabelByUserAndLabel(User user, Label label);
 }

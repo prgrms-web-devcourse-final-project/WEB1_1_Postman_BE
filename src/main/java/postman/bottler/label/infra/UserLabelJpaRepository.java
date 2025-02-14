@@ -12,9 +12,8 @@ public interface UserLabelJpaRepository extends JpaRepository<UserLabelEntity, L
     @Query("SELECT ul.label FROM UserLabelEntity ul WHERE ul.user.userId = :userId")
     List<LabelEntity> findLabelsByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT ul FROM UserLabelEntity ul WHERE ul.user.userId = :userId AND ul.label.labelId = :labelId")
-    List<UserLabelEntity> findLabelsByUserAndLabel(@Param("userId") Long userId, @Param("labelId") Long labelId);
-
     @Query("SELECT l FROM LabelEntity l WHERE l.labelType = :labelType")
     List<LabelEntity> findFirstComeLabels(@Param("labelType") LabelType labelType);
+
+    boolean existsByUserUserIdAndLabelLabelId(Long userId, Long labelId);
 }
