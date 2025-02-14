@@ -3,37 +3,36 @@ package postman.bottler.notification.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static postman.bottler.notification.domain.NotificationType.BAN;
-import static postman.bottler.notification.domain.NotificationType.KEYWORD_REPLY;
 import static postman.bottler.notification.domain.NotificationType.MAP_REPLY;
 import static postman.bottler.notification.domain.NotificationType.NEW_LETTER;
 import static postman.bottler.notification.domain.NotificationType.TARGET_LETTER;
 import static postman.bottler.notification.domain.NotificationType.WARNING;
-import static postman.bottler.notification.domain.NotificationType.from;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import postman.bottler.notification.application.dto.request.NotificationRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
-import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.application.dto.response.NotificationResponseDTO;
+import postman.bottler.notification.application.dto.response.UnreadNotificationResponseDTO;
 import postman.bottler.notification.application.repository.NotificationRepository;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.application.service.NotificationService;
@@ -45,94 +44,92 @@ import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.exception.NoLetterIdException;
 
 @DisplayName("알림 서비스 테스트")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class NotificationServiceTest {
-    @InjectMocks
+    @Autowired
     private NotificationService notificationService;
-    @Mock
+    @MockBean
     private NotificationRepository notificationRepository;
-    @Mock
+    @MockBean
     private SubscriptionRepository subscriptionRepository;
-    @Mock
+    @MockBean
     private PushNotificationProvider pushNotificationProvider;
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Nested
     @DisplayName("알림 생성")
     class CreateNotification {
+        @DisplayName("정지 알림 저장에 실패해도 외부 기능은 유지되어야 한다.")
         @Test
-        @DisplayName("새 편지 알림을 보낸다.")
-        public void sendNewLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(NEW_LETTER, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
+        void sendBanNotificationWithPushException() {
+            // given
+            given(notificationRepository.save(any()))
+                    .willThrow(new RuntimeException());
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(NEW_LETTER, 1L, 1L, "label");
+            TransactionStatus outer = transactionManager.getTransaction(new DefaultTransactionAttribute());
 
-            // THEN
-            assertThat(response)
-                    .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(NEW_LETTER, 1L, 1L, "label");
+            // when
+            assertDoesNotThrow(() -> notificationService.sendBanNotification(1L));
+
+            // then
+            assertThat(outer.isRollbackOnly()).isFalse();
         }
 
+        @DisplayName("경고 알림 저장에 실패해도 외부 기능은 유지되어야 한다.")
         @Test
-        @DisplayName("타겟 편지 알림을 보낸다.")
-        public void sendTargetLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(TARGET_LETTER, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
+        void sendWarningNotificationWithPushException() {
+            // given
+            given(notificationRepository.save(any()))
+                    .willThrow(new RuntimeException());
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(TARGET_LETTER, 1L, 1L, "label");
+            TransactionStatus outer = transactionManager.getTransaction(new DefaultTransactionAttribute());
 
-            // THEN
-            assertThat(response)
-                    .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(TARGET_LETTER, 1L, 1L, "label");
+            // when
+            assertDoesNotThrow(() -> notificationService.sendWarningNotification(1L));
+
+            // then
+            assertThat(outer.isRollbackOnly()).isFalse();
         }
 
+        @DisplayName("편지 관련 알림 저장에 실패해도 외부 기능은 유지되어야 한다.")
         @Test
-        @DisplayName("지도 답장 편지 알림을 보낸다.")
-        public void sendMapReplyLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(MAP_REPLY, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
-            given(subscriptionRepository.findByUserId(1L)).willReturn(
-                    Subscriptions.from(List.of(Subscription.create(1L, "token"))));
-
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(MAP_REPLY, 1L, 1L, "label");
-
-            // THEN
-            assertThat(response)
-                    .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(MAP_REPLY, 1L, 1L, "label");
-        }
-
-        @Test
-        @DisplayName("키워드 답장 편지 알림을 보낸다.")
-        public void sendKeywordReplyLetterNotificationTest() {
-            // GIVEN
-            Notification notification = Notification.create(KEYWORD_REPLY, 1L, 1L, "label");
-
-            given(notificationRepository.save(any())).willReturn(notification);
+        void sendLetterNotificationWithPushException() {
+            // given
+            given(notificationRepository.save(any()))
+                    .willThrow(new RuntimeException());
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
-            // WHEN
-            NotificationResponseDTO response = notificationService.sendNotification(KEYWORD_REPLY, 1L, 1L, "label");
+            TransactionStatus outer = transactionManager.getTransaction(new DefaultTransactionAttribute());
 
-            // THEN
+            // when
+            assertDoesNotThrow(() -> notificationService.sendLetterNotification(NEW_LETTER, 1L, 1L, "label"));
+
+            // then
+            assertThat(outer.isRollbackOnly()).isFalse();
+        }
+
+        @ParameterizedTest(name = "{0} 알림을 보낼 시, {0}, 받는 유저의 ID, 편지 ID, 라벨 URL이 저장된다.")
+        @DisplayName("편지 관련 알림을 보낸다.")
+        @CsvSource({"NEW_LETTER", "TARGET_LETTER", "MAP_REPLY", "KEYWORD_REPLY"})
+        public void sendLetterNotification(NotificationType type) {
+            // given
+            given(notificationRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+            given(subscriptionRepository.findByUserId(1L))
+                    .willReturn(Subscriptions.from(List.of()));
+
+            // when
+            NotificationResponseDTO response = notificationService.sendNotification(type, 1L, 1L, "label");
+
+            // then
             assertThat(response)
                     .extracting("type", "receiver", "letterId", "label")
-                    .containsExactlyInAnyOrder(KEYWORD_REPLY, 1L, 1L, "label");
+                    .containsExactlyInAnyOrder(type, 1L, 1L, "label");
         }
 
         @DisplayName("편지 관련 알림에 편지 ID가 없는 경우, 예외가 발생한다.")
@@ -145,12 +142,10 @@ public class NotificationServiceTest {
         }
 
         @Test
-        @DisplayName("경고 알림을 보낸다.")
+        @DisplayName("경고 알림을 보낼 시, 알림 유형(WARNING)과 유저 ID 정보가 저장된다.")
         public void sendWarningNotificationTest() {
             // GIVEN
-            Notification notification = Notification.create(WARNING, 1L, null, null);
-
-            given(notificationRepository.save(any())).willReturn(notification);
+            given(notificationRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
@@ -164,12 +159,10 @@ public class NotificationServiceTest {
         }
 
         @Test
-        @DisplayName("정지 알림을 보낸다.")
+        @DisplayName("정지 알림을 보낼 시, 알림 유형(BAN)과 유저 ID 정보가 저장된다.")
         public void sendBanNotificationTest() {
             // GIVEN
-            Notification notification = Notification.create(BAN, 1L, null, null);
-
-            given(notificationRepository.save(any())).willReturn(notification);
+            given(notificationRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
@@ -194,7 +187,7 @@ public class NotificationServiceTest {
                     .willReturn(Subscriptions.from(List.of(Subscription.create(1L, "token"))));
 
             // when
-            NotificationResponseDTO response = notificationService.sendNotification(BAN, 1L, 1L, "label");
+            NotificationResponseDTO response = notificationService.sendNotification(BAN, 1L, null, null);
 
             // then
             assertThat(response)
@@ -206,17 +199,14 @@ public class NotificationServiceTest {
         @DisplayName("알림 보낼 기기가 없다면, 보내지 않는다.")
         public void notSendPushNotification() {
             // GIVEN
-            NotificationRequestDTO request = new NotificationRequestDTO("BAN", 1L, 1L, "label");
-            Notification notification = Notification.create(from(request.notificationType()),
-                    request.receiver(), request.letterId(), request.label());
+            Notification notification = Notification.create(BAN, 1L, null, null);
 
             given(notificationRepository.save(any())).willReturn(notification);
             given(subscriptionRepository.findByUserId(1L))
                     .willReturn(Subscriptions.from(List.of()));
 
             // WHEN
-            notificationService.sendNotification(from(request.notificationType()), request.receiver(),
-                    request.letterId(), request.label());
+            notificationService.sendNotification(BAN, 1L, null, null);
 
             // THEN
             verify(pushNotificationProvider, times(0)).pushAll(any());

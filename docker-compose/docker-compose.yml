@@ -12,6 +12,9 @@ services:
     environment:
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - TZ:Asia/Seoul
+    volumes:
+      - /home/ubuntu/logs:/home/logs
     restart: always  # 재시작 정책 추가
 
   redis:

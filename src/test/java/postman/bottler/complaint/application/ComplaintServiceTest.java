@@ -161,6 +161,6 @@ public class ComplaintServiceTest {
 
         // then
         Mockito.verify(notificationService, Mockito.times(1))
-                .sendNotification(WARNING, writerId, 1L, null);
+                .sendWarningNotification(writerId);
     }
 }

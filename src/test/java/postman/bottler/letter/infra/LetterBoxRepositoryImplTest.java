@@ -70,7 +70,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
         when(queryRepository.countLetters(1L, null)).thenReturn(1L);
 
         // when
-        Page<LetterSummaryResponseDTO> result = repository.findLetters(1L, pageable, BoxType.UNKNOWN);
+        Page<LetterSummaryResponseDTO> result = repository.findLetters(1L, pageable, BoxType.NONE);
 
         // then
         assertThat(result).isNotEmpty();

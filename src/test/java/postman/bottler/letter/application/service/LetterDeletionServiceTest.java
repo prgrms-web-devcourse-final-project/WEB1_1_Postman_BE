@@ -47,7 +47,7 @@ class LetterDeletionServiceTest {
 
         // then
         verify(letterBoxService, times(1))
-                .deleteByLetterIdsAndType(eq(List.of(1L)), eq(LetterType.LETTER), eq(BoxType.UNKNOWN));
+                .deleteByLetterIdsAndType(eq(List.of(1L)), eq(LetterType.LETTER), eq(BoxType.NONE));
     }
 
     @Test
@@ -65,7 +65,7 @@ class LetterDeletionServiceTest {
 
         // then
         verify(letterBoxService, atLeastOnce())
-                .deleteByLetterIdsAndType(eq(List.of(1L)), eq(LetterType.LETTER), eq(BoxType.UNKNOWN));
+                .deleteByLetterIdsAndType(eq(List.of(1L)), eq(LetterType.LETTER), eq(BoxType.NONE));
         verify(letterBoxService, atLeastOnce())
                 .deleteByLetterIdsAndTypeForUser(eq(List.of(2L)), eq(LetterType.REPLY_LETTER), eq(BoxType.RECEIVE),
                         eq(userId));
@@ -84,6 +84,6 @@ class LetterDeletionServiceTest {
 
         // then
         verify(letterBoxService, atLeastOnce())
-                .deleteByLetterIdsAndType(eq(List.of(1L)), eq(LetterType.LETTER), eq(BoxType.UNKNOWN));
+                .deleteByLetterIdsAndType(eq(List.of(1L)), eq(LetterType.LETTER), eq(BoxType.NONE));
     }
 }

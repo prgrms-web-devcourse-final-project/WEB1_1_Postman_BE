@@ -22,7 +22,7 @@ public enum SortField {
             }
         }
         if (!isValid) {
-            throw new InvalidSortFieldException("유효하지 않은 값입니다.");
+            throw new InvalidSortFieldException();
         }
     }
 }

@@ -42,6 +42,11 @@ class LetterKeywordRepositoryImplTest extends TestBase {
             LetterKeywordEntity.builder().letterId(1L).keyword("keyword2").isDeleted(false).build()
     );
 
+    private static final List<String> MOCK_KEYWORDS_STRING = List.of(
+            "keyword1",
+            "keyword2"
+    );
+
     @Test
     @DisplayName("키워드 리스트 저장")
     void saveAll() {
@@ -107,14 +112,14 @@ class LetterKeywordRepositoryImplTest extends TestBase {
     void getFrequentKeywords() {
         // given
         List<Long> letterIds = List.of(1L, 2L);
-        when(queryDslRepository.getFrequentKeywords(letterIds)).thenReturn(MOCK_KEYWORD_ENTITIES);
+        when(queryDslRepository.getFrequentKeywords(letterIds)).thenReturn(MOCK_KEYWORDS_STRING);
 
         // when
-        List<LetterKeyword> frequentKeywords = repository.getFrequentKeywords(letterIds);
+        List<String> frequentKeywords = repository.getFrequentKeywords(letterIds);
 
         // then
         assertThat(frequentKeywords).hasSize(2);
-        assertThat(frequentKeywords.get(0).getKeyword()).isEqualTo("keyword1");
+        assertThat(frequentKeywords).isIn("keyword1", "keyword2");
         verify(queryDslRepository, times(1)).getFrequentKeywords(letterIds);
     }
 }

@@ -814,7 +814,7 @@ class UserServiceTest {
         verify(user).checkBan();
         verify(banService).banUser(user);
         verify(slackService).sendSlackMessage(SlackConstant.BAN, userId);
-        verify(notificationService).sendNotification(NotificationType.BAN, userId, null, null);
+        verify(notificationService).sendBanNotification(userId);
         verify(userRepository).updateWarningCount(user);
     }
 

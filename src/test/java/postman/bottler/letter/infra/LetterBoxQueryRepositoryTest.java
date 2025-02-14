@@ -256,7 +256,7 @@ class LetterBoxQueryRepositoryTest extends TestBase {
             @DisplayName("UNKNOWN 타입일 경우 타입 조건 무시 후 편지 삭제")
             void deleteReplyLetterTypeUnknown() {
                 // when
-                repository.deleteByCondition(List.of(letterEntity.toDomain().getId()), LetterType.UNKNOWN,
+                repository.deleteByCondition(List.of(letterEntity.toDomain().getId()), LetterType.NONE,
                         BoxType.RECEIVE);
 
                 // then
