@@ -15,5 +15,6 @@ public interface LabelJpaRepository extends JpaRepository<LabelEntity, Long> {
     @Query("SELECT l FROM LabelEntity l WHERE l.labelId = :labelId")
     Optional<LabelEntity> findByIdWithLock(@Param("labelId") Long labelId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<LabelEntity> findByLabelType(LabelType labelType);
 }
