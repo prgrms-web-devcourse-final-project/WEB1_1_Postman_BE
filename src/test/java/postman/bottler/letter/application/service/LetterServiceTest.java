@@ -136,7 +136,8 @@ class LetterServiceTest extends TestBase {
             when(letterRepository.findById(1L)).thenReturn(Optional.of(mockLetter));
 
             // when & then
-            assertThrows(LetterAuthorMismatchException.class, () -> letterService.softDeleteLetters(letterIds, 200L));
+            assertThrows(LetterAuthorMismatchException.class,
+                    () -> letterService.softDeleteLetters(letterIds, 200L));
             verify(letterRepository, times(1)).findById(1L);
         }
 
@@ -173,12 +174,12 @@ class LetterServiceTest extends TestBase {
 
     @Test
     @DisplayName("편지 존재 여부 확인")
-    void letterExists() {
+    void existsLetterById() {
         // given
         when(letterRepository.existsById(1L)).thenReturn(true);
 
         // when
-        boolean result = letterService.letterExists(1L);
+        boolean result = letterService.existsLetterById(1L);
 
         // then
         assertThat(result).isTrue();

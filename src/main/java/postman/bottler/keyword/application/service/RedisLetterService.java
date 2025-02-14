@@ -149,7 +149,7 @@ public class RedisLetterService {
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.letterExists(letterId);
+        return letterService.existsLetterById(letterId);
     }
 
     private void updateActiveRecommendations(Long letterId, List<Long> activeRecommendations, String activeKey) {
