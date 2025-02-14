@@ -11,9 +11,9 @@ import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.LetterDeleteRequests;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.processor.BoxTypeProcessor;
+import postman.bottler.letter.processor.BoxTypeDeletionProcessor;
 import postman.bottler.letter.processor.LetterDeletionContext;
-import postman.bottler.letter.processor.LetterTypeProcessor;
+import postman.bottler.letter.processor.LetterTypeDeletionProcessor;
 
 @Service
 @RequiredArgsConstructor
@@ -48,17 +48,17 @@ public class LetterDeletionService {
 
     @Transactional
     public void deleteAllSavedLetters(Long userId) {
-        BoxTypeProcessor.NONE.process(userId, createLetterDeletionContext());
+        BoxTypeDeletionProcessor.NONE.process(userId, createLetterDeletionContext());
     }
 
     @Transactional
     public void deleteAllSavedReceivedLetters(Long userId) {
-        BoxTypeProcessor.RECEIVE.process(userId, createLetterDeletionContext());
+        BoxTypeDeletionProcessor.RECEIVE.process(userId, createLetterDeletionContext());
     }
 
     @Transactional
     public void deleteAllSavedSentLetters(Long userId) {
-        BoxTypeProcessor.SEND.process(userId, createLetterDeletionContext());
+        BoxTypeDeletionProcessor.SEND.process(userId, createLetterDeletionContext());
     }
 
     private Map<LetterType, Map<BoxType, List<Long>>> groupRequestsByTypeAndBox(
@@ -78,7 +78,7 @@ public class LetterDeletionService {
     private void processLetterType(Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap) {
         log.debug("편지 타입별 삭제 처리 시작: userId={}, 편지 타입={}", userId, letterType);
 
-        LetterTypeProcessor processor = LetterTypeProcessor.valueOf(letterType.name());
+        LetterTypeDeletionProcessor processor = LetterTypeDeletionProcessor.valueOf(letterType.name());
         LetterDeletionContext letterDeletionContext = createLetterDeletionContext();
 
         boxTypeMap.forEach((boxType, ids) -> {

@@ -5,7 +5,7 @@ import java.util.List;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 
-public enum LetterTypeProcessor {
+public enum LetterTypeDeletionProcessor {
 
     LETTER {
         @Override

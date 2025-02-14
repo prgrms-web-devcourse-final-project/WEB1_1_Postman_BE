@@ -4,7 +4,7 @@ import java.util.List;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 
-public enum BoxTypeProcessor {
+public enum BoxTypeDeletionProcessor {
     SEND {
         @Override
         public void process(Long userId, LetterDeletionContext context) {
