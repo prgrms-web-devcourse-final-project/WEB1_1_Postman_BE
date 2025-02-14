@@ -11,6 +11,7 @@ import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.LetterDeleteRequests;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.processor.BoxTypeProcessor;
 import postman.bottler.letter.processor.LetterDeletionContext;
 import postman.bottler.letter.processor.LetterTypeProcessor;
 
@@ -43,6 +44,21 @@ public class LetterDeletionService {
         processGroupedRequests(groupedRequests, userId);
 
         log.info("편지 삭제 완료: userId={}, 삭제된 편지 개수={}", userId, letterDeleteDTOS.size());
+    }
+
+    @Transactional
+    public void deleteAllSavedLetters(Long userId) {
+        BoxTypeProcessor.NONE.process(userId, createLetterDeletionContext());
+    }
+
+    @Transactional
+    public void deleteAllSavedReceivedLetters(Long userId) {
+        BoxTypeProcessor.RECEIVE.process(userId, createLetterDeletionContext());
+    }
+
+    @Transactional
+    public void deleteAllSavedSentLetters(Long userId) {
+        BoxTypeProcessor.SEND.process(userId, createLetterDeletionContext());
     }
 
     private Map<LetterType, Map<BoxType, List<Long>>> groupRequestsByTypeAndBox(
