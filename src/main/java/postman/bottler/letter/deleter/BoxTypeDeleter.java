@@ -1,13 +1,13 @@
-package postman.bottler.letter.processor;
+package postman.bottler.letter.deleter;
 
 import java.util.List;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 
-public enum BoxTypeDeletionProcessor {
+public enum BoxTypeDeleter {
     SEND {
         @Override
-        public void process(Long userId, LetterDeletionContext context) {
+        public void delete(Long userId, LetterDeletionContext context) {
             List<Long> letterIds = context.letterService().findIdsByUserId(userId);
             List<Long> replyLetterIds = context.replyLetterService().findIdsBySenderId(userId);
 
@@ -38,16 +38,16 @@ public enum BoxTypeDeletionProcessor {
         }
     }, RECEIVE {
         @Override
-        public void process(Long userId, LetterDeletionContext context) {
+        public void delete(Long userId, LetterDeletionContext context) {
             context.letterBoxService().deleteAllByBoxTypeForUser(userId, BoxType.RECEIVE);
         }
     }, NONE {
         @Override
-        public void process(Long userId, LetterDeletionContext context) {
-            SEND.process(userId, context);
-            RECEIVE.process(userId, context);
+        public void delete(Long userId, LetterDeletionContext context) {
+            SEND.delete(userId, context);
+            RECEIVE.delete(userId, context);
         }
     };
 
-    public abstract void process(Long userId, LetterDeletionContext context);
+    public abstract void delete(Long userId, LetterDeletionContext context);
 }

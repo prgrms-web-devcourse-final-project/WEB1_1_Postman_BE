@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.service.LetterKeywordService;
 import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.LetterDeleteRequests;
+import postman.bottler.letter.deleter.BoxTypeDeleter;
+import postman.bottler.letter.deleter.LetterDeletionContext;
+import postman.bottler.letter.deleter.LetterTypeDeleter;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
-import postman.bottler.letter.processor.BoxTypeDeletionProcessor;
-import postman.bottler.letter.processor.LetterDeletionContext;
-import postman.bottler.letter.processor.LetterTypeDeletionProcessor;
 
 @Service
 @RequiredArgsConstructor
@@ -48,17 +48,17 @@ public class LetterDeletionService {
 
     @Transactional
     public void deleteAllSavedLetters(Long userId) {
-        BoxTypeDeletionProcessor.NONE.process(userId, createLetterDeletionContext());
+        BoxTypeDeleter.NONE.delete(userId, createLetterDeletionContext());
     }
 
     @Transactional
     public void deleteAllSavedReceivedLetters(Long userId) {
-        BoxTypeDeletionProcessor.RECEIVE.process(userId, createLetterDeletionContext());
+        BoxTypeDeleter.RECEIVE.delete(userId, createLetterDeletionContext());
     }
 
     @Transactional
     public void deleteAllSavedSentLetters(Long userId) {
-        BoxTypeDeletionProcessor.SEND.process(userId, createLetterDeletionContext());
+        BoxTypeDeleter.SEND.delete(userId, createLetterDeletionContext());
     }
 
     private Map<LetterType, Map<BoxType, List<Long>>> groupRequestsByTypeAndBox(
@@ -78,12 +78,12 @@ public class LetterDeletionService {
     private void processLetterType(Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap) {
         log.debug("편지 타입별 삭제 처리 시작: userId={}, 편지 타입={}", userId, letterType);
 
-        LetterTypeDeletionProcessor processor = LetterTypeDeletionProcessor.valueOf(letterType.name());
+        LetterTypeDeleter processor = LetterTypeDeleter.valueOf(letterType.name());
         LetterDeletionContext letterDeletionContext = createLetterDeletionContext();
 
         boxTypeMap.forEach((boxType, ids) -> {
             log.debug("보관 타입별 삭제 처리: userId={}, 보관 타입={}, 편지 타입={}, 삭제 개수={}", userId, boxType, letterType, ids.size());
-            processor.process(boxType, ids, userId, letterDeletionContext);
+            processor.delete(boxType, ids, userId, letterDeletionContext);
         });
     }
 
