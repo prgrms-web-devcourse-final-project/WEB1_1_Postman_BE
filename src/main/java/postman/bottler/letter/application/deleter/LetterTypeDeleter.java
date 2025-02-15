@@ -1,4 +1,4 @@
-package postman.bottler.letter.deleter;
+package postman.bottler.letter.application.deleter;
 
 
 import java.util.List;

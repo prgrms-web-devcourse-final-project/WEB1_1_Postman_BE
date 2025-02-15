@@ -1,4 +1,4 @@
-package postman.bottler.letter.deleter;
+package postman.bottler.letter.application.deleter;
 
 import postman.bottler.keyword.application.service.LetterKeywordService;
 import postman.bottler.letter.application.service.LetterBoxService;

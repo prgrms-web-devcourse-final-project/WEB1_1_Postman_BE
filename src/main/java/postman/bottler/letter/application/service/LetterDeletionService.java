@@ -7,11 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.service.LetterKeywordService;
+import postman.bottler.letter.application.deleter.BoxTypeDeleter;
+import postman.bottler.letter.application.deleter.LetterDeletionContext;
+import postman.bottler.letter.application.deleter.LetterTypeDeleter;
 import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.LetterDeleteRequests;
-import postman.bottler.letter.deleter.BoxTypeDeleter;
-import postman.bottler.letter.deleter.LetterDeletionContext;
-import postman.bottler.letter.deleter.LetterTypeDeleter;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterType;
 
