@@ -27,33 +27,6 @@ public class LabelScheduler {
 
     private final Map<LocalDateTime, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
 
-//    @Transactional
-//    public void scheduleUpdateFirstComeLabel(LabelRequestDTO labelRequestDTO) {
-//        LocalDateTime scheduledTime = labelRequestDTO.scheduledDateTime();
-//        List<Long> labelIds = labelRequestDTO.labelIds();
-//
-//        log.info("{}에 라벨을 FIRST_COME으로 변경하는 스케줄 등록", scheduledTime);
-//
-//        labelIds.forEach(labelId -> {
-//            ScheduledFuture<?> scheduledTask = taskScheduler.schedule(() -> {
-//                log.info("스케줄 실행: 라벨 {}을 FIRST_COME으로 변경", labelId);
-//
-//                Label label = labelRepository.findLabelByLabelId(labelId);
-//                label.updateFirstComeLabel();
-//                labelRepository.save(label);
-//                scheduledTasks.remove(labelId);
-//
-//            }, scheduledTime.atZone(ZoneId.systemDefault()).toInstant());
-//
-//            // 기존에 등록된 스케줄이 있으면 취소하고 새로운 스케줄 등록
-//            if (scheduledTasks.containsKey(labelId)) {
-//                scheduledTasks.get(labelId).cancel(false);
-//                log.info("기존 스케줄 취소: 라벨 {}", labelId);
-//            }
-//            scheduledTasks.put(labelId, scheduledTask);
-//        });
-//    }
-
     @Transactional
     public void scheduleUpdateFirstComeLabel(LabelRequestDTO labelRequestDTO) {
         LocalDateTime scheduledTime = labelRequestDTO.scheduledDateTime();
