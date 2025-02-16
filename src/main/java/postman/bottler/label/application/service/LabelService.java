@@ -70,18 +70,4 @@ public class LabelService {
     public void updateFirstComeLabel(LabelRequestDTO labelRequestDTO) {
         labelScheduler.scheduleUpdateFirstComeLabel(labelRequestDTO);
     }
-
-    @Transactional
-    public void giveDefaultLabelsToNewUser(User storedUser) {
-        List<Long> defaultLabelIds = List.of(1L, 2L);
-        for (Long labelId : defaultLabelIds) {
-            Label label = labelRepository.findLabelByLabelId(labelId);
-            giveLabelToUser(storedUser, label);
-        }
-    }
-
-    private void giveLabelToUser(User user, Label label) {
-        labelRepository.updateOwnedCount(label);
-        labelRepository.createUserLabel(user, label);
-    }
 }
