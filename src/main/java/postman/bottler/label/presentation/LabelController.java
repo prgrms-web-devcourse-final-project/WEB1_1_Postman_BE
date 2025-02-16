@@ -104,8 +104,8 @@ public class LabelController {
 
     @Operation(summary = "선착순 라벨 뽑기", description = "(로그인 필요) 로그인한 사용자가 뽑기 대상 라벨들 중 하나를 선착순으로 가져갑니다.")
     @PostMapping("/first-come")
-    public ApiResponse<String> createFirstComeFirstServedLabel(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        labelService.createFirstComeFirstServedLabel(customUserDetails.getUserId());
-        return ApiResponse.onCreateSuccess("선착순 라벨 뽑기 성공");
+    public ApiResponse<LabelResponseDTO> createFirstComeFirstServedLabel(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        LabelResponseDTO labelResponseDTO = labelService.createFirstComeFirstServedLabel(customUserDetails.getUserId());
+        return ApiResponse.onCreateSuccess(labelResponseDTO);
     }
 }

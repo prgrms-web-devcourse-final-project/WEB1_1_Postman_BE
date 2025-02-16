@@ -39,7 +39,7 @@ public class LabelService {
     }
 
     @Transactional
-    public void createFirstComeFirstServedLabel(Long userId) {
+    public LabelResponseDTO createFirstComeFirstServedLabel(Long userId) {
         User user = userService.findById(userId);
 
         List<Label> firstComeLabels = labelRepository.findByLabelType(LabelType.FIRST_COME);
@@ -53,7 +53,7 @@ public class LabelService {
             if (label.isOwnedCountValid()) {
                 labelRepository.updateOwnedCount(label);
                 labelRepository.createUserLabel(user, label);
-                return;
+                return label.toLabelResponseDTO();
             }
         }
 
