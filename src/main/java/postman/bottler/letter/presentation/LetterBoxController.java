@@ -97,6 +97,31 @@ public class LetterBoxController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         letterDeletionService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
-        return ApiResponse.onSuccess("편지 보관을 취소했습니다.");
+        return ApiResponse.onSuccess("보관된 편지를 삭제했습니다.");
     }
+
+    @DeleteMapping("/all")
+    public ApiResponse<String> deleteAllSavedLetters(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        letterDeletionService.deleteAllSavedLetters(userDetails.getUserId());
+        return ApiResponse.onSuccess("보관된 편지를 모두 삭제했습니다");
+    }
+
+    @DeleteMapping("/received")
+    public ApiResponse<String> deleteAllSavedReceivedLetters(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        letterDeletionService.deleteAllSavedReceivedLetters(userDetails.getUserId());
+        return ApiResponse.onSuccess("받은 편지를 모두 삭제했습니다");
+    }
+
+    @DeleteMapping("/sent")
+    public ApiResponse<String> deleteAllSavedSentLetters(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        letterDeletionService.deleteAllSavedSentLetters(userDetails.getUserId());
+        return ApiResponse.onSuccess("보낸 편지를 모두 삭제했습니다.");
+    }
+
 }

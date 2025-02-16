@@ -32,6 +32,14 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
+    public Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
+        List<LetterSummaryResponseDTO> letterSummaryResponseDTOS =
+                letterBoxQueryRepository.fetchLetters(userId, boxType, pageable);
+        long total = countLetters(userId, boxType);
+        return new PageImpl<>(letterSummaryResponseDTOS, pageable, total);
+    }
+
+    @Override
     public void deleteByCondition(List<Long> letterIds, LetterType letterType, BoxType boxType) {
         letterBoxQueryRepository.deleteByCondition(letterIds, letterType, boxType);
     }
@@ -42,16 +50,14 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
     }
 
     @Override
-    public boolean existsByLetterIdAndUserId(Long letterId, Long userId) {
-        return letterBoxJdbcRepository.existsByUserIdAndLetterId(letterId, userId);
+    public void deleteAllByBoxTypeForUser(Long userId, BoxType boxType) {
+        letterBoxQueryRepository.deleteAllByUserIdAndBoxType(userId, boxType);
     }
 
+
     @Override
-    public Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
-        List<LetterSummaryResponseDTO> letterSummaryResponseDTOS =
-                letterBoxQueryRepository.fetchLetters(userId, boxType, pageable);
-        long total = countLetters(userId, boxType);
-        return new PageImpl<>(letterSummaryResponseDTOS, pageable, total);
+    public boolean existsByLetterIdAndUserId(Long letterId, Long userId) {
+        return letterBoxJdbcRepository.existsByUserIdAndLetterId(letterId, userId);
     }
 
     private long countLetters(Long userId, BoxType boxType) {

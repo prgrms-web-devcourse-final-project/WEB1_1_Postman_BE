@@ -107,7 +107,7 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public boolean letterExists(Long letterId) {
+    public boolean existsLetterById(Long letterId) {
         log.debug("편지 존재 여부 확인: letterId={}", letterId);
 
         boolean exists = letterRepository.existsById(letterId);

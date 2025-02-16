@@ -82,8 +82,8 @@ public class ReplyLetterService {
     }
 
     @Transactional
-    public void softDeleteReplyLetters(List<Long> replyLetterIds, Long userId) {
-        log.info("답장 삭제 요청: userId={}, replyLetterIds={}", userId, replyLetterIds);
+    public void softDeleteReplyLetters(List<Long> replyLetterIds, Long senderId) {
+        log.info("답장 삭제 요청: userId={}, replyLetterIds={}", senderId, replyLetterIds);
 
         if (replyLetterIds == null || replyLetterIds.isEmpty()) {
             throw new InvalidLetterRequestException("삭제할 답장 편지 ID 목록이 비어 있습니다.");
@@ -91,7 +91,7 @@ public class ReplyLetterService {
 
         List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
 
-        if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
+        if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(senderId))) {
             throw new LetterAuthorMismatchException();
         }
 
@@ -101,7 +101,7 @@ public class ReplyLetterService {
 
         replyLetterRepository.softDeleteByIds(replyLetterIds);
 
-        log.info("답장 삭제 완료: userId={}, count={}", userId, replyLetterIds.size());
+        log.info("답장 삭제 완료: userId={}, count={}", senderId, replyLetterIds.size());
     }
 
     @Transactional
@@ -178,5 +178,10 @@ public class ReplyLetterService {
 
         return replyLetterRepository.findById(replyLetterId)
                 .orElseThrow(() -> new LetterNotFoundException(LetterType.REPLY_LETTER));
+    }
+
+    public List<Long> findIdsBySenderId(Long senderId) {
+        return replyLetterRepository.findAllBySenderId(senderId).stream().map(ReplyLetter::getId)
+                .toList();
     }
 }
