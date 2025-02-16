@@ -36,16 +36,13 @@ public class ComplaintService {
 
     @Transactional
     public ComplaintResponseDTO complain(ComplaintType type, Long letterId, Long reporterId, String description) {
-        ComplaintRepository repository = getRepositoryByType(type);
-        Complaints complaints = repository.findByLetterId(letterId);
-        Complaint complaint = Complaint.create(letterId, reporterId, description);
-        complaints.add(complaint);
-        if (complaints.needWarning()) {
-            Long writer = blockLetter(type, letterId);
-            notificationService.sendWarningNotification(writer);
-            userService.updateWarningCount(writer);
+        Complaint newComplaint = Complaint.create(letterId, reporterId, description);
+        Complaints existingComplaints = findExistingComplaints(type, letterId);
+        existingComplaints.add(newComplaint);
+        if (existingComplaints.needWarning()) {
+            sendWarningToWriter(type, letterId);
         }
-        return ComplaintResponseDTO.from(repository.save(complaint));
+        return ComplaintResponseDTO.from(saveComplaint(newComplaint, type));
     }
 
     private Complaints findExistingComplaints(ComplaintType type, Long letterId) {
