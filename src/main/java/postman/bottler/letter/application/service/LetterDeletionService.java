@@ -27,9 +27,6 @@ public class LetterDeletionService {
 
     @Transactional
     public void deleteLetter(LetterDeleteDTO letterDeleteDTO, Long userId) {
-        log.debug("단일 편지 삭제 요청: userId={}, letterId={}, 편지 타입={}, 보관 타입={}", userId, letterDeleteDTO.letterId(),
-                letterDeleteDTO.letterType(), letterDeleteDTO.boxType());
-
         deleteLetters(List.of(letterDeleteDTO), userId);
     }
 
@@ -63,21 +60,14 @@ public class LetterDeletionService {
 
     private Map<LetterType, Map<BoxType, List<Long>>> groupRequestsByTypeAndBox(
             List<LetterDeleteDTO> letterDeleteDTOS) {
-        log.debug("편지 삭제 요청을 타입별로 그룹화 중: 요청 개수={}", letterDeleteDTOS.size());
         return new LetterDeleteRequests(letterDeleteDTOS).groupByTypeAndBox();
     }
 
     private void processGroupedRequests(Map<LetterType, Map<BoxType, List<Long>>> groupedRequests, Long userId) {
-        log.debug("그룹화된 편지 삭제 처리 시작: userId={}, 편지 타입={}", userId, groupedRequests.keySet());
-
         groupedRequests.forEach((letterType, boxTypeMap) -> processLetterType(userId, letterType, boxTypeMap));
-
-        log.debug("그룹화된 편지 삭제 처리 완료: userId={}", userId);
     }
 
     private void processLetterType(Long userId, LetterType letterType, Map<BoxType, List<Long>> boxTypeMap) {
-        log.debug("편지 타입별 삭제 처리 시작: userId={}, 편지 타입={}", userId, letterType);
-
         LetterTypeDeleter processor = LetterTypeDeleter.valueOf(letterType.name());
         LetterDeletionContext letterDeletionContext = createLetterDeletionContext();
 
