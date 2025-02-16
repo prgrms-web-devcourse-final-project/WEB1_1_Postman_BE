@@ -42,7 +42,7 @@ public class ReplyLetterService {
         log.info("답장 생성 요청: senderId={}, letterId={}", senderId, letterId);
 
         if (checkIsReplied(letterId, senderId)) {
-            throw new DuplicateReplyLetterException(letterId, senderId);
+            throw new DuplicateReplyLetterException();
         }
 
         ReplyLetter replyLetter = saveReplyLetter(letterId, requestDTO, senderId);
