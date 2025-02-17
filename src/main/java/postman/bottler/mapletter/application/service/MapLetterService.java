@@ -13,14 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.application.BlockMapLetterType;
 import postman.bottler.mapletter.application.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.application.dto.FindSentMapLetter;
 import postman.bottler.mapletter.application.dto.MapLetterAndDistance;
-import postman.bottler.mapletter.application.dto.ReplyProjectDTO;
 import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
@@ -52,10 +50,8 @@ import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.PageRequestException;
-import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
-import postman.bottler.reply.application.dto.ReplyType;
 import postman.bottler.user.application.service.UserService;
 
 @Service
@@ -66,10 +62,9 @@ public class MapLetterService {
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
     private final UserService userService;
     private final NotificationService notificationService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final ReplyRedisService replyRedisService;
 
     private static final double VIEW_DISTANCE = 15;
-    private static final int REDIS_SAVED_REPLY = 6;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -192,9 +187,10 @@ public class MapLetterService {
         MapLetter source = mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
-        saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
+        replyRedisService.saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
         notificationService.sendLetterNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
                 save.getLabel());
+
         return save;
     }
 
@@ -303,12 +299,22 @@ public class MapLetterService {
 
     @Transactional
     public void deleteReplyMapLetter(List<Long> letters, Long userId) {
+        List<ReplyMapLetter> replyMapLetters = new ArrayList<>();
+
         for (Long letterId : letters) {
             ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
             replyMapLetter.validDeleteReplyMapLetter(userId);
             replyMapLetterRepository.softDelete(letterId);
 
-            deleteRecentReply(letterId, replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+            replyMapLetters.add(replyMapLetter);
+        }
+        deleteRecentRepliesFromRedis(replyMapLetters);
+    }
+
+    private void deleteRecentRepliesFromRedis(List<ReplyMapLetter> replyMapLetters) {
+        for (ReplyMapLetter replyMapLetter : replyMapLetters) {
+            replyRedisService.deleteRecentReply(replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel(),
+                    replyMapLetter.getSourceLetterId());
         }
     }
 
@@ -400,49 +406,6 @@ public class MapLetterService {
         }
     }
 
-    private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
-        MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
-        String key = "REPLY:" + sourceLetter.getCreateUserId();
-        String value = ReplyType.MAP + ":" + letterId + ":" + labelUrl;
-
-        Long size = redisTemplate.opsForList().size(key);
-        if (size != null && size >= REDIS_SAVED_REPLY) {
-            redisTemplate.opsForList().rightPop(key);
-        }
-
-        if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
-            redisTemplate.opsForList().leftPush(key, value);
-        }
-    }
-
-    private void deleteRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
-        MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
-        String key = "REPLY:" + sourceLetter.getCreateUserId();
-        String value = ReplyType.MAP + ":" + letterId + ":" + labelUrl;
-
-        redisTemplate.opsForList().remove(key, 1, value);
-    }
-
-    public void fetchRecentReply(Long userId, int fetchItemSize) {
-        List<ReplyProjectDTO> recentMapKeywordReplyByUserId = replyMapLetterRepository.findRecentMapKeywordReplyByUserId(
-                userId, fetchItemSize);
-
-        String key = "REPLY:" + userId;
-
-        List<ReplyProjectDTO> reversedList = new ArrayList<>(recentMapKeywordReplyByUserId);
-        Collections.reverse(reversedList);
-
-        List<Object> existingValues = redisTemplate.opsForList().range(key, 0, -1);
-
-        for (ReplyProjectDTO replyLetter : reversedList) {
-            String tempValue = replyLetter.getType() + ":" + replyLetter.getId() + ":" + replyLetter.getLabel();
-
-            if (existingValues == null || !existingValues.contains(tempValue)) { //레디스에 없을 때만 저장
-                redisTemplate.opsForList().leftPush(key, tempValue);
-            }
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<FindNearbyLettersResponseDTO> guestFindNearByMapLetters(BigDecimal latitude, BigDecimal longitude) {
         List<MapLetterAndDistance> letters = mapLetterRepository.guestFindLettersByUserLocation(latitude, longitude);
@@ -497,7 +460,8 @@ public class MapLetterService {
                     replyMapLetter.validDeleteReplyMapLetter(userId);
                     replyMapLetterRepository.softDelete(letter.letterId());
 
-                    deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+                    replyRedisService.deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(),
+                            replyMapLetter.getSourceLetterId());
                     break;
             }
         }
