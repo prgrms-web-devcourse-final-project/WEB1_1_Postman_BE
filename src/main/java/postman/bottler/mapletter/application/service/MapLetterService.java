@@ -509,6 +509,13 @@ public class MapLetterService {
             case "SENT":
                 mapLetterRepository.softDeleteAllByCreateUserId(userId);
                 replyMapLetterRepository.softDeleteAllByCreateUserId(userId);
+                break;
+            case "SENT-MAP":
+                mapLetterRepository.softDeleteAllByCreateUserId(userId);
+                break;
+            case "SENT-REPLY":
+                replyMapLetterRepository.softDeleteAllByCreateUserId(userId);
+                break;
         }
     }
 }

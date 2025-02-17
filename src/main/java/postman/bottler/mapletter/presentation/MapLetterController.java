@@ -249,8 +249,8 @@ public class MapLetterController {
 
     @GetMapping("/saved")
     public ApiResponse<?> savedLettersV1(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
-                                       @RequestParam(defaultValue = "1") int page,
-                                       @RequestParam(defaultValue = "9") int size) {
+                                         @RequestParam(defaultValue = "1") int page,
+                                         @RequestParam(defaultValue = "9") int size) {
         Long userId = user.getUserId();
         return switch (type) {
             case "sent-all" -> //보낸 편지 전체 조회(지도편지, 답장 편지)
