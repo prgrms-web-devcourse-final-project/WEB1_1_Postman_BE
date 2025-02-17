@@ -103,7 +103,7 @@ class LetterBoxServiceTest extends TestBase {
         @DisplayName("모든 편지 요약을 성공적으로 조회한다")
         void findAllLetterSummaries() {
             // given
-            when(letterBoxRepository.findLetters(1L, pageRequestDTO.toPageable(), BoxType.UNKNOWN)).thenReturn(
+            when(letterBoxRepository.findLetters(1L, pageRequestDTO.toPageable(), BoxType.NONE)).thenReturn(
                     mockPage);
 
             // when

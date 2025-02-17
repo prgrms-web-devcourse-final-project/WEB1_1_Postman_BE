@@ -3,9 +3,9 @@ package postman.bottler.keyword.infra;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.keyword.infra.entity.LetterKeywordEntity;
-import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,9 +37,7 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
     }
 
     @Override
-    public List<LetterKeyword> getFrequentKeywords(List<Long> letterIds) {
-        return queryDslRepository.getFrequentKeywords(letterIds).stream()
-                .map(LetterKeywordEntity::toDomain)
-                .toList();
+    public List<String> getFrequentKeywords(List<Long> letterIds) {
+        return queryDslRepository.getFrequentKeywords(letterIds);
     }
 }

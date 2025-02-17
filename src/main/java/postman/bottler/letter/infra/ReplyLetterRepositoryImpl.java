@@ -43,6 +43,13 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
+    public List<ReplyLetter> findAllBySenderId(Long senderId) {
+        return replyLetterJpaRepository.findAllBySenderId(senderId).stream()
+                .map(ReplyLetterEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     @Transactional
     public void softDeleteByIds(List<Long> letterIds) {
         replyLetterJpaRepository.softDeleteByIds(letterIds);

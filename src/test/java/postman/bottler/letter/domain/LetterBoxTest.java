@@ -44,8 +44,8 @@ class LetterBoxTest {
                 .id(2L)
                 .userId(101L)
                 .letterId(201L)
-                .letterType(LetterType.UNKNOWN)
-                .boxType(BoxType.UNKNOWN)
+                .letterType(LetterType.NONE)
+                .boxType(BoxType.NONE)
                 .createdAt(now)
                 .build();
 
@@ -53,8 +53,8 @@ class LetterBoxTest {
         assertThat(letterBox.getId()).isEqualTo(2L);
         assertThat(letterBox.getUserId()).isEqualTo(101L);
         assertThat(letterBox.getLetterId()).isEqualTo(201L);
-        assertThat(letterBox.getLetterType()).isEqualTo(LetterType.UNKNOWN);
-        assertThat(letterBox.getBoxType()).isEqualTo(BoxType.UNKNOWN);
+        assertThat(letterBox.getLetterType()).isEqualTo(LetterType.NONE);
+        assertThat(letterBox.getBoxType()).isEqualTo(BoxType.NONE);
         assertThat(letterBox.getCreatedAt()).isEqualTo(now);
     }
 }

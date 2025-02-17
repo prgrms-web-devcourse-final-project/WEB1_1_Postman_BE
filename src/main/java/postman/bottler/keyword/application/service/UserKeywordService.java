@@ -2,6 +2,7 @@ package postman.bottler.keyword.application.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.dto.request.UserKeywordRequestDTO;
@@ -11,6 +12,7 @@ import postman.bottler.keyword.domain.UserKeyword;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserKeywordService {
 
     private final UserKeywordRepository userKeywordRepository;
@@ -23,7 +25,8 @@ public class UserKeywordService {
 
     @Transactional
     public void createKeywords(UserKeywordRequestDTO userKeywordRequestDTO, Long userId) {
-        userKeywordRepository.replaceKeywordsByUserId(userKeywordRequestDTO.toDomain(userId), userId);
+        List<UserKeyword> userKeywords = userKeywordRequestDTO.toDomain(userId);
+        userKeywordRepository.replaceKeywordsByUserId(userKeywords, userId);
     }
 
     @Transactional(readOnly = true)

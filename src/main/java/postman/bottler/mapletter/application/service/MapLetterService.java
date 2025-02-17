@@ -84,7 +84,7 @@ public class MapLetterService {
         Long targetUserId = userService.getUserIdByNickname(createTargetMapLetterRequestDTO.target());
         MapLetter mapLetter = MapLetter.createTargetMapLetter(createTargetMapLetterRequestDTO, userId, targetUserId);
         MapLetter save = mapLetterRepository.save(mapLetter);
-        notificationService.sendNotification(TARGET_LETTER, targetUserId, save.getId(), save.getLabel());
+        notificationService.sendLetterNotification(TARGET_LETTER, targetUserId, save.getId(), save.getLabel());
         return save;
     }
 
@@ -193,7 +193,7 @@ public class MapLetterService {
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
         saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
-        notificationService.sendNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
+        notificationService.sendLetterNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
                 save.getLabel());
         return save;
     }

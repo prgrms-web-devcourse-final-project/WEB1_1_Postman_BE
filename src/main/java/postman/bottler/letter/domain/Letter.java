@@ -21,5 +21,7 @@ public class Letter {
     private Long userId;
     private boolean isDeleted;
     private boolean isBlocked;
-    private LocalDateTime createdAt;
+
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -37,21 +37,25 @@ public class RedisLetterService {
     @Value("${recommendation.saved-replies}")
     private int redisSavedReply;
 
-    @Transactional
     public void saveTempRecommendations(Long userId, List<Long> recommendations) {
         String key = getTempRecommendationKey(userId);
+        log.info("임시 추천 저장: userId={}, 추천 개수={}", userId, recommendations.size());
+
         redisTemplate.opsForValue().set(key, recommendations);
     }
 
-    @Transactional
     public void saveDeveloperLetter(Long userId, List<Long> recommendations) {
         String key = getActiveRecommendationKey(userId);
+        log.info("개발자 추천 저장: userId={}, 추천 개수={}", userId, recommendations.size());
+
         redisTemplate.opsForValue().set(key, recommendations);
     }
 
     public void saveReplyToRedis(Long letterId, String labelUrl, Long receiverId) {
         String key = getReplyKey(receiverId);
         String value = getReplyValue(letterId, labelUrl);
+
+        log.debug("Redis에 답장 저장 요청: receiverId={}, letterId={}, label={}", receiverId, letterId, labelUrl);
 
         Long size = redisTemplateForReply.opsForList().size(key);
         if (size != null && size >= redisSavedReply) {
@@ -60,6 +64,7 @@ public class RedisLetterService {
 
         if (!Objects.requireNonNull(redisTemplateForReply.opsForList().range(key, 0, -1)).contains(value)) {
             redisTemplateForReply.opsForList().leftPush(key, value);
+            log.info("Redis에 답장 저장 완료: receiverId={}, letterId={}", receiverId, letterId);
         }
     }
 
@@ -79,6 +84,8 @@ public class RedisLetterService {
         List<Long> activeRecommendations = fetchActiveRecommendations(userId);
 
         Long recommendId = processRecommendations(userId, tempRecommendations, activeRecommendations);
+
+        log.info("임시 추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
         return createRecommendNotification(userId, recommendId);
     }
 
@@ -86,6 +93,7 @@ public class RedisLetterService {
         String key = getReplyKey(receiverId);
         String value = getReplyValue(replyLetterId, label);
 
+        log.info("Redis에서 답장 삭제 요청: receiverId={}, letterId={}", receiverId, replyLetterId);
         redisTemplate.opsForList().remove(key, 1, value);
     }
 
@@ -102,42 +110,46 @@ public class RedisLetterService {
     }
 
     private String getReplyValue(Long letterId, String labelUrl) {
-        return createReplyValue(letterId, labelUrl);
-    }
-
-    private String createReplyValue(Long letterId, String labelUrl) {
         return ReplyType.KEYWORD + ":" + letterId + ":" + labelUrl;
     }
 
     private List<Long> fetchRecommendations(String key) {
         List<Long> recommendations = redisTemplate.opsForValue().get(key);
-        validateRecommendations(key, recommendations);
+        validateRecommendations(recommendations);
         return recommendations;
     }
 
-    private void validateRecommendations(String key, List<Long> recommendations) {
+    private void validateRecommendations(List<Long> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
-            throw new TempRecommendationsNotFoundException("추천 데이터가 없습니다. key: " + key);
+            throw new TempRecommendationsNotFoundException();
         }
     }
 
     private Long processRecommendations(Long userId, List<Long> tempRecommendations, List<Long> activeRecommendations) {
+        String activeKey = getActiveRecommendationKey(userId);
+        String tempRecommendationKey = getTempRecommendationKey(userId);
+
         Long recommendId = findFirstValidLetter(tempRecommendations);
-        updateActiveRecommendations(recommendId, activeRecommendations, getActiveRecommendationKey(userId));
+
+        updateActiveRecommendations(recommendId, activeRecommendations, activeKey);
         saveLetterToBox(userId, recommendId);
-        redisTemplate.delete(getTempRecommendationKey(userId));
+
+        redisTemplate.delete(tempRecommendationKey);
+
         return recommendId;
     }
 
     private Long findFirstValidLetter(List<Long> recommendations) {
-        return recommendations.stream()
-                .filter(this::isValidLetter)
-                .findFirst()
-                .orElseThrow(() -> new LetterNotFoundException("No valid letters found in temp recommendations."));
+        if (recommendations == null || recommendations.isEmpty()) {
+            throw new LetterNotFoundException();
+        }
+
+        return recommendations.stream().filter(this::isValidLetter).findFirst()
+                .orElseThrow(LetterNotFoundException::new);
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.letterExists(letterId);
+        return letterService.existsLetterById(letterId);
     }
 
     private void updateActiveRecommendations(Long letterId, List<Long> activeRecommendations, String activeKey) {
@@ -146,12 +158,16 @@ public class RedisLetterService {
         }
         activeRecommendations.add(letterId);
         redisTemplate.opsForValue().set(activeKey, activeRecommendations);
+
+        log.info("사용자 현재 추천 편지 업데이트 완료: 추천 추가된 편지 ID={}, 저장된 개수={}", letterId, activeRecommendations.size());
     }
 
     private void saveLetterToBox(Long userId, Long letterId) {
-        letterBoxService.saveLetter(LetterBoxDTO.of(
-                userId, letterId, LetterType.LETTER, BoxType.RECEIVE, LocalDateTime.now()
-        ));
+        LetterBoxDTO letterBoxDTO = LetterBoxDTO.of(userId, letterId, LetterType.LETTER, BoxType.RECEIVE,
+                LocalDateTime.now());
+
+        letterBoxService.saveLetter(letterBoxDTO);
+        log.info("[추천 편지 보관함 저장 완료] userId={}, letterId={}", userId, letterId);
     }
 
     private RecommendNotificationRequestDTO createRecommendNotification(Long userId, Long recommendId) {
