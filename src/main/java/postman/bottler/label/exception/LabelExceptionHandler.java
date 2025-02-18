@@ -45,4 +45,11 @@ public class LabelExceptionHandler {
         log.error(e.getMessage());
         return ApiResponse.onFailure(ErrorStatus.DUPLICATE_LABEL.getCode(), e.getMessage(), null);
     }
+
+    @ExceptionHandler(LabelRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<?> handleLabelRequestException(LabelRequestException e) {
+        log.error(e.getMessage());
+        return ApiResponse.onFailure(ErrorStatus.DUPLICATE_LABEL.getCode(), e.getMessage(), null);
+    }
 }

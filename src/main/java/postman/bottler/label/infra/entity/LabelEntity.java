@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import postman.bottler.label.domain.Label;
+import postman.bottler.label.domain.LabelType;
 
 @Entity
 @Builder
@@ -28,11 +29,16 @@ public class LabelEntity {
     @Builder.Default
     private int ownedCount = 0;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private LabelType labelType;
+
     public static LabelEntity from(Label label) {
         return LabelEntity.builder()
                 .labelId(label.getLabelId())
                 .imageUrl(label.getImageUrl())
                 .limitCount(label.getLimitCount())
+                .labelType(label.getLabelType())
                 .build();
     }
 
@@ -47,7 +53,7 @@ public class LabelEntity {
     }
 
     public Label to() {
-        return Label.createLabel(this.labelId, this.imageUrl, this.limitCount, this.ownedCount);
+        return Label.createLabel(this.labelId, this.imageUrl, this.limitCount, this.ownedCount, this.labelType);
     }
 
     public void updateOwnedCount() {

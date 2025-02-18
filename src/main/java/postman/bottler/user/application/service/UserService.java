@@ -19,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.service.RedisLetterService;
+import postman.bottler.label.application.repository.LabelRepository;
+import postman.bottler.label.application.service.LabelService;
+import postman.bottler.label.domain.Label;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.service.LetterBoxService;
 import postman.bottler.letter.domain.BoxType;
@@ -64,6 +67,7 @@ public class UserService {
     private final NotificationService notificationService;
     private final RedisLetterService redisLetterService;
     private final LetterBoxService letterBoxService;
+    private final LabelRepository labelRepository;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 8;
@@ -74,6 +78,9 @@ public class UserService {
         String profileImageUrl = profileImageRepository.findProfileImage();
         User user = User.createUser(email, passwordEncoder.encode(password), nickname, profileImageUrl);
         User storedUser = userRepository.save(user);
+
+        giveDefaultLabelsToNewUser(storedUser);
+
         List<Long> randomDevelopLetter = findRandomDevelopLetter();
         redisLetterService.saveDeveloperLetter(storedUser.getUserId(), randomDevelopLetter);
         randomDevelopLetter.forEach(
@@ -238,7 +245,8 @@ public class UserService {
             nickname = generateUniqueNickname(nickname);
             String profileImageUrl = profileImageRepository.findProfileImage();
             User user = User.createKakaoUser(kakaoId, nickname, profileImageUrl, passwordEncoder.encode(kakaoId));
-            userRepository.save(user);
+            User storedUser = userRepository.save(user);
+            giveDefaultLabelsToNewUser(storedUser);
         }
         return authenticateAndGenerateTokens(kakaoId, kakaoId);
     }
@@ -313,5 +321,18 @@ public class UserService {
     @Transactional
     public void deleteEmailCode(String email) {
         emailCodeRepository.deleteByEmail(email);
+    }
+
+    public void giveDefaultLabelsToNewUser(User storedUser) {
+        List<Long> defaultLabelIds = List.of(1L, 2L);
+        for (Long labelId : defaultLabelIds) {
+            Label label = labelRepository.findLabelByLabelId(labelId);
+            giveLabelToUser(storedUser, label);
+        }
+    }
+
+    private void giveLabelToUser(User user, Label label) {
+        labelRepository.updateOwnedCount(label);
+        labelRepository.createUserLabel(user, label);
     }
 }

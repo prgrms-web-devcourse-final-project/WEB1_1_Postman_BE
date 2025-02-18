@@ -53,7 +53,7 @@ class LabelTest {
         int ownedCount = 2;
 
         // when
-        Label label = Label.createLabel(labelId, imageUrl, limitCount, ownedCount);
+        Label label = Label.createLabel(labelId, imageUrl, limitCount, ownedCount, LabelType.GENERAL);
 
         // then
         assertNotNull(label, "Label은 null이 될 수 없음");

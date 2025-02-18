@@ -10,23 +10,26 @@ public class Label {
     private final String imageUrl;
     private final int limitCount; //최대 인원수
     private int ownedCount; //소유한 인원수
+    private LabelType labelType;
 
-    private Label(Long labelId, String imageUrl, int limitCount, int ownedCount) {
+    private Label(Long labelId, String imageUrl, int limitCount, int ownedCount, LabelType labelType) {
         this.labelId = labelId;
         this.imageUrl = imageUrl;
         this.limitCount = limitCount;
         this.ownedCount = ownedCount;
+        this.labelType = labelType;
     }
 
     private Label(String imageUrl, int limitCount) {
         this.imageUrl = imageUrl;
         this.limitCount = limitCount;
+        this.labelType = LabelType.GENERAL;
     }
 
-    public static Label createLabel(Long labelId, String imageUrl, int limitCount, int ownedCount) {
+    public static Label createLabel(Long labelId, String imageUrl, int limitCount, int ownedCount, LabelType labelType) {
         validateCount(limitCount);
         validateCount(ownedCount);
-        return new Label(labelId, imageUrl, limitCount, ownedCount);
+        return new Label(labelId, imageUrl, limitCount, ownedCount, labelType);
     }
 
     public static Label createLabel(String imageUrl, int limitCount) {
@@ -50,5 +53,13 @@ public class Label {
 
     public boolean isOwnedCountValid() {
         return limitCount > ownedCount;
+    }
+
+    public void updateFirstComeLabel() {
+        this.labelType = LabelType.FIRST_COME;
+    }
+
+    public void updateGeneralLabel() {
+        this.labelType = LabelType.GENERAL;
     }
 }
