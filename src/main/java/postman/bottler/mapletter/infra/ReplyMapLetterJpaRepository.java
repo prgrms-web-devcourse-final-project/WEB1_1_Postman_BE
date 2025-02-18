@@ -10,13 +10,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import postman.bottler.mapletter.application.dto.ReplyProjectDTO;
+import postman.bottler.mapletter.infra.entity.MapLetterEntity;
 import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 
 @Repository
 public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLetterEntity, Long> {
 
     @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m WHERE m.createUserId = :userId " +
-            "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false ORDER BY r.createdAt DESC ")
+            "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false AND r.isRecipientDeleted = false ORDER BY r.createdAt DESC ")
     Page<ReplyMapLetterEntity> findActiveReplyMapLettersBySourceUserId(Long userId, Pageable pageable);
 
     @Query("SELECT r FROM ReplyMapLetterEntity r " +
@@ -39,14 +40,22 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
                     SELECT r.reply_letter_id as id, r.created_at, r.label, 'MAP' as type
                     FROM reply_map_letter r
                     JOIN map_letter m ON r.source_letter_id = m.map_letter_id
-                    WHERE m.create_user_id=:userId
+                    WHERE m.create_user_id=:userId AND r.is_deleted=false AND r.is_blocked = false 
                         UNION ALL
                     SELECT rl.id AS id, rl.created_at, rl.label, 'KEYWORD' as type
                     FROM reply_letters rl
-                    WHERE rl.receiver_id=:userId
+                    WHERE rl.receiver_id=:userId AND rl.is_blocked=false AND rl.is_deleted=false 
                 ) combined
                 ORDER BY created_at DESC
                 LIMIT :fetchItemSize
             """, nativeQuery = true)
     List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
+
+    List<ReplyMapLetterEntity> findAllByCreateUserId(Long createUserId);
+
+    @Query(value = """
+                 SELECT r FROM MapLetterEntity m, ReplyMapLetterEntity r
+                 WHERE m.mapLetterId = r.sourceLetterId AND m.createUserId=:userId
+            """)
+    List<ReplyMapLetterEntity> findAllBySourceLetterCreateUserId(Long userId);
 }

@@ -40,4 +40,10 @@ public interface MapLetterRepository {
     List<MapLetter> findAllByIds(List<Long> ids);
 
     void updateRead(MapLetter mapLetter);
+
+    void softDeleteAllByCreateUserId(Long userId);
+
+    void softDeleteForRecipient(Long letterId);
+
+    void softDeleteAllForRecipient(Long userId);
 }

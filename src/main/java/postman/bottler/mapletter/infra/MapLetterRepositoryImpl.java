@@ -3,6 +3,7 @@ package postman.bottler.mapletter.infra;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,6 @@ import postman.bottler.mapletter.application.repository.MapLetterRepository;
 @RequiredArgsConstructor
 public class MapLetterRepositoryImpl implements MapLetterRepository {
     private final MapLetterJpaRepository mapLetterJpaRepository;
-    private final EntityManager em;
 
     @Override
     public MapLetter save(MapLetter mapLetter) {
@@ -110,7 +110,36 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     @Override
     public void updateRead(MapLetter mapLetter) {
         MapLetterEntity mapLetterEntity = mapLetterJpaRepository.findById(mapLetter.getId())
-                        .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
         mapLetterEntity.updateRead();
+    }
+
+    @Override
+    public void softDeleteAllByCreateUserId(Long userId) {
+        List<MapLetterEntity> mapLetterEntities = mapLetterJpaRepository.findAllByCreateUserId(userId);
+
+        if (mapLetterEntities.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제할 편지가 없습니다.");
+        }
+
+        mapLetterEntities.forEach(mapLetterEntity -> mapLetterEntity.updateDelete(true));
+    }
+
+    @Override
+    public void softDeleteForRecipient(Long letterId) {
+        MapLetterEntity deleteLetter = mapLetterJpaRepository.findById(letterId)
+                .orElseThrow(() -> new MapLetterNotFoundException("편지를 찾을 수 없습니다."));
+        deleteLetter.updateRecipientDeleted(true);
+    }
+
+    @Override
+    public void softDeleteAllForRecipient(Long userId) {
+        List<MapLetterEntity> mapLetterEntities = mapLetterJpaRepository.findAllByTargetUserId(userId);
+
+        if (mapLetterEntities.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제 할 편지가 없습니다.");
+        }
+
+        mapLetterEntities.forEach(mapLetterEntity -> mapLetterEntity.updateRecipientDeleted(true));
     }
 }

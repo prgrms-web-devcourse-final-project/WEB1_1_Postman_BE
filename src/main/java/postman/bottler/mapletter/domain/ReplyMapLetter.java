@@ -27,6 +27,7 @@ public class ReplyMapLetter {
     private Long createUserId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isRecipientDeleted;
 
     public static ReplyMapLetter createReplyMapLetter(CreateReplyMapLetterRequestDTO createReplyMapLetterRequestDTO,
                                                       Long userId) {
@@ -41,11 +42,16 @@ public class ReplyMapLetter {
                 .createUserId(userId)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .isRecipientDeleted(false)
                 .build();
     }
 
     public void updateDelete(boolean deleted) {
         this.isDeleted = deleted;
+    }
+
+    public void updateRecipientDeleted(boolean deleted) {
+        this.isRecipientDeleted = deleted;
     }
 
     public void validFindOneReplyMapLetter(Long userId, MapLetter sourceLetter) {
@@ -68,6 +74,18 @@ public class ReplyMapLetter {
         }
         if (this.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
+    }
+
+    public void validateRecipientDeletion(Long userId, Long sourceLetterCreateUserId) {
+        if (!sourceLetterCreateUserId.equals(userId)) {
+            throw new CommonForbiddenException("편지를 삭제 할 권한이 없습니다. 편지 삭제에 실패하였습니다.");
+        }
+        if (this.isBlocked()) {
+            throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
+        }
+        if (this.isRecipientDeleted()) {
+            throw new MapLetterAlreadyDeletedException("해당 편지는 이미 삭제되었습니다.");
         }
     }
 }

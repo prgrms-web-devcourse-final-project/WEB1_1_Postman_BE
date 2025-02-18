@@ -39,11 +39,12 @@ public class ReplyMapLetterEntity {
     private LocalDateTime updatedAt;
     @NotNull
     private Long createUserId;
+    private boolean isRecipientDeleted;
 
     @Builder
     public ReplyMapLetterEntity(Long replyLetterId, Long sourceLetterId, String font, String paper, String label,
                                 boolean isBlocked, boolean isDeleted, LocalDateTime createdAt, LocalDateTime updatedAt,
-                                Long createUserId, String content) {
+                                Long createUserId, String content, boolean isRecipientDeleted) {
         this.replyLetterId = replyLetterId;
         this.sourceLetterId = sourceLetterId;
         this.font = font;
@@ -55,6 +56,7 @@ public class ReplyMapLetterEntity {
         this.updatedAt = updatedAt;
         this.createUserId = createUserId;
         this.content = content;
+        this.isRecipientDeleted = isRecipientDeleted;
     }
 
     public static ReplyMapLetterEntity from(ReplyMapLetter replyMapLetter) {
@@ -70,6 +72,7 @@ public class ReplyMapLetterEntity {
                 .updatedAt(replyMapLetter.getUpdatedAt())
                 .createUserId(replyMapLetter.getCreateUserId())
                 .content(replyMapLetter.getContent())
+                .isRecipientDeleted(replyMapLetter.isRecipientDeleted())
                 .build();
     }
 
@@ -86,10 +89,15 @@ public class ReplyMapLetterEntity {
                 .updatedAt(replyMapLetter.getUpdatedAt())
                 .createUserId(replyMapLetter.getCreateUserId())
                 .content(replyMapLetter.getContent())
+                .isRecipientDeleted(replyMapLetter.isRecipientDeleted())
                 .build();
     }
 
     public void updateDelete(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void updateRecipientDeleted(boolean isRecipientDeleted) {
+        this.isRecipientDeleted = isRecipientDeleted;
     }
 }
