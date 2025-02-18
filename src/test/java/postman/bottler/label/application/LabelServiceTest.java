@@ -127,30 +127,6 @@ class LabelServiceTest {
         verify(labelRepository, times(1)).findFirstComeLabels();
     }
 
-//    @Test
-//    @DisplayName("사용자에게 기본 라벨을 제공한다.")
-//    void giveDefaultLabelsToNewUser() {
-//        // given
-//        User storedUser = User.createUser(1L, "email", "password", "nickname", "imageUrl", Role.USER, Provider.LOCAL,
-//                LocalDateTime.now(), LocalDateTime.now(), false, 0);
-//        Label label1 = Label.createLabel("imageUrl1", 10);
-//        Label label2 = Label.createLabel("imageUrl2", 20);
-//
-//        when(labelRepository.findLabelByLabelId(1L)).thenReturn(label1);
-//        when(labelRepository.findLabelByLabelId(2L)).thenReturn(label2);
-//
-//        // when
-//        labelService.giveDefaultLabelsToNewUser(storedUser);
-//
-//        // then
-//        verify(labelRepository, times(1)).findLabelByLabelId(1L);
-//        verify(labelRepository, times(1)).findLabelByLabelId(2L);
-//        verify(labelRepository, times(1)).updateOwnedCount(label1);
-//        verify(labelRepository, times(1)).updateOwnedCount(label2);
-//        verify(labelRepository, times(1)).createUserLabel(storedUser, label1);
-//        verify(labelRepository, times(1)).createUserLabel(storedUser, label2);
-//    }
-
     @Test
     @DisplayName("사용자가 선착순 라벨을 정상적으로 뽑는다.")
     void createFirstComeFirstServedLabel_success() {
