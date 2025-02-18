@@ -465,7 +465,7 @@ public class MapLetterService {
                             replyMapLetter.getSourceLetterId());
                     break;
                 default:
-                    throw new TypeNotFoundException("잘못된 타입입니다.");
+                    throw new TypeNotFoundException("잘못된 편지 타입입니다.");
             }
         }
     }
