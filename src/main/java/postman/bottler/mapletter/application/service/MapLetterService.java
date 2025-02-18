@@ -508,4 +508,28 @@ public class MapLetterService {
             }
         }
     }
+
+    @Transactional
+    public void deleteReceivedMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
+        for (LetterInfo letter : letters.letters()) {
+            switch (letter.letterType()) {
+                case MAP:
+                    MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
+                    findMapLetter.validateRecipientDeletion(userId);
+                    mapLetterRepository.softDeleteForRecipient(letter.letterId());
+                    break;
+                case REPLY:
+                    ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
+                    MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+                    replyMapLetter.validateRecipientDeletion(userId, sourceLetter.getCreateUserId());
+                    replyMapLetterRepository.softDeleteForRecipient(letter.letterId());
+
+                    replyRedisService.deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(),
+                            replyMapLetter.getSourceLetterId());
+                    break;
+                default:
+                    throw new TypeNotFoundException("잘못된 편지 타입입니다.");
+            }
+        }
+    }
 }

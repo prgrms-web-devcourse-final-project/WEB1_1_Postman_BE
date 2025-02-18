@@ -17,7 +17,7 @@ import postman.bottler.mapletter.infra.entity.ReplyMapLetterEntity;
 public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLetterEntity, Long> {
 
     @Query("SELECT r FROM ReplyMapLetterEntity r, MapLetterEntity m WHERE m.createUserId = :userId " +
-            "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false ORDER BY r.createdAt DESC ")
+            "AND m.mapLetterId = r.sourceLetterId AND r.isDeleted=false AND r.isBlocked = false AND r.isRecipientDeleted = false ORDER BY r.createdAt DESC ")
     Page<ReplyMapLetterEntity> findActiveReplyMapLettersBySourceUserId(Long userId, Pageable pageable);
 
     @Query("SELECT r FROM ReplyMapLetterEntity r " +

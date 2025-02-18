@@ -29,4 +29,6 @@ public interface ReplyMapLetterRepository {
     List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
 
     void softDeleteAllByCreateUserId(Long userId);
+
+    void softDeleteForRecipient(Long letterId);
 }

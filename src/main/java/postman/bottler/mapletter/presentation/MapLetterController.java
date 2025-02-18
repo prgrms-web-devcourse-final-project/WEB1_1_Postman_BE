@@ -337,9 +337,18 @@ public class MapLetterController {
     @DeleteMapping("/sent")
     @Operation(summary = "보낸 편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능")
     public ApiResponse<?> deleteSentMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
-                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
         mapLetterService.deleteSentMapLetters(deleteLetters, userId);
+        return ApiResponse.onDeleteSuccess(deleteLetters);
+    }
+
+    @DeleteMapping("/received")
+    @Operation(summary = "받은 편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능. 받은 편지 자체를 삭제하는게 아니라 받은 사람의 마이페이지에서만 삭제")
+    public ApiResponse<?> deleteReceivedMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteReceivedMapLetters(deleteLetters, userId);
         return ApiResponse.onDeleteSuccess(deleteLetters);
     }
 

@@ -22,7 +22,6 @@ import postman.bottler.mapletter.application.repository.MapLetterRepository;
 @RequiredArgsConstructor
 public class MapLetterRepositoryImpl implements MapLetterRepository {
     private final MapLetterJpaRepository mapLetterJpaRepository;
-    private final EntityManager em;
 
     @Override
     public MapLetter save(MapLetter mapLetter) {
@@ -111,7 +110,7 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
     @Override
     public void updateRead(MapLetter mapLetter) {
         MapLetterEntity mapLetterEntity = mapLetterJpaRepository.findById(mapLetter.getId())
-                        .orElseThrow(()->new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MapLetterNotFoundException("해당 편지를 찾을 수 없습니다."));
         mapLetterEntity.updateRead();
     }
 
@@ -124,5 +123,12 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
         }
 
         mapLetterEntities.forEach(mapLetterEntity -> mapLetterEntity.updateDelete(true));
+    }
+
+    @Override
+    public void softDeleteForRecipient(Long letterId) {
+        MapLetterEntity deleteLetter = mapLetterJpaRepository.findById(letterId)
+                .orElseThrow(() -> new MapLetterNotFoundException("편지를 찾을 수 없습니다."));
+        deleteLetter.updateRecipientDeleted(true);
     }
 }
