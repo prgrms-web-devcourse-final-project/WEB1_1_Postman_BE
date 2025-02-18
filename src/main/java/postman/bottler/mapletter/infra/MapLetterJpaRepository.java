@@ -129,4 +129,6 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
 
     List<MapLetterEntity> findAllByCreateUserId(Long createUserId);
+
+    List<MapLetterEntity> findAllByTargetUserId(Long targetUserId);
 }

@@ -44,4 +44,6 @@ public interface MapLetterRepository {
     void softDeleteAllByCreateUserId(Long userId);
 
     void softDeleteForRecipient(Long letterId);
+
+    void softDeleteAllForRecipient(Long userId);
 }

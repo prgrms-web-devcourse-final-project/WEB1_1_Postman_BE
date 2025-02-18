@@ -31,4 +31,6 @@ public interface ReplyMapLetterRepository {
     void softDeleteAllByCreateUserId(Long userId);
 
     void softDeleteForRecipient(Long letterId);
+
+    void softDeleteAllForRecipient(Long userId);
 }

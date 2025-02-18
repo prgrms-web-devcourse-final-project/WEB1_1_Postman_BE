@@ -52,4 +52,10 @@ public interface ReplyMapLetterJpaRepository extends JpaRepository<ReplyMapLette
     List<ReplyProjectDTO> findRecentMapKeywordReplyByUserId(Long userId, int fetchItemSize);
 
     List<ReplyMapLetterEntity> findAllByCreateUserId(Long createUserId);
+
+    @Query(value = """
+                 SELECT r FROM MapLetterEntity m, ReplyMapLetterEntity r
+                 WHERE m.mapLetterId = r.sourceLetterId AND m.createUserId=:userId
+            """)
+    List<ReplyMapLetterEntity> findAllBySourceLetterCreateUserId(Long userId);
 }

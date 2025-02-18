@@ -131,4 +131,15 @@ public class MapLetterRepositoryImpl implements MapLetterRepository {
                 .orElseThrow(() -> new MapLetterNotFoundException("편지를 찾을 수 없습니다."));
         deleteLetter.updateRecipientDeleted(true);
     }
+
+    @Override
+    public void softDeleteAllForRecipient(Long userId) {
+        List<MapLetterEntity> mapLetterEntities = mapLetterJpaRepository.findAllByTargetUserId(userId);
+
+        if (mapLetterEntities.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제 할 편지가 없습니다.");
+        }
+
+        mapLetterEntities.forEach(mapLetterEntity -> mapLetterEntity.updateRecipientDeleted(true));
+    }
 }

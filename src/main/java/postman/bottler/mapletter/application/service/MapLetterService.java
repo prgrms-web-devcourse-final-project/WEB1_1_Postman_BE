@@ -483,6 +483,18 @@ public class MapLetterService {
             case "SENT-REPLY":
                 replyMapLetterRepository.softDeleteAllByCreateUserId(userId);
                 break;
+            case "RECEIVED":
+                mapLetterRepository.softDeleteAllForRecipient(userId);
+                replyMapLetterRepository.softDeleteAllForRecipient(userId);
+                break;
+            case "RECEIVED-MAP":
+                mapLetterRepository.softDeleteAllForRecipient(userId);
+                break;
+            case "RECEIVED-REPLY":
+                replyMapLetterRepository.softDeleteAllForRecipient(userId);
+                break;
+            default:
+                throw new TypeNotFoundException("잘못된 편지 타입입니다.");
         }
     }
 

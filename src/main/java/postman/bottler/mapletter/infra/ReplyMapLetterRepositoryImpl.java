@@ -99,4 +99,15 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
 
         letter.updateRecipientDeleted(true);
     }
+
+    @Override
+    public void softDeleteAllForRecipient(Long userId) {
+        List<ReplyMapLetterEntity> letters = replyMapLetterJpaRepository.findAllBySourceLetterCreateUserId(userId);
+
+        if (letters.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제할 편지가 없습니다.");
+        }
+
+        letters.forEach(letter -> letter.updateRecipientDeleted(true));
+    }
 }
