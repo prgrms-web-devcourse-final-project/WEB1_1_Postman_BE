@@ -50,6 +50,7 @@ import postman.bottler.mapletter.exception.LetterAlreadyReplyException;
 import postman.bottler.mapletter.exception.MapLetterAlreadyArchivedException;
 import postman.bottler.mapletter.exception.MapLetterNotFoundException;
 import postman.bottler.mapletter.exception.PageRequestException;
+import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.user.application.service.UserService;
@@ -463,6 +464,8 @@ public class MapLetterService {
                     replyRedisService.deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(),
                             replyMapLetter.getSourceLetterId());
                     break;
+                default:
+                    throw new TypeNotFoundException("잘못된 타입입니다.");
             }
         }
     }
