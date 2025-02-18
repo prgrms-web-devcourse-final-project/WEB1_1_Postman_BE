@@ -31,7 +31,7 @@ public class ReplyRedisService {
             List<ReplyProjectDTO> recentMapKeywordReplyByUserId =
                     replyMapLetterRepository.findRecentMapKeywordReplyByUserId(userId, fetchItemSize);
 
-            String key="REPLY:"+userId;
+            String key = "REPLY:" + userId;
 
             List<ReplyProjectDTO> reversedList = new ArrayList<>(recentMapKeywordReplyByUserId);
             Collections.reverse(reversedList);

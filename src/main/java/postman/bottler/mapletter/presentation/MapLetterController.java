@@ -353,7 +353,7 @@ public class MapLetterController {
     }
 
     @DeleteMapping("/all")
-    @Operation(summary = "편지 전체 삭제", description = "로그인 필수. 타입(SENT, SENT-MAP, SENT-REPLY) 나눠서 보내주세요")
+    @Operation(summary = "편지 전체 삭제", description = "로그인 필수. 타입(SENT, SENT-MAP, SENT-REPLY, RECEIVED, RECEIVED-MAP, RECEIVED-REPLY) 나눠서 보내주세요")
     public ApiResponse<?> deleteAllMapLetter(@RequestParam String type,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();

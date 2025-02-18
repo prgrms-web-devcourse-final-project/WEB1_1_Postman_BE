@@ -84,7 +84,7 @@ public class ReplyMapLetter {
         if (this.isBlocked()) {
             throw new BlockedLetterException("해당 편지는 신고당한 편지입니다.");
         }
-        if(this.isRecipientDeleted()){
+        if (this.isRecipientDeleted()) {
             throw new MapLetterAlreadyDeletedException("해당 편지는 이미 삭제되었습니다.");
         }
     }

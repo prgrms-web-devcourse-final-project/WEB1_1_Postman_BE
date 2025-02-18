@@ -94,8 +94,8 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
 
     @Override
     public void softDeleteForRecipient(Long letterId) {
-        ReplyMapLetterEntity letter=replyMapLetterJpaRepository.findById(letterId)
-                .orElseThrow(()->new MapLetterNotFoundException("편지를 찾을 수 없습니다."));
+        ReplyMapLetterEntity letter = replyMapLetterJpaRepository.findById(letterId)
+                .orElseThrow(() -> new MapLetterNotFoundException("편지를 찾을 수 없습니다."));
 
         letter.updateRecipientDeleted(true);
     }
