@@ -334,6 +334,15 @@ public class MapLetterController {
         return ApiResponse.onDeleteSuccess(deleteLetters);
     }
 
+    @DeleteMapping("/sent")
+    @Operation(summary = "보낸 편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능")
+    public ApiResponse<?> deleteSentMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteSentMapLetters(deleteLetters, userId);
+        return ApiResponse.onDeleteSuccess(deleteLetters);
+    }
+
     @DeleteMapping("/all")
     @Operation(summary = "편지 전체 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능")
     public ApiResponse<?> deleteAllMapLetter(@RequestParam String type,
