@@ -323,7 +323,6 @@ public class UserService {
         emailCodeRepository.deleteByEmail(email);
     }
 
-    @Transactional
     public void giveDefaultLabelsToNewUser(User storedUser) {
         List<Long> defaultLabelIds = List.of(1L, 2L);
         for (Long labelId : defaultLabelIds) {
