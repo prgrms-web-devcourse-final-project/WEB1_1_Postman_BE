@@ -46,11 +46,7 @@ public class LabelService {
 
         for (Label label : firstComeLabels) {
             boolean hasLabel = labelRepository.existsUserLabelByUserAndLabel(user, label);
-            if (hasLabel) {
-                continue;
-            }
-
-            if (label.isOwnedCountValid()) {
+            if (!hasLabel && label.isOwnedCountValid()) {
                 labelRepository.updateOwnedCount(label);
                 labelRepository.createUserLabel(user, label);
                 return label.toLabelResponseDTO();
