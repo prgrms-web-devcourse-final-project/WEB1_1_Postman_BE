@@ -41,6 +41,7 @@ import postman.bottler.mapletter.application.dto.response.OneLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.application.repository.MapLetterArchiveRepository;
 import postman.bottler.mapletter.application.repository.MapLetterRepository;
+import postman.bottler.mapletter.application.repository.RecentReplyStorage;
 import postman.bottler.mapletter.application.repository.ReplyMapLetterRepository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
@@ -53,6 +54,7 @@ import postman.bottler.mapletter.exception.PageRequestException;
 import postman.bottler.mapletter.exception.TypeNotFoundException;
 import postman.bottler.notification.application.dto.request.NotificationLabelRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
+import postman.bottler.reply.application.dto.ReplyType;
 import postman.bottler.user.application.service.UserService;
 
 @Service
@@ -63,7 +65,7 @@ public class MapLetterService {
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
     private final UserService userService;
     private final NotificationService notificationService;
-    private final ReplyRedisService replyRedisService;
+    private final RecentReplyStorage recentReplyStorage;
 
     private static final double VIEW_DISTANCE = 15;
 
@@ -188,7 +190,11 @@ public class MapLetterService {
         MapLetter source = mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
-        replyRedisService.saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
+
+        MapLetter sourceLetter = mapLetterRepository.findById(save.getSourceLetterId());
+        recentReplyStorage.saveRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                save.getReplyLetterId(), save.getLabel());
+
         notificationService.sendLetterNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
                 save.getLabel());
 
@@ -314,8 +320,9 @@ public class MapLetterService {
 
     private void deleteRecentRepliesFromRedis(List<ReplyMapLetter> replyMapLetters) {
         for (ReplyMapLetter replyMapLetter : replyMapLetters) {
-            replyRedisService.deleteRecentReply(replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel(),
-                    replyMapLetter.getSourceLetterId());
+            MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+            recentReplyStorage.deleteRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                    replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel());
         }
     }
 
@@ -489,8 +496,9 @@ public class MapLetterService {
                     replyMapLetter.validDeleteReplyMapLetter(userId);
                     replyMapLetterRepository.softDelete(letter.letterId());
 
-                    replyRedisService.deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(),
-                            replyMapLetter.getSourceLetterId());
+                    MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+                    recentReplyStorage.deleteRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                            replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel());
                     break;
                 default:
                     throw new TypeNotFoundException("잘못된 편지 타입입니다.");
@@ -513,8 +521,8 @@ public class MapLetterService {
                     replyMapLetter.validateRecipientDeletion(userId, sourceLetter.getCreateUserId());
                     replyMapLetterRepository.softDeleteForRecipient(letter.letterId());
 
-                    replyRedisService.deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(),
-                            replyMapLetter.getSourceLetterId());
+                    recentReplyStorage.deleteRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                            replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel());
                     break;
                 default:
                     throw new TypeNotFoundException("잘못된 편지 타입입니다.");
