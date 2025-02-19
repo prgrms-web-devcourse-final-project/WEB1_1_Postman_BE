@@ -448,29 +448,6 @@ public class MapLetterService {
     }
 
     @Transactional
-    public void deleteMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
-        for (LetterInfo letter : letters.letters()) {
-            switch (letter.letterType()) {
-                case MAP:
-                    MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
-                    findMapLetter.validDeleteMapLetter(userId);
-                    mapLetterRepository.softDelete(letter.letterId());
-                    break;
-                case REPLY:
-                    ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
-                    replyMapLetter.validDeleteReplyMapLetter(userId);
-                    replyMapLetterRepository.softDelete(letter.letterId());
-
-                    replyRedisService.deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(),
-                            replyMapLetter.getSourceLetterId());
-                    break;
-                default:
-                    throw new TypeNotFoundException("잘못된 편지 타입입니다.");
-            }
-        }
-    }
-
-    @Transactional
     public void deleteAllMapLetters(String type, Long userId) {
         switch (type) {
             case "SENT":

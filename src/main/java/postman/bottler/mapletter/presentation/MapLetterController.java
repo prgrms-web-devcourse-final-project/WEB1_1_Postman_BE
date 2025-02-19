@@ -330,7 +330,7 @@ public class MapLetterController {
     public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        mapLetterService.deleteMapLetters(deleteLetters, userId);
+        mapLetterService.deleteSentMapLetters(deleteLetters, userId);
         return ApiResponse.onDeleteSuccess(deleteLetters);
     }
 
