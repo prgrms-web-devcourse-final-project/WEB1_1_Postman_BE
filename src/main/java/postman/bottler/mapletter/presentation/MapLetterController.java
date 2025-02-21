@@ -249,8 +249,8 @@ public class MapLetterController {
 
     @GetMapping("/saved")
     public ApiResponse<?> savedLettersV1(@RequestParam String type, @AuthenticationPrincipal CustomUserDetails user,
-                                       @RequestParam(defaultValue = "1") int page,
-                                       @RequestParam(defaultValue = "9") int size) {
+                                         @RequestParam(defaultValue = "1") int page,
+                                         @RequestParam(defaultValue = "9") int size) {
         Long userId = user.getUserId();
         return switch (type) {
             case "sent-all" -> //보낸 편지 전체 조회(지도편지, 답장 편지)
@@ -330,7 +330,34 @@ public class MapLetterController {
     public ApiResponse<?> deleteMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        mapLetterService.deleteMapLetters(deleteLetters, userId);
+        mapLetterService.deleteSentMapLetters(deleteLetters, userId);
         return ApiResponse.onDeleteSuccess(deleteLetters);
+    }
+
+    @DeleteMapping("/sent")
+    @Operation(summary = "보낸 편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능")
+    public ApiResponse<?> deleteSentMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
+                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteSentMapLetters(deleteLetters, userId);
+        return ApiResponse.onDeleteSuccess(deleteLetters);
+    }
+
+    @DeleteMapping("/received")
+    @Operation(summary = "받은 편지 삭제", description = "로그인 필수. 지도편지, 답장편지 구분해서 보내주세요. 리스트 형태로 1개 ~ n개까지 삭제 가능. 받은 편지 자체를 삭제하는게 아니라 받은 사람의 마이페이지에서만 삭제")
+    public ApiResponse<?> deleteReceivedMapLetter(@RequestBody DeleteMapLettersRequestDTO deleteLetters,
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteReceivedMapLetters(deleteLetters, userId);
+        return ApiResponse.onDeleteSuccess(deleteLetters);
+    }
+
+    @DeleteMapping("/all")
+    @Operation(summary = "편지 전체 삭제", description = "로그인 필수. 타입(SENT, SENT-MAP, SENT-REPLY, RECEIVED, RECEIVED-MAP, RECEIVED-REPLY) 나눠서 보내주세요")
+    public ApiResponse<?> deleteAllMapLetter(@RequestParam String type,
+                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        mapLetterService.deleteAllMapLetters(type, userId);
+        return ApiResponse.onDeleteSuccess(type);
     }
 }

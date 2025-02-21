@@ -13,14 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.mapletter.application.BlockMapLetterType;
 import postman.bottler.mapletter.application.dto.FindReceivedMapLetterDTO;
 import postman.bottler.mapletter.application.dto.FindSentMapLetter;
 import postman.bottler.mapletter.application.dto.MapLetterAndDistance;
-import postman.bottler.mapletter.application.dto.ReplyProjectDTO;
 import postman.bottler.mapletter.application.dto.request.CreatePublicMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateReplyMapLetterRequestDTO;
 import postman.bottler.mapletter.application.dto.request.CreateTargetMapLetterRequestDTO;
@@ -43,6 +41,7 @@ import postman.bottler.mapletter.application.dto.response.OneLetterResponseDTO;
 import postman.bottler.mapletter.application.dto.response.OneReplyLetterResponseDTO;
 import postman.bottler.mapletter.application.repository.MapLetterArchiveRepository;
 import postman.bottler.mapletter.application.repository.MapLetterRepository;
+import postman.bottler.mapletter.application.repository.RecentReplyStorage;
 import postman.bottler.mapletter.application.repository.ReplyMapLetterRepository;
 import postman.bottler.mapletter.domain.MapLetter;
 import postman.bottler.mapletter.domain.MapLetterArchive;
@@ -66,10 +65,9 @@ public class MapLetterService {
     private final MapLetterArchiveRepository mapLetterArchiveRepository;
     private final UserService userService;
     private final NotificationService notificationService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RecentReplyStorage recentReplyStorage;
 
     private static final double VIEW_DISTANCE = 15;
-    private static final int REDIS_SAVED_REPLY = 6;
 
     @Transactional
     public MapLetter createPublicMapLetter(CreatePublicMapLetterRequestDTO createPublicMapLetterRequestDTO,
@@ -192,9 +190,14 @@ public class MapLetterService {
         MapLetter source = mapLetterRepository.findSourceMapLetterById(createReplyMapLetterRequestDTO.sourceLetter());
         ReplyMapLetter replyMapLetter = ReplyMapLetter.createReplyMapLetter(createReplyMapLetterRequestDTO, userId);
         ReplyMapLetter save = replyMapLetterRepository.save(replyMapLetter);
-        saveRecentReply(save.getReplyLetterId(), save.getLabel(), save.getSourceLetterId());
+
+        MapLetter sourceLetter = mapLetterRepository.findById(save.getSourceLetterId());
+        recentReplyStorage.saveRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                save.getReplyLetterId(), save.getLabel());
+
         notificationService.sendLetterNotification(MAP_REPLY, source.getCreateUserId(), save.getReplyLetterId(),
                 save.getLabel());
+
         return save;
     }
 
@@ -260,7 +263,8 @@ public class MapLetterService {
 
     @Transactional
     public void deleteArchivedLetter(DeleteArchivedLettersRequestDTO deleteArchivedLettersRequestDTO, Long userId) {
-        List<MapLetterArchive> archiveInfos = mapLetterArchiveRepository.findAllById(deleteArchivedLettersRequestDTO.letterIds());
+        List<MapLetterArchive> archiveInfos = mapLetterArchiveRepository.findAllById(
+                deleteArchivedLettersRequestDTO.letterIds());
 
         if (archiveInfos.size() != deleteArchivedLettersRequestDTO.letterIds().size()) {
             throw new MapLetterNotFoundException("편지를 찾을 수 없습니다.");
@@ -274,7 +278,8 @@ public class MapLetterService {
     }
 
     @Transactional
-    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO, Long userId) { //삭제 예정
+    public void deleteArchivedLetter(DeleteArchivedLettersRequestDTOV1 deleteArchivedLettersRequestDTO,
+                                     Long userId) { //삭제 예정
         for (Long archiveId : deleteArchivedLettersRequestDTO.archiveIds()) {
             MapLetterArchive findArchiveInfo = mapLetterArchiveRepository.findById(archiveId);
             findArchiveInfo.validDeleteArchivedLetter(userId);
@@ -301,12 +306,23 @@ public class MapLetterService {
 
     @Transactional
     public void deleteReplyMapLetter(List<Long> letters, Long userId) {
+        List<ReplyMapLetter> replyMapLetters = new ArrayList<>();
+
         for (Long letterId : letters) {
             ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letterId);
             replyMapLetter.validDeleteReplyMapLetter(userId);
             replyMapLetterRepository.softDelete(letterId);
 
-            deleteRecentReply(letterId, replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+            replyMapLetters.add(replyMapLetter);
+        }
+        deleteRecentRepliesFromRedis(replyMapLetters);
+    }
+
+    private void deleteRecentRepliesFromRedis(List<ReplyMapLetter> replyMapLetters) {
+        for (ReplyMapLetter replyMapLetter : replyMapLetters) {
+            MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+            recentReplyStorage.deleteRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                    replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel());
         }
     }
 
@@ -398,49 +414,6 @@ public class MapLetterService {
         }
     }
 
-    private void saveRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
-        MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
-        String key = "REPLY:" + sourceLetter.getCreateUserId();
-        String value = ReplyType.MAP + ":" + letterId + ":" + labelUrl;
-
-        Long size = redisTemplate.opsForList().size(key);
-        if (size != null && size >= REDIS_SAVED_REPLY) {
-            redisTemplate.opsForList().rightPop(key);
-        }
-
-        if (!redisTemplate.opsForList().range(key, 0, -1).contains(value)) {
-            redisTemplate.opsForList().leftPush(key, value);
-        }
-    }
-
-    private void deleteRecentReply(Long letterId, String labelUrl, Long sourceLetterId) {
-        MapLetter sourceLetter = mapLetterRepository.findById(sourceLetterId);
-        String key = "REPLY:" + sourceLetter.getCreateUserId();
-        String value = ReplyType.MAP + ":" + letterId + ":" + labelUrl;
-
-        redisTemplate.opsForList().remove(key, 1, value);
-    }
-
-    public void fetchRecentReply(Long userId, int fetchItemSize) {
-        List<ReplyProjectDTO> recentMapKeywordReplyByUserId = replyMapLetterRepository.findRecentMapKeywordReplyByUserId(
-                userId, fetchItemSize);
-
-        String key = "REPLY:" + userId;
-
-        List<ReplyProjectDTO> reversedList = new ArrayList<>(recentMapKeywordReplyByUserId);
-        Collections.reverse(reversedList);
-
-        List<Object> existingValues = redisTemplate.opsForList().range(key, 0, -1);
-
-        for (ReplyProjectDTO replyLetter : reversedList) {
-            String tempValue = replyLetter.getType() + ":" + replyLetter.getId() + ":" + replyLetter.getLabel();
-
-            if (existingValues == null || !existingValues.contains(tempValue)) { //레디스에 없을 때만 저장
-                redisTemplate.opsForList().leftPush(key, tempValue);
-            }
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<FindNearbyLettersResponseDTO> guestFindNearByMapLetters(BigDecimal latitude, BigDecimal longitude) {
         List<MapLetterAndDistance> letters = mapLetterRepository.guestFindLettersByUserLocation(latitude, longitude);
@@ -482,9 +455,37 @@ public class MapLetterService {
     }
 
     @Transactional
-    public void deleteMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
+    public void deleteAllMapLetters(String type, Long userId) {
+        switch (type) {
+            case "SENT":
+                mapLetterRepository.softDeleteAllByCreateUserId(userId);
+                replyMapLetterRepository.softDeleteAllByCreateUserId(userId);
+                break;
+            case "SENT-MAP":
+                mapLetterRepository.softDeleteAllByCreateUserId(userId);
+                break;
+            case "SENT-REPLY":
+                replyMapLetterRepository.softDeleteAllByCreateUserId(userId);
+                break;
+            case "RECEIVED":
+                mapLetterRepository.softDeleteAllForRecipient(userId);
+                replyMapLetterRepository.softDeleteAllForRecipient(userId);
+                break;
+            case "RECEIVED-MAP":
+                mapLetterRepository.softDeleteAllForRecipient(userId);
+                break;
+            case "RECEIVED-REPLY":
+                replyMapLetterRepository.softDeleteAllForRecipient(userId);
+                break;
+            default:
+                throw new TypeNotFoundException("잘못된 편지 타입입니다.");
+        }
+    }
+
+    @Transactional
+    public void deleteSentMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
         for (LetterInfo letter : letters.letters()) {
-            switch (letter.letterType()){
+            switch (letter.letterType()) {
                 case MAP:
                     MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
                     findMapLetter.validDeleteMapLetter(userId);
@@ -495,8 +496,36 @@ public class MapLetterService {
                     replyMapLetter.validDeleteReplyMapLetter(userId);
                     replyMapLetterRepository.softDelete(letter.letterId());
 
-                    deleteRecentReply(letter.letterId(), replyMapLetter.getLabel(), replyMapLetter.getSourceLetterId());
+                    MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+                    recentReplyStorage.deleteRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                            replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel());
                     break;
+                default:
+                    throw new TypeNotFoundException("잘못된 편지 타입입니다.");
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteReceivedMapLetters(DeleteMapLettersRequestDTO letters, Long userId) {
+        for (LetterInfo letter : letters.letters()) {
+            switch (letter.letterType()) {
+                case MAP:
+                    MapLetter findMapLetter = mapLetterRepository.findById(letter.letterId());
+                    findMapLetter.validateRecipientDeletion(userId);
+                    mapLetterRepository.softDeleteForRecipient(letter.letterId());
+                    break;
+                case REPLY:
+                    ReplyMapLetter replyMapLetter = replyMapLetterRepository.findById(letter.letterId());
+                    MapLetter sourceLetter = mapLetterRepository.findById(replyMapLetter.getSourceLetterId());
+                    replyMapLetter.validateRecipientDeletion(userId, sourceLetter.getCreateUserId());
+                    replyMapLetterRepository.softDeleteForRecipient(letter.letterId());
+
+                    recentReplyStorage.deleteRecentReply(sourceLetter.getCreateUserId(), ReplyType.MAP.name(),
+                            replyMapLetter.getReplyLetterId(), replyMapLetter.getLabel());
+                    break;
+                default:
+                    throw new TypeNotFoundException("잘못된 편지 타입입니다.");
             }
         }
     }

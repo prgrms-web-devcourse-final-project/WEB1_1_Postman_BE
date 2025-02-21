@@ -22,7 +22,7 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
     Page<MapLetterEntity> findActiveByCreateUserId(Long userId, Pageable pageable);
 
     @Query("SELECT m FROM MapLetterEntity m "
-            + "WHERE m.targetUserId = :userId AND m.isDeleted = false AND m.isBlocked=false ORDER BY m.createdAt DESC")
+            + "WHERE m.targetUserId = :userId AND m.isDeleted = false AND m.isBlocked=false AND m.isRecipientDeleted = false ORDER BY m.createdAt DESC")
     Page<MapLetterEntity> findActiveByTargetUserId(Long userId, Pageable pageable);
 
     @Query(value = "SELECT m.map_letter_id as letterId, m.latitude, m.longitude, m.title, m.description, "
@@ -94,7 +94,8 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
             "m.label AS label, NULL AS sourceLetterId, 'TARGET' AS type, m.created_at AS createdAt, m.create_user_id as senderId, m.is_read as isRead  "
             +
             "FROM map_letter m " +
-            "WHERE m.target_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false " +
+            "WHERE m.target_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false AND m.is_recipient_deleted = false "
+            +
             "UNION ALL " +
             "SELECT r.reply_letter_id AS letterId, "
             + "CONCAT('Re: ', (SELECT ml.title FROM map_letter ml WHERE ml.map_letter_id = r.source_letter_id)) AS title, "
@@ -102,14 +103,16 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
             + "r.label AS label, r.source_letter_id AS sourceLetterId, 'REPLY' AS type, r.created_at AS createdAt, r.create_user_id as senderId, false as isRead "
             +
             "FROM reply_map_letter r " +
-            "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false " +
+            "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false AND r.is_recipient_deleted = false "
+            +
             "ORDER BY createdAt DESC",
             countQuery = "SELECT COUNT(*) FROM (" +
                     "SELECT m.map_letter_id FROM map_letter m " +
-                    "WHERE m.target_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false " +
+                    "WHERE m.target_user_id = :userId AND m.is_deleted = false AND m.is_blocked = false AND m.is_recipient_deleted = false "
+                    +
                     "UNION ALL " +
                     "SELECT r.reply_letter_id FROM reply_map_letter r " +
-                    "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false) AS combined",
+                    "WHERE r.create_user_id = :userId AND r.is_deleted = false AND r.is_blocked = false AND r.is_recipient_deleted = false) AS combined",
             nativeQuery = true)
     Page<FindReceivedMapLetterDTO> findActiveReceivedMapLettersByUserId(Long userId, PageRequest pageRequest);
 
@@ -124,4 +127,8 @@ public interface MapLetterJpaRepository extends JpaRepository<MapLetterEntity, L
                      AND TIMESTAMPDIFF(DAY, m.created_at, NOW()) <= 30
             """, nativeQuery = true)
     List<MapLetterAndDistance> guestFindLettersByUserLocation(BigDecimal latitude, BigDecimal longitude);
+
+    List<MapLetterEntity> findAllByCreateUserId(Long createUserId);
+
+    List<MapLetterEntity> findAllByTargetUserId(Long targetUserId);
 }
