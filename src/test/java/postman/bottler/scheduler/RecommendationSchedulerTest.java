@@ -60,7 +60,7 @@ class RecommendationSchedulerTest {
         RecommendNotificationRequestDTO mockNotification = new RecommendNotificationRequestDTO(1L, 101L, "label1");
 
         when(userService.getAllUserIds()).thenReturn(userIds);
-        when(redisLetterService.updateRecommendationsFromTemp(anyLong())).thenReturn(mockNotification);
+//        when(redisLetterService.updateRecommendationsFromTemp(anyLong())).thenReturn(mockNotification);
 
         // When
         recommendationScheduler.updateAllRecommendations();

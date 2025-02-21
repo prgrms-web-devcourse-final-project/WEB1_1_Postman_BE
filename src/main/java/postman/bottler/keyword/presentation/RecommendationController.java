@@ -6,15 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import postman.bottler.keyword.application.service.AsyncRecommendationService;
+import postman.bottler.keyword.application.service.RecommendedLetterService;
 import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.user.application.service.UserService;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/test/recommendations")
@@ -24,6 +27,7 @@ public class RecommendationController {
     private final AsyncRecommendationService asyncRecommendationService;
     private final RedisLetterService redisLetterService;
     private final UserService userService;
+    private final RecommendedLetterService recommendedLetterService;
 
     @Operation(
             summary = "키워드 편지 추천 요청",
@@ -73,9 +77,19 @@ public class RecommendationController {
     @GetMapping("/temp")
     public ResponseEntity<Map<Long, List<Long>>> getRecommendTemp() {
         List<Long> userIds = userService.getAllUserIds();
+        log.info("userIds: {}", userIds);
         Map<Long, List<Long>> result = new HashMap<>();
         userIds.forEach(userId -> result.put(userId, redisLetterService.fetchTempRecommendations(userId))
         );
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<Map<Long, List<Long>>> getRecommendRecommended() {
+        List<Long> userIds = userService.getAllUserIds();
+        Map<Long, List<Long>> result = new HashMap<>();
+        userIds.forEach(
+                userId -> result.put(userId, recommendedLetterService.findRecommendedLetterIdsByUserId(userId)));
         return ResponseEntity.ok(result);
     }
 }
