@@ -18,12 +18,7 @@ public class KeywordService {
 
     @Transactional(readOnly = true)
     public KeywordResponseDTO getKeywords() {
-        log.debug("키워드 조회 요청");
-
         List<Keyword> keywords = keywordRepository.getKeywords();
-
-        log.info("키워드 조회 완료: 조회된 키워드 개수={}", keywords.size());
-
         return KeywordResponseDTO.from(keywords);
     }
 }

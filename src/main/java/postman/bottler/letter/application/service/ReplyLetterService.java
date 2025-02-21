@@ -42,15 +42,11 @@ public class ReplyLetterService {
         log.info("답장 생성 요청: senderId={}, letterId={}", senderId, letterId);
 
         if (checkIsReplied(letterId, senderId)) {
-            throw new DuplicateReplyLetterException(letterId, senderId);
+            throw new DuplicateReplyLetterException();
         }
 
         ReplyLetter replyLetter = saveReplyLetter(letterId, requestDTO, senderId);
-
         handleReplyPostProcessing(replyLetter, requestDTO.label());
-
-        log.info("답장 생성 완료: replyLetterId={}, senderId={}, receiverId={}", replyLetter.getId(), senderId,
-                replyLetter.getReceiverId());
 
         return ReplyLetterResponseDTO.from(replyLetter);
     }
@@ -58,32 +54,20 @@ public class ReplyLetterService {
     @Transactional(readOnly = true)
     public Page<ReplyLetterSummaryResponseDTO> findReplyLetterSummaries(Long letterId, PageRequestDTO pageRequestDTO,
                                                                         Long receiverId) {
-        log.debug("답장 요약 정보 조회 요청: letterId={}, receiverId={}", letterId, receiverId);
-
-        Page<ReplyLetterSummaryResponseDTO> summaries = replyLetterRepository.findAllByLetterIdAndReceiverId(letterId,
-                receiverId, pageRequestDTO.toPageable()).map(ReplyLetterSummaryResponseDTO::from);
-
-        log.info("답장 요약 정보 조회 완료: letterId={}, receiverId={}, count={}", letterId, receiverId,
-                summaries.getTotalElements());
-
-        return summaries;
+        return replyLetterRepository.findAllByLetterIdAndReceiverId(letterId, receiverId, pageRequestDTO.toPageable())
+                .map(ReplyLetterSummaryResponseDTO::from);
     }
 
     @Transactional(readOnly = true)
     public ReplyLetterDetailResponseDTO findReplyLetterDetail(Long replyLetterId, Long userId) {
-        log.debug("답장 상세 조회 요청: replyLetterId={}, userId={}", replyLetterId, userId);
-
         boolean isReplied = checkIsReplied(replyLetterId, userId);
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
-
-        log.info("답장 상세 조회 완료: replyLetterId={}, userId={}, isReplied={}", replyLetterId, userId, isReplied);
-
         return ReplyLetterDetailResponseDTO.from(replyLetter, isReplied);
     }
 
     @Transactional
-    public void softDeleteReplyLetters(List<Long> replyLetterIds, Long userId) {
-        log.info("답장 삭제 요청: userId={}, replyLetterIds={}", userId, replyLetterIds);
+    public void softDeleteReplyLetters(List<Long> replyLetterIds, Long senderId) {
+        log.info("답장 삭제 요청: userId={}, replyLetterIds={}", senderId, replyLetterIds);
 
         if (replyLetterIds == null || replyLetterIds.isEmpty()) {
             throw new InvalidLetterRequestException("삭제할 답장 편지 ID 목록이 비어 있습니다.");
@@ -91,7 +75,7 @@ public class ReplyLetterService {
 
         List<ReplyLetter> replyLetters = replyLetterRepository.findAllByIds(replyLetterIds);
 
-        if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(userId))) {
+        if (replyLetters.stream().anyMatch(replyLetter -> !replyLetter.getSenderId().equals(senderId))) {
             throw new LetterAuthorMismatchException();
         }
 
@@ -100,8 +84,6 @@ public class ReplyLetterService {
                         replyLetter.getLabel()));
 
         replyLetterRepository.softDeleteByIds(replyLetterIds);
-
-        log.info("답장 삭제 완료: userId={}, count={}", userId, replyLetterIds.size());
     }
 
     @Transactional
@@ -111,33 +93,19 @@ public class ReplyLetterService {
         ReplyLetter replyLetter = findReplyLetter(replyLetterId);
         replyLetterRepository.softBlockById(replyLetterId);
 
-        log.info("답장 차단 완료: replyLetterId={}, senderId={}", replyLetterId, replyLetter.getSenderId());
         return replyLetter.getSenderId();
     }
 
     @Transactional
     public boolean checkIsReplied(Long letterId, Long senderId) {
-        log.debug("답장 여부 확인: letterId={}, senderId={}", letterId, senderId);
-
-        boolean exists = replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId);
-
-        log.info("답장 여부 확인 결과: letterId={}, senderId={}, isReplied={}", letterId, senderId, exists);
-        return exists;
+        return replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId);
     }
 
     private ReplyLetter saveReplyLetter(Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId) {
-        log.debug("답장 저장 시작: letterId={}, senderId={}", letterId, senderId);
-
         ReceiverDTO receiverInfo = letterService.findReceiverInfo(letterId);
         String title = formatReplyTitle(receiverInfo.title());
 
-        ReplyLetter savedReplyLetter = replyLetterRepository.save(
-                requestDTO.toDomain(title, letterId, receiverInfo.receiverId(), senderId));
-
-        log.info("답장 저장 완료: replyLetterId={}, senderId={}, receiverId={}", savedReplyLetter.getId(), senderId,
-                receiverInfo.receiverId());
-
-        return savedReplyLetter;
+        return replyLetterRepository.save(requestDTO.toDomain(title, letterId, receiverInfo.receiverId(), senderId));
     }
 
     private String formatReplyTitle(String title) {
@@ -145,13 +113,9 @@ public class ReplyLetterService {
     }
 
     private void handleReplyPostProcessing(ReplyLetter replyLetter, String labelUrl) {
-        log.debug("답장 생성 후처리 시작: replyLetterId={}", replyLetter.getId());
-
         saveReplyLetterToBox(replyLetter);
         redisLetterService.saveReplyToRedis(replyLetter.getId(), labelUrl, replyLetter.getReceiverId());
         sendReplyNotification(replyLetter);
-
-        log.info("답장 생성 후처리 완료: replyLetterId={}", replyLetter.getId());
     }
 
     private void saveReplyLetterToBox(ReplyLetter replyLetter) {
@@ -169,14 +133,14 @@ public class ReplyLetterService {
 
         notificationService.sendLetterNotification(KEYWORD_REPLY, replyLetter.getReceiverId(), replyLetter.getId(),
                 replyLetter.getLabel());
-
-        log.info("답장 알림 전송 완료: receiverId={}, replyLetterId={}", replyLetter.getReceiverId(), replyLetter.getId());
     }
 
     private ReplyLetter findReplyLetter(Long replyLetterId) {
-        log.debug("답장 조회 요청: replyLetterId={}", replyLetterId);
-
         return replyLetterRepository.findById(replyLetterId)
                 .orElseThrow(() -> new LetterNotFoundException(LetterType.REPLY_LETTER));
+    }
+
+    public List<Long> findIdsBySenderId(Long senderId) {
+        return replyLetterRepository.findAllBySenderId(senderId).stream().map(ReplyLetter::getId).toList();
     }
 }

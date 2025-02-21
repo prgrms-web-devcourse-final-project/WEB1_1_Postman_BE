@@ -15,6 +15,8 @@ public interface ReplyLetterRepository {
 
     List<ReplyLetter> findAllByIds(List<Long> letterIds);
 
+    List<ReplyLetter> findAllBySenderId(Long senderId);
+
     void softDeleteByIds(List<Long> letterIds);
 
     void softBlockById(Long replyLetterId);

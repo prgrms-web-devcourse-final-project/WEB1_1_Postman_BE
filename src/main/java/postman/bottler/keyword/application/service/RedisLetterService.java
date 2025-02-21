@@ -115,13 +115,13 @@ public class RedisLetterService {
 
     private List<Long> fetchRecommendations(String key) {
         List<Long> recommendations = redisTemplate.opsForValue().get(key);
-        validateRecommendations(key, recommendations);
+        validateRecommendations(recommendations);
         return recommendations;
     }
 
-    private void validateRecommendations(String key, List<Long> recommendations) {
+    private void validateRecommendations(List<Long> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
-            throw new TempRecommendationsNotFoundException(key);
+            throw new TempRecommendationsNotFoundException();
         }
     }
 
@@ -149,7 +149,7 @@ public class RedisLetterService {
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.letterExists(letterId);
+        return letterService.existsLetterById(letterId);
     }
 
     private void updateActiveRecommendations(Long letterId, List<Long> activeRecommendations, String activeKey) {
