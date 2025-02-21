@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import postman.bottler.keyword.application.service.AsyncRecommendationService;
 import postman.bottler.keyword.application.service.RedisLetterService;
-import postman.bottler.letter.exception.TempRecommendationsNotFoundException;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.user.application.service.UserService;
@@ -76,16 +75,8 @@ public class RecommendationScheduler {
 
         List<RecommendNotificationRequestDTO> notifications = new ArrayList<>();
         for (List<Long> batch : batches) {
-            batch.forEach(userId -> {
-                try {
-                    RecommendNotificationRequestDTO dto = redisLetterService.updateRecommendationsFromTemp(userId);
-                    notifications.add(dto);
-                } catch (TempRecommendationsNotFoundException e) {
-                    log.warn("사용자 [{}]에 대한 추천 데이터가 없어 알림 작업에 추가하지 않습니다.", userId);
-                } catch (Exception e) {
-                    log.error("사용자 [{}]의 추천 데이터 업데이트 중 알 수 없는 예외 발생: {}", userId, e.getMessage(), e);
-                }
-            });
+            batch.forEach(userId -> redisLetterService.updateRecommendationsFromTemp(userId)
+                    .ifPresent(notifications::add));
         }
         if (!notifications.isEmpty()) {
             try {
