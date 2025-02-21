@@ -4,8 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.label.domain.Label;
-import postman.bottler.label.domain.UserLabel;
+import postman.bottler.label.domain.LabelType;
 import postman.bottler.label.exception.InvalidLabelException;
 import postman.bottler.label.exception.UserLabelNotFoundException;
 import postman.bottler.label.infra.entity.LabelEntity;
@@ -50,6 +51,7 @@ public class LabelRepositoryImpl implements LabelRepository {
     }
 
     @Override
+    @Transactional
     public Label findLabelByLabelId(Long labelId) {
         LabelEntity labelEntity = labelJpaRepository.findByIdWithLock(labelId)
                 .orElseThrow(() -> new InvalidLabelException("라벨 ID " + labelId + " 에 해당하는 라벨이 존재하지 않습니다."));
@@ -75,9 +77,19 @@ public class LabelRepositoryImpl implements LabelRepository {
     }
 
     @Override
-    public List<UserLabel> findUserLabelByUserAndLabel(User user, Label label) {
-        List<UserLabelEntity> userLabelEntities = userLabelJpaRepository.findLabelsByUserAndLabel(user.getUserId(),
-                label.getLabelId());
-        return UserLabelEntity.toUserLabels(userLabelEntities);
+    public List<Label> findFirstComeLabels() {
+        List<LabelEntity> labelEntities = userLabelJpaRepository.findFirstComeLabels(LabelType.FIRST_COME);
+        return LabelEntity.toLabels(labelEntities);
+    }
+
+    @Override
+    public List<Label> findByLabelType(LabelType labelType) {
+        List<LabelEntity> labelEntities = labelJpaRepository.findByLabelType(labelType);
+        return LabelEntity.toLabels(labelEntities);
+    }
+
+    @Override
+    public boolean existsUserLabelByUserAndLabel(User user, Label label) {
+        return userLabelJpaRepository.existsByUserUserIdAndLabelLabelId(user.getUserId(), label.getLabelId());
     }
 }
