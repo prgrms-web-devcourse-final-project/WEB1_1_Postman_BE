@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import postman.bottler.letter.application.service.LetterBoxService;
 
 @Service
 @RequiredArgsConstructor
@@ -16,8 +15,8 @@ public class AsyncRecommendationService {
 
     private final RecommendService recommendService;
     private final UserKeywordService userKeywordService;
-    private final LetterBoxService letterBoxService;
     private final RedisLetterService redisLetterService;
+    private final RecommendedLetterService recommendedLetterService;
 
     @Value("${recommendation.limit.candidate}")
     private int recommendationCandidateLimit;
@@ -28,10 +27,10 @@ public class AsyncRecommendationService {
 
         try {
             List<String> keywords = userKeywordService.findKeywords(userId);
-            List<Long> letterIds = letterBoxService.findReceivedLetterIdsByUserId(userId);
+            List<Long> letterIds = recommendedLetterService.findRecommendedLetterIdsByUserId(userId);
 
             if (log.isDebugEnabled()) {
-                log.debug("사용자 [{}]의 키워드: {}, 받은 편지: {}", userId, keywords, letterIds);
+                log.debug("사용자 [{}]의 키워드: {}, 추천 받았던 편지: {}", userId, keywords, letterIds);
             }
 
             List<Long> recommendedLetters = recommendService.getRecommendedLetters(keywords, letterIds,

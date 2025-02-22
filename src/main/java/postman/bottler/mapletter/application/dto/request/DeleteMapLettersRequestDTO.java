@@ -1,7 +1,6 @@
 package postman.bottler.mapletter.application.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 import postman.bottler.mapletter.exception.TypeNotFoundException;
 

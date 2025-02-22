@@ -81,4 +81,33 @@ public class ReplyMapLetterRepositoryImpl implements ReplyMapLetterRepository {
         return replyMapLetterJpaRepository.findRecentMapKeywordReplyByUserId(userId, fetchItemSize);
     }
 
+    @Override
+    public void softDeleteAllByCreateUserId(Long userId) {
+        List<ReplyMapLetterEntity> letters = replyMapLetterJpaRepository.findAllByCreateUserId(userId);
+
+        if (letters.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제할 편지가 없습니다.");
+        }
+
+        letters.forEach(letter -> letter.updateDelete(true));
+    }
+
+    @Override
+    public void softDeleteForRecipient(Long letterId) {
+        ReplyMapLetterEntity letter = replyMapLetterJpaRepository.findById(letterId)
+                .orElseThrow(() -> new MapLetterNotFoundException("편지를 찾을 수 없습니다."));
+
+        letter.updateRecipientDeleted(true);
+    }
+
+    @Override
+    public void softDeleteAllForRecipient(Long userId) {
+        List<ReplyMapLetterEntity> letters = replyMapLetterJpaRepository.findAllBySourceLetterCreateUserId(userId);
+
+        if (letters.isEmpty()) {
+            throw new MapLetterNotFoundException("삭제할 편지가 없습니다.");
+        }
+
+        letters.forEach(letter -> letter.updateRecipientDeleted(true));
+    }
 }

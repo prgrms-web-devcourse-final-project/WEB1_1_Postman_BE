@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.mapletter.application.service.MapLetterService;
+import postman.bottler.mapletter.application.service.ReplyFetchService;
 import postman.bottler.reply.application.dto.ReplyType;
 import postman.bottler.reply.application.dto.response.ReplyResponseDTO;
 
@@ -15,7 +15,7 @@ import postman.bottler.reply.application.dto.response.ReplyResponseDTO;
 public class ReplyService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final MapLetterService mapLetterService;
+    private final ReplyFetchService replyFetchService;
     private static final int REDIS_SAVED_REPLY = 6;
 
     @Transactional(readOnly = true)
@@ -23,10 +23,8 @@ public class ReplyService {
         String key = "REPLY:" + userId;
         List<Object> values = redisTemplate.opsForList().range(key, 0, 2);
 
-        int fetchItemSize = REDIS_SAVED_REPLY - (values == null ? 0 : values.size());
-
         if (values == null || values.size() < 3) {
-            mapLetterService.fetchRecentReply(userId, fetchItemSize);
+            replyFetchService.fetchRecentReply(userId);
             values = redisTemplate.opsForList().range(key, 0, 2);
         }
 
