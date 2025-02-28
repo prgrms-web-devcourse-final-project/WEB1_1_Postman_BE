@@ -7,8 +7,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import postman.bottler.notification.domain.PushMessages;
 import postman.bottler.notification.application.PushNotificationProvider;
+import postman.bottler.notification.domain.PushMessages;
 
 @Slf4j
 @Component
@@ -17,6 +17,7 @@ public class FirebasePushProvider implements PushNotificationProvider {
     private final FirebaseMessageMapper messageMapper;
 
     @Override
+//    @Async
     public void pushAll(PushMessages pushMessages) {
         List<Message> firebaseMessages = messageMapper.mapToFirebaseMessages(pushMessages);
         try {
