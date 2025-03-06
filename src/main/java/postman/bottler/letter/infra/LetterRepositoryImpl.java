@@ -23,22 +23,17 @@ public class LetterRepositoryImpl implements LetterRepository {
 
     @Override
     public Optional<Letter> findById(Long letterId) {
-        return letterJpaRepository.findById(letterId)
-                .map(LetterEntity::toDomain);
+        return letterJpaRepository.findById(letterId).map(LetterEntity::toDomain);
     }
 
     @Override
     public List<Letter> findAllByIds(List<Long> letterIds) {
-        return letterJpaRepository.findAllByIds(letterIds).stream()
-                .map(LetterEntity::toDomain)
-                .toList();
+        return letterJpaRepository.findAllByIds(letterIds).stream().map(LetterEntity::toDomain).toList();
     }
 
     @Override
     public List<Letter> findAllByUserId(Long userId) {
-        return letterJpaRepository.findAllByUserId(userId).stream()
-                .map(LetterEntity::toDomain)
-                .toList();
+        return letterJpaRepository.findAllByUserId(userId).stream().map(LetterEntity::toDomain).toList();
     }
 
     @Override

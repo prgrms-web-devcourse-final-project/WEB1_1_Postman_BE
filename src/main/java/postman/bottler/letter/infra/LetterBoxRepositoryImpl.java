@@ -33,8 +33,8 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
 
     @Override
     public Page<LetterSummaryResponseDTO> findLetters(Long userId, Pageable pageable, BoxType boxType) {
-        List<LetterSummaryResponseDTO> letterSummaryResponseDTOS =
-                letterBoxQueryRepository.fetchLetters(userId, boxType, pageable);
+        List<LetterSummaryResponseDTO> letterSummaryResponseDTOS = letterBoxQueryRepository.fetchLetters(userId,
+                boxType, pageable);
         long total = countLetters(userId, boxType);
         return new PageImpl<>(letterSummaryResponseDTOS, pageable, total);
     }

@@ -61,11 +61,15 @@ public class LetterService {
         log.info("편지 삭제 요청: userId={}, letterIds={}", userId, letterIds);
 
         List<Letter> letters = letterRepository.findAllByIds(letterIds);
+        validateLetterOwnerShip(userId, letters);
+
+        letterRepository.softDeleteByIds(letterIds);
+    }
+
+    private void validateLetterOwnerShip(Long userId, List<Letter> letters) {
         if (letters.stream().anyMatch(letter -> !letter.getUserId().equals(userId))) {
             throw new LetterAuthorMismatchException();
         }
-
-        letterRepository.softDeleteByIds(letterIds);
     }
 
     @Transactional

@@ -17,18 +17,16 @@ public class LetterExceptionHandler {
 
     @ExceptionHandler(LetterValidationException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(LetterValidationException e) {
-        log.error("유효성 검사 실패 - 상태 코드: {}, 메시지: {}, 상세 오류: {}",
-                e.getErrorStatus(), e.getMessage(), formatErrors(e.getErrors()));
+        log.error("유효성 검사 실패 - 상태 코드: {}, 메시지: {}, 상세 오류: {}", e.getErrorStatus(), e.getMessage(),
+                formatErrors(e.getErrors()));
 
-        return ResponseEntity
-                .status(e.getErrorStatus().getHttpStatus())
+        return ResponseEntity.status(e.getErrorStatus().getHttpStatus())
                 .body(ApiResponse.onFailure(e.getErrorStatus().getCode(), e.getMessage(), e.getErrors()));
     }
 
     private ResponseEntity<ApiResponse<?>> buildErrorResponse(LetterCustomException e) {
         log.error("{}: {}", e.getErrorStatus(), e.getMessage());
-        return ResponseEntity
-                .status(e.getErrorStatus().getHttpStatus())
+        return ResponseEntity.status(e.getErrorStatus().getHttpStatus())
                 .body(ApiResponse.onFailure(e.getErrorStatus().getCode(), e.getMessage(), null));
     }
 
@@ -36,9 +34,7 @@ public class LetterExceptionHandler {
         if (errors == null || errors.isEmpty()) {
             return "세부 오류 없음";
         }
-        return errors.entrySet().stream()
-                .map(entry -> entry.getKey() + ": " + entry.getValue())
-                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-                .orElse("세부 오류 없음");
+        return errors.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue())
+                .reduce((msg1, msg2) -> msg1 + ", " + msg2).orElse("세부 오류 없음");
     }
 }

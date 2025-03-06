@@ -16,13 +16,8 @@ public class LetterDeleteRequests {
     }
 
     public Map<LetterType, Map<BoxType, List<Long>>> groupByTypeAndBox() {
-        return requests.stream()
-                .collect(Collectors.groupingBy(
-                        LetterDeleteDTO::letterType,
-                        Collectors.groupingBy(
-                                LetterDeleteDTO::boxType,
-                                Collectors.mapping(LetterDeleteDTO::letterId, Collectors.toList())
-                        )
-                ));
+        return requests.stream().collect(Collectors.groupingBy(LetterDeleteDTO::letterType,
+                Collectors.groupingBy(LetterDeleteDTO::boxType,
+                        Collectors.mapping(LetterDeleteDTO::letterId, Collectors.toList()))));
     }
 }

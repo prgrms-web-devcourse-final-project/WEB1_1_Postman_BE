@@ -32,8 +32,9 @@ public class LetterEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    private LetterEntity(String title, String content, String font, String paper, String label,
-                         Long userId, boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
+    private LetterEntity(String title, String content, String font, String paper, String label, Long userId,
+                         boolean isDeleted, boolean isBlocked,
+                         LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
         this.font = font;
@@ -61,16 +62,16 @@ public class LetterEntity {
 
     public Letter toDomain() {
         return Letter.builder()
-                .id(this.id)
-                .title(this.title)
-                .content(this.content)
-                .font(this.font)
-                .paper(this.paper)
-                .label(this.label)
-                .userId(this.userId)
-                .isDeleted(this.isDeleted)
-                .isBlocked(this.isBlocked)
-                .createdAt(this.createdAt)
+                .id(id)
+                .title(title)
+                .content(content)
+                .font(font)
+                .paper(paper)
+                .label(label)
+                .userId(userId)
+                .isDeleted(isDeleted)
+                .isBlocked(isBlocked)
+                .createdAt(createdAt)
                 .build();
     }
 

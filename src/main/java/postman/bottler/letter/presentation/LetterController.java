@@ -37,56 +37,35 @@ public class LetterController {
     private final LetterDeletionService letterDeletionService;
     private final LetterFacadeService letterFacadeService;
 
-    @Operation(
-            summary = "키워드 편지 생성",
-            description = "새로운 키워드 편지를 생성합니다."
-    )
+    @Operation(summary = "키워드 편지 생성", description = "새로운 키워드 편지를 생성합니다.")
     @PostMapping
     @LetterValidationMetaData(message = "키워드 편지 유효성 검사 실패", errorStatus = LETTER_VALIDATION_ERROR)
-    public ApiResponse<LetterResponseDTO> createLetter(
-            @RequestBody @Valid LetterRequestDTO letterRequestDTO,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        LetterResponseDTO result = letterFacadeService.createLetter(letterRequestDTO, userDetails.getUserId());
-        return ApiResponse.onCreateSuccess(result);
+    public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO,
+                                                       BindingResult bindingResult,
+                                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onCreateSuccess(letterFacadeService.createLetter(letterRequestDTO, userDetails.getUserId()));
     }
 
-    @Operation(
-            summary = "키워드 편지 상세 조회",
-            description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다."
-    )
+    @Operation(summary = "키워드 편지 상세 조회", description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다.")
     @GetMapping("/detail/{letterId}")
-    public ApiResponse<LetterDetailResponseDTO> getLetterDetail(
-            @PathVariable Long letterId, @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        LetterDetailResponseDTO result = letterFacadeService.findLetterDetail(letterId, userDetails.getUserId());
-        return ApiResponse.onSuccess(result);
+    public ApiResponse<LetterDetailResponseDTO> getLetterDetail(@PathVariable Long letterId,
+                                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(letterFacadeService.findLetterDetail(letterId, userDetails.getUserId()));
     }
-    
-    @Operation(
-            summary = "추천 키워드 편지 조회",
-            description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다."
-    )
+
+    @Operation(summary = "추천 키워드 편지 조회", description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다.")
     @GetMapping("/recommend")
     public ApiResponse<List<LetterRecommendSummaryResponseDTO>> getRecommendLetters(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        List<LetterRecommendSummaryResponseDTO> result = letterFacadeService.findRecommendHeaders(
-                userDetails.getUserId());
-        return ApiResponse.onSuccess(result);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(letterFacadeService.findRecommendHeaders(userDetails.getUserId()));
     }
 
-    @Operation(
-            summary = "키워드 편지 삭제",
-            description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
-    )
+    @Operation(summary = "키워드 편지 삭제", description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다.")
     @DeleteMapping
-    public ApiResponse<String> deleteLetter(
-            @RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        letterDeletionService.deleteLetter(LetterDeleteDTO.fromLetter(letterDeleteRequestDTO), userDetails.getUserId());
+    public ApiResponse<String> deleteLetter(@RequestBody @Valid LetterDeleteRequestDTO letterDeleteRequestDTO,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        LetterDeleteDTO letterDeleteDTO = LetterDeleteDTO.fromLetter(letterDeleteRequestDTO);
+        letterDeletionService.deleteLetter(letterDeleteDTO, userDetails.getUserId());
         return ApiResponse.onSuccess("키워드 편지를 삭제했습니다.");
     }
 }

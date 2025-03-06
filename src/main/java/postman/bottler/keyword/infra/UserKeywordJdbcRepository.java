@@ -16,9 +16,7 @@ public class UserKeywordJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void batchInsertKeywords(List<UserKeyword> keywords) {
-        List<Object[]> batchKeywordParams = toBatchKeywordParams(keywords);
-
-        jdbcTemplate.batchUpdate(INSERT_SQL, batchKeywordParams);
+        jdbcTemplate.batchUpdate(INSERT_SQL, toBatchKeywordParams(keywords));
     }
 
     public void deleteAllByUserId(Long userId) {
@@ -26,8 +24,6 @@ public class UserKeywordJdbcRepository {
     }
 
     private List<Object[]> toBatchKeywordParams(List<UserKeyword> keywords) {
-        return keywords.stream()
-                .map(entity -> new Object[]{entity.getUserId(), entity.getKeyword()})
-                .toList();
+        return keywords.stream().map(entity -> new Object[]{entity.getUserId(), entity.getKeyword()}).toList();
     }
 }

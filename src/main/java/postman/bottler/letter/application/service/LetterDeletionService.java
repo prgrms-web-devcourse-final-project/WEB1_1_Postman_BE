@@ -45,17 +45,17 @@ public class LetterDeletionService {
 
     @Transactional
     public void deleteAllSavedLetters(Long userId) {
-        BoxTypeDeleter.NONE.delete(userId, createLetterDeletionContext());
+        executeBoxTypeDeletion(BoxTypeDeleter.NONE, userId);
     }
 
     @Transactional
     public void deleteAllSavedReceivedLetters(Long userId) {
-        BoxTypeDeleter.RECEIVE.delete(userId, createLetterDeletionContext());
+        executeBoxTypeDeletion(BoxTypeDeleter.RECEIVE, userId);
     }
 
     @Transactional
     public void deleteAllSavedSentLetters(Long userId) {
-        BoxTypeDeleter.SEND.delete(userId, createLetterDeletionContext());
+        executeBoxTypeDeletion(BoxTypeDeleter.SEND, userId);
     }
 
     private Map<LetterType, Map<BoxType, List<Long>>> groupRequestsByTypeAndBox(
@@ -75,6 +75,11 @@ public class LetterDeletionService {
             log.debug("보관 타입별 삭제 처리: userId={}, 보관 타입={}, 편지 타입={}, 삭제 개수={}", userId, boxType, letterType, ids.size());
             processor.delete(boxType, ids, userId, letterDeletionContext);
         });
+    }
+
+    private void executeBoxTypeDeletion(BoxTypeDeleter deleter, Long userId) {
+        LetterDeletionContext context = createLetterDeletionContext();
+        deleter.delete(userId, context);
     }
 
     private LetterDeletionContext createLetterDeletionContext() {

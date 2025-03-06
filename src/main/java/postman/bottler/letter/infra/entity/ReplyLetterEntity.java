@@ -34,9 +34,10 @@ public class ReplyLetterEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    private ReplyLetterEntity(String title, String content, String font, String paper,
-                              String label, Long letterId, Long receiverId, Long senderId,
-                              boolean isDeleted, boolean isBlocked, LocalDateTime createdAt) {
+    private ReplyLetterEntity(String title, String content, String font, String paper, String label,
+                              Long letterId, Long receiverId, Long senderId,
+                              boolean isDeleted, boolean isBlocked,
+                              LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
         this.font = font;
@@ -68,18 +69,18 @@ public class ReplyLetterEntity {
 
     public ReplyLetter toDomain() {
         return ReplyLetter.builder()
-                .id(this.id)
-                .title(this.title)
-                .content(this.content)
-                .font(this.font)
-                .paper(this.paper)
-                .label(this.label)
-                .letterId(this.letterId)
-                .receiverId(this.receiverId)
-                .senderId(this.senderId)
-                .isDeleted(this.isDeleted)
-                .isBlocked(this.isBlocked)
-                .createdAt(this.createdAt)
+                .id(id)
+                .title(title)
+                .content(content)
+                .font(font)
+                .paper(paper)
+                .label(label)
+                .letterId(letterId)
+                .receiverId(receiverId)
+                .senderId(senderId)
+                .isDeleted(isDeleted)
+                .isBlocked(isBlocked)
+                .createdAt(createdAt)
                 .build();
     }
 }

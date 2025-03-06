@@ -24,8 +24,7 @@ public class LetterKeywordService {
     public List<LetterKeyword> createLetterKeywords(Long letterId, List<String> keywords) {
         log.info("편지 키워드 생성 요청: letterId={}, 키워드 개수={}", letterId, keywords.size());
 
-        List<LetterKeyword> letterKeywords = keywords.stream()
-                .map(keyword -> LetterKeyword.from(letterId, keyword))
+        List<LetterKeyword> letterKeywords = keywords.stream().map(keyword -> LetterKeyword.from(letterId, keyword))
                 .toList();
 
         return letterKeywordRepository.saveAll(letterKeywords);

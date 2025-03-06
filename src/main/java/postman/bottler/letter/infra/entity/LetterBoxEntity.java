@@ -64,12 +64,12 @@ public class LetterBoxEntity {
 
     public LetterBox toDomain() {
         return LetterBox.builder()
-                .id(this.id)
-                .userId(this.userId)
-                .letterId(this.letterId)
-                .letterType(this.letterType)
-                .boxType(this.boxType)
-                .createdAt(this.createdAt)
+                .id(id)
+                .userId(userId)
+                .letterId(letterId)
+                .letterType(letterType)
+                .boxType(boxType)
+                .createdAt(createdAt)
                 .build();
     }
 }

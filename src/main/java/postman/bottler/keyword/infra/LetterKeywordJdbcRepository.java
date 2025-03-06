@@ -28,9 +28,7 @@ public class LetterKeywordJdbcRepository {
     public void batchUpdateIsDeleted(List<Long> letterIds) {
         String sql = "UPDATE letter_keyword SET is_deleted = true WHERE letter_id = ?";
 
-        List<Object[]> batchArgs = letterIds.stream()
-                .map(id -> new Object[]{id})
-                .toList();
+        List<Object[]> batchArgs = letterIds.stream().map(id -> new Object[]{id}).toList();
 
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }

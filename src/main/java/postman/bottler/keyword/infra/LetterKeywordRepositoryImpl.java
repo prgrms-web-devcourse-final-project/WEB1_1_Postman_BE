@@ -21,9 +21,7 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
 
     @Override
     public List<LetterKeyword> getKeywordsByLetterId(Long letterId) {
-        return queryDslRepository.findKeywordsByLetterId(letterId).stream()
-                .map(LetterKeywordEntity::toDomain)
-                .toList();
+        return queryDslRepository.findKeywordsByLetterId(letterId).stream().map(LetterKeywordEntity::toDomain).toList();
     }
 
     @Override
