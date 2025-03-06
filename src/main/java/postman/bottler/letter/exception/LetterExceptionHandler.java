@@ -25,14 +25,6 @@ public class LetterExceptionHandler {
                 .body(ApiResponse.onFailure(e.getErrorStatus().getCode(), e.getMessage(), e.getErrors()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<String>> handleGenericException(Exception e) {
-        log.error("예기치 않은 오류 발생: {}", e.getMessage(), e);
-        return ResponseEntity
-                .status(500)
-                .body(ApiResponse.onFailure("SERVER_ERROR", "서버 내부 오류가 발생했습니다.", null));
-    }
-
     private ResponseEntity<ApiResponse<?>> buildErrorResponse(LetterCustomException e) {
         log.error("{}: {}", e.getErrorStatus(), e.getMessage());
         return ResponseEntity
