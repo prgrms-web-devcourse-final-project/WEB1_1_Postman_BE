@@ -85,15 +85,13 @@ public class RedisLetterService {
         List<Long> tempRecommendations = fetchTempRecommendations(userId);
         List<Long> activeRecommendations = fetchActiveRecommendations(userId);
 
-        return processRecommendations(userId, tempRecommendations, activeRecommendations)
-                .map(recommendId -> {
-                    log.info("추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
-                    return createRecommendNotification(userId, recommendId);
-                })
-                .or(() -> {
-                    log.info("userId={}에 대한 유효한 추천이 없음. 추천을 건너뜁니다.", userId);
-                    return Optional.empty();
-                });
+        return processRecommendations(userId, tempRecommendations, activeRecommendations).map(recommendId -> {
+            log.info("추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
+            return createRecommendNotification(userId, recommendId);
+        }).or(() -> {
+            log.info("userId={}에 대한 유효한 추천이 없음. 추천을 건너뜁니다.", userId);
+            return Optional.empty();
+        });
     }
 
     public void deleteRecentReply(Long receiverId, Long replyLetterId, String label) {
@@ -137,15 +135,14 @@ public class RedisLetterService {
         String activeKey = getActiveRecommendationKey(userId);
         String tempRecommendationKey = getTempRecommendationKey(userId);
 
-        return findFirstValidLetter(tempRecommendations)
-                .map(recommendId -> {
-                    updateActiveRecommendations(recommendId, activeRecommendations, activeKey);
-                    saveLetterToBox(userId, recommendId);
-                    saveLetterToRecommendedLetter(userId, recommendId);
+        return findFirstValidLetter(tempRecommendations).map(recommendId -> {
+            updateActiveRecommendations(recommendId, activeRecommendations, activeKey);
+            saveLetterToBox(userId, recommendId);
+            saveLetterToRecommendedLetter(userId, recommendId);
 
-                    redisTemplate.delete(tempRecommendationKey);
-                    return recommendId;
-                });
+            redisTemplate.delete(tempRecommendationKey);
+            return recommendId;
+        });
     }
 
     private Optional<Long> findFirstValidLetter(List<Long> recommendations) {
@@ -153,9 +150,7 @@ public class RedisLetterService {
             return Optional.empty();
         }
 
-        List<Long> validLetters = recommendations.stream()
-                .filter(this::isValidLetter)
-                .toList();
+        List<Long> validLetters = recommendations.stream().filter(this::isValidLetter).toList();
 
         if (validLetters.isEmpty()) {
             log.warn("추천할 편지가 모두 삭제됨. 새로운 추천이 필요함.");

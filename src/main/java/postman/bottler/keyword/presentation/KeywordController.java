@@ -27,50 +27,30 @@ public class KeywordController {
     private final KeywordService keywordService;
     private final LetterKeywordService letterKeywordService;
 
-    @Operation(
-            summary = "유저 키워드 목록 조회",
-            description = "유저가 설정한 키워드 목록을 조회합니다."
-    )
+    @Operation(summary = "유저 키워드 목록 조회", description = "유저가 설정한 키워드 목록을 조회합니다.")
     @GetMapping
-    public ApiResponse<UserKeywordResponseDTO> getKeywords(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        UserKeywordResponseDTO result = userKeywordService.findUserKeywords(userDetails.getUserId());
-        return ApiResponse.onSuccess(result);
+    public ApiResponse<UserKeywordResponseDTO> getKeywords(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(userKeywordService.findUserKeywords(userDetails.getUserId()));
     }
 
-    @Operation(
-            summary = "유저 키워드 등록",
-            description = "유저가 설정한 키워드로 변경합니다."
-    )
+    @Operation(summary = "유저 키워드 등록", description = "유저가 설정한 키워드로 변경합니다.")
     @PostMapping
-    public ApiResponse<String> createKeywords(
-            @RequestBody UserKeywordRequestDTO userKeywordRequestDTO,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    public ApiResponse<String> createKeywords(@RequestBody UserKeywordRequestDTO userKeywordRequestDTO,
+                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         userKeywordService.createKeywords(userKeywordRequestDTO, userDetails.getUserId());
         return ApiResponse.onSuccess("사용자 키워드를 생성하였습니다.");
     }
 
-    @Operation(
-            summary = "전체 키워드 조회",
-            description = "카테고리별로 등록된 키워드 목록을 조회합니다."
-    )
+    @Operation(summary = "전체 키워드 조회", description = "카테고리별로 등록된 키워드 목록을 조회합니다.")
     @GetMapping("/list")
     public ApiResponse<KeywordResponseDTO> getKeywordList() {
-        KeywordResponseDTO result = keywordService.getKeywords();
-        return ApiResponse.onSuccess(result);
+        return ApiResponse.onSuccess(keywordService.getKeywords());
     }
 
-    @Operation(
-            summary = "사용자의 자주 쓰는 키워드 조회",
-            description = "현재 사용자의 자주 쓰는 키워드를 조회합니다"
-    )
+    @Operation(summary = "사용자의 자주 쓰는 키워드 조회", description = "현재 사용자의 자주 쓰는 키워드를 조회합니다")
     @GetMapping("/frequent")
     public ApiResponse<FrequentKeywordsDTO> getTopFrequentKeywords(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        FrequentKeywordsDTO result = letterKeywordService.getTopFrequentKeywords(userDetails.getUserId());
-        return ApiResponse.onSuccess(result);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(letterKeywordService.getTopFrequentKeywords(userDetails.getUserId()));
     }
 }

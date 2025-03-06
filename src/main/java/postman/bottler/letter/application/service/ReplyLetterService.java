@@ -96,7 +96,6 @@ public class ReplyLetterService {
         return replyLetter.getSenderId();
     }
 
-    @Transactional
     public boolean checkIsReplied(Long letterId, Long senderId) {
         return replyLetterRepository.existsByLetterIdAndSenderId(letterId, senderId);
     }

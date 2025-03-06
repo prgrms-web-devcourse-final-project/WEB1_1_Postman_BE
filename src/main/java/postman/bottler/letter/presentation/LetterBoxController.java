@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,90 +35,61 @@ public class LetterBoxController {
     private final LetterBoxService letterBoxService;
     private final LetterDeletionService letterDeletionService;
 
-    @Operation(
-            summary = "보관된 모든 편지 조회",
-            description = "페이지네이션을 사용하여 보관된 모든 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
-                    + "\nPage Default: page(1) size(9) sort(createAt)"
-    )
+    @Operation(summary = "보관된 모든 편지 조회", description = "페이지네이션을 사용하여 보관된 모든 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
+            + "\nPage Default: page(1) size(9) sort(createAt)")
     @GetMapping
     @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
-    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getAllLetters(
-            @Valid PageRequestDTO pageRequestDTO,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Page<LetterSummaryResponseDTO> result = letterBoxService.findAllLetterSummaries(pageRequestDTO,
-                userDetails.getUserId());
-        return ApiResponse.onSuccess(PageResponseDTO.from(result));
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getAllLetters(@Valid PageRequestDTO pageRequestDTO,
+                                                                                BindingResult bindingResult,
+                                                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(
+                PageResponseDTO.from(letterBoxService.findAllLetterSummaries(pageRequestDTO, userDetails.getUserId())));
     }
 
-    @Operation(
-            summary = "보낸 편지 조회",
-            description = "페이지네이션을 사용하여 보관된 보낸 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
-                    + "\nPage Default: page(1) size(9) sort(createAt)"
-    )
+    @Operation(summary = "보낸 편지 조회", description = "페이지네이션을 사용하여 보관된 보낸 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
+            + "\nPage Default: page(1) size(9) sort(createAt)")
     @GetMapping("/sent")
     @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
-    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getSentLetters(
-            @Valid PageRequestDTO pageRequestDTO,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Page<LetterSummaryResponseDTO> result = letterBoxService.findSentLetterSummaries(pageRequestDTO,
-                userDetails.getUserId());
-        return ApiResponse.onSuccess(PageResponseDTO.from(result));
+    public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getSentLetters(@Valid PageRequestDTO pageRequestDTO,
+                                                                                 BindingResult bindingResult,
+                                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(PageResponseDTO.from(
+                letterBoxService.findSentLetterSummaries(pageRequestDTO, userDetails.getUserId())));
     }
 
-    @Operation(
-            summary = "받은 편지 조회",
-            description = "페이지네이션을 사용하여 보관된 받은 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
-                    + "\nPage Default: page(1) size(9) sort(createAt)"
-    )
+    @Operation(summary = "받은 편지 조회", description = "페이지네이션을 사용하여 보관된 받은 편지의 제목, 라벨이미지, 작성날짜 정보를 조회합니다."
+            + "\nPage Default: page(1) size(9) sort(createAt)")
     @GetMapping("/received")
     @LetterValidationMetaData(message = "페이지네이션 유효성 검사 실패", errorStatus = PAGINATION_VALIDATION_ERROR)
     public ApiResponse<PageResponseDTO<LetterSummaryResponseDTO>> getReceivedLetters(
-            @Valid PageRequestDTO pageRequestDTO,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Page<LetterSummaryResponseDTO> result = letterBoxService.findReceivedLetterSummaries(pageRequestDTO,
-                userDetails.getUserId());
-        return ApiResponse.onSuccess(PageResponseDTO.from(result));
+            @Valid PageRequestDTO pageRequestDTO, BindingResult bindingResult,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.onSuccess(PageResponseDTO.from(
+                letterBoxService.findReceivedLetterSummaries(pageRequestDTO, userDetails.getUserId())));
     }
 
-    @Operation(
-            summary = "보관된 편지 삭제",
-            description = "편지ID, 편지타입(LETTER, REPLY_LETTER), 송수신 타입(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다."
-    )
+    @Operation(summary = "보관된 편지 삭제", description = "편지ID, 편지타입(LETTER, REPLY_LETTER), 송수신 타입(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다.")
     @DeleteMapping
-    public ApiResponse<String> deleteSavedLetter(
-            @RequestBody @Valid List<LetterDeleteDTO> letterDeleteDTOS,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    public ApiResponse<String> deleteSavedLetter(@RequestBody @Valid List<LetterDeleteDTO> letterDeleteDTOS,
+                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
         letterDeletionService.deleteLetters(letterDeleteDTOS, userDetails.getUserId());
         return ApiResponse.onSuccess("보관된 편지를 삭제했습니다.");
     }
 
     @DeleteMapping("/all")
-    public ApiResponse<String> deleteAllSavedLetters(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    public ApiResponse<String> deleteAllSavedLetters(@AuthenticationPrincipal CustomUserDetails userDetails) {
         letterDeletionService.deleteAllSavedLetters(userDetails.getUserId());
         return ApiResponse.onSuccess("보관된 편지를 모두 삭제했습니다");
     }
 
     @DeleteMapping("/received")
-    public ApiResponse<String> deleteAllSavedReceivedLetters(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    public ApiResponse<String> deleteAllSavedReceivedLetters(@AuthenticationPrincipal CustomUserDetails userDetails) {
         letterDeletionService.deleteAllSavedReceivedLetters(userDetails.getUserId());
         return ApiResponse.onSuccess("받은 편지를 모두 삭제했습니다");
     }
 
     @DeleteMapping("/sent")
-    public ApiResponse<String> deleteAllSavedSentLetters(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    public ApiResponse<String> deleteAllSavedSentLetters(@AuthenticationPrincipal CustomUserDetails userDetails) {
         letterDeletionService.deleteAllSavedSentLetters(userDetails.getUserId());
         return ApiResponse.onSuccess("보낸 편지를 모두 삭제했습니다.");
     }

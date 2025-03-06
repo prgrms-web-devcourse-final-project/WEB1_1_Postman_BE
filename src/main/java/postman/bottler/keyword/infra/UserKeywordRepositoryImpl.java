@@ -16,10 +16,7 @@ public class UserKeywordRepositoryImpl implements UserKeywordRepository {
 
     @Override
     public List<UserKeyword> findUserKeywordsByUserId(Long userId) {
-        List<UserKeywordEntity> userKeywordEntities = jpaRepository.findAllByUserId(userId);
-        return userKeywordEntities.stream()
-                .map(UserKeywordEntity::toDomain)
-                .toList();
+        return jpaRepository.findAllByUserId(userId).stream().map(UserKeywordEntity::toDomain).toList();
     }
 
     @Override

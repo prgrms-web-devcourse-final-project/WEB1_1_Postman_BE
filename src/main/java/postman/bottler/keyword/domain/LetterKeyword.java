@@ -18,10 +18,6 @@ public class LetterKeyword {
     private boolean isDeleted;
 
     public static LetterKeyword from(Long letterId, String keyword) {
-        return LetterKeyword.builder()
-                .letterId(letterId)
-                .keyword(keyword)
-                .isDeleted(false)
-                .build();
+        return LetterKeyword.builder().letterId(letterId).keyword(keyword).isDeleted(false).build();
     }
 }

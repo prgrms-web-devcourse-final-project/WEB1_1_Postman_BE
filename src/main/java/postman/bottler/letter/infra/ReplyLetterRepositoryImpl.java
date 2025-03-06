@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.letter.application.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.infra.entity.ReplyLetterEntity;
@@ -19,8 +18,7 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public ReplyLetter save(ReplyLetter replyLetter) {
-        ReplyLetterEntity replyLetterEntity = replyLetterJpaRepository.save(ReplyLetterEntity.from(replyLetter));
-        return replyLetterEntity.toDomain();
+        return replyLetterJpaRepository.save(ReplyLetterEntity.from(replyLetter)).toDomain();
     }
 
     @Override
@@ -31,8 +29,7 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
 
     @Override
     public Optional<ReplyLetter> findById(Long replyLetterId) {
-        return replyLetterJpaRepository.findById(replyLetterId)
-                .map(ReplyLetterEntity::toDomain);
+        return replyLetterJpaRepository.findById(replyLetterId).map(ReplyLetterEntity::toDomain);
     }
 
     @Override
@@ -50,13 +47,11 @@ public class ReplyLetterRepositoryImpl implements ReplyLetterRepository {
     }
 
     @Override
-    @Transactional
     public void softDeleteByIds(List<Long> letterIds) {
         replyLetterJpaRepository.softDeleteByIds(letterIds);
     }
 
     @Override
-    @Transactional
     public void softBlockById(Long replyLetterId) {
         replyLetterJpaRepository.softBlockById(replyLetterId);
     }

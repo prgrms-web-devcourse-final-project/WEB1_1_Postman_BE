@@ -46,10 +46,10 @@ public class LetterKeywordEntity {
 
     public LetterKeyword toDomain() {
         return LetterKeyword.builder()
-                .id(this.id)
-                .letterId(this.letterId)
-                .keyword(this.keyword)
-                .isDeleted(this.isDeleted)
+                .id(id)
+                .letterId(letterId)
+                .keyword(keyword)
+                .isDeleted(isDeleted)
                 .build();
     }
 }

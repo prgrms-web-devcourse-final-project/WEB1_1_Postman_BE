@@ -16,8 +16,6 @@ public class KeywordRepositoryImpl implements KeywordRepository {
     @Override
     public List<Keyword> getKeywords() {
         List<KeywordEntity> keywords = keywordJpaRepository.findAll();
-        return keywords.stream()
-                .map(KeywordEntity::toDomain)
-                .toList();
+        return keywords.stream().map(KeywordEntity::toDomain).toList();
     }
 }
